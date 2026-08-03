@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Achat de billet</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="event-card">
+
+        <h1>J'achète mon ticket</h1>
+<div class="payment-box">
+
+    <h2>Informations de paiement</h2>
+<p><strong>Montant :</strong> 50 dhs</p>
+
+<p><strong>Bénéficiaire :</strong> Trésorière JEEAM</p>
+
+<p><strong>Mobile Money :</strong> +212 07709676</p>
+
+<p><strong>Banque :</strong> CIH Bank</p>
+
+<p><strong>RIB :</strong> CIH 12 XXXX XXXX XXXX XXXX</p>
+<img src="images/image rib.png" alt="RIB" class="rib-image">
+</div>
+        <p>Remplissez les informations pour confirmer votre paiement.</p>
+
+        <label>Votre nom et prénom </label>
+        <br>
+        <input type="text" id="nom">
+
+        <br><br>
+
+        <label>Votre contact whatsApp </label>
+        <br>
+        <input type="tel" id="telephone">
+
+        <br><br>
+
+        <label>Capture du paiement</label>
+        <br>
+        <input type="file" id="preuvePaiement">
+
+        <br><br>
+    <button id="paiement">
+    J'ai effectué le paiement
+</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase.js"></script>
+
+<script src="script.js"></script>
+
+</body>
+
+</html>

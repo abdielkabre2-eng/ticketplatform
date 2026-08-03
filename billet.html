@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billet</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="ticket">
+
+        <h1>🎟️ Billet d'entrée</h1>
+
+        <h2>JEEAM's Days Tanger 2026</h2>
+
+        <hr>
+        <p><strong>Nom et prénom :</strong> <span id="nomBillet"></span></p>
+
+        <p><strong>Téléphone :</strong> <span id="telephoneBillet"></span></p>
+        <p><strong>Date :</strong> 1 Août 2026</p>
+
+        <p><strong>Lieu :</strong> Tanger</p>
+
+        <p><strong>Billet N° :</strong> <span id="numeroBillet"></span></p>
+
+        <div id="qrcode" class="qr-box"></div>
+
+        <p class="info">
+
+            Veillez présentez ce billet à l'entrée.
+
+        </p>
+
+    </div>
+    <button id="downloadTicket">
+    ⬇️ Télécharger mon billet
+    </button>
+<!-- 1. Bibliothèque Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- 2. Ton fichier de configuration Supabase -->
+    <script src="supabase.js"></script>
+
+    <!-- 3. Librairies pour le QR Code et le PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <!-- 4. Ton fichier de logique globale -->
+    <script src="script.js"></script>
+</body>
+
+</html>
