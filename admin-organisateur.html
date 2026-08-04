@@ -182,10 +182,10 @@
             chargerToutesLesDemandes();
         }   
 
-        // Gestion centrale de la vérification et de l'anti-fraude (double passage)
-        async function traiterVerificationBillet(code) {
+        // Gestion centrale de la vérification et de l'anti-fraude (tolérante et universelle)
+        async function traiterVerificationBillet(codeScanne) {
             let resultatDiv = document.getElementById("resultatScan");
-            code = code ? code.trim() : "";
+            let code = codeScanne ? codeScanne.trim() : "";
 
             if (!code) {
                 resultatDiv.style.background = "#fff3cd";
@@ -194,18 +194,31 @@
                 return;
             }
 
-            // Recherche du billet par ID, numéro de billet ou QR code pour cet événement
-            const { data: b, error } = await window.supabaseClient
+            // On récupère tous les billets de cet événement pour faire une vérification souple
+            const { data: billets, error } = await window.supabaseClient
                 .from("billets")
                 .select("*")
-                .or(`id.eq.${code},numero_billet.eq.${code},qr_code.eq.${code}`)
-                .eq("evenement_id", eventId)
-                .single();
+                .eq("evenement_id", eventId);
 
-            if (error || !b) {
+            if (error || !billets) {
                 resultatDiv.style.background = "#f8d7da";
                 resultatDiv.style.color = "#721c24";
-                resultatDiv.textContent = "❌ Billet invalide ou introuvable pour cet événement.";
+                resultatDiv.textContent = "❌ Erreur de connexion avec la base de données.";
+                return;
+            }
+
+            // On cherche le billet peu importe que le scan lise l'ID, le numéro ou une URL partielle
+            let b = billets.find(item => 
+                item.id.toString() === code || 
+                code.includes(item.id.toString()) ||
+                (item.numero_billet && code.includes(item.numero_billet)) || 
+                (item.qr_code && code.includes(item.qr_code))
+            );
+
+            if (!b) {
+                resultatDiv.style.background = "#f8d7da";
+                resultatDiv.style.color = "#721c24";
+                resultatDiv.textContent = `❌ Billet introuvable pour ce code (${code}).`;
                 return;
             }
 
