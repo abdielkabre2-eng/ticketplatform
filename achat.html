@@ -6,27 +6,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Achat de billet</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Petit style propre pour l'affiche dynamique */
+        .event-card img.affiche-dynamique {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-bottom: 15px;
+        }
+    </style>
 </head>
 
 <body>
 
     <div class="event-card">
 
-        <h1>J'achète mon ticket</h1>
-<div class="payment-box">
+        <!-- Zone où l'affiche et les infos de l'événement vont s'injecter automatiquement -->
+        <div id="infosEvenement">
+            <h1 id="titreEvenement">J'achète mon ticket</h1>
+            <p id="detailsEvenement">Chargement des infos de l'événement...</p>
+        </div>
 
-    <h2>Informations de paiement</h2>
-<p><strong>Montant :</strong> 50 dhs</p>
+        <div class="payment-box">
+            <h2>Informations de paiement</h2>
+            <p><strong>Montant :</strong> 50 dhs</p>
+            <p><strong>Bénéficiaire :</strong> Trésorière JEEAM</p>
+            <p><strong>Mobile Money :</strong> +212 07709676</p>
+            <p><strong>Banque :</strong> CIH Bank</p>
+            <p><strong>RIB :</strong> CIH 12 XXXX XXXX XXXX XXXX</p>
+            <img src="images/image rib.png" alt="RIB" class="rib-image">
+        </div>
 
-<p><strong>Bénéficiaire :</strong> Trésorière JEEAM</p>
-
-<p><strong>Mobile Money :</strong> +212 07709676</p>
-
-<p><strong>Banque :</strong> CIH Bank</p>
-
-<p><strong>RIB :</strong> CIH 12 XXXX XXXX XXXX XXXX</p>
-<img src="images/image rib.png" alt="RIB" class="rib-image">
-</div>
         <p>Remplissez les informations pour confirmer votre paiement.</p>
 
         <label>Votre nom et prénom </label>
@@ -46,16 +57,51 @@
         <input type="file" id="preuvePaiement">
 
         <br><br>
-    <button id="paiement">
-    J'ai effectué le paiement
-</button>
-</div>
+        <button id="paiement">
+            J'ai effectué le paiement
+        </button>
+    </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Scripts Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script>
+        // 1. Charger dynamiquement l'événement en fonction du lien ?event=ID
+        async function chargerPageAchat() {
+            const urlParams = new URLSearchParams(window.location.search);
+            let eventId = urlParams.get("event");
+            let container = document.getElementById("infosEvenement");
 
-<script src="supabase.js"></script>
+            if (!eventId) {
+                container.innerHTML = "<h1>Erreur</h1><p>Aucun événement spécifié dans le lien.</p>";
+                return;
+            }
 
-<script src="script.js"></script>
+            const { data: ev, error } = await window.supabaseClient
+                .from("evenements")
+                .select("*")
+                .eq("id", eventId)
+                .single();
+
+            if (error || !ev) {
+                container.innerHTML = "<h1>Oups</h1><p>Événement introuvable.</p>";
+                return;
+            }
+
+            // Injection de l'affiche et des infos propres à cet événement
+            container.innerHTML = `
+                <img src="${ev.affiche_url}" alt="Affiche de l'événement" class="affiche-dynamique">
+                <h1>${ev.titre}</h1>
+                <p>📅 Date : ${ev.date} à ${ev.heure}</p>
+                <p>📍 Lieu : ${ev.lieu}</p>
+            `;
+        }
+
+        chargerPageAchat();
+    </script>
+    
+    <!-- Ton script.js global pour gérer l'envoi du formulaire d'achat -->
+    <script src="script.js"></script>
 
 </body>
 

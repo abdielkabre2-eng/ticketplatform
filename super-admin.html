@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin - Création d'Événement</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f7f6; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        input, textarea { width: 100%; padding: 10px; margin: 10px 0 20px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        textarea { height: 80px; resize: vertical; }
+        button { background: #007bff; color: white; border: none; padding: 12px; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .links-box { background: #e9ecef; padding: 15px; border-radius: 5px; margin-top: 20px; word-break: break-all; display: none; }
+        .links-box p { margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Créer un Événement</h1>
+        <p>Remplis les infos pour générer l'événement et obtenir les liens uniques.</p>
+
+        <label>Nom de l'événement :</label>
+        <input type="text" id="titreEvent" placeholder="ex: Concert JEEAM">
+
+        <label>Date :</label>
+        <input type="date" id="dateEvent">
+
+        <label>Heure :</label>
+        <input type="time" id="heureEvent">
+
+        <label>Lieu :</label>
+        <input type="text" id="lieuEvent" placeholder="ex: Canal Olympia">
+
+        <label>Prix du billet :</label>
+        <input type="text" id="prixEvent" placeholder="ex: 50">
+
+        <label>Nom du bénéficiaire (qui reçoit l'argent) :</label>
+        <input type="text" id="beneficiaireNom" placeholder="ex: Trésorière JEEAM">
+
+        <label>Coordonnées de paiement (Mobile Money, RIB, etc.) :</label>
+        <textarea id="beneficiaireInfos" placeholder="ex: Mobile Money: +226 ... / CIH Bank: ..."></textarea>
+
+        <!-- AJOUTÉ : Champ pour l'image du RIB / QR Code -->
+        <label>Image du RIB ou QR Code de paiement :</label>
+        <input type="file" id="ribEvent" accept="image/*">
+
+        <label>Affiche de l'événement (Image) :</label>
+        <input type="file" id="afficheEvent" accept="image/*">
+
+        <button id="btnCreerEvent">Créer l'événement et générer les liens</button>
+
+        <!-- Zone d'affichage des liens générés -->
+        <div id="resultatLiens" class="links-box">
+            <h3>Événement créé avec succès ! 🎉</h3>
+            <p><strong>1. Lien Public (Achat pour les participants) :</strong><br>
+                <a id="lienPublic" href="#" target="_blank"></a>
+            </p>
+            <p><strong>2. Lien Organisateur (Validations & Scanner) :</strong><br>
+                <a id="lienAdmin" href="#" target="_blank"></a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Scripts Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script>
+        document.getElementById("btnCreerEvent").onclick = async function() {
+            let titre = document.getElementById("titreEvent").value.trim();
+            let date = document.getElementById("dateEvent").value.trim();
+            let heure = document.getElementById("heureEvent").value.trim();
+            let lieu = document.getElementById("lieuEvent").value.trim();
+            let prix = document.getElementById("prixEvent").value.trim();
+            let beneficiaireNom = document.getElementById("beneficiaireNom").value.trim();
+            let beneficiaireInfos = document.getElementById("beneficiaireInfos").value.trim();
+            
+            let fichierRib = document.getElementById("ribEvent").files[0];
+            let fichierAffiche = document.getElementById("afficheEvent").files[0];
+
+            if (!titre || !date || !heure || !lieu || !prix || !beneficiaireNom || !beneficiaireInfos || !fichierRib || !fichierAffiche) {
+                alert("Veuillez remplir tous les champs et joindre l'affiche ainsi que l'image du RIB.");
+                return;
+            }
+
+            let btn = document.getElementById("btnCreerEvent");
+            btn.disabled = true;
+            btn.textContent = "Création en cours...";
+
+            try {
+                // 1. Upload de l'Affiche
+                let extAffiche = fichierAffiche.name.split('.').pop();
+                let nameAffiche = `affiche-${Date.now()}.${extAffiche}`;
+                await window.supabaseClient.storage.from("preuves").upload(nameAffiche, fichierAffiche);
+                let { data: urlAfficheData } = window.supabaseClient.storage.from("preuves").getPublicUrl(nameAffiche);
+                let afficheUrl = urlAfficheData.publicUrl;
+
+                // 2. Upload de l'image du RIB
+                let extRib = fichierRib.name.split('.').pop();
+                let nameRib = `rib-${Date.now()}.${extRib}`;
+                await window.supabaseClient.storage.from("preuves").upload(nameRib, fichierRib);
+                let { data: urlRibData } = window.supabaseClient.storage.from("preuves").getPublicUrl(nameRib);
+                let ribImageUrl = urlRibData.publicUrl;
+
+                // 3. Enregistrement dans la table 'evenements'
+                const { data: eventData, error: eventError } = await window.supabaseClient
+                    .from("evenements")
+                    .insert([
+                        { 
+                            titre: titre, 
+                            date: date, 
+                            heure: heure, 
+                            lieu: lieu, 
+                            prix: prix,
+                            beneficiaire_nom: beneficiaireNom,
+                            beneficiaire_infos: beneficiaireInfos,
+                            affiche_url: afficheUrl,
+                            rib_image_url: ribImageUrl // <-- On enregistre le lien du RIB
+                        }
+                    ])
+                    .select();
+
+                if (eventError) {
+                    alert("Erreur enregistrement : " + eventError.message);
+                    btn.disabled = false;
+                    btn.textContent = "Créer l'événement et générer les liens";
+                    return;
+                }
+
+                let idEvent = eventData[0].id;
+
+                // 4. Génération des deux liens uniques
+                let baseUrl = window.location.origin;
+                let urlPublique = `${baseUrl}/index.html?event=${idEvent}`;
+                let urlOrganisateur = `${baseUrl}/admin-organisateur.html?event=${idEvent}`;
+
+                document.getElementById("lienPublic").href = urlPublique;
+                document.getElementById("lienPublic").textContent = urlPublique;
+
+                document.getElementById("lienAdmin").href = urlOrganisateur;
+                document.getElementById("lienAdmin").textContent = urlOrganisateur;
+
+                document.getElementById("resultatLiens").style.display = "block";
+                btn.textContent = "Événement créé avec succès !";
+
+            } catch (err) {
+                console.error(err);
+                alert("Une erreur est survenue.");
+                btn.disabled = false;
+                btn.textContent = "Créer l'événement et générer les liens";
+            }
+        };
+    </script>
+</body>
+</html>

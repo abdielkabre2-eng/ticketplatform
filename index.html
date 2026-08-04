@@ -4,32 +4,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ticket Platform</title>
+    <title>Achat de Billet</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+    body { font-family: Arial, sans-serif; background: #f4f7f6; padding: 20px; margin: 0; }
+    .container { max-width: 600px; margin: 0 auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    
+    #detailsEvenement img:first-of-type { 
+        width: 100%; 
+        max-height: 350px; 
+        object-fit: contain; 
+        border-radius: 8px; 
+        margin-bottom: 15px; 
+        background: white; 
+    }
+
+    .payment-box { background: #e9ecef; padding: 15px; border-radius: 5px; margin: 20px 0; text-align: center; }
+    
+    .rib-image { 
+        max-width: 250px; 
+        width: 100%; 
+        height: auto; 
+        border-radius: 5px; 
+        margin-top: 10px; 
+        display: block; 
+        margin-left: auto; 
+        margin-right: auto; 
+        border: 1px solid #ccc;
+    }
+
+    input { width: 100%; padding: 10px; margin: 10px 0 20px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+    button { background: #007bff; color: white; border: none; padding: 12px; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer; }
+    button:hover { background: #0056b3; }
+</style>
 </head>
 
 <body>
 
-    
-
-
-    <div class="event-card">
-
-        <img src="images/JEEAM's day.jpeg" alt="Affiche de l'événement">
-
-        <h1>JEEAM'S DAYS - Tanger 2026</h1>
-
-        <p>📅 Date : 1 Août 2026</p>
-
-        <p>📍 Lieu : Tanger</p>
-
-        <p>💰 Prix : 50 Dhs</p>
-
-   <a href="achat.html">
-    <button>Acheter mon ticket pour</button>
-   </a>
-
+    <div class="container">
+        <div id="detailsEvenement">
+            <p>Chargement de l'événement...</p>
+        </div>
     </div>
-</body>
 
+    <!-- Scripts Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script>
+        async function chargerPageAchatUnique() {
+            const urlParams = new URLSearchParams(window.location.search);
+            let eventId = urlParams.get("event");
+            let container = document.getElementById("detailsEvenement");
+
+            console.log("ID d'événement récupéré de l'URL :", eventId);
+
+            if (!eventId) {
+                container.innerHTML = "<h2>Erreur</h2><p>Aucun événement spécifié dans le lien.</p>";
+                return;
+            }
+
+            const { data: ev, error } = await window.supabaseClient
+                .from("evenements")
+                .select("*")
+                .eq("id", eventId)
+                .single();
+
+            if (error || !ev) {
+                container.innerHTML = "<h2>Oups</h2><p>Événement introuvable.</p>";
+                return;
+            }
+
+            container.innerHTML = `
+                <img src="${ev.affiche_url}" alt="Affiche">
+                <h1>${ev.titre}</h1>
+                <p>📅 Date : ${ev.date} à ${ev.heure}</p>
+                <p>📍 Lieu : ${ev.lieu}</p>
+                <p>💰 <strong>Prix du billet : ${ev.prix} </strong></p>
+
+                <div class="payment-box">
+                    <h3>Informations de paiement</h3>
+                    <p><strong>Bénéficiaire :</strong> ${ev.beneficiaire_nom}</p>
+                    <p><strong>Coordonnées :</strong> ${ev.beneficiaire_infos}</p>
+                    ${ev.rib_image_url ? `<img src="${ev.rib_image_url}" alt="RIB ou QR Code" class="rib-image">` : ''}
+                </div>
+
+                <h3>Remplissez les informations pour confirmer votre paiement</h3>
+                <label>Votre Nom et Prénom :</label>
+                <input type="text" id="nomParticipant" placeholder="ex: Jean Ouédraogo">
+
+                <label>Votre contact WhatsApp :</label>
+                <input type="tel" id="telParticipant" placeholder="ex: +226 ...">
+
+                <label>Capture du paiement :</label>
+                <input type="file" id="preuvePaiement" accept="image/*">
+
+                <button id="btnValiderAchat">J'ai effectué le paiement</button>
+            `;
+
+            document.getElementById("btnValiderAchat").onclick = async function() {
+                let nom = document.getElementById("nomParticipant").value.trim();
+                let tel = document.getElementById("telParticipant").value.trim();
+                let fichierPreuve = document.getElementById("preuvePaiement").files[0];
+
+                if (!nom || !tel || !fichierPreuve) {
+                    alert("Veuillez remplir tous les champs et joindre la capture de paiement.");
+                    return;
+                }
+
+                let btn = document.getElementById("btnValiderAchat");
+                btn.disabled = true;
+                btn.textContent = "Envoi en cours...";
+
+                try {
+                    let fileExt = fichierPreuve.name.split('.').pop();
+                    let fileName = `preuve-${Date.now()}.${fileExt}`;
+
+                    const { error: uploadError } = await window.supabaseClient
+                        .storage
+                        .from("preuves")
+                        .upload(fileName, fichierPreuve);
+
+                    if (uploadError) {
+                        alert("Erreur lors de l'envoi de la preuve : " + uploadError.message);
+                        btn.disabled = false;
+                        btn.textContent = "J'ai effectué le paiement";
+                        return;
+                    }
+
+                    const { data: urlData } = window.supabaseClient
+                        .storage
+                        .from("preuves")
+                        .getPublicUrl(fileName);
+
+                    let preuveUrl = urlData.publicUrl;
+
+                    const { data: insertedBillet, error: insertError } = await window.supabaseClient
+                        .from("billets")
+                        .insert([
+                            {
+                                evenement_id: ev.id,
+                                nom_participant: nom,
+                                telephone: tel,
+                                preuve_url: preuveUrl,
+                                statut: "attente", // <-- Corrigé ici ("attente" au lieu de "en_attente")
+                                utilise: false
+                            }
+                        ])
+                        .select();
+
+                    if (insertError) {
+                        alert("Erreur lors de l'enregistrement du billet : " + insertError.message);
+                        btn.disabled = false;
+                        btn.textContent = "J'ai effectué le paiement";
+                        return;
+                    }
+
+                    if (insertedBillet && insertedBillet.length > 0) {
+                        let idBilletCree = insertedBillet[0].id;
+                        window.location.href = `billet.html?id=${idBilletCree}`;
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("Une erreur inattendue est survenue.");
+                    let btn = document.getElementById("btnValiderAchat");
+                    btn.disabled = false;
+                    btn.textContent = "J'ai effectué le paiement";
+                }
+            };
+        }
+
+        chargerPageAchatUnique();
+    </script>
+</body>
 </html>
