@@ -9,7 +9,7 @@
         body { font-family: Arial, sans-serif; background: #f4f7f6; padding: 20px; }
         .container { max-width: 800px; margin: 0 auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .tabs { display: flex; justify-content: space-around; margin-bottom: 20px; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
-        .tab-btn { background: none; border: none; font-size: 18px; font-weight: bold; cursor: pointer; padding: 10px 20px; color: #666; }
+        .tab-btn { background: none; border: none; font-size: 16px; font-weight: bold; cursor: pointer; padding: 10px 15px; color: #666; }
         .tab-btn.active { color: #007bff; border-bottom: 3px solid #007bff; }
         .section-content { display: none; }
         .section-content.active { display: block; }
@@ -44,13 +44,14 @@
         <h1 id="titreEvenementOrg">Espace Organisateur</h1>
         <p id="infosEvenementOrg">Chargement des informations...</p>
 
-        <!-- Les deux onglets -->
+        <!-- Les trois onglets -->
         <div class="tabs">
             <button class="tab-btn active" onclick="changerOnglet('paiements', event)">1. Demandes de Paiement</button>
-            <button class="tab-btn" onclick="changerOnglet('scanner', event)">2. Scanner les Billets</button>
+            <button class="tab-btn" onclick="changerOnglet('validees', event)">2. Demandes Validées</button>
+            <button class="tab-btn" onclick="changerOnglet('scanner', event)">3. Scanner les Billets</button>
         </div>
 
-        <!-- SECTION 1 : TOUTES LES DEMANDES DE PAIEMENT -->
+        <!-- SECTION 1 : DEMANDES DE PAIEMENT -->
         <div id="section-paiements" class="section-content active">
             <h2>Gestion des paiements</h2>
             <div id="listePaiements">
@@ -58,7 +59,16 @@
             </div>
         </div>
 
-        <!-- SECTION 2 : SCANNER -->
+        <!-- SECTION 2 : DEMANDES VALIDÉES -->
+        <div id="section-validees" class="section-content">
+            <h2>Participants Confirmés & Validés</h2>
+            <p>Liste des personnes validées (basculées ici après 5 min). En cas d'empêchement, vous pouvez retirer un participant pour invalider son billet :</p>
+            <div id="listeValidees">
+                <p>Chargement des participants validés...</p>
+            </div>
+        </div>
+
+        <!-- SECTION 3 : SCANNER -->
         <div id="section-scanner" class="section-content">
             <h2>Contrôle des Billets (Jour J)</h2>
             <p>Scannez le QR Code avec la caméra du téléphone ou entrez le code manuellement :</p>
@@ -109,9 +119,10 @@
             chargerToutesLesDemandes();
         }
 
-        // Charger TOUTES les demandes de l'événement
+        // Charger et répartir les demandes entre Paiements et Demandes Validées
         async function chargerToutesLesDemandes() {
-            let container = document.getElementById("listePaiements");
+            let containerPaiements = document.getElementById("listePaiements");
+            let containerValidees = document.getElementById("listeValidees");
 
             const { data: billets, error } = await window.supabaseClient
                 .from("billets")
@@ -120,47 +131,104 @@
                 .order("id", { ascending: false });
 
             if (error) {
-                container.innerHTML = "<p>Erreur lors du chargement des paiements.</p>";
+                containerPaiements.innerHTML = "<p>Erreur lors du chargement.</p>";
+                containerValidees.innerHTML = "<p>Erreur lors du chargement.</p>";
                 return;
             }
 
             if (!billets || billets.length === 0) {
-                container.innerHTML = "<p>Aucune demande de paiement pour le moment.</p>";
+                containerPaiements.innerHTML = "<p>Aucune demande de paiement pour le moment.</p>";
+                containerValidees.innerHTML = "<p>Aucun participant validé pour le moment.</p>";
                 return;
             }
 
-            container.innerHTML = "";
+            containerPaiements.innerHTML = "";
+            containerValidees.innerHTML = "";
+
+            let now = Date.now();
+            let countPaiements = 0;
+            let countValidees = 0;
+
             billets.forEach(function(b) {
                 let statutHtml = "";
                 if (b.statut === "confirme") {
                     statutHtml = `<span class="badge-statut badge-confirme">✅ Confirmé / Payé</span>`;
                 } else if (b.statut === "refuse") {
-                    statutHtml = `<span class="badge-statut badge-refuse">❌ Refusé / Non reçu</span>`;
+                    statutHtml = `<span class="badge-statut badge-refuse">❌ Refusé / Annulé</span>`;
                 } else {
                     statutHtml = `<span class="badge-statut badge-attente">⏳ En attente</span>`;
                 }
 
-                container.innerHTML += `
-                    <div class="billet-card">
-                        ${statutHtml}
-                        <p><strong>Nom du participant :</strong> ${b.nom_participant}</p>
-                        <p><strong>Téléphone WhatsApp :</strong> ${b.telephone}</p>
-                        <p><strong>Capture du paiement :</strong></p>
-                        <a href="${b.preuve_url}" target="_blank"><img src="${b.preuve_url}" alt="Preuve de paiement"></a>
-                        <br>
-                        <div style="margin-top: 10px;">
-                            <button class="btn-confirmer" onclick="changerStatut(${b.id}, 'confirme')">✅ J'ai reçu</button>
-                            <button class="btn-refuser" onclick="changerStatut(${b.id}, 'refuse')">❌ Non reçu</button>
-                            <button class="btn-attente" onclick="changerStatut(${b.id}, 'attente')">⏳ Mettre en attente</button>
+                // Logique des 5 minutes pour les confirmés
+                if (b.statut === 'confirme') {
+                    // On se base sur updated_at ou creation, fallback sur now si absent
+                    let tempsConfirmation = b.updated_at ? new Date(b.updated_at).getTime() : now;
+                    let diffMinutes = (now - tempsConfirmation) / (1000 * 60);
+
+                    if (diffMinutes < 5) {
+                        // Moins de 5 minutes : reste dans les demandes de paiement
+                        countPaiements++;
+                        containerPaiements.innerHTML += `
+                            <div class="billet-card">
+                                ${statutHtml}
+                                <p><strong>Nom du participant :</strong> ${b.nom_participant}</p>
+                                <p><strong>Téléphone WhatsApp :</strong> ${b.telephone}</p>
+                                <p><strong>Capture du paiement :</strong></p>
+                                <a href="${b.preuve_url}" target="_blank"><img src="${b.preuve_url}" alt="Preuve de paiement"></a>
+                                <br>
+                                <div style="margin-top: 10px;">
+                                    <button class="btn-confirmer" onclick="changerStatut(${b.id}, 'confirme')">✅ J'ai reçu</button>
+                                    <button class="btn-refuser" onclick="changerStatut(${b.id}, 'refuse')">❌ Non reçu</button>
+                                    <button class="btn-attente" onclick="changerStatut(${b.id}, 'attente')">⏳ Mettre en attente</button>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // Plus de 5 minutes : bascule dans le volet "Demandes Validées"
+                        countValidees++;
+                        containerValidees.innerHTML += `
+                            <div class="billet-card">
+                                <span class="badge-statut badge-confirme">✅ Validé & Actif</span>
+                                <p><strong>Nom du participant :</strong> ${b.nom_participant}</p>
+                                <p><strong>Téléphone WhatsApp :</strong> ${b.telephone}</p>
+                                <p><strong>Billet N° :</strong> ${b.id}</p>
+                                <div style="margin-top: 10px;">
+                                    <button class="btn-refuser" onclick="retirerParticipant(${b.id})">🚫 Retirer (Empêchement / Invalider)</button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                } else {
+                    // Les autres statuts (en attente ou refusés) restent dans l'onglet des paiements
+                    countPaiements++;
+                    containerPaiements.innerHTML += `
+                        <div class="billet-card">
+                            ${statutHtml}
+                            <p><strong>Nom du participant :</strong> ${b.nom_participant}</p>
+                            <p><strong>Téléphone WhatsApp :</strong> ${b.telephone}</p>
+                            <p><strong>Capture du paiement :</strong></p>
+                            <a href="${b.preuve_url}" target="_blank"><img src="${b.preuve_url}" alt="Preuve de paiement"></a>
+                            <br>
+                            <div style="margin-top: 10px;">
+                                <button class="btn-confirmer" onclick="changerStatut(${b.id}, 'confirme')">✅ J'ai reçu</button>
+                                <button class="btn-refuser" onclick="changerStatut(${b.id}, 'refuse')">❌ Non reçu</button>
+                                <button class="btn-attente" onclick="changerStatut(${b.id}, 'attente')">⏳ Mettre en attente</button>
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
+                }
             });
+
+            if (countPaiements === 0) containerPaiements.innerHTML = "<p>Aucune demande en cours.</p>";
+            if (countValidees === 0) containerValidees.innerHTML = "<p>Aucun participant validé pour le moment (les validations y apparaîtront après 5 minutes).</p>";
         }
 
-        // Mettre à jour le statut du billet
+        // Mettre à jour le statut du billet (enregistre aussi l'heure actuelle pour le calcul des 5 min)
         async function changerStatut(billetId, nouveauStatut) {
-            let updateData = { statut: nouveauStatut };
+            let updateData = { 
+                statut: nouveauStatut,
+                updated_at: new Date().toISOString() // Horodatage pour le délai de 5 minutes
+            };
 
             if (nouveauStatut === 'confirme') {
                 let codeUnique = `${billetId}`;
@@ -181,7 +249,29 @@
             chargerToutesLesDemandes();
         }   
 
-        // Mémoire pour stocker les derniers billets scannés (sans espace dans le nom de variable)
+        // Fonction pour retirer un participant (Désistement -> Invalide le billet)
+        async function retirerParticipant(billetId) {
+            if (!confirm("Voulez-vous vraiment retirer ce participant ? Son billet ne sera plus valable.")) return;
+
+            const { error } = await window.supabaseClient
+                .from("billets")
+                .update({ 
+                    statut: 'refuse', 
+                    utilise: true, // Bloque son utilisation au scan
+                    updated_at: new Date().toISOString()
+                })
+                .eq("id", billetId);
+
+            if (error) {
+                alert("Erreur lors du retrait : " + error.message);
+                return;
+            }
+
+            alert("Le participant a été retiré et son billet a été invalidé.");
+            chargerToutesLesDemandes();
+        }
+
+        // Mémoire pour stocker les derniers billets scannés
         let derniersBilletsScannes = {};
 
         // Gestion centrale de la vérification avec délai de grâce de 30 secondes
@@ -196,11 +286,9 @@
                 return;
             }
 
-            // Extraction de l'ID du billet
             let chiffresTrouves = code.match(/\d+/g);
             let idBilletExtrait = chiffresTrouves ? chiffresTrouves[chiffresTrouves.length - 1] : code;
 
-            // On récupère tous les billets de cet événement
             const { data: billets, error } = await window.supabaseClient
                 .from("billets")
                 .select("*")
@@ -227,17 +315,15 @@
                 return;
             }
 
-            // Vérification si le paiement est confirmé
             if (b.statut !== "confirme") {
                 resultatDiv.style.background = "#fff3cd";
                 resultatDiv.style.color = "#856404";
-                resultatDiv.textContent = `⚠️ Entrée refusée : Ce billet n'est pas confirmé (Statut : ${b.statut}).`;
+                resultatDiv.textContent = `⚠️ Entrée refusée : Ce billet n'est pas confirmé ou a été invalidé (Statut : ${b.statut}).`;
                 return;
             }
 
             let maintenant = Date.now();
 
-            // 🕒 VÉRIFICATION DE LA FENÈTRE DE 30 SECONDES (Délai de grâce)
             if (derniersBilletsScannes[b.id] && (maintenant - derniersBilletsScannes[b.id] < 30000)) {
                 resultatDiv.style.background = "#d4edda";
                 resultatDiv.style.color = "#155724";
@@ -251,7 +337,6 @@
                 return;
             }
 
-            // 🚨 CONTRÔLE ANTI-FRAUDE CLASSIQUE
             if (b.utilise === true || b.utilise === "true") {
                 resultatDiv.style.background = "#f8d7da";
                 resultatDiv.style.color = "#721c24";
@@ -264,7 +349,6 @@
                 return;
             }
 
-            // PREMIÈRE VALIDATION : On verrouille le billet en passant `utilise` à true dans la base
             const { error: updateError } = await window.supabaseClient
                 .from("billets")
                 .update({ utilise: true })
@@ -277,10 +361,8 @@
                 return;
             }
 
-            // On enregistre le moment exact du scan dans notre mémoire tampon
             derniersBilletsScannes[b.id] = maintenant;
 
-            // SUCCÈS : Entrée autorisée
             resultatDiv.style.background = "#d4edda";
             resultatDiv.style.color = "#155724";
             resultatDiv.innerHTML = `
@@ -298,7 +380,7 @@
             document.getElementById("codeBilletInput").value = "";
         }
 
-        // Gestion des onglets et activation de la caméra du téléphone
+        // Gestion des trois onglets et activation de la caméra
         function changerOnglet(nomOnglet, eventElement) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
@@ -306,9 +388,11 @@
             if (nomOnglet === 'paiements') {
                 eventElement.currentTarget.classList.add('active');
                 document.getElementById('section-paiements').classList.add('active');
-                if (html5QrCode && html5QrCode.isScanning) {
-                    html5QrCode.stop();
-                }
+                if (html5QrCode && html5QrCode.isScanning) html5QrCode.stop();
+            } else if (nomOnglet === 'validees') {
+                eventElement.currentTarget.classList.add('active');
+                document.getElementById('section-validees').classList.add('active');
+                if (html5QrCode && html5QrCode.isScanning) html5QrCode.stop();
             } else {
                 eventElement.currentTarget.classList.add('active');
                 document.getElementById('section-scanner').classList.add('active');
@@ -322,9 +406,7 @@
                     (decodedText) => {
                         traiterVerificationBillet(decodedText);
                     },
-                    (errorMessage) => {
-                        // Ignore les erreurs de flash en direct
-                    }
+                    (errorMessage) => {}
                 ).catch(err => {
                     console.log("Caméra non disponible :", err);
                 });
