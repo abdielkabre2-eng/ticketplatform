@@ -182,7 +182,7 @@
             chargerToutesLesDemandes();
         }   
 
-        // Gestion centrale de la vérification et de l'anti-fraude (tolérante et universelle)
+      // Gestion centrale de la vérification et de l'anti-fraude (extraction intelligente du numéro)
         async function traiterVerificationBillet(codeScanne) {
             let resultatDiv = document.getElementById("resultatScan");
             let code = codeScanne ? codeScanne.trim() : "";
@@ -194,7 +194,11 @@
                 return;
             }
 
-            // On récupère tous les billets de cet événement pour faire une vérification souple
+            // On extrait tous les chiffres présents dans le texte scanné (ex: "BILLET-EVENT-14-ID-64" -> extrait "64" ou l'ID de l'événement)
+            let chiffresTrouves = code.match(/\d+/g);
+            let idBilletExtrait = chiffresTrouves ? chiffresTrouves[chiffresTrouves.length - 1] : code;
+
+            // On récupère tous les billets de cet événement
             const { data: billets, error } = await window.supabaseClient
                 .from("billets")
                 .select("*")
@@ -207,10 +211,10 @@
                 return;
             }
 
-            // On cherche le billet peu importe que le scan lise l'ID, le numéro ou une URL partielle
+            // On cherche le billet dont l'ID correspond au numéro extrait du QR code
             let b = billets.find(item => 
-                item.id.toString() === code || 
-                code.includes(item.id.toString()) ||
+                item.id.toString() === idBilletExtrait || 
+                item.id.toString() === code ||
                 (item.numero_billet && code.includes(item.numero_billet)) || 
                 (item.qr_code && code.includes(item.qr_code))
             );
@@ -266,8 +270,7 @@
                     Téléphone : ${b.telephone} | Billet N° : ${b.id}
                 </span>
             `;
-        }
-
+        } 
         function verifierBilletManuel() {
             let code = document.getElementById("codeBilletInput").value;
             traiterVerificationBillet(code);
