@@ -158,12 +158,13 @@
             });
         }
 
-        // Mettre à jour le statut du billet
+   // Mettre à jour le statut du billet
         async function changerStatut(billetId, nouveauStatut) {
             let updateData = { statut: nouveauStatut };
 
             if (nouveauStatut === 'confirme') {
-                let codeUnique = `BILLET-EVENT-${eventId}-ID-${billetId}`;
+                // On s'assure que le QR code contient l'ID direct ou le numéro exact
+                let codeUnique = `${billetId}`; // ou un format court simple
                 updateData.qr_code = codeUnique;
                 updateData.numero_billet = codeUnique;
             }
@@ -179,7 +180,7 @@
             }
 
             chargerToutesLesDemandes();
-        }
+        }   
 
         // Gestion centrale de la vérification et de l'anti-fraude (double passage)
         async function traiterVerificationBillet(code) {
