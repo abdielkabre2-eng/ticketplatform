@@ -182,7 +182,10 @@
             chargerToutesLesDemandes();
         }   
 
-      // Gestion centrale de la vérification et de l'anti-fraude (extraction intelligente du numéro)
+      // Mémoire pour stocker les derniers billets scannés et éviter les doubles scans instantanés (30 secondes)
+        let derniersBillets Scannes = {};
+
+        // Gestion centrale de la vérification avec délai de grâce de 30 secondes
         async function traiterVerificationBillet(codeScanne) {
             let resultatDiv = document.getElementById("resultatScan");
             let code = codeScanne ? codeScanne.trim() : "";
@@ -194,7 +197,7 @@
                 return;
             }
 
-            // On extrait tous les chiffres présents dans le texte scanné (ex: "BILLET-EVENT-14-ID-64" -> extrait "64" ou l'ID de l'événement)
+            // Extraction de l'ID du billet
             let chiffresTrouves = code.match(/\d+/g);
             let idBilletExtrait = chiffresTrouves ? chiffresTrouves[chiffresTrouves.length - 1] : code;
 
@@ -211,7 +214,6 @@
                 return;
             }
 
-            // On cherche le billet dont l'ID correspond au numéro extrait du QR code
             let b = billets.find(item => 
                 item.id.toString() === idBilletExtrait || 
                 item.id.toString() === code ||
@@ -234,7 +236,24 @@
                 return;
             }
 
-            // 🚨 CONTRÔLE ANTI-FRAUDE : Billet déjà utilisé ?
+            let maintenant = Date.now();
+
+            // 🕒 VÉRIFICATION DE LA FENÈTRE DE 30 SECONDES (Délai de grâce)
+            // Si ce billet a déjà été validé il y a moins de 30 secondes, on affiche à nouveau "Entrée valide" sans bloquer
+            if (derniersBilletsScannes[b.id] && (maintenant - derniersBilletsScannes[b.id] < 30000)) {
+                resultatDiv.style.background = "#d4edda";
+                resultatDiv.style.color = "#155724";
+                resultatDiv.innerHTML = `
+                    ✅ <strong>ENTRÉE VALIDE (Déjà scanné à l'instant)</strong><br>
+                    <span style="font-size: 14px; font-weight: normal; color: #333;">
+                        Bienvenue à <strong>${b.nom_participant || 'N/A'}</strong><br>
+                        Téléphone : ${b.telephone} | Billet N° : ${b.id}
+                    </span>
+                `;
+                return;
+            }
+
+            // 🚨 CONTRÔLE ANTI-FRAUDE CLASSIQUE (si les 30 secondes sont passées et qu'il était déjà utilisé)
             if (b.utilise === true || b.utilise === "true") {
                 resultatDiv.style.background = "#f8d7da";
                 resultatDiv.style.color = "#721c24";
@@ -247,7 +266,7 @@
                 return;
             }
 
-            // PREMIÈRE VALIDATION : On verrouille le billet en passant `utilise` à true
+            // PREMIÈRE VALIDATION : On verrouille le billet en passant `utilise` à true dans la base
             const { error: updateError } = await window.supabaseClient
                 .from("billets")
                 .update({ utilise: true })
@@ -260,6 +279,9 @@
                 return;
             }
 
+            // On enregistre le moment exact du scan dans notre mémoire tampon
+            derniersBilletsScannes[b.id] = maintenant;
+
             // SUCCÈS : Entrée autorisée
             resultatDiv.style.background = "#d4edda";
             resultatDiv.style.color = "#155724";
@@ -270,7 +292,7 @@
                     Téléphone : ${b.telephone} | Billet N° : ${b.id}
                 </span>
             `;
-        } 
+        }
         function verifierBilletManuel() {
             let code = document.getElementById("codeBilletInput").value;
             traiterVerificationBillet(code);
