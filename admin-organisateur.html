@@ -158,13 +158,12 @@
             });
         }
 
-   // Mettre à jour le statut du billet
+        // Mettre à jour le statut du billet
         async function changerStatut(billetId, nouveauStatut) {
             let updateData = { statut: nouveauStatut };
 
             if (nouveauStatut === 'confirme') {
-                // On s'assure que le QR code contient l'ID direct ou le numéro exact
-                let codeUnique = `${billetId}`; // ou un format court simple
+                let codeUnique = `${billetId}`;
                 updateData.qr_code = codeUnique;
                 updateData.numero_billet = codeUnique;
             }
@@ -182,8 +181,8 @@
             chargerToutesLesDemandes();
         }   
 
-      // Mémoire pour stocker les derniers billets scannés et éviter les doubles scans instantanés (30 secondes)
-        let derniersBillets Scannes = {};
+        // Mémoire pour stocker les derniers billets scannés (sans espace dans le nom de variable)
+        let derniersBilletsScannes = {};
 
         // Gestion centrale de la vérification avec délai de grâce de 30 secondes
         async function traiterVerificationBillet(codeScanne) {
@@ -239,7 +238,6 @@
             let maintenant = Date.now();
 
             // 🕒 VÉRIFICATION DE LA FENÈTRE DE 30 SECONDES (Délai de grâce)
-            // Si ce billet a déjà été validé il y a moins de 30 secondes, on affiche à nouveau "Entrée valide" sans bloquer
             if (derniersBilletsScannes[b.id] && (maintenant - derniersBilletsScannes[b.id] < 30000)) {
                 resultatDiv.style.background = "#d4edda";
                 resultatDiv.style.color = "#155724";
@@ -253,7 +251,7 @@
                 return;
             }
 
-            // 🚨 CONTRÔLE ANTI-FRAUDE CLASSIQUE (si les 30 secondes sont passées et qu'il était déjà utilisé)
+            // 🚨 CONTRÔLE ANTI-FRAUDE CLASSIQUE
             if (b.utilise === true || b.utilise === "true") {
                 resultatDiv.style.background = "#f8d7da";
                 resultatDiv.style.color = "#721c24";
@@ -293,6 +291,7 @@
                 </span>
             `;
         }
+
         function verifierBilletManuel() {
             let code = document.getElementById("codeBilletInput").value;
             traiterVerificationBillet(code);
