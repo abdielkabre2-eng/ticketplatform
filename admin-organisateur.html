@@ -3,144 +3,297 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scanner Organisateur</title>
-    <!-- SDK Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Librairie QR Code Scanner (html5-qrcode) -->
-    <script src="https://unpkg.com/html5-qrcode"></script>
+    <title>Espace Organisateur / Bénéficiaire</title>
+    <link rel="stylesheet" href="style.css">
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f4f7f6; color: #333; }
-        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: #2c3e50; font-size: 22px; }
-        #reader { width: 100%; border-radius: 8px; overflow: hidden; margin-bottom: 20px; }
-        .manual-section { margin-top: 20px; display: flex; gap: 10px; }
-        input[type="text"] { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
-        button { padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
-        button:hover { background: #2980b9; }
-        #resultatScan { margin-top: 20px; padding: 15px; border-radius: 4px; font-weight: bold; text-align: center; font-size: 18px; }
+        body { font-family: Arial, sans-serif; background: #f4f7f6; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .tabs { display: flex; justify-content: space-around; margin-bottom: 20px; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
+        .tab-btn { background: none; border: none; font-size: 18px; font-weight: bold; cursor: pointer; padding: 10px 20px; color: #666; }
+        .tab-btn.active { color: #007bff; border-bottom: 3px solid #007bff; }
+        .section-content { display: none; }
+        .section-content.active { display: block; }
+        .billet-card { background: #fff; border: 1px solid #ddd; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .billet-card img { max-width: 200px; display: block; margin: 10px 0; border-radius: 5px; }
+        
+        /* Styles des boutons d'action */
+        .btn-confirmer { background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-refuser { background: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-left: 5px; }
+        .btn-attente { background: #ffc107; color: #333; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-left: 5px; }
+        
+        .badge-statut { display: inline-block; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 14px; margin-bottom: 10px; }
+        .badge-attente { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        .badge-confirme { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .badge-refuse { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        /* Style de la boîte de résultat du scan */
+        #resultatScan {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+        }
+        #reader { width: 100%; max-width: 400px; margin: 0 auto; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Contrôle des Billets - Organisateur</h1>
-    
-    <!-- Zone de la caméra pour le scan -->
-    <div id="reader"></div>
+    <div class="container">
+        <h1 id="titreEvenementOrg">Espace Organisateur</h1>
+        <p id="infosEvenementOrg">Chargement des informations...</p>
 
-    <!-- Saisie manuelle de secours -->
-    <div class="manual-section">
-        <input type="text" id="codeManuel" placeholder="Entrer le code ou ID du billet...">
-        <button onclick="verifierCodeManuel()">Vérifier</button>
+        <!-- Les deux onglets -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="changerOnglet('paiements', event)">1. Demandes de Paiement</button>
+            <button class="tab-btn" onclick="changerOnglet('scanner', event)">2. Scanner les Billets</button>
+        </div>
+
+        <!-- SECTION 1 : TOUTES LES DEMANDES DE PAIEMENT -->
+        <div id="section-paiements" class="section-content active">
+            <h2>Gestion des paiements</h2>
+            <div id="listePaiements">
+                <p>Chargement des demandes...</p>
+            </div>
+        </div>
+
+        <!-- SECTION 2 : SCANNER -->
+        <div id="section-scanner" class="section-content">
+            <h2>Contrôle des Billets (Jour J)</h2>
+            <p>Scannez le QR Code avec la caméra du téléphone ou entrez le code manuellement :</p>
+            
+            <!-- Caméra pour les téléphones -->
+            <div id="reader"></div>
+
+            <div style="margin-top: 20px; text-align: center;">
+                <input type="text" id="codeBilletInput" placeholder="ID ou Code du billet..." style="padding: 10px; width: 60%; border: 1px solid #ccc; border-radius: 5px;">
+                <button onclick="verifierBilletManuel()" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Vérifier</button>
+            </div>
+
+            <div id="resultatScan"></div>
+        </div>
     </div>
 
-    <!-- Affichage du résultat du scan -->
-    <div id="resultatScan">En attente de scan...</div>
-</div>
+    <!-- Scripts Supabase et Scanner QR -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
 
-<script>
-    // Configuration Supabase
-    const SUPABASE_URL = "https://didtpgzelaqlwbrujqdv.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpZHRwZ3plbGFxbHdicnVqcWR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjM0ODQ0MjY4MzYsImV4cCI6Mzg0MDAwMDAwMn0.FAKE_KEY_OR_YOUR_REAL_KEY"; // Remplace par ta clé si besoin, ou garde ton initialisation habituelle
-    
-    // Initialisation du client Supabase global
-    window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        let eventId = urlParams.get("event");
+        let html5QrCode = null;
 
-    // Récupérer l'ID de l'événement depuis l'URL (ex: ?event=14)
-    const urlParams = new URLSearchParams(window.location.search);
-    const eventId = urlParams.get('event');
+        async function chargerEspaceOrganisateur() {
+            if (!eventId) {
+                document.getElementById("titreEvenementOrg").textContent = "Erreur";
+                document.getElementById("infosEvenementOrg").textContent = "Aucun événement spécifié.";
+                return;
+            }
 
-    async function traiterVerificationBillet(code) {
-        let resultatDiv = document.getElementById("resultatScan");
-        code = code ? code.trim() : "";
+            const { data: ev, error } = await window.supabaseClient
+                .from("evenements")
+                .select("*")
+                .eq("id", eventId)
+                .single();
 
-        if (!code) {
-            resultatDiv.style.background = "#fff3cd";
-            resultatDiv.style.color = "#856404";
-            resultatDiv.textContent = "⚠️ Veuillez entrer ou scanner un code de billet.";
-            return;
+            if (error || !ev) {
+                document.getElementById("infosEvenementOrg").textContent = "Événement introuvable.";
+                return;
+            }
+
+            document.getElementById("titreEvenementOrg").textContent = `Organisateur : ${ev.titre}`;
+            document.getElementById("infosEvenementOrg").innerHTML = `📅 Date : ${ev.date} à ${ev.heure} | 📍 Lieu : ${ev.lieu}`;
+
+            chargerToutesLesDemandes();
         }
 
-        // Recherche du billet dans Supabase
-        const { data: b, error } = await window.supabaseClient
-            .from("billets")
-            .select("*")
-            .or(`id.eq.${code},numero_billet.eq.${code},qr_code.eq.${code}`)
-            .single();
+        // Charger TOUTES les demandes de l'événement
+        async function chargerToutesLesDemandes() {
+            let container = document.getElementById("listePaiements");
 
-        if (error || !b) {
-            resultatDiv.style.background = "#f8d7da";
-            resultatDiv.style.color = "#721c24";
-            resultatDiv.textContent = "❌ Billet introuvable dans la base de données.";
-            return;
+            const { data: billets, error } = await window.supabaseClient
+                .from("billets")
+                .select("*")
+                .eq("evenement_id", eventId)
+                .order("id", { ascending: false });
+
+            if (error) {
+                container.innerHTML = "<p>Erreur lors du chargement des paiements.</p>";
+                return;
+            }
+
+            if (!billets || billets.length === 0) {
+                container.innerHTML = "<p>Aucune demande de paiement pour le moment.</p>";
+                return;
+            }
+
+            container.innerHTML = "";
+            billets.forEach(function(b) {
+                let statutHtml = "";
+                if (b.statut === "confirme") {
+                    statutHtml = `<span class="badge-statut badge-confirme">✅ Confirmé / Payé</span>`;
+                } else if (b.statut === "refuse") {
+                    statutHtml = `<span class="badge-statut badge-refuse">❌ Refusé / Non reçu</span>`;
+                } else {
+                    statutHtml = `<span class="badge-statut badge-attente">⏳ En attente</span>`;
+                }
+
+                container.innerHTML += `
+                    <div class="billet-card">
+                        ${statutHtml}
+                        <p><strong>Nom du participant :</strong> ${b.nom_participant}</p>
+                        <p><strong>Téléphone WhatsApp :</strong> ${b.telephone}</p>
+                        <p><strong>Capture du paiement :</strong></p>
+                        <a href="${b.preuve_url}" target="_blank"><img src="${b.preuve_url}" alt="Preuve de paiement"></a>
+                        <br>
+                        <div style="margin-top: 10px;">
+                            <button class="btn-confirmer" onclick="changerStatut(${b.id}, 'confirme')">✅ J'ai reçu</button>
+                            <button class="btn-refuser" onclick="changerStatut(${b.id}, 'refuse')">❌ Non reçu</button>
+                            <button class="btn-attente" onclick="changerStatut(${b.id}, 'attente')">⏳ Mettre en attente</button>
+                        </div>
+                    </div>
+                `;
+            });
         }
 
-        // Vérification si le paiement est confirmé
-        if (b.statut !== "confirme") {
-            resultatDiv.style.background = "#fff3cd";
-            resultatDiv.style.color = "#856404";
-            resultatDiv.textContent = `⚠️ Entrée refusée : Ce billet n'est pas confirmé (Statut : ${b.statut}).`;
-            return;
+        // Mettre à jour le statut du billet
+        async function changerStatut(billetId, nouveauStatut) {
+            let updateData = { statut: nouveauStatut };
+
+            if (nouveauStatut === 'confirme') {
+                let codeUnique = `BILLET-EVENT-${eventId}-ID-${billetId}`;
+                updateData.qr_code = codeUnique;
+                updateData.numero_billet = codeUnique;
+            }
+
+            const { error } = await window.supabaseClient
+                .from("billets")
+                .update(updateData)
+                .eq("id", billetId);
+
+            if (error) {
+                alert("Erreur lors de la mise à jour : " + error.message);
+                return;
+            }
+
+            chargerToutesLesDemandes();
         }
 
-        // 🚨 CONTRÔLE ANTI-FRAUDE : Billet déjà utilisé ?
-        if (b.utilise === true || b.utilise === "true") {
-            resultatDiv.style.background = "#f8d7da";
-            resultatDiv.style.color = "#721c24";
+        // Gestion centrale de la vérification et de l'anti-fraude (double passage)
+        async function traiterVerificationBillet(code) {
+            let resultatDiv = document.getElementById("resultatScan");
+            code = code ? code.trim() : "";
+
+            if (!code) {
+                resultatDiv.style.background = "#fff3cd";
+                resultatDiv.style.color = "#856404";
+                resultatDiv.textContent = "⚠️ Veuillez entrer ou scanner un code de billet.";
+                return;
+            }
+
+            // Recherche du billet par ID, numéro de billet ou QR code pour cet événement
+            const { data: b, error } = await window.supabaseClient
+                .from("billets")
+                .select("*")
+                .or(`id.eq.${code},numero_billet.eq.${code},qr_code.eq.${code}`)
+                .eq("evenement_id", eventId)
+                .single();
+
+            if (error || !b) {
+                resultatDiv.style.background = "#f8d7da";
+                resultatDiv.style.color = "#721c24";
+                resultatDiv.textContent = "❌ Billet invalide ou introuvable pour cet événement.";
+                return;
+            }
+
+            // Vérification si le paiement est confirmé
+            if (b.statut !== "confirme") {
+                resultatDiv.style.background = "#fff3cd";
+                resultatDiv.style.color = "#856404";
+                resultatDiv.textContent = `⚠️ Entrée refusée : Ce billet n'est pas confirmé (Statut : ${b.statut}).`;
+                return;
+            }
+
+            // 🚨 CONTRÔLE ANTI-FRAUDE : Billet déjà utilisé ?
+            if (b.utilise === true || b.utilise === "true") {
+                resultatDiv.style.background = "#f8d7da";
+                resultatDiv.style.color = "#721c24";
+                resultatDiv.innerHTML = `
+                    🚨 <strong>ENTRÉE NON VALIDE - BILLET DÉJÀ UTILISÉ !</strong><br>
+                    <span style="font-size: 14px; font-weight: normal; color: #333;">
+                        Propriétaire : <strong>${b.nom_participant || 'N/A'}</strong> | Tél : ${b.telephone}
+                    </span>
+                `;
+                return;
+            }
+
+            // PREMIÈRE VALIDATION : On verrouille le billet en passant `utilise` à true
+            const { error: updateError } = await window.supabaseClient
+                .from("billets")
+                .update({ utilise: true })
+                .eq("id", b.id);
+
+            if (updateError) {
+                resultatDiv.style.background = "#f8d7da";
+                resultatDiv.style.color = "#721c24";
+                resultatDiv.textContent = "❌ Erreur lors de la validation de l'entrée.";
+                return;
+            }
+
+            // SUCCÈS : Entrée autorisée
+            resultatDiv.style.background = "#d4edda";
+            resultatDiv.style.color = "#155724";
             resultatDiv.innerHTML = `
-                🚨 <strong>ENTRÉE NON VALIDE - BILLET DÉJÀ UTILISÉ !</strong><br>
+                ✅ <strong>ENTRÉE VALIDE</strong><br>
                 <span style="font-size: 14px; font-weight: normal; color: #333;">
-                    Participant : ${b.nom_participant || 'N/A'} | Tél : ${b.telephone}
+                    Bienvenue à <strong>${b.nom_participant || 'N/A'}</strong><br>
+                    Téléphone : ${b.telephone} | Billet N° : ${b.id}
                 </span>
             `;
-            return;
         }
 
-        // PREMIÈRE VALIDATION : On marque le billet comme utilisé (true)
-        const { error: updateError } = await window.supabaseClient
-            .from("billets")
-            .update({ utilise: true })
-            .eq("id", b.id);
-
-        if (updateError) {
-            resultatDiv.style.background = "#f8d7da";
-            resultatDiv.style.color = "#721c24";
-            resultatDiv.textContent = "❌ Erreur lors de la validation de l'entrée.";
-            return;
+        function verifierBilletManuel() {
+            let code = document.getElementById("codeBilletInput").value;
+            traiterVerificationBillet(code);
+            document.getElementById("codeBilletInput").value = "";
         }
 
-        // SUCCÈS : Entrée autorisée
-        resultatDiv.style.background = "#d4edda";
-        resultatDiv.style.color = "#155724";
-        resultatDiv.innerHTML = `
-            ✅ <strong>ENTRÉE VALIDE</strong><br>
-            <span style="font-size: 14px; font-weight: normal; color: #333;">
-                Bienvenue !<br>
-                Participant : ${b.nom_participant || 'N/A'} | Tél : ${b.telephone}
-            </span>
-        `;
-    }
+        // Gestion des onglets et activation de la caméra du téléphone
+        function changerOnglet(nomOnglet, eventElement) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
 
-    function verifierCodeManuel() {
-        let code = document.getElementById("codeManuel").value;
-        traiterVerificationBillet(code);
-    }
+            if (nomOnglet === 'paiements') {
+                eventElement.currentTarget.classList.add('active');
+                document.getElementById('section-paiements').classList.add('active');
+                if (html5QrCode && html5QrCode.isScanning) {
+                    html5QrCode.stop();
+                }
+            } else {
+                eventElement.currentTarget.classList.add('active');
+                document.getElementById('section-scanner').classList.add('active');
 
-    // Démarrage de la caméra avec html5-qrcode
-    function onScanSuccess(decodedText, decodedResult) {
-        console.log(`Code scanned = ${decodedText}`, decodedResult);
-        traiterVerificationBillet(decodedText);
-    }
+                if (!html5QrCode) {
+                    html5QrCode = new Html5Qrcode("reader");
+                }
+                html5QrCode.start(
+                    { facingMode: "environment" },
+                    { fps: 10, qrbox: 250 },
+                    (decodedText) => {
+                        traiterVerificationBillet(decodedText);
+                    },
+                    (errorMessage) => {
+                        // Ignore les erreurs de flash en direct
+                    }
+                ).catch(err => {
+                    console.log("Caméra non disponible :", err);
+                });
+            }
+        }
 
-    let html5QrCode = new Html5Qrcode("reader");
-    html5QrCode.start(
-        { facingMode: "environment" }, 
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        onScanSuccess
-    ).catch(err => {
-        console.error("Erreur d'accès à la caméra : ", err);
-    });
-</script>
-
+        chargerEspaceOrganisateur();
+    </script>
 </body>
 </html>
