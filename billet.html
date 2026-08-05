@@ -508,19 +508,38 @@
     }
 }
 
-        function telechargerPDF() {
-            const element = document.getElementById('ticketContent');
-            let opt = {
-                margin:       [10, 10, 10, 10],
-                filename:     'Pass-DIELTIX.pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            html2pdf().from(element).set(opt).save();
-        }
+    function telechargerPDF() {
+    const element = document.getElementById('ticketContent');
+    const btnDownload = document.getElementById('downloadTicket');
 
-        chargerBillet();
+    // 1. Désactiver temporairement l'effet de rognage/scroll pour html2canvas
+    window.scrollTo(0, 0);
+
+    // 2. Options ajustées pour capturer exactement le ticket
+    let opt = {
+        margin:       [5, 5, 5, 5],
+        filename:     `Pass-DIELTIX-${Date.now()}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { 
+            scale: 2, 
+            useCORS: true, 
+            scrollY: 0,
+            scrollX: 0
+        },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak:    { mode: 'avoid-all' } // Évite de couper le contenu sur plusieurs pages
+    };
+
+    // 3. Masquer le bouton pendant la génération pour éviter toute interférence
+    if (btnDownload) btnDownload.style.opacity = '0.5';
+
+    html2pdf().set(opt).from(element).save().then(() => {
+        if (btnDownload) btnDownload.style.opacity = '1';
+    }).catch(err => {
+        console.error('Erreur PDF :', err);
+        if (btnDownload) btnDownload.style.opacity = '1';
+    });
+}
     </script>
 </body>
 </html>
