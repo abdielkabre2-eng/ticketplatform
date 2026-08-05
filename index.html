@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="fr">
 
 <head>
@@ -437,15 +437,14 @@
                     </div>
                 `;
             } else {
-                // Gestion de l'affichage du texte des consignes / instructions
                 let infosCoordonnees = ev.beneficiaire_infos || "";
                 
-                // Gestion de l'affichage de l'image du RIB / QR Code stockée dans Supabase (rib_image_url)
-                let ribImageUrl = ev.rib_image_url || ev.rib_image || "";
+                // Récupération de l'image du RIB depuis la colonne rib_image_url
+                let ribImageUrl = ev.rib_image_url || "";
                 let affichageRibHtml = "";
                 
                 if (ribImageUrl && (ribImageUrl.startsWith("http://") || ribImageUrl.startsWith("https://"))) {
-                    affichageRibHtml = `<div style="margin-top: 12px; text-align: center;"><img src="${ribImageUrl}" alt="RIB ou QR Code" style="max-width: 100%; max-height: 220px; border-radius: 10px; border: 1px solid rgba(217, 119, 6, 0.25); box-shadow: 0 4px 12px rgba(0,0,0,0.05); object-fit: contain;"></div>`;
+                    affichageRibHtml = `<div style="margin-top: 12px; text-align: center;"><img src="${ribImageUrl}" alt="Image du RIB / QR Code" style="max-width: 100%; max-height: 220px; border-radius: 10px; border: 1px solid rgba(217, 119, 6, 0.25); box-shadow: 0 4px 12px rgba(0,0,0,0.05); object-fit: contain;"></div>`;
                 }
 
                 contenuColonneDroite = `
@@ -454,7 +453,7 @@
                             <h3>📱 ÉTAPE 1 : EFFECTUER LE PAIEMENT</h3>
                             <p><strong>Bénéficiaire :</strong> <span>${ev.beneficiaire_nom || 'Non renseigné'}</span></p>
                             <p style="margin-top: 8px;"><strong>Instructions / Coordonnées :</strong></p>
-                            <p style="margin-top: 2px; font-weight: 600; color: #1e293b;">${infosCoordonnees || 'Aucune consigne particuliere.'}</p>
+                            <p style="margin-top: 2px; font-weight: 600; color: #1e293b;">${infosCoordonnees || 'Aucune consigne particulière.'}</p>
                             ${affichageRibHtml}
                         </div>
                         
