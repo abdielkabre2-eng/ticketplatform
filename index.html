@@ -36,7 +36,6 @@
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             background-color: var(--bg-main);
-            /* Arrière-plan global : blanc avec deux halos or/doré extrêmement légers */
             background-image: 
                 radial-gradient(at 0% 0%, rgba(245, 158, 11, 0.06) 0px, transparent 50%),
                 radial-gradient(at 100% 100%, rgba(217, 119, 6, 0.05) 0px, transparent 50%);
@@ -45,44 +44,28 @@
             padding: 20px 20px 60px 20px; 
             line-height: 1.6;
             min-height: 100vh;
-            overflow-x: hidden; /* Évite les micro-scrolls horizontaux pendant l'animation */
+            overflow-x: hidden;
         }
 
-        /* --- ANIMATIONS ULTRA-FLUIDES ET LENTES (EFFET CINÉMATIQUE) --- */
         @keyframes slideDownFade {
-            0% {
-                opacity: 0;
-                transform: translateY(-120px) scale(0.97);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            0% { opacity: 0; transform: translateY(-120px) scale(0.97); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         @keyframes slideUpFade {
-            0% {
-                opacity: 0;
-                transform: translateY(150px) scale(0.97);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            0% { opacity: 0; transform: translateY(150px) scale(0.97); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .animate-slide-down {
-            /* Durée de 1.8s : On prend le temps de savourer le glissement du haut */
             animation: slideDownFade 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
         }
 
         .animate-slide-up {
             opacity: 0;
-            /* Durée de 2.2s avec un léger décalage pour que la colonne droite suive gracieusement */
             animation: slideUpFade 2.2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.4s forwards;
         }
 
-        /* En-tête */
         .top-navbar {
             max-width: 1100px;
             margin: 10px auto 35px auto;
@@ -129,7 +112,6 @@
             backdrop-filter: blur(8px);
         }
 
-        /* Container & Layout 2 Colonnes */
         .main-wrapper {
             max-width: 1100px;
             margin: 0 auto;
@@ -148,7 +130,6 @@
             }
         }
 
-        /* Cartes en Glassmorphism blanc et lumineux */
         .event-card, .form-card {
             background: var(--card-bg);
             backdrop-filter: blur(16px);
@@ -159,7 +140,6 @@
             box-shadow: 0 10px 30px rgba(217, 119, 6, 0.05), 0 4px 12px rgba(0, 0, 0, 0.03);
         }
 
-        /* Arrière-plan de l'affiche : Blanc épuré avec un très léger halo or */
         .event-poster-wrapper {
             width: 100%;
             border-radius: var(--radius-md);
@@ -250,23 +230,6 @@
             font-size: 14px;
             color: #334155;
             margin-bottom: 6px;
-        }
-
-        .payment-box p strong {
-            color: #64748b;
-        }
-
-        .rib-image { 
-            max-width: 100%; 
-            max-height: 220px; 
-            object-fit: contain; 
-            border-radius: 12px; 
-            margin: 18px auto 0 auto;
-            display: block; 
-            border: 1px solid var(--border-color, #e2e8f0);
-            background: #ffffff;
-            padding: 8px;
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
         }
 
         .form-section-title {
@@ -365,7 +328,6 @@
             transform: none;
         }
 
-        /* Boîte pour afficher le message de fermeture des ventes */
         .closed-sales-box {
             background: #fef2f2;
             border: 1px solid #fecaca;
@@ -387,7 +349,6 @@
             line-height: 1.5;
         }
 
-        /* Pied de page GoldTix */
         .creator-footer {
             max-width: 1100px;
             margin: 50px auto 0 auto;
@@ -414,7 +375,6 @@
 
 <body>
 
-    <!-- Barre supérieure avec logo et animation -->
     <div class="top-navbar animate-slide-down">
         <div class="brand-container">
             <img src="logo.png" alt="GoldTix Logo" class="site-logo">
@@ -423,7 +383,6 @@
         <span class="secure-badge">🔒 Billetterie fiable & Sécurisée</span>
     </div>
 
-    <!-- Conteneur Principal -->
     <div class="main-wrapper">
         <div id="detailsEvenement">
             <div class="event-card" style="text-align: center; padding: 60px 20px;">
@@ -432,7 +391,6 @@
         </div>
     </div>
 
-    <!-- Pied de page officiel GoldTix -->
     <footer class="creator-footer">
         <p style="margin-bottom: 6px; font-weight: 600;">— LA BILLETTERIE EN OR —</p>
         <p style="margin: 0;">
@@ -442,7 +400,6 @@
         </p>
     </footer>
 
-    <!-- Scripts Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase.js"></script>
     <script>
@@ -467,7 +424,6 @@
                 return;
             }
 
-            // Construction de la colonne de droite (Formulaire ou Message d'arrêt des ventes)
             let contenuColonneDroite = "";
 
             if (ev.ventes_fermees) {
@@ -481,20 +437,32 @@
                     </div>
                 `;
             } else {
+                // On vérifie d'abord rib_image, puis beneficiaire_infos si l'image y a été stockée
+                let infosRib = ev.rib_image || ev.beneficiaire_infos || "";
+                let affichageRibHtml = "";
+                
+                if (infosRib.startsWith("http://") || infosRib.startsWith("https://")) {
+                    affichageRibHtml = `<img src="${infosRib}" alt="Image RIB / QR Code" style="max-width: 100%; max-height: 240px; display: block; margin: 12px auto 0 auto; border-radius: 12px; border: 1px solid rgba(217, 119, 6, 0.3); box-shadow: 0 4px 15px rgba(0,0,0,0.06); object-fit: contain;">`;
+                } else if (infosRib) {
+                    affichageRibHtml = `<p style="margin-top: 6px; font-weight: 600; color: #1e293b;">${infosRib}</p>`;
+                } else {
+                    affichageRibHtml = `<p style="margin-top: 6px; color: #64748b; font-style: italic;">Aucun visuel de RIB fourni.</p>`;
+                }
+
                 contenuColonneDroite = `
                     <div class="form-card">
                         <div class="payment-box">
-                            <h3>📲 Étape 1 : Effectuer le paiement</h3>
-                            <p><strong>Bénéficiaire :</strong> ${ev.beneficiaire_nom || 'Non spécifié'}</p>
-                            <p><strong>Coordonnées :</strong> ${ev.beneficiaire_infos || 'Non spécifiées'}</p>
-                            ${ev.rib_image_url ? `<img src="${ev.rib_image_url}" alt="RIB ou QR Code" class="rib-image">` : ''}
+                            <h3>📱 ÉTAPE 1 : EFFECTUER LE PAIEMENT</h3>
+                            <p><strong>Bénéficiaire :</strong> <span>${ev.beneficiaire_nom || 'Non renseigné'}</span></p>
+                            <p style="margin-top: 8px;"><strong>Instructions / Coordonnées :</strong></p>
+                            ${affichageRibHtml}
                         </div>
-
+                        
                         <h3 class="form-section-title">📩 Étape 2 : Confirmez votre achat</h3>
                         
                         <div class="form-group">
                             <label for="nomParticipant">Nom et Prénom:</label>
-                            <input type="text" id="nomParticipant" placeholder="ex: KONATE  Jean ">
+                            <input type="text" id="nomParticipant" placeholder="ex: KONATE Jean">
                         </div>
 
                         <div class="form-group">
@@ -507,16 +475,14 @@
                             <input type="file" id="preuvePaiement" accept="image/*">
                         </div>
 
-                        <button id="btnValiderAchat"> Valider mon paiement & obtenir mon ticket</button>
+                        <button id="btnValiderAchat">Valider mon paiement & obtenir mon ticket</button>
                     </div>
                 `;
             }
 
-            // Injection du HTML avec les classes d'animation adaptées
             container.innerHTML = `
                 <div class="grid-container">
                     
-                    <!-- Colonne Gauche : Détails de l'événement (glisse lentement par le haut) -->
                     <div class="event-card animate-slide-down">
                         <div class="event-poster-wrapper">
                             <img src="${ev.affiche_url || ''}" alt="Affiche" onerror="this.parentElement.innerHTML='<p style=\\'color:#64748b;padding:30px;\\'>🖼️ Affiche non disponible</p>'">
@@ -529,7 +495,6 @@
                         </div>
                     </div>
 
-                    <!-- Colonne Droite : Formulaire ou Message de fermeture (glisse par le bas en cascade) -->
                     <div class="animate-slide-up">
                         ${contenuColonneDroite}
                     </div>
@@ -537,7 +502,6 @@
                 </div>
             `;
 
-            // On n'attache le clic du bouton que si les ventes ne sont pas fermées
             if (!ev.ventes_fermees) {
                 document.getElementById("btnValiderAchat").onclick = async function() {
                     let nom = document.getElementById("nomParticipant").value.trim();
@@ -577,7 +541,7 @@
                         if (uploadError) {
                             alert("Erreur lors de l'envoi de la preuve : " + uploadError.message);
                             btn.disabled = false;
-                            btn.textContent = " Valider mon achat & obtenir mon billet";
+                            btn.textContent = "Valider mon paiement & obtenir mon ticket";
                             return;
                         }
 
@@ -605,7 +569,7 @@
                         if (insertError) {
                             alert("Erreur lors de l'enregistrement du billet : " + insertError.message);
                             btn.disabled = false;
-                            btn.textContent = " Valider mon achat & obtenir mon billet";
+                            btn.textContent = "Valider mon paiement & obtenir mon ticket";
                             return;
                         }
 
@@ -617,7 +581,7 @@
                         console.error("Erreur inattendue :", err);
                         alert("Une erreur inattendue est survenue lors du traitement.");
                         btn.disabled = false;
-                        btn.textContent = " Valider mon achat & obtenir mon billet";
+                        btn.textContent = "Valider mon paiement & obtenir mon ticket";
                     }
                 };
             }
