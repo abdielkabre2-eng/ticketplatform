@@ -4,19 +4,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Achat de Billet | DIELTIX</title>
+    <title>Achat de Billet | GoldTix</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            --primary-glow: rgba(99, 102, 241, 0.4);
-            --bg-main: #0b0f19;
-            --card-bg: rgba(23, 31, 48, 0.7);
-            --card-border: rgba(255, 255, 255, 0.08);
-            --input-bg: rgba(15, 23, 42, 0.6);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
+            --primary: #d97706;
+            --primary-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            --primary-glow: rgba(217, 119, 6, 0.25);
+            
+            /* Fond global tout blanc avec une très légère touche dorée */
+            --bg-main: #fcfbf9;
+            
+            /* Cartes en Glassmorphism blanc/lumineux avec bordures dorées très douces */
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-border: rgba(217, 119, 6, 0.15);
+            --input-bg: rgba(248, 250, 252, 0.9);
+            
+            /* Textes sombres ajustés pour fond clair */
+            --text-main: #0f172a;
+            --text-muted: #64748b;
             --radius-lg: 24px;
             --radius-md: 14px;
         }
@@ -30,14 +36,50 @@
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             background-color: var(--bg-main);
+            /* Arrière-plan global : blanc avec deux halos or/doré extrêmement légers */
             background-image: 
-                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.15) 0px, transparent 50%);
+                radial-gradient(at 0% 0%, rgba(245, 158, 11, 0.06) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(217, 119, 6, 0.05) 0px, transparent 50%);
             background-attachment: fixed;
             color: var(--text-main); 
             padding: 20px 20px 60px 20px; 
             line-height: 1.6;
             min-height: 100vh;
+            overflow-x: hidden; /* Évite les micro-scrolls horizontaux pendant l'animation */
+        }
+
+        /* --- ANIMATIONS ULTRA-FLUIDES ET LENTES (EFFET CINÉMATIQUE) --- */
+        @keyframes slideDownFade {
+            0% {
+                opacity: 0;
+                transform: translateY(-120px) scale(0.97);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes slideUpFade {
+            0% {
+                opacity: 0;
+                transform: translateY(150px) scale(0.97);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .animate-slide-down {
+            /* Durée de 1.8s : On prend le temps de savourer le glissement du haut */
+            animation: slideDownFade 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+
+        .animate-slide-up {
+            opacity: 0;
+            /* Durée de 2.2s avec un léger décalage pour que la colonne droite suive gracieusement */
+            animation: slideUpFade 2.2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.4s forwards;
         }
 
         /* En-tête */
@@ -49,11 +91,22 @@
             align-items: center;
         }
 
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .site-logo {
+            height: 38px;
+            width: auto;
+        }
+
         .brand-title {
             font-size: 24px;
             font-weight: 800;
             letter-spacing: -0.5px;
-            color: #ffffff;
+            color: #0f172a;
         }
 
         .brand-title span {
@@ -66,9 +119,9 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: rgba(16, 185, 129, 0.1);
-            color: #34d399;
-            border: 1px solid rgba(52, 211, 153, 0.25);
+            background: rgba(16, 185, 129, 0.08);
+            color: #059669;
+            border: 1px solid rgba(16, 185, 129, 0.25);
             padding: 8px 16px;
             border-radius: 30px;
             font-size: 13px;
@@ -95,7 +148,7 @@
             }
         }
 
-        /* Cartes en Glassmorphism */
+        /* Cartes en Glassmorphism blanc et lumineux */
         .event-card, .form-card {
             background: var(--card-bg);
             backdrop-filter: blur(16px);
@@ -103,21 +156,23 @@
             border-radius: var(--radius-lg);
             padding: 30px;
             border: 1px solid var(--card-border);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 10px 30px rgba(217, 119, 6, 0.05), 0 4px 12px rgba(0, 0, 0, 0.03);
         }
 
+        /* Arrière-plan de l'affiche : Blanc épuré avec un très léger halo or */
         .event-poster-wrapper {
             width: 100%;
             border-radius: var(--radius-md);
             overflow: hidden;
-            background: rgba(15, 23, 42, 0.9);
+            background: #ffffff;
+            background-image: radial-gradient(circle at center, rgba(245, 158, 11, 0.08) 0%, #ffffff 70%);
             margin-bottom: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid var(--card-border);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            padding: 10px;
+            border: 1px solid rgba(217, 119, 6, 0.12);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+            padding: 12px;
         }
 
         .event-poster-wrapper img {
@@ -131,7 +186,7 @@
         .event-title {
             font-size: 26px;
             font-weight: 800;
-            color: #ffffff;
+            color: #0f172a;
             margin: 0 0 16px 0;
             letter-spacing: -0.5px;
             line-height: 1.3;
@@ -163,8 +218,8 @@
 
         /* Zone Paiement (Droite) */
         .payment-box {
-            background: rgba(15, 23, 42, 0.7);
-            border: 1px solid rgba(99, 102, 241, 0.25);
+            background: #fefce8;
+            border: 1px solid rgba(245, 158, 11, 0.25);
             border-radius: var(--radius-md);
             padding: 22px;
             margin-bottom: 30px;
@@ -183,7 +238,7 @@
             margin: 0 0 14px 0;
             font-size: 14px;
             font-weight: 800;
-            color: #818cf8;
+            color: #b45309;
             text-transform: uppercase;
             letter-spacing: 1px;
             display: flex;
@@ -193,12 +248,12 @@
 
         .payment-box p {
             font-size: 14px;
-            color: #e2e8f0;
+            color: #334155;
             margin-bottom: 6px;
         }
 
         .payment-box p strong {
-            color: #94a3b8;
+            color: #64748b;
         }
 
         .rib-image { 
@@ -208,17 +263,17 @@
             border-radius: 12px; 
             margin: 18px auto 0 auto;
             display: block; 
-            border: 1px solid var(--card-border);
+            border: 1px solid var(--border-color, #e2e8f0);
             background: #ffffff;
             padding: 8px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
         }
 
         .form-section-title {
             font-size: 17px;
             font-weight: 800;
             margin: 0 0 20px 0;
-            color: #ffffff;
+            color: #0f172a;
             letter-spacing: -0.3px;
         }
 
@@ -230,7 +285,7 @@
             display: block;
             font-size: 13px;
             font-weight: 700;
-            color: #c7d2fe;
+            color: #b45309;
             margin-bottom: 8px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -243,11 +298,11 @@
             padding: 14px 16px;
             font-size: 14px;
             font-family: inherit;
-            border: 1px solid var(--card-border);
+            border: 1px solid #e2e8f0;
             border-radius: var(--radius-md);
             outline: none;
             background: var(--input-bg);
-            color: #ffffff;
+            color: #0f172a;
             transition: all 0.25s ease;
         }
 
@@ -255,7 +310,7 @@
         input[type="tel"]:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 4px var(--primary-glow);
-            background: rgba(15, 23, 42, 0.9);
+            background: #ffffff;
         }
 
         input[type="file"] {
@@ -265,9 +320,9 @@
         }
 
         input[type="file"]::file-selector-button {
-            background: rgba(99, 102, 241, 0.2);
-            border: 1px solid rgba(99, 102, 241, 0.4);
-            color: #c7d2fe;
+            background: #fef3c7;
+            border: 1px solid #fde68a;
+            color: #b45309;
             padding: 8px 14px;
             border-radius: 8px;
             cursor: pointer;
@@ -299,36 +354,59 @@
 
         button#btnValiderAchat:hover { 
             transform: translateY(-2px);
-            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.5);
+            box-shadow: 0 15px 30px rgba(217, 119, 6, 0.4);
         }
 
         button#btnValiderAchat:disabled {
-            background: #475569;
+            background: #cbd5e1;
+            color: #64748b;
             cursor: not-allowed;
             box-shadow: none;
             transform: none;
         }
 
-        /* Pied de page DIELTIX */
+        /* Boîte pour afficher le message de fermeture des ventes */
+        .closed-sales-box {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: var(--radius-md);
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .closed-sales-box h3 {
+            color: #dc2626;
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .closed-sales-box p {
+            color: #991b1b;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        /* Pied de page GoldTix */
         .creator-footer {
             max-width: 1100px;
             margin: 50px auto 0 auto;
             padding-top: 25px;
-            border-top: 1px solid var(--card-border);
+            border-top: 1px solid #e2e8f0;
             text-align: center;
             font-size: 13px;
             color: var(--text-muted);
         }
 
         .creator-footer a {
-            color: #818cf8;
+            color: #d97706;
             text-decoration: none;
             font-weight: 600;
             transition: color 0.2s ease;
         }
 
         .creator-footer a:hover {
-            color: #ffffff;
+            color: #b45309;
             text-decoration: underline;
         }
     </style>
@@ -336,9 +414,12 @@
 
 <body>
 
-    <!-- Barre supérieure -->
-    <div class="top-navbar">
-        <div class="brand-title">DIEL<span>TIX</span></div>
+    <!-- Barre supérieure avec logo et animation -->
+    <div class="top-navbar animate-slide-down">
+        <div class="brand-container">
+            <img src="logo.png" alt="GoldTix Logo" class="site-logo">
+            <div class="brand-title">Gold<span>Tix</span></div>
+        </div>
         <span class="secure-badge">🔒 Billetterie fiable & Sécurisée</span>
     </div>
 
@@ -351,11 +432,11 @@
         </div>
     </div>
 
-    <!-- Pied de page officiel DIELTIX -->
+    <!-- Pied de page officiel GoldTix -->
     <footer class="creator-footer">
-        <p style="margin-bottom: 6px; font-weight: 600;">— Vos événements, notre priorité —</p>
+        <p style="margin-bottom: 6px; font-weight: 600;">— LA BILLETTERIE EN OR —</p>
         <p style="margin: 0;">
-            Plateforme propulsée par <strong>DIELTIX</strong> | Développée par <strong>Abdiel KABRE</strong><br>
+            Plateforme propulsée par <strong>GoldTix</strong> | Développée par <strong>Abdiel KABRE</strong><br>
             📧 <a href="mailto:abdielkabre2@gmail.com">abdielkabre2@gmail.com</a> | 
             📞 <a href="https://wa.me/22653107345" target="_blank">+226 53 10 73 45</a> / <a href="https://wa.me/212770967646" target="_blank">+212 770-967646</a>
         </p>
@@ -386,24 +467,21 @@
                 return;
             }
 
-            // Injection du HTML structuré
-            container.innerHTML = `
-                <div class="grid-container">
-                    
-                    <!-- Colonne Gauche : Détails de l'événement -->
-                    <div class="event-card">
-                        <div class="event-poster-wrapper">
-                            <img src="${ev.affiche_url || ''}" alt="Affiche" onerror="this.parentElement.innerHTML='<p style=\\'color:#64748b;padding:30px;\\'>🖼️ Affiche non disponible</p>'">
-                        </div>
-                        <h1 class="event-title">${ev.titre}</h1>
-                        <div class="event-meta-item">📅 <span><strong>Date :</strong> ${ev.date} à ${ev.heure}</span></div>
-                        <div class="event-meta-item">📍 <span><strong>Lieu :</strong> ${ev.lieu}</span></div>
-                        <div>
-                            <span class="price-badge">💳 Billet : ${ev.prix}</span>
+            // Construction de la colonne de droite (Formulaire ou Message d'arrêt des ventes)
+            let contenuColonneDroite = "";
+
+            if (ev.ventes_fermees) {
+                contenuColonneDroite = `
+                    <div class="form-card">
+                        <div class="closed-sales-box">
+                            <h3>🔴 Ventes fermées</h3>
+                            <p>Les ventes en ligne de billets pour cet événement sont désormais fermées par l'organisateur.</p>
+                            <p style="margin-top: 10px; font-size: 13px; color: #64748b;">Merci pour votre intérêt !</p>
                         </div>
                     </div>
-
-                    <!-- Colonne Droite : Formulaire & Consignes de paiement -->
+                `;
+            } else {
+                contenuColonneDroite = `
                     <div class="form-card">
                         <div class="payment-box">
                             <h3>📲 Étape 1 : Effectuer le paiement</h3>
@@ -415,13 +493,13 @@
                         <h3 class="form-section-title">📩 Étape 2 : Confirmez votre achat</h3>
                         
                         <div class="form-group">
-                            <label for="nomParticipant">Nom et Prénom :</label>
-                            <input type="text" id="nomParticipant" placeholder="ex: Jean Ouédraogo">
+                            <label for="nomParticipant">Nom et Prénom:</label>
+                            <input type="text" id="nomParticipant" placeholder="ex: KONATE  Jean ">
                         </div>
 
                         <div class="form-group">
                             <label for="telParticipant">Numéro WhatsApp :</label>
-                            <input type="tel" id="telParticipant" placeholder="ex: +226 ... / +212 ...">
+                            <input type="tel" id="telParticipant" placeholder="ex: +226 ... / +212 .../ +242 ...">
                         </div>
 
                         <div class="form-group">
@@ -429,85 +507,120 @@
                             <input type="file" id="preuvePaiement" accept="image/*">
                         </div>
 
-                        <button id="btnValiderAchat">🚀 Valider mon achat & obtenir mon billet</button>
+                        <button id="btnValiderAchat"> Valider mon paiement & obtenir mon ticket</button>
+                    </div>
+                `;
+            }
+
+            // Injection du HTML avec les classes d'animation adaptées
+            container.innerHTML = `
+                <div class="grid-container">
+                    
+                    <!-- Colonne Gauche : Détails de l'événement (glisse lentement par le haut) -->
+                    <div class="event-card animate-slide-down">
+                        <div class="event-poster-wrapper">
+                            <img src="${ev.affiche_url || ''}" alt="Affiche" onerror="this.parentElement.innerHTML='<p style=\\'color:#64748b;padding:30px;\\'>🖼️ Affiche non disponible</p>'">
+                        </div>
+                        <h1 class="event-title">${ev.titre}</h1>
+                        <div class="event-meta-item">📅 <span><strong>Date :</strong> ${ev.date} à ${ev.heure}</span></div>
+                        <div class="event-meta-item">📍 <span><strong>Lieu :</strong> ${ev.lieu}</span></div>
+                        <div>
+                            <span class="price-badge">💳 Prix du ticket : ${ev.prix}</span>
+                        </div>
+                    </div>
+
+                    <!-- Colonne Droite : Formulaire ou Message de fermeture (glisse par le bas en cascade) -->
+                    <div class="animate-slide-up">
+                        ${contenuColonneDroite}
                     </div>
 
                 </div>
             `;
 
-            document.getElementById("btnValiderAchat").onclick = async function() {
-                let nom = document.getElementById("nomParticipant").value.trim();
-                let tel = document.getElementById("telParticipant").value.trim();
-                let fichierPreuve = document.getElementById("preuvePaiement").files[0];
+            // On n'attache le clic du bouton que si les ventes ne sont pas fermées
+            if (!ev.ventes_fermees) {
+                document.getElementById("btnValiderAchat").onclick = async function() {
+                    let nom = document.getElementById("nomParticipant").value.trim();
+                    let tel = document.getElementById("telParticipant").value.trim();
+                    let fichierPreuve = document.getElementById("preuvePaiement").files[0];
 
-                if (!nom || !tel || !fichierPreuve) {
-                    alert("Veuillez remplir tous les champs et joindre la capture de paiement.");
-                    return;
-                }
-
-                let btn = document.getElementById("btnValiderAchat");
-                btn.disabled = true;
-                btn.textContent = "⏳ Validation et envoi en cours...";
-
-                try {
-                    // Nettoyage de l'extension et création d'un nom unique sécurisé
-                    let fileExt = fichierPreuve.name.split('.').pop().toLowerCase();
-                    let fileName = `preuve-${Date.now()}-${Math.floor(Math.random() * 1000)}.${fileExt}`;
-
-                    // Upload dans le bucket Supabase
-                    const { error: uploadError } = await window.supabaseClient
-                        .storage
-                        .from("preuves")
-                        .upload(fileName, fichierPreuve, { cacheControl: '3600', upsert: false });
-
-                    if (uploadError) {
-                        alert("Erreur lors de l'envoi de la preuve : " + uploadError.message);
-                        btn.disabled = false;
-                        btn.textContent = "🚀 Valider mon achat & obtenir mon billet";
+                    if (!nom || !tel || !fichierPreuve) {
+                        alert("Veuillez remplir tous les champs et joindre la capture de paiement.");
                         return;
                     }
 
-                    // Récupération de l'URL publique
-                    const { data: urlData } = window.supabaseClient
-                        .storage
-                        .from("preuves")
-                        .getPublicUrl(fileName);
+                    let btn = document.getElementById("btnValiderAchat");
+                    btn.disabled = true;
+                    btn.textContent = "⏳ Validation et envoi en cours...";
 
-                    let preuveUrl = urlData.publicUrl;
+                    try {
+                        const { data: verifEv } = await window.supabaseClient
+                            .from("evenements")
+                            .select("ventes_fermees")
+                            .eq("id", ev.id)
+                            .single();
 
-                    // Enregistrement de la commande dans la base de données
-                    const { data: insertedBillet, error: insertError } = await window.supabaseClient
-                        .from("billets")
-                        .insert([
-                            {
-                                evenement_id: ev.id,
-                                nom_participant: nom,
-                                telephone: tel,
-                                preuve_url: preuveUrl,
-                                statut: "attente",
-                                utilise: false
-                            }
-                        ])
-                        .select();
+                        if (verifEv && verifEv.ventes_fermees) {
+                            alert("Désolé, la vente des billets pour cet événement vient tout juste d'être fermée.");
+                            window.location.reload();
+                            return;
+                        }
 
-                    if (insertError) {
-                        alert("Erreur lors de l'enregistrement du billet : " + insertError.message);
+                        let fileExt = fichierPreuve.name.split('.').pop().toLowerCase();
+                        let fileName = `preuve-${Date.now()}-${Math.floor(Math.random() * 1000)}.${fileExt}`;
+
+                        const { error: uploadError } = await window.supabaseClient
+                            .storage
+                            .from("preuves")
+                            .upload(fileName, fichierPreuve, { cacheControl: '3600', upsert: false });
+
+                        if (uploadError) {
+                            alert("Erreur lors de l'envoi de la preuve : " + uploadError.message);
+                            btn.disabled = false;
+                            btn.textContent = " Valider mon achat & obtenir mon billet";
+                            return;
+                        }
+
+                        const { data: urlData } = window.supabaseClient
+                            .storage
+                            .from("preuves")
+                            .getPublicUrl(fileName);
+
+                        let preuveUrl = urlData.publicUrl;
+
+                        const { data: insertedBillet, error: insertError } = await window.supabaseClient
+                            .from("billets")
+                            .insert([
+                                {
+                                    evenement_id: ev.id,
+                                    nom_participant: nom,
+                                    telephone: tel,
+                                    preuve_url: preuveUrl,
+                                    statut: "attente",
+                                    utilise: false
+                                }
+                            ])
+                            .select();
+
+                        if (insertError) {
+                            alert("Erreur lors de l'enregistrement du billet : " + insertError.message);
+                            btn.disabled = false;
+                            btn.textContent = " Valider mon achat & obtenir mon billet";
+                            return;
+                        }
+
+                        if (insertedBillet && insertedBillet.length > 0) {
+                            let idBilletCree = insertedBillet[0].id;
+                            window.location.href = `billet.html?id=${idBilletCree}`;
+                        }
+                    } catch (err) {
+                        console.error("Erreur inattendue :", err);
+                        alert("Une erreur inattendue est survenue lors du traitement.");
                         btn.disabled = false;
-                        btn.textContent = "🚀 Valider mon achat & obtenir mon billet";
-                        return;
+                        btn.textContent = " Valider mon achat & obtenir mon billet";
                     }
-
-                    if (insertedBillet && insertedBillet.length > 0) {
-                        let idBilletCree = insertedBillet[0].id;
-                        window.location.href = `billet.html?id=${idBilletCree}`;
-                    }
-                } catch (err) {
-                    console.error("Erreur inattendue :", err);
-                    alert("Une erreur inattendue est survenue lors du traitement.");
-                    btn.disabled = false;
-                    btn.textContent = "🚀 Valider mon achat & obtenir mon billet";
-                }
-            };
+                };
+            }
         }
 
         chargerPageAchatUnique();

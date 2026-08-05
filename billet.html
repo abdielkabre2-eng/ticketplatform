@@ -3,32 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Billet | DIELTIX</title>
+    <title>Mon Billet | GoldTix</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            --primary: #d97706;
+            --primary-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
             --warning: #f59e0b;
             --danger: #ef4444;
             --success: #10b981;
-            --bg-main: #0f172a;
+            
+            /* Fond tout blanc avec une très légère touche dorée */
+            --bg-main: #fcfbf9;
             --card-bg: #ffffff;
             --text-main: #0f172a;
             --text-muted: #64748b;
-            --border-color: #e2e8f0;
+            --border-color: rgba(217, 119, 6, 0.15);
             --radius-lg: 24px;
             --radius-md: 12px;
-            --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+            --shadow-lg: 0 20px 40px -10px rgba(217, 119, 6, 0.08), 0 10px 25px -5px rgba(0, 0, 0, 0.04);
         }
 
         * { box-sizing: border-box; }
 
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: var(--bg-main); 
-            color: #ffffff; 
+            background-color: var(--bg-main); 
+            /* Arrière-plan : blanc lumineux avec halo or très léger */
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(245, 158, 11, 0.06) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(217, 119, 6, 0.05) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main); 
             margin: 0; 
             padding: 20px 20px 60px 20px; 
             line-height: 1.5;
@@ -43,22 +50,43 @@
             align-items: center;
         }
 
+        /* Container Logo + Texte */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .site-logo {
+            height: 38px;
+            width: auto;
+            object-fit: contain;
+        }
+
         .brand-title {
             font-size: 22px;
             font-weight: 800;
             letter-spacing: -0.5px;
-            color: #ffffff;
+            line-height: 1;
         }
 
-        .brand-title span { color: #818cf8; }
+        .brand-title .text-gold {
+            color: #0f172a; /* Noir */
+        }
+
+        .brand-title .text-tix {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
         .secure-badge {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: rgba(16, 185, 129, 0.15);
-            color: #34d399;
-            border: 1px solid rgba(52, 211, 153, 0.3);
+            background: rgba(16, 185, 129, 0.08);
+            color: #059669;
+            border: 1px solid rgba(16, 185, 129, 0.25);
             padding: 6px 14px;
             border-radius: 20px;
             font-size: 12px;
@@ -77,6 +105,7 @@
             box-shadow: var(--shadow-lg); 
             position: relative;
             overflow: hidden;
+            border: 1px solid var(--border-color);
         }
 
         .ticket-header {
@@ -217,7 +246,7 @@
             border: 2px dashed var(--primary);
             border-radius: 18px;
             display: inline-block;
-            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.12);
+            box-shadow: 0 8px 20px rgba(217, 119, 6, 0.12);
         }
 
         .info-text { 
@@ -226,6 +255,16 @@
             text-align: center; 
             margin-top: 14px;
             font-weight: 500;
+        }
+
+        .thanks-text {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--primary);
+            text-align: center;
+            margin-top: 8px;
+            margin-bottom: 0;
+            letter-spacing: -0.2px;
         }
 
         .btn-action { 
@@ -244,7 +283,7 @@
         .btn-primary { 
             background: var(--primary-gradient); 
             color: white; 
-            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35); 
+            box-shadow: 0 8px 20px rgba(217, 119, 6, 0.3); 
         }
         .btn-primary:hover { opacity: 0.95; transform: translateY(-1px); }
         .btn-warning { background: var(--warning); color: #fff; }
@@ -254,23 +293,34 @@
             max-width: 440px;
             margin: 30px auto 0 auto;
             padding-top: 15px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid #e2e8f0;
             text-align: center;
             font-size: 12px;
-            color: #94a3b8;
+            color: var(--text-muted);
         }
 
         .creator-footer a {
-            color: #818cf8;
+            color: #d97706;
             text-decoration: none;
             font-weight: 600;
+        }
+
+        .creator-footer a:hover {
+            color: #b45309;
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
 
+    <!-- Barre supérieure avec Logo + Texte GoldTix et Badge -->
     <div class="top-navbar">
-        <div class="brand-title">DIEL<span>TIX</span></div>
+        <div class="logo-container">
+            <img src="logo.png" alt="GoldTix Logo" class="site-logo">
+            <span class="brand-title">
+                <span class="text-gold">Gold</span><span class="text-tix">Tix</span>
+            </span>
+        </div>
         <span class="secure-badge">🔒 Billet Authentique</span>
     </div>
 
@@ -287,9 +337,9 @@
     </div>
 
     <footer class="creator-footer">
-        <p style="margin-bottom: 4px;">— Vos événements, notre priorité —</p>
+        <p style="margin-bottom: 4px; font-weight: 600;">— LA BILLETTERIE EN OR —</p>
         <p style="margin: 0;">
-            Plateforme propulsée par <strong>DIELTIX</strong> | Développée par <strong>Abdiel KABRE</strong><br>
+            Plateforme propulsée par <strong>GoldTix</strong> | Développée par <strong>Abdiel KABRE</strong><br>
             📧 <a href="mailto:abdielkabre2@gmail.com">abdielkabre2@gmail.com</a> | 
             📞 <a href="https://wa.me/22653107345" target="_blank">+226 53 10 73 45</a> / <a href="https://wa.me/212770967646" target="_blank">+212 770-967646</a>
         </p>
@@ -444,7 +494,7 @@
                                 <span class="ticket-info-label">📍 Lieu</span>
                                 <span class="ticket-info-value">${ev.lieu || ''}</span>
                             </div>
-                            <div class="ticket-card" style="background: #eef2ff; border-color: #c7d2fe;">
+                            <div class="ticket-card" style="background: #fefce8; border-color: #fde68a;">
                                 <span class="ticket-info-label" style="color: var(--primary);">🎟️ Pass N°</span>
                                 <span class="ticket-info-value" style="color: var(--primary); font-family: monospace; font-size: 16px;">#${billet.numero_billet || billet.id}</span>
                             </div>
@@ -458,7 +508,8 @@
 
                         <div class="qr-container-wrapper">
                             <div id="qrcode"></div>
-                            <p class="info-text">Scannez ce QR Code à l'entrée de l'événement</p>
+                            <p class="info-text">Veillez présenter ce QR Code à l'entrée </p>
+                            <p class="thanks-text">✨ Merci d'avoir choisi GoldTix !</p>
                         </div>
                     </div>
                 `;
@@ -493,7 +544,7 @@
 
         let opt = {
             margin:       [5, 5, 5, 5],
-            filename:     `Pass-DIELTIX-${Date.now()}.pdf`,
+            filename:     `Pass-GoldTix-${Date.now()}.pdf`,
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { scale: 2, useCORS: true, scrollY: 0, scrollX: 0 },
             jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },

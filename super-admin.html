@@ -3,427 +3,458 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Admin - Création d'Événement | DIELTIX</title>
+    <title>Espace Super Organisateur | GoldTix</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-            --bg-main: #0f172a;
-            --card-bg: #1e293b;
-            --input-bg: #0f172a;
-            --border-color: #334155;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
+            --primary: #d97706;
+            --primary-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            --secondary: #0ea5e9;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            
+            --bg-main: #fcfbf9;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: rgba(217, 119, 6, 0.18);
             --radius-lg: 20px;
             --radius-md: 12px;
+            --shadow-lg: 0 20px 40px -10px rgba(217, 119, 6, 0.08), 0 10px 25px -5px rgba(0, 0, 0, 0.04);
         }
 
         * { box-sizing: border-box; }
 
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: var(--bg-main); 
+            background-color: var(--bg-main); 
+            background-image: 
+                radial-gradient(circle at 0% 15%, rgba(245, 158, 11, 0.18) 0px, transparent 35%),
+                radial-gradient(circle at 100% 15%, rgba(245, 158, 11, 0.18) 0px, transparent 35%),
+                radial-gradient(at 0% 0%, rgba(245, 158, 11, 0.06) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(217, 119, 6, 0.05) 0px, transparent 50%);
+            background-attachment: fixed;
             color: var(--text-main); 
             margin: 0; 
-            padding: 40px 20px; 
+            padding: 20px 20px 50px 20px;
             min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        @keyframes slideDownFade {
+            0% { opacity: 0; transform: translateY(-40px) scale(0.98); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .animate-slide-down {
+            animation: slideDownFade 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+
+        .navbar {
+            max-width: 1000px;
+            margin: 0 auto 30px auto;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-        }
-
-        .admin-card {
             background: var(--card-bg);
-            border: 1px solid var(--border-color);
+            padding: 15px 25px;
             border-radius: var(--radius-lg);
-            width: 100%;
-            max-width: 580px;
-            padding: 35px 30px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-lg);
         }
 
-        .admin-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+        .logo-container { display: flex; align-items: center; gap: 10px; }
+        .site-logo { height: 38px; width: auto; object-fit: contain; }
+        .brand-title { font-size: 22px; font-weight: 800; line-height: 1; }
+        .brand-title .text-gold { color: #0f172a; }
+        .brand-title .text-tix { background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        .brand-badge {
-            display: inline-block;
-            font-size: 11px;
-            font-weight: 800;
-            letter-spacing: 1.5px;
-            color: #818cf8;
-            background: rgba(99, 102, 241, 0.15);
+        .user-badge {
+            background: rgba(217, 119, 6, 0.08);
+            color: #b45309;
+            border: 1px solid rgba(217, 119, 6, 0.25);
             padding: 6px 14px;
             border-radius: 20px;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
-
-        .admin-header h1 {
-            font-size: 26px;
-            font-weight: 800;
-            margin: 0 0 8px 0;
-            letter-spacing: -0.5px;
-            color: #ffffff;
-        }
-
-        .admin-header p {
-            font-size: 14px;
-            color: var(--text-muted);
-            margin: 0;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .full-width {
-            grid-column: span 2;
-        }
-
-        label {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-muted);
-        }
-
-        input[type="text"], 
-        input[type="date"], 
-        input[type="time"], 
-        textarea {
-            width: 100%;
-            padding: 12px 16px;
-            background: var(--input-bg);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            color: #ffffff;
-            font-size: 14px;
-            font-family: inherit;
-            outline: none;
-            transition: all 0.2s ease;
-        }
-
-        textarea {
-            height: 90px;
-            resize: vertical;
-        }
-
-        input:focus, textarea:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
-        }
-
-        /* Uploader personnalisé */
-        .file-upload-wrapper {
-            position: relative;
-            background: var(--input-bg);
-            border: 2px dashed var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .file-upload-wrapper:hover {
-            border-color: var(--primary);
-            background: rgba(99, 102, 241, 0.05);
-        }
-
-        .file-upload-wrapper input[type="file"] {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0;
-            cursor: pointer;
-        }
-
-        .file-upload-label {
-            font-size: 13px;
-            color: var(--text-muted);
-            font-weight: 500;
-            pointer-events: none;
-            word-break: break-all;
-        }
-
-        /* Bouton Action */
-        button#btnCreerEvent {
-            width: 100%;
-            padding: 16px;
-            background: var(--primary-gradient);
-            color: white;
-            border: none;
-            border-radius: var(--radius-md);
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 10px;
-            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35);
-            transition: all 0.2s ease;
-            font-family: inherit;
-        }
-
-        button#btnCreerEvent:hover {
-            opacity: 0.95;
-            transform: translateY(-1px);
-        }
-
-        button#btnCreerEvent:disabled {
-            background: #475569;
-            cursor: not-allowed;
-            box-shadow: none;
-            transform: none;
-        }
-
-        /* Zone des Liens Générés */
-        .links-box {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(52, 211, 153, 0.3);
-            border-radius: var(--radius-md);
-            padding: 20px;
-            margin-top: 25px;
-            display: none;
-        }
-
-        .links-box h3 {
-            margin: 0 0 15px 0;
-            font-size: 16px;
-            color: #34d399;
-            text-align: center;
-            font-weight: 700;
-        }
-
-        .link-card {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 12px 14px;
-            border-radius: 10px;
-            margin-bottom: 12px;
-        }
-
-        .link-card:last-child {
-            margin-bottom: 0;
-        }
-
-        .link-card strong {
-            display: block;
             font-size: 12px;
-            color: #94a3b8;
-            margin-bottom: 4px;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        .link-card a {
-            color: #38bdf8;
-            font-size: 13px;
-            word-break: break-all;
-            text-decoration: underline;
-            font-weight: 600;
+        .container { max-width: 1000px; margin: 0 auto; }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
         }
+
+        .section-header h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; margin: 0; }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+            font-family: inherit;
+        }
+        .btn-primary:hover { transform: translateY(-2px); opacity: 0.95; }
+
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .event-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(217, 119, 6, 0.15);
+            border-color: var(--primary);
+        }
+
+        .event-title { font-size: 18px; font-weight: 700; margin: 0 0 10px 0; }
+        .event-info { font-size: 14px; color: var(--text-muted); margin-bottom: 8px; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center; align-items: center;
+            z-index: 1000;
+            padding: 15px;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: var(--radius-lg);
+            max-width: 550px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 20px;
+        }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--text-main); }
+        .form-group input, .form-group textarea { 
+            width: 100%; 
+            padding: 11px 14px; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 10px; 
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-group input[type="file"] {
+            padding: 8px;
+            background: #f8fafc;
+            cursor: pointer;
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15);
+        }
+        
+        .link-container { display: flex; gap: 10px; }
+        .btn-copy { background: #0f172a; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: inherit; }
+        .btn-copy:hover { background: #1e293b; }
 
         .creator-footer {
-            margin-top: 30px;
+            max-width: 1000px;
+            margin: 45px auto 0 auto;
+            padding-top: 25px;
+            border-top: 1px solid #e2e8f0;
             text-align: center;
             font-size: 12px;
-            color: #64748b;
+            color: var(--text-muted);
+            line-height: 1.6;
         }
+        .creator-footer .slogan { font-weight: 700; color: var(--primary); letter-spacing: 0.5px; margin-bottom: 6px; text-transform: uppercase; font-size: 11px; }
+        .creator-footer p { margin: 4px 0; }
+        .creator-footer a { color: #d97706; text-decoration: none; font-weight: 600; }
+        .creator-footer a:hover { color: #b45309; text-decoration: underline; }
     </style>
 </head>
-<body>
+<body class="animate-slide-down">
 
-    <div class="admin-card">
-        <div class="admin-header">
-            <span class="brand-badge">Espace Super Admin</span>
-            <h1>Créer un Événement</h1>
-            <p>Remplissez les informations ci-dessous pour générer l'événement et vos accès unique.</p>
+    <div class="navbar">
+        <div class="logo-container">
+            <img src="logo.png" alt="GoldTix Logo" class="site-logo">
+            <span class="brand-title">
+                <span class="text-gold">Gold</span><span class="text-tix">Tix</span>
+            </span>
+        </div>
+        <span class="user-badge">⚙️ Espace Super-Organisateur</span>
+    </div>
+
+    <div class="container">
+        <div class="section-header">
+            <h2>Mes Événements</h2>
+            <button class="btn-primary" onclick="ouvrirModalCreation()">+ Créer un Événement</button>
         </div>
 
-        <div class="form-grid">
-            <div class="form-group full-width">
-                <label for="titreEvent">Nom de l'événement</label>
-                <input type="text" id="titreEvent" placeholder="ex: Concert JEEAM">
-            </div>
-
-            <div class="form-group">
-                <label for="dateEvent">Date</label>
-                <input type="date" id="dateEvent">
-            </div>
-
-            <div class="form-group">
-                <label for="heureEvent">Heure</label>
-                <input type="time" id="heureEvent">
-            </div>
-
-            <div class="form-group">
-                <label for="lieuEvent">Lieu</label>
-                <input type="text" id="lieuEvent" placeholder="ex: Canal Olympia">
-            </div>
-
-            <div class="form-group">
-                <label for="prixEvent">Prix du billet</label>
-                <input type="text" id="prixEvent" placeholder="ex: 50 DHS">
-            </div>
-
-            <div class="form-group full-width">
-                <label for="beneficiaireNom">Nom du bénéficiaire (qui reçoit l'argent)</label>
-                <input type="text" id="beneficiaireNom" placeholder="ex: Trésorière JEEAM">
-            </div>
-
-            <div class="form-group full-width">
-                <label for="beneficiaireInfos">Coordonnées de paiement (Mobile Money, RIB, etc.)</label>
-                <textarea id="beneficiaireInfos" placeholder="ex: Mobile Money: +226 ... / CIH Bank: ..."></textarea>
-            </div>
-
-            <!-- Upload RIB -->
-            <div class="form-group full-width">
-                <label>Image du RIB ou QR Code de paiement</label>
-                <div class="file-upload-wrapper">
-                    <input type="file" id="ribEvent" accept="image/*" onchange="updateFileName(this, 'labelRib')">
-                    <span class="file-upload-label" id="labelRib">📷 Cliquez pour choisir le RIB / QR Code</span>
-                </div>
-            </div>
-
-            <!-- Upload Affiche -->
-            <div class="form-group full-width">
-                <label>Affiche de l'événement (Image)</label>
-                <div class="file-upload-wrapper">
-                    <input type="file" id="afficheEvent" accept="image/*" onchange="updateFileName(this, 'labelAffiche')">
-                    <span class="file-upload-label" id="labelAffiche">🖼️ Cliquez pour choisir l'affiche</span>
-                </div>
-            </div>
+        <div id="listeEvenements" class="events-grid">
+            <p>Chargement de vos événements...</p>
         </div>
+    </div>
 
-        <button id="btnCreerEvent">🚀 Créer l'événement et générer les liens</button>
+    <!-- Modal de création d'événement -->
+    <div id="modalEvent" class="modal">
+        <div class="modal-content">
+            <h3>Créer un nouvel événement</h3>
+            <form id="formEvent">
+                <div class="form-group">
+                    <label>Titre de l'événement</label>
+                    <input type="text" id="titre" required placeholder="Ex: Concert VIP GoldTix">
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="date" required>
+                </div>
+                <div class="form-group">
+                    <label>Heure</label>
+                    <input type="time" id="heure" required>
+                </div>
+                <div class="form-group">
+                    <label>Lieu</label>
+                    <input type="text" id="lieu" required placeholder="Ex: Canal Olympia, Ouagadougou">
+                </div>
+                
+                <!-- CHAMP FICHIER : Affiche de l'événement -->
+                <div class="form-group">
+                    <label>🖼️ Affiche de l'événement (Image)</label>
+                    <input type="file" id="fileAffiche" accept="image/*" required>
+                    <small style="color: var(--text-muted); font-size: 11px;">Sélectionnez l'affiche envoyée par l'organisateur.</small>
+                </div>
 
-        <!-- Zone d'affichage des liens générés -->
-        <div id="resultatLiens" class="links-box">
-            <h3>🎉 Événement créé avec succès !</h3>
+                <div class="form-group">
+                    <label>Nom du Bénéficiaire (Paiement)</label>
+                    <input type="text" id="beneficiaire_nom" required placeholder="Ex: Jean KABRE">
+                </div>
+                
+                <!-- CHAMP FICHIER : Image du RIB / QR Code du Bénéficiaire -->
+                <div class="form-group">
+                    <label>💳 Image du RIB / QR Code Mobile Money (Paiement)</label>
+                    <input type="file" id="fileRib" accept="image/*" required>
+                    <small style="color: var(--text-muted); font-size: 11px;">Sélectionnez la capture ou l'image du compte où l'acheteur doit payer.</small>
+                </div>
+
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                    <button type="button" onclick="fermerModalCreation()" style="padding: 10px 15px; background:#cbd5e1; border:none; border-radius:8px; cursor:pointer; font-weight:700;">Annuler</button>
+                    <button type="submit" id="btnSubmitForm" class="btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal pour afficher les liens -->
+    <div id="modalDetails" class="modal">
+        <div class="modal-content">
+            <h3 id="detail-titre">Titre de l'événement</h3>
             
-            <div class="link-card">
-                <strong>1. Lien Public (Achat pour les participants)</strong>
-                <a id="lienPublic" href="#" target="_blank"></a>
+            <div class="form-group" style="margin-top: 20px;">
+                <label>🎟️ Lien Billetterie (Acheteurs - index.html) :</label>
+                <div class="link-container">
+                    <input type="text" id="lien-acheteur" readonly>
+                    <button class="btn-copy" onclick="copierLien('lien-acheteur')">Copier</button>
+                </div>
             </div>
 
-            <div class="link-card">
-                <strong>2. Lien Organisateur (Validations & Scanner)</strong>
-                <a id="lienAdmin" href="#" target="_blank"></a>
+            <div class="form-group">
+                <label>⚙️ Lien Espace Organisateur (admin-organisateur.html) :</label>
+                <div class="link-container">
+                    <input type="text" id="lien-vendeur" readonly>
+                    <button class="btn-copy" onclick="copierLien('lien-vendeur')">Copier</button>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+                <button type="button" onclick="fermerModalDetails()" style="padding: 10px 15px; background:#cbd5e1; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">Fermer</button>
             </div>
         </div>
     </div>
 
     <footer class="creator-footer">
-        Plateforme propulsée par <strong>DIELTIX</strong>
+        <p class="slogan">— LA BILLETTERIE EN OR —</p>
+        <p>Plateforme propulsée par <strong>GoldTix</strong> | Développée par <strong>Abdiel KABRE</strong></p>
+        <p>
+            📧 Email : <a href="mailto:abdielkabre2@gmail.com">abdielkabre2@gmail.com</a><br>
+            📞 WhatsApp / Tel : 
+            <a href="https://wa.me/22653107345" target="_blank">+226 53 10 73 45</a> &nbsp;|&nbsp; 
+            <a href="https://wa.me/212770967646" target="_blank">+212 770-967646</a>
+        </p>
     </footer>
 
-    <!-- Scripts Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase.js"></script>
+
     <script>
-        // Fonction pour afficher le nom des fichiers sélectionnés
-        function updateFileName(input, labelId) {
-            const label = document.getElementById(labelId);
-            if (input.files && input.files[0]) {
-                label.innerHTML = `<span style="color: #34d399; font-weight: 700;">✅ ${input.files[0].name}</span>`;
-            }
+    let listeGlobaleEvenements = [];
+
+    async function chargerMesEvenements() {
+        const container = document.getElementById("listeEvenements");
+        if (!window.supabaseClient) {
+            container.innerHTML = "<p>Erreur : supabase.js introuvable.</p>";
+            return;
         }
 
-        document.getElementById("btnCreerEvent").onclick = async function() {
-            let titre = document.getElementById("titreEvent").value.trim();
-            let date = document.getElementById("dateEvent").value.trim();
-            let heure = document.getElementById("heureEvent").value.trim();
-            let lieu = document.getElementById("lieuEvent").value.trim();
-            let prix = document.getElementById("prixEvent").value.trim();
-            let beneficiaireNom = document.getElementById("beneficiaireNom").value.trim();
-            let beneficiaireInfos = document.getElementById("beneficiaireInfos").value.trim();
-            
-            let fichierRib = document.getElementById("ribEvent").files[0];
-            let fichierAffiche = document.getElementById("afficheEvent").files[0];
+        try {
+            const { data: evenements, error } = await window.supabaseClient
+                .from("evenements")
+                .select("*")
+                .order("created_at", { ascending: false });
 
-            if (!titre || !date || !heure || !lieu || !prix || !beneficiaireNom || !beneficiaireInfos || !fichierRib || !fichierAffiche) {
-                alert("Veuillez remplir tous les champs et joindre l'affiche ainsi que l'image du RIB.");
+            if (error) throw error;
+
+            if (!evenements || evenements.length === 0) {
+                container.innerHTML = "<p>Aucun événement créé pour le moment.</p>";
                 return;
             }
 
-            let btn = document.getElementById("btnCreerEvent");
-            btn.disabled = true;
-            btn.textContent = "Création en cours...";
+            listeGlobaleEvenements = evenements;
 
-            try {
-                // 1. Upload de l'Affiche
-                let extAffiche = fichierAffiche.name.split('.').pop();
-                let nameAffiche = `affiche-${Date.now()}.${extAffiche}`;
-                await window.supabaseClient.storage.from("preuves").upload(nameAffiche, fichierAffiche);
-                let { data: urlAfficheData } = window.supabaseClient.storage.from("preuves").getPublicUrl(nameAffiche);
-                let afficheUrl = urlAfficheData.publicUrl;
+            container.innerHTML = evenements.map(ev => `
+                <div class="event-card" onclick="ouvrirModalDetails('${ev.id}')">
+                    <h3 class="event-title">${ev.titre}</h3>
+                    <p class="event-info">📅 ${ev.date || 'Non précisée'} à ${ev.heure || ''}</p>
+                    <p class="event-info">📍 ${ev.lieu || 'Non précisé'}</p>
+                    <p class="event-info">💳 ${ev.beneficiaire_nom || ''}</p>
+                </div>
+            `).join("");
 
-                // 2. Upload de l'image du RIB
-                let extRib = fichierRib.name.split('.').pop();
-                let nameRib = `rib-${Date.now()}.${extRib}`;
-                await window.supabaseClient.storage.from("preuves").upload(nameRib, fichierRib);
-                let { data: urlRibData } = window.supabaseClient.storage.from("preuves").getPublicUrl(nameRib);
-                let ribImageUrl = urlRibData.publicUrl;
+        } catch (err) {
+            console.error("Erreur :", err);
+            container.innerHTML = `<p>Erreur lors du chargement : ${err.message}</p>`;
+        }
+    }
 
-                // 3. Enregistrement dans la table 'evenements'
-                const { data: eventData, error: eventError } = await window.supabaseClient
-                    .from("evenements")
-                    .insert([
-                        { 
-                            titre: titre, 
-                            date: date, 
-                            heure: heure, 
-                            lieu: lieu, 
-                            prix: prix,
-                            beneficiaire_nom: beneficiaireNom,
-                            beneficiaire_infos: beneficiaireInfos,
-                            affiche_url: afficheUrl,
-                            rib_image_url: ribImageUrl
-                        }
-                    ])
-                    .select();
+    function ouvrirModalCreation() { document.getElementById("modalEvent").style.display = "flex"; }
+    function fermerModalCreation() { document.getElementById("modalEvent").style.display = "none"; }
 
-                if (eventError) {
-                    alert("Erreur enregistrement : " + eventError.message);
-                    btn.disabled = false;
-                    btn.textContent = "Créer l'événement et générer les liens";
-                    return;
-                }
+    function ouvrirModalDetails(idEvenement) {
+        const ev = listeGlobaleEvenements.find(e => e.id == idEvenement);
+        if (!ev) return;
 
-                let idEvent = eventData[0].id;
+        document.getElementById("detail-titre").innerText = "Gérer : " + ev.titre;
+        const baseUrl = "https://ticketplatformbyabdiel.netlify.app";
+        
+        document.getElementById("lien-acheteur").value = `${baseUrl}/index.html?event=${ev.id}`;
+        document.getElementById("lien-vendeur").value = `${baseUrl}/admin-organisateur.html?event=${ev.id}`;
 
-                // 4. Génération des deux liens uniques
-                let baseUrl = window.location.origin;
-                let urlPublique = `${baseUrl}/index.html?event=${idEvent}`;
-                let urlOrganisateur = `${baseUrl}/admin-organisateur.html?event=${idEvent}`;
+        document.getElementById("modalDetails").style.display = "flex";
+    }
 
-                document.getElementById("lienPublic").href = urlPublique;
-                document.getElementById("lienPublic").textContent = urlPublique;
+    function fermerModalDetails() { 
+        document.getElementById("modalDetails").style.display = "none"; 
+    }
 
-                document.getElementById("lienAdmin").href = urlOrganisateur;
-                document.getElementById("lienAdmin").textContent = urlOrganisateur;
+    function copierLien(inputId) {
+        const input = document.getElementById(inputId);
+        input.select();
+        input.setSelectionRange(0, 99999);
+        document.execCommand("copy");
+        alert("Lien copié dans le presse-papier !");
+    }
 
-                document.getElementById("resultatLiens").style.display = "block";
-                btn.textContent = "Événement créé avec succès ! 🎉";
+    // Fonction d'upload d'image vers Supabase Storage
+    async function uploaderFichierSupabase(file, dossier) {
+        const fileName = `${dossier}/${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+        const { data, error } = await window.supabaseClient.storage
+            .from('preuves') // Utilise ton bucket existant ou un bucket public de stockage
+            .upload(fileName, file);
 
-            } catch (err) {
-                console.error(err);
-                alert("Une erreur est survenue.");
-                btn.disabled = false;
-                btn.textContent = "Créer l'événement et générer les liens";
+        if (error) {
+            throw new Error("Erreur d'upload : " + error.message);
+        }
+
+        // Récupérer l'URL publique de l'image
+        const { data: publicUrlData } = window.supabaseClient.storage
+            .from('preuves')
+            .getPublicUrl(fileName);
+
+        return publicUrlData.publicUrl;
+    }
+
+    document.getElementById("formEvent").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        
+        const btnSubmit = document.getElementById("btnSubmitForm");
+        btnSubmit.disabled = true;
+        btnSubmit.textContent = "Création en cours...";
+
+        try {
+            const fileAfficheInput = document.getElementById("fileAffiche").files[0];
+            const fileRibInput = document.getElementById("fileRib").files[0];
+
+            if (!fileAfficheInput || !fileRibInput) {
+                alert("Veuillez sélectionner l'affiche et l'image du RIB.");
+                btnSubmit.disabled = false;
+                btnSubmit.textContent = "Enregistrer";
+                return;
             }
-        };
+
+            // Upload de l'affiche et du RIB vers Supabase Storage
+            const afficheUrl = await uploaderFichierSupabase(fileAfficheInput, 'affiches');
+            const ribUrl = await uploaderFichierSupabase(fileRibInput, 'ribs');
+
+            const nouvelEvenement = {
+                titre: document.getElementById("titre").value,
+                date: document.getElementById("date").value,
+                heure: document.getElementById("heure").value,
+                lieu: document.getElementById("lieu").value,
+                affiche_url: afficheUrl,
+                beneficiaire_nom: document.getElementById("beneficiaire_nom").value,
+                beneficiaire_infos: ribUrl // On stocke l'URL de l'image du RIB ici
+            };
+
+            const { error } = await window.supabaseClient
+                .from("evenements")
+                .insert([nouvelEvenement]);
+
+            if (error) throw error;
+
+            document.getElementById("formEvent").reset();
+            fermerModalCreation();
+            chargerMesEvenements();
+            alert("Événement créé avec succès !");
+
+        } catch (err) {
+            alert("Erreur : " + err.message);
+        } finally {
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = "Enregistrer";
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", chargerMesEvenements);
     </script>
 </body>
 </html>

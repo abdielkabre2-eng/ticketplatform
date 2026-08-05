@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réserver votre billet | DIELTIX</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --secondary: #0ea5e9;
+            --success: #10b981;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: var(--bg-main); 
+            color: var(--text-main); 
+            margin: 0; 
+            padding: 20px 20px 50px 20px; 
+            line-height: 1.5;
+        }
+
+        /* En-tête de la page */
+        .top-navbar {
+            max-width: 1050px;
+            margin: 0 auto 25px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo-container img {
+            height: 44px;
+            object-fit: contain;
+        }
+
+        .brand-title {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: #000;
+        }
+
+        .brand-title span {
+            color: var(--primary);
+        }
+
+        .secure-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #ecfdf5;
+            color: #047857;
+            border: 1px solid #a7f3d0;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* Layout Principal à deux colonnes */
+        .main-wrapper {
+            max-width: 1050px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        @media (max-width: 850px) {
+            .main-wrapper {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Carte de gauche : Détails de l'événement */
+        .event-card {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+
+        .event-poster-wrapper {
+            width: 100%;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            background: #f1f5f9;
+            margin-bottom: 20px;
+            aspect-ratio: 4/5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .event-poster-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .event-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin: 0 0 15px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .event-meta-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .event-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .event-meta-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: #eef2ff;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .price-tag-container {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px dashed var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .price-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .price-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        /* Carte de droite : Formulaire d'achat */
+        .form-card {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+
+        .form-header {
+            margin-bottom: 25px;
+        }
+
+        .form-header h2 {
+            font-size: 20px;
+            font-weight: 800;
+            margin: 0 0 6px 0;
+        }
+
+        .form-header p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 15px;
+            font-family: inherit;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-md);
+            outline: none;
+            transition: all 0.2s ease;
+            background: #fff;
+        }
+
+        .input-wrapper input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35);
+        }
+
+        .btn-submit:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Pied de page Contact Créateur - DIELTIX */
+        .creator-footer {
+            max-width: 1050px;
+            margin: 40px auto 0 auto;
+            padding-top: 25px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .creator-footer .slogan {
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            font-size: 11px;
+        }
+
+        .creator-footer p {
+            margin: 4px 0;
+        }
+
+        .creator-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .creator-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Barre supérieure : Logo & Badge Sécurisé -->
+    <div class="top-navbar">
+        <div class="brand-logo-container">
+            <img src="logo-dieltix.png" alt="DIELTIX Logo" onerror="this.style.display='none'; document.getElementById('alt-brand').style.display='block';">
+            <div id="alt-brand" class="brand-title" style="display:none;">DIEL<span>TIX</span></div>
+        </div>
+        <span class="secure-badge">🔒 Billetterie Officielle & Sécurisée</span>
+    </div>
+
+    <!-- Contenu Principal -->
+    <div class="main-wrapper">
+        
+        <!-- Colonne Gauche : Affiche et Infos Événement -->
+        <div class="event-card">
+            <div class="event-poster-wrapper">
+                <img id="afficheEvenement" src="" alt="Affiche de l'événement" style="display:none;">
+                <span id="afficheLoader" style="color: var(--text-muted); font-size: 14px;">Chargement du visuel...</span>
+            </div>
+            
+            <h1 class="event-title" id="titreEvenement">Chargement en cours...</h1>
+            
+            <div class="event-meta-list">
+                <div class="event-meta-item">
+                    <div class="event-meta-icon">📅</div>
+                    <div>
+                        <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Date & Heure</div>
+                        <span id="dateEvenement" style="color: var(--text-main);">...</span>
+                    </div>
+                </div>
+
+                <div class="event-meta-item">
+                    <div class="event-meta-icon">📍</div>
+                    <div>
+                        <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Lieu</div>
+                        <span id="lieuEvenement" style="color: var(--text-main);">...</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="price-tag-container">
+                <span class="price-label">Prix du billet</span>
+                <span class="price-value" id="prixEvenement">0 FCFA</span>
+            </div>
+        </div>
+
+        <!-- Colonne Droite : Formulaire de Réservation -->
+        <div class="form-card">
+            <div class="form-header">
+                <h2>Réservez votre place</h2>
+                <p>Veuillez remplir vos informations exactes pour la génération de votre ticket.</p>
+            </div>
+
+            <form id="formAchatBillet">
+                <div class="form-group">
+                    <label for="nomParticipant">Nom et Prénom</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="nomParticipant" placeholder="ex: Jean Dupont" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="telephoneParticipant">Numéro WhatsApp</label>
+                    <div class="input-wrapper">
+                        <input type="tel" id="telephoneParticipant" placeholder="ex: +226 70 00 00 00" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit" id="btnSubmit">
+                    <span>Continuer vers le paiement</span>
+                    <span>➔</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Pied de page officiel DIELTIX par Abdiel KABRE -->
+    <footer class="creator-footer">
+        <p class="slogan">— Vos événements, notre priorité —</p>
+        <p>Plateforme propulsée par <strong>DIELTIX</strong> | Développée par <strong>Abdiel KABRE</strong></p>
+        <p>
+            📧 Email : <a href="mailto:abdielkabre2@gmail.com">abdielkabre2@gmail.com</a><br>
+            📞 WhatsApp / Tel : 
+            <a href="https://wa.me/22653107345" target="_blank">+226 53 10 73 45</a> &nbsp;|&nbsp; 
+            <a href="https://wa.me/212770967646" target="_blank">+212 770-967646</a>
+        </p>
+    </footer>
+
+    <!-- Scripts Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const eventId = urlParams.get("event");
+
+        let currentEvent = null;
+
+        async function chargerDetailsEvenement() {
+            if (!eventId) {
+                alert("Erreur : Aucun événement sélectionné.");
+                return;
+            }
+
+            const { data: ev, error } = await window.supabaseClient
+                .from("evenements")
+                .select("*")
+                .eq("id", eventId)
+                .single();
+
+            if (error || !ev) {
+                document.getElementById("titreEvenement").textContent = "Événement introuvable";
+                return;
+            }
+
+            currentEvent = ev;
+
+            // Remplissage des détails
+            document.getElementById("titreEvenement").textContent = ev.titre;
+            document.getElementById("dateEvenement").textContent = `${ev.date} à ${ev.heure}`;
+            document.getElementById("lieuEvenement").textContent = ev.lieu;
+            document.getElementById("prixEvenement").textContent = `${ev.prix} FCFA`;
+
+            // Gestion de l'affiche
+            if (ev.affiche_url) {
+                const imgAffiche = document.getElementById("afficheEvenement");
+                imgAffiche.src = ev.affiche_url;
+                imgAffiche.onload = function() {
+                    document.getElementById("afficheLoader").style.display = "none";
+                    imgAffiche.style.display = "block";
+                };
+            } else {
+                document.getElementById("afficheLoader").textContent = "Pas d'affiche disponible";
+            }
+        }
+
+        // Soumission du formulaire
+        document.getElementById("formAchatBillet").addEventListener("submit", async function(e) {
+            e.preventDefault();
+
+            const btn = document.getElementById("btnSubmit");
+            const nom = document.getElementById("nomParticipant").value.trim();
+            const telephone = document.getElementById("telephoneParticipant").value.trim();
+
+            if (!nom || !telephone) {
+                alert("Veuillez remplir tous les champs.");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = "Traitement en cours...";
+
+            // Insertion du billet temporaire ou redirection directe vers la page d'attente/paiement
+            const { data, error } = await window.supabaseClient
+                .from("billets")
+                .insert([
+                    {
+                        evenement_id: eventId,
+                        nom_participant: nom,
+                        telephone: telephone,
+                        statut: "attente"
+                    }
+                ])
+                .select()
+                .single();
+
+            if (error) {
+                alert("Erreur lors de l'enregistrement : " + error.message);
+                btn.disabled = false;
+                btn.innerHTML = "<span>Continuer vers le paiement</span> <span>➔</span>";
+                return;
+            }
+
+            // Redirection vers la page d'attente/paiement avec l'ID du billet généré
+            window.location.href = `attente.html?billet=${data.id}&event=${eventId}`;
+        });
+
+        chargerDetailsEvenement();
+    </script>
+</body>
+</html>
