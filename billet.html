@@ -3,153 +3,516 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Billet - Événement</title>
+    <title>Mon Billet | DIELTIX</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; background: #f4f7f6; padding: 20px; text-align: center; }
-        .ticket { max-width: 450px; margin: 0 auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: left; }
-        .badge-attente { background: #ffc107; color: #333; padding: 10px; border-radius: 5px; font-weight: bold; text-align: center; margin-bottom: 20px; }
-        .badge-refuse { background: #dc3545; color: white; padding: 10px; border-radius: 5px; font-weight: bold; text-align: center; margin-bottom: 20px; }
-        
-        .qr-container-wrapper { 
+        :root {
+            --primary: #6366f1;
+            --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --success: #10b981;
+            --bg-main: #0f172a;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --radius-lg: 24px;
+            --radius-md: 12px;
+            --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+        }
+
+        * { box-sizing: border-box; }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: var(--bg-main); 
+            color: #ffffff; 
+            margin: 0; 
+            padding: 20px 20px 60px 20px; 
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        .top-navbar {
+            max-width: 440px;
+            margin: 0 auto 20px auto;
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
+        }
+
+        .brand-title {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: #ffffff;
+        }
+
+        .brand-title span { color: #818cf8; }
+
+        .secure-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(52, 211, 153, 0.3);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .ticket-wrapper {
+            max-width: 440px;
+            margin: 0 auto;
+        }
+
+        /* Conteneur principal du Ticket */
+        .ticket { 
+            background: var(--card-bg); 
+            color: var(--text-main);
+            border-radius: var(--radius-lg); 
+            box-shadow: var(--shadow-lg); 
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* En-tête VIP du ticket avec conteneur d'image floutée */
+        .ticket-header {
+            position: relative;
+            padding: 35px 25px;
+            text-align: center;
+            overflow: hidden;
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .header-bg-blur {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.45); /* Image nette mais légèrement assombrie pour la lisibilité du texte */
+    transform: scale(1);
+    z-index: 1;
+}
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .ticket-header::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: radial-gradient(circle, transparent, transparent 50%, white 50%, white);
+            background-size: 15px 20px;
+            z-index: 3;
+        }
+
+        .ticket-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin: 12px 0 0 0;
+            letter-spacing: -0.5px;
+            color: #ffffff;
+            line-height: 1.2;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+
+        /* Badges de statut */
+        .badge-confirme {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(8px);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-weight: 800;
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            display: inline-block;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .badge-attente { 
+            background: #fffbeb; 
+            color: #b45309; 
+            border: 1px solid #fde68a;
+            padding: 10px 16px; 
+            border-radius: 30px; 
+            font-weight: 700; 
+            text-align: center; 
+            margin: 0 auto 20px auto; 
+            font-size: 13px;
+            display: table;
+        }
+
+        .badge-refuse { 
+            background: #fef2f2; 
+            color: #991b1b; 
+            border: 1px solid #fecaca;
+            padding: 10px 16px; 
+            border-radius: 30px; 
+            font-weight: 700; 
+            text-align: center; 
+            margin: 0 auto 20px auto; 
+            font-size: 13px;
+            display: table;
+        }
+
+        /* Corps du ticket */
+        .ticket-body {
+            padding: 25px;
+            position: relative;
+        }
+
+        .ticket-details {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .ticket-card {
+            background: #f8fafc;
+            border: 1px solid #f1f5f9;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ticket-info-label {
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ticket-info-value {
+            color: var(--text-main);
+            font-weight: 700;
+            font-size: 14px;
+            text-align: right;
+        }
+
+        /* Ligne de séparation avec Encoches */
+        .separator-container {
+            position: relative;
             margin: 20px 0;
         }
-        #qrcode {
-            padding: 10px;
-            background: white;
-            border: 2px dashed #333;
-            border-radius: 8px;
-            display: inline-block;
+
+        .ticket-divider {
+            border: none;
+            border-top: 2px dashed #cbd5e1;
+            margin: 0;
         }
-        
-        .info { font-size: 12px; color: #666; text-align: center; margin-top: 15px; }
-        button { background: #007bff; color: white; border: none; padding: 12px; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 20px; }
-        button:hover { background: #0056b3; }
+
+        .notch-left, .notch-right {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background-color: var(--bg-main);
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .notch-left { left: -37px; }
+        .notch-right { right: -37px; }
+
+        /* Zone QR Code */
+        .qr-container-wrapper { 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding-bottom: 10px;
+        }
+
+        #qrcode {
+            padding: 14px;
+            background: #fff;
+            border: 2px dashed var(--primary);
+            border-radius: 18px;
+            display: inline-block;
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.12);
+        }
+
+        .info-text { 
+            font-size: 12px; 
+            color: var(--text-muted); 
+            text-align: center; 
+            margin-top: 14px;
+            font-weight: 500;
+        }
+
+        /* Boutons d'action */
+        .btn-action { 
+            width: 100%; 
+            padding: 16px; 
+            border: none; 
+            border-radius: 16px; 
+            font-size: 15px;
+            font-weight: 700; 
+            cursor: pointer; 
+            transition: all 0.2s ease;
+            margin-top: 15px;
+            font-family: inherit;
+        }
+
+        .btn-primary { 
+            background: var(--primary-gradient); 
+            color: white; 
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35); 
+        }
+        .btn-primary:hover { opacity: 0.95; transform: translateY(-1px); }
+
+        .btn-warning { background: var(--warning); color: #fff; }
+        .btn-success { background: var(--success); color: white; }
+
+        /* Pied de page DIELTIX */
+        .creator-footer {
+            max-width: 440px;
+            margin: 30px auto 0 auto;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .creator-footer a {
+            color: #818cf8;
+            text-decoration: none;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
 
-    <div class="ticket" id="ticketContent">
-        <h2 style="text-align: center;">Chargement de votre billet...</h2>
+    <div class="top-navbar">
+        <div class="brand-title">DIEL<span>TIX</span></div>
+        <span class="secure-badge">🔒 Billet Authentique</span>
     </div>
 
-    <button id="downloadTicket" style="max-width: 450px; display: none; margin: 20px auto;" onclick="telechargerPDF()">
-        ⬇️ Télécharger mon billet
-    </button>
+    <div class="ticket-wrapper">
+        <div class="ticket" id="ticketContent">
+            <div style="padding: 40px 20px; text-align: center; color: var(--text-muted);">
+                <h3>Chargement de votre billet...</h3>
+            </div>
+        </div>
 
-    <!-- 1. Bibliothèque Supabase -->
+        <button id="downloadTicket" class="btn-action btn-primary" style="display: none;" onclick="telechargerPDF()">
+            ⬇️ Télécharger mon billet (PDF)
+        </button>
+    </div>
+
+    <!-- Pied de page officiel DIELTIX -->
+    <footer class="creator-footer">
+        <p style="margin-bottom: 4px;">— Vos événements, notre priorité —</p>
+        <p style="margin: 0;">
+            Plateforme propulsée par <strong>DIELTIX</strong> | Développée par <strong>Abdiel KABRE</strong><br>
+            📧 <a href="mailto:abdielkabre2@gmail.com">abdielkabre2@gmail.com</a> | 
+            📞 <a href="https://wa.me/22653107345" target="_blank">+226 53 10 73 45</a> / <a href="https://wa.me/212770967646" target="_blank">+212 770-967646</a>
+        </p>
+    </footer>
+
+    <!-- Scripts Supabase & Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- 2. Configuration Supabase -->
     <script src="supabase.js"></script>
-    <!-- 3. Librairies QR Code et PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <script>
-        async function chargerBillet() {
-            const urlParams = new URLSearchParams(window.location.search);
-            let billetId = urlParams.get("id");
-            let container = document.getElementById("ticketContent");
-            let btnDownload = document.getElementById("downloadTicket");
+       async function chargerBillet() {
+    const urlParams = new URLSearchParams(window.location.search);
+    let billetId = urlParams.get("id");
+    let container = document.getElementById("ticketContent");
+    let btnDownload = document.getElementById("downloadTicket");
 
-            if (!billetId) {
-                container.innerHTML = "<h3>Erreur</h3><p>Aucun identifiant de billet trouvé.</p>";
-                return;
-            }
+    if (!billetId) {
+        container.innerHTML = "<div style='padding:30px; text-align:center;'><h3>Erreur</h3><p>Aucun identifiant de billet trouvé.</p></div>";
+        return;
+    }
 
-            const { data: billet, error: errBillet } = await window.supabaseClient
-                .from("billets")
-                .select("*")
-                .eq("id", billetId)
-                .single();
+    const { data: billet, error: errBillet } = await window.supabaseClient
+        .from("billets")
+        .select("*")
+        .eq("id", billetId)
+        .single();
 
-            if (errBillet || !billet) {
-                container.innerHTML = "<h3>Oups</h3><p>Impossible de trouver ce billet.</p>";
-                return;
-            }
+    if (errBillet || !billet) {
+        container.innerHTML = "<div style='padding:30px; text-align:center;'><h3>Oups</h3><p>Impossible de trouver ce billet.</p></div>";
+        return;
+    }
 
-            const { data: ev, error: errEv } = await window.supabaseClient
-                .from("evenements")
-                .select("*")
-                .eq("id", billet.evenement_id)
-                .single();
+    const { data: ev, error: errEv } = await window.supabaseClient
+        .from("evenements")
+        .select("*")
+        .eq("id", billet.evenement_id)
+        .single();
 
-            if (errEv || !ev) {
-                container.innerHTML = "<h3>Oups</h3><p>Impossible de trouver l'événement lié à ce billet.</p>";
-                return;
-            }
+    if (errEv || !ev) {
+        container.innerHTML = "<div style='padding:30px; text-align:center;'><h3>Oups</h3><p>Impossible de trouver l'événement lié à ce billet.</p></div>";
+        return;
+    }
 
-            // Cas 1 : En attente
-            if (billet.statut === "attente" || !billet.statut) {
-                container.innerHTML = `
-                    <div class="badge-attente">⏳ Paiement en attente de validation</div>
-                    <h1>🎟️ ${ev.titre}</h1>
-                    <hr>
-                    <p>Merci <strong>${billet.nom_participant}</strong> ! Votre preuve de paiement a bien été transmise.</p>
-                    <p>L'organisateur doit valider votre paiement. Cette page se mettra à jour dès que ce sera fait.</p>
-                    <button onclick="location.reload()" style="background: #ffc107; color: #333; margin-top: 15px;">Rafraîchir la page</button>
-                `;
-                return;
-            }
+    const afficheUrl = ev.affiche_url || '';
+    const bgStyle = afficheUrl ? `background-image: url('${afficheUrl}');` : '';
 
-            // Cas 2 : Refusé
-            if (billet.statut === "refuse") {
-                container.innerHTML = `
-                    <div class="badge-refuse">❌ Paiement non validé / Non reçu</div>
-                    <h1 style="font-size: 20px;">🎟️ ${ev.titre}</h1>
-                    <hr>
-                    <p>Désolé Mr/Mme <strong>${billet.nom_participant}</strong>, le bénéficiare indique ne pas avoir reçu les fonds.</p>
-                    <div style="background: #fff3cd; padding: 12px; border-radius: 5px; margin: 15px 0; border: 1px solid #ffeeba; text-align: left;">
-                        <p style="margin: 0; font-size: 14px; color: #856404;">
-                            💡 <strong>Que faire ?</strong> Contactez l'organisateur au numéro : <strong>${ev.beneficiaire_infos}</strong> (${ev.beneficiaire_nom}).
-                        </p>
+    // --- CAS 1 : PAIEMENT EN ATTENTE ---
+    if (billet.statut === "attente" || !billet.statut) {
+        btnDownload.style.display = "none";
+        container.innerHTML = `
+            <div class="ticket-header" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%);">
+                ${afficheUrl ? `<div class="header-bg-blur" style="${bgStyle}"></div>` : ''}
+                <div class="header-content">
+                    <span class="badge-confirme" style="background: rgba(245, 158, 11, 0.5); border-color: rgba(253, 230, 138, 0.6);">⏳ PAIEMENT EN ATTENTE DE VALIDATION</span>
+                    <h1 class="ticket-title">${ev.titre}</h1>
+                </div>
+            </div>
+
+            <div class="ticket-body">
+                <div class="ticket-details">
+                    <div class="ticket-card">
+                        <span class="ticket-info-label">👤 Titulaire</span>
+                        <span class="ticket-info-value">${billet.nom_participant}</span>
                     </div>
-                    <button onclick="location.reload()" style="background: #28a745; color: white; margin-top: 5px;">🔄 Vérifier à nouveau</button>
-                `;
-                return;
-            }
-
-            // Cas 3 : Confirmé (Affichage du Billet et du QR Code unique & centré)
-            if (billet.statut === "confirme") {
-                container.innerHTML = `
-                    <h1 style="text-align: center;">🎟️ Billet d'entrée</h1>
-                    <h2 style="text-align: center; color: #007bff;">${ev.titre}</h2>
-                    <hr>
-                    <p><strong>Nom et prénom :</strong> ${billet.nom_participant}</p>
-                    <p><strong>Téléphone :</strong> ${billet.telephone}</p>
-                    <p><strong>Date :</strong> ${ev.date} à ${ev.heure}</p>
-                    <p><strong>Lieu :</strong> ${ev.lieu}</p>
-                    <p><strong>Billet N° :</strong> ${billet.numero_billet || billet.id}</p>
-
-                    <div class="qr-container-wrapper">
-                        <div id="qrcode"></div>
+                    <div class="ticket-card">
+                        <span class="ticket-info-label">📞 Téléphone</span>
+                        <span class="ticket-info-value">${billet.telephone}</span>
                     </div>
+                    <div class="ticket-card">
+                        <span class="ticket-info-label">📅 Date & Heure</span>
+                        <span class="ticket-info-value">${ev.date} à ${ev.heure}</span>
+                    </div>
+                    <div class="ticket-card">
+                        <span class="ticket-info-label">📍 Lieu</span>
+                        <span class="ticket-info-value">${ev.lieu}</span>
+                    </div>
+                </div>
 
-                    <p class="info">Veuillez présenter ce billet ou ce QR Code à l'entrée.</p>
-                `;
+                <div style="border-top: 1px dashed #cbd5e1; margin-top: 20px; padding-top: 15px;">
+                    <p style="font-size: 13px; color: var(--text-muted); text-align: center; margin-bottom: 15px; line-height: 1.5;">
+                        Votre preuve de paiement a bien été reçue. Le numéro de Pass et le QR Code d'accès seront débloqués dès confirmation du règlement par l'organisateur.
+                    </p>
+                    <button onclick="location.reload()" class="btn-action btn-warning">🔄 Rafraîchir la page</button>
+                </div>
+            </div>
+        `;
+        return;
+    }
 
-                const qrContainer = document.getElementById("qrcode");
-                qrContainer.innerHTML = "";
+    // --- CAS 2 : PAIEMENT REFUSÉ ---
+    if (billet.statut === "refuse") {
+        btnDownload.style.display = "none";
+        container.innerHTML = `
+            <div class="ticket-header" style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);">
+                ${afficheUrl ? `<div class="header-bg-blur" style="${bgStyle}"></div>` : ''}
+                <div class="header-content">
+                    <span class="badge-confirme" style="background: rgba(239, 68, 68, 0.5); border-color: rgba(254, 202, 202, 0.6);">❌ PAIEMENT NON VALIDÉ</span>
+                    <h1 class="ticket-title">${ev.titre}</h1>
+                </div>
+            </div>
+            <div class="ticket-body" style="text-align: center;">
+                <p style="font-size: 14px; color: var(--text-main); margin-bottom: 15px;">
+                    Le paiement n'a pas pu être confirmé par l'organisateur.
+                </p>
+                <div style="background: #fffbeb; padding: 12px; border-radius: var(--radius-md); border: 1px solid #fde68a; margin-bottom: 15px;">
+                    <p style="margin:0; font-size: 12px; color: #b45309;">
+                        💡 Contactez l'organisateur : <strong>${ev.beneficiaire_infos || ''}</strong> (${ev.beneficiaire_nom || ''}).
+                    </p>
+                </div>
+                <button onclick="location.reload()" class="btn-action btn-success">🔄 Re-vérifier l'état</button>
+            </div>
+        `;
+        return;
+    }
 
-                new QRCode(qrContainer, {
-                    text: billet.numero_billet || String(billet.id),
-                    width: 140,
-                    height: 140
-                });
+    // --- CAS 3 : PAIEMENT CONFIRMÉ ---
+    if (billet.statut === "confirme") {
+        container.innerHTML = `
+            <div class="ticket-header">
+                ${afficheUrl ? `<div class="header-bg-blur" style="${bgStyle}"></div>` : ''}
+                <div class="header-content">
+                    <span class="badge-confirme">✓ ACCÈS CONFIRMÉ</span>
+                    <h1 class="ticket-title">${ev.titre}</h1>
+                </div>
+            </div>
 
-                btnDownload.style.display = "block";
-                return;
-            }
-        }
+            <div class="ticket-body">
+                <div class="ticket-details">
+                    <div class="ticket-card">
+                        <span class="ticket-info-label">👤 Titulaire</span>
+                        <span class="ticket-info-value">${billet.nom_participant}</span>
+                    </div>
+                    <div class="ticket-card">
+                        <span class="ticket-info-label">📞 Téléphone</span>
+                        <span class="ticket-info-value">${billet.telephone}</span>
+                    </div>
+                    <div class="ticket-card">
+                        <span class="ticket-info-label">📅 Date & Heure</span>
+                        <span class="ticket-info-value">${ev.date} à ${ev.heure}</span>
+                    </div>
+                    <div class="ticket-card">
+                        <span class="ticket-info-label">📍 Lieu</span>
+                        <span class="ticket-info-value">${ev.lieu}</span>
+                    </div>
+                    <div class="ticket-card" style="background: #eef2ff; border-color: #c7d2fe;">
+                        <span class="ticket-info-label" style="color: var(--primary);">🎟️ Pass N°</span>
+                        <span class="ticket-info-value" style="color: var(--primary); font-family: monospace; font-size: 16px;">#${billet.numero_billet || billet.id}</span>
+                    </div>
+                </div>
+
+                <div class="separator-container">
+                    <div class="notch-left"></div>
+                    <hr class="ticket-divider">
+                    <div class="notch-right"></div>
+                </div>
+
+                <div class="qr-container-wrapper">
+                    <div id="qrcode"></div>
+                    <p class="info-text">Scannez ce QR Code à l'entrée de l'événement</p>
+                </div>
+            </div>
+        `;
+
+        const qrContainer = document.getElementById("qrcode");
+        qrContainer.innerHTML = "";
+
+        new QRCode(qrContainer, {
+            text: billet.numero_billet || String(billet.id),
+            width: 150,
+            height: 150,
+            colorDark : "#0f172a",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
+        });
+
+        btnDownload.style.display = "block";
+        return;
+    }
+}
 
         function telechargerPDF() {
             const element = document.getElementById('ticketContent');
             let opt = {
-                margin:       10,
-                filename:     'mon-billet.pdf',
+                margin:       [10, 10, 10, 10],
+                filename:     'Pass-DIELTIX.pdf',
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2 },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }

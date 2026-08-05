@@ -3,57 +3,326 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Espace Organisateur / Bénéficiaire</title>
+    <title>DIELTIX - Espace Organisateur</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; background: #f4f7f6; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .tabs { display: flex; justify-content: space-around; margin-bottom: 20px; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
-        .tab-btn { background: none; border: none; font-size: 16px; font-weight: bold; cursor: pointer; padding: 10px 15px; color: #666; }
-        .tab-btn.active { color: #007bff; border-bottom: 3px solid #007bff; }
-        .section-content { display: none; }
-        .section-content.active { display: block; }
-        .billet-card { background: #fff; border: 1px solid #ddd; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .billet-card img { max-width: 200px; display: block; margin: 10px 0; border-radius: 5px; }
-        
-        /* Styles des boutons d'action */
-        .btn-confirmer { background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .btn-refuser { background: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-left: 5px; }
-        .btn-attente { background: #ffc107; color: #333; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-left: 5px; }
-        
-        .badge-statut { display: inline-block; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 14px; margin-bottom: 10px; }
-        .badge-attente { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
-        .badge-confirme { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .badge-refuse { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        :root {
+            /* Couleurs inspirées du logo DIELTIX (Violet / Bleu Indigo) */
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --secondary: #0ea5e9;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --radius: 12px;
+        }
 
-        /* Style de la boîte de résultat du scan */
-        #resultatScan {
-            margin-top: 20px;
-            padding: 15px;
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: var(--bg-main); 
+            color: var(--text-main); 
+            margin: 0; 
+            padding: 20px 20px 40px 20px; 
+        }
+
+        /* Barre supérieure avec Logo DIELTIX et Badge */
+        .top-navbar {
+            max-width: 900px;
+            margin: 0 auto 20px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo-container img {
+            height: 48px;
+            object-fit: contain;
+        }
+
+        /* Texte fallback si l'image met du temps à charger */
+        .brand-title {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: #000;
+        }
+        .brand-title span {
+            color: var(--primary);
+        }
+
+        .container { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            background: var(--card-bg); 
+            padding: 35px; 
+            border-radius: var(--radius); 
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05); 
+        }
+
+        .header-top {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .badge-espace {
+            display: inline-block;
+            background: #eef2ff;
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid #e0e7ff;
+        }
+
+        h1#titreEvenementOrg {
+            font-size: 26px;
+            font-weight: 800;
+            margin: 12px 0 0 0;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+
+        #infosEvenementOrg {
+            background: #f1f5f9;
+            padding: 12px 18px;
             border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 25px;
+            font-weight: 500;
             text-align: center;
         }
-        #reader { width: 100%; max-width: 400px; margin: 0 auto; }
+
+        /* Onglets stylés */
+        .tabs { 
+            display: flex; 
+            gap: 10px; 
+            margin-bottom: 30px; 
+            border-bottom: 2px solid var(--border-color); 
+            padding-bottom: 0; 
+        }
+
+        .tab-btn { 
+            background: transparent; 
+            border: none; 
+            font-size: 15px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            padding: 12px 20px; 
+            color: var(--text-muted); 
+            border-bottom: 3px solid transparent; 
+            transition: all 0.2s ease;
+            margin-bottom: -2px;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary);
+        }
+
+        .tab-btn.active { 
+            color: var(--primary); 
+            border-bottom: 3px solid var(--primary); 
+        }
+
+        .section-content { display: none; }
+        .section-content.active { display: block; }
+
+        .section-content h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .section-content > p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+        
+        /* Cartes modernes */
+        .billet-card { 
+            background: var(--card-bg); 
+            border: 1px solid var(--border-color); 
+            padding: 24px; 
+            border-radius: var(--radius); 
+            margin-bottom: 20px; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02); 
+            text-align: center; 
+            transition: transform 0.2s;
+        }
+
+        .billet-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        }
+
+        .billet-card p {
+            margin: 8px 0;
+            font-size: 15px;
+        }
+
+        .billet-card img { 
+            max-width: 220px; 
+            max-height: 250px; 
+            display: block; 
+            margin: 15px auto; 
+            border-radius: 8px; 
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        
+        /* Boutons d'action modernes */
+        .btn-confirmer { background: var(--success); color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; transition: background 0.2s; }
+        .btn-confirmer:hover { background: #059669; }
+
+        .btn-refuser { background: var(--danger); color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; margin-left: 6px; transition: background 0.2s; }
+        .btn-refuser:hover { background: #dc2626; }
+
+        .btn-attente { background: var(--warning); color: #78350f; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; margin-left: 6px; transition: background 0.2s; }
+        .btn-attente:hover { background: #d97706; }
+        
+        /* Badges élégants */
+        .badge-statut { display: inline-block; padding: 6px 14px; border-radius: 20px; font-weight: 600; font-size: 12px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .badge-attente { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .badge-confirme { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+        .badge-refuse { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+
+        /* Scanner et recherche */
+        #resultatScan {
+            margin-top: 20px;
+            padding: 18px;
+            border-radius: var(--radius);
+            font-size: 15px;
+            font-weight: 500;
+            text-align: center;
+        }
+        #reader { 
+            width: 100%; 
+            max-width: 400px; 
+            margin: 0 auto; 
+            border-radius: var(--radius); 
+            overflow: hidden; 
+            border: 2px solid var(--border-color); 
+        }
+
+        .scanner-input-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .scanner-input-group input {
+            padding: 12px 16px;
+            width: 50%;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .scanner-input-group input:focus {
+            border-color: var(--primary);
+        }
+
+        .scanner-input-group button {
+            padding: 12px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .scanner-input-group button:hover {
+            background: var(--primary-hover);
+        }
+
+        /* Pied de page Contact Créateur - DIELTIX */
+        .creator-footer {
+            max-width: 900px;
+            margin: 35px auto 0 auto;
+            padding-top: 25px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .creator-footer .slogan {
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            font-size: 11px;
+        }
+
+        .creator-footer p {
+            margin: 4px 0;
+        }
+
+        .creator-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .creator-footer a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
 
+    <!-- Barre supérieure : Logo DIELTIX à gauche + Badge Organisateur à droite -->
+    <div class="top-navbar">
+        <div class="brand-logo-container">
+            <img src="logo-dieltix.png" alt="DIELTIX Logo" onerror="this.style.display='none'; document.getElementById('alt-brand').style.display='block';">
+            <div id="alt-brand" class="brand-title" style="display:none;">DIEL<span>TIX</span></div>
+        </div>
+        <span class="badge-espace">Espace Organisateur</span>
+    </div>
+
     <div class="container">
-        <h1 id="titreEvenementOrg">Espace Organisateur</h1>
+        <!-- Titre de l'événement -->
+        <div class="header-top">
+            <h1 id="titreEvenementOrg">Chargement de l'événement...</h1>
+        </div>
+
         <p id="infosEvenementOrg">Chargement des informations...</p>
 
         <!-- Les trois onglets -->
         <div class="tabs">
             <button class="tab-btn active" onclick="changerOnglet('paiements', event)">1. Demandes de Paiement</button>
-            <button class="tab-btn" onclick="changerOnglet('validees', event)">2. Demandes Validées</button>
+            <button class="tab-btn" id="btnTabValidees" onclick="changerOnglet('validees', event)">2. Demandes Validées (0)</button>
             <button class="tab-btn" onclick="changerOnglet('scanner', event)">3. Scanner les Billets</button>
         </div>
 
         <!-- SECTION 1 : DEMANDES DE PAIEMENT -->
         <div id="section-paiements" class="section-content active">
             <h2>Gestion des paiements</h2>
+            <p>Examinez et validez les captures d'écran des paiements reçus.</p>
             <div id="listePaiements">
                 <p>Chargement des demandes...</p>
             </div>
@@ -61,8 +330,8 @@
 
         <!-- SECTION 2 : DEMANDES VALIDÉES -->
         <div id="section-validees" class="section-content">
-            <h2>Participants Confirmés & Validés</h2>
-            <p>Liste des personnes validées (basculées ici après 5 min). En cas d'empêchement, vous pouvez retirer un participant pour invalider son billet :</p>
+            <h2 id="titreSectionValidees">Participants Confirmés & Validés (0)</h2>
+            <p>Liste des personnes validées. En cas d'empêchement, vous pouvez retirer un participant pour supprimer son billet :</p>
             <div id="listeValidees">
                 <p>Chargement des participants validés...</p>
             </div>
@@ -73,17 +342,28 @@
             <h2>Contrôle des Billets (Jour J)</h2>
             <p>Scannez le QR Code avec la caméra du téléphone ou entrez le code manuellement :</p>
             
-            <!-- Caméra pour les téléphones -->
             <div id="reader"></div>
 
-            <div style="margin-top: 20px; text-align: center;">
-                <input type="text" id="codeBilletInput" placeholder="ID ou Code du billet..." style="padding: 10px; width: 60%; border: 1px solid #ccc; border-radius: 5px;">
-                <button onclick="verifierBilletManuel()" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Vérifier</button>
+            <div class="scanner-input-group">
+                <input type="text" id="codeBilletInput" placeholder="ID ou Code du billet...">
+                <button onclick="verifierBilletManuel()">Vérifier</button>
             </div>
 
             <div id="resultatScan"></div>
         </div>
     </div>
+
+    <!-- Pied de page officiel DIELTIX par Abdiel KABRE -->
+    <footer class="creator-footer">
+        <p class="slogan">— Vos événements, notre priorité —</p>
+        <p>Plateforme de billetterie par <strong>DIELTIX</strong> | Développée par <strong>Abdiel KABRE</strong></p>
+        <p>
+            📧 Email : <a href="mailto:abdielkabre2@gmail.com">abdielkabre2@gmail.com</a><br>
+            📞 WhatsApp / Tel : 
+            <a href="https://wa.me/22653107345" target="_blank">+226 53 10 73 45</a> &nbsp;|&nbsp; 
+            <a href="https://wa.me/212770967646" target="_blank">+212 770-967646</a>
+        </p>
+    </footer>
 
     <!-- Scripts Supabase et Scanner QR -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -113,13 +393,12 @@
                 return;
             }
 
-            document.getElementById("titreEvenementOrg").textContent = `Organisateur : ${ev.titre}`;
-            document.getElementById("infosEvenementOrg").innerHTML = `📅 Date : ${ev.date} à ${ev.heure} | 📍 Lieu : ${ev.lieu}`;
+            document.getElementById("titreEvenementOrg").textContent = ev.titre;
+            document.getElementById("infosEvenementOrg").innerHTML = `📅 Date : ${ev.date} à ${ev.heure} &nbsp;&nbsp;|&nbsp;&nbsp; 📍 Lieu : ${ev.lieu}`;
 
             chargerToutesLesDemandes();
         }
 
-        // Charger et répartir les demandes entre Paiements et Demandes Validées
         async function chargerToutesLesDemandes() {
             let containerPaiements = document.getElementById("listePaiements");
             let containerValidees = document.getElementById("listeValidees");
@@ -137,8 +416,9 @@
             }
 
             if (!billets || billets.length === 0) {
-                containerPaiements.innerHTML = "<p>Aucune demande de paiement pour le moment.</p>";
-                containerValidees.innerHTML = "<p>Aucun participant validé pour le moment.</p>";
+                containerPaiements.innerHTML = "<p style='text-align:center; color:#64748b;'>Aucune demande de paiement pour le moment.</p>";
+                containerValidees.innerHTML = "<p style='text-align:center; color:#64748b;'>Aucun participant validé pour le moment.</p>";
+                mettreAJourCompteurs(0);
                 return;
             }
 
@@ -159,14 +439,11 @@
                     statutHtml = `<span class="badge-statut badge-attente">⏳ En attente</span>`;
                 }
 
-                // Logique des 5 minutes pour les confirmés
                 if (b.statut === 'confirme') {
-                    // On se base sur updated_at ou creation, fallback sur now si absent
                     let tempsConfirmation = b.updated_at ? new Date(b.updated_at).getTime() : now;
                     let diffMinutes = (now - tempsConfirmation) / (1000 * 60);
 
                     if (diffMinutes < 5) {
-                        // Moins de 5 minutes : reste dans les demandes de paiement
                         countPaiements++;
                         containerPaiements.innerHTML += `
                             <div class="billet-card">
@@ -176,7 +453,7 @@
                                 <p><strong>Capture du paiement :</strong></p>
                                 <a href="${b.preuve_url}" target="_blank"><img src="${b.preuve_url}" alt="Preuve de paiement"></a>
                                 <br>
-                                <div style="margin-top: 10px;">
+                                <div style="margin-top: 15px;">
                                     <button class="btn-confirmer" onclick="changerStatut(${b.id}, 'confirme')">✅ J'ai reçu</button>
                                     <button class="btn-refuser" onclick="changerStatut(${b.id}, 'refuse')">❌ Non reçu</button>
                                     <button class="btn-attente" onclick="changerStatut(${b.id}, 'attente')">⏳ Mettre en attente</button>
@@ -184,7 +461,6 @@
                             </div>
                         `;
                     } else {
-                        // Plus de 5 minutes : bascule dans le volet "Demandes Validées"
                         countValidees++;
                         containerValidees.innerHTML += `
                             <div class="billet-card">
@@ -192,14 +468,13 @@
                                 <p><strong>Nom du participant :</strong> ${b.nom_participant}</p>
                                 <p><strong>Téléphone WhatsApp :</strong> ${b.telephone}</p>
                                 <p><strong>Billet N° :</strong> ${b.id}</p>
-                                <div style="margin-top: 10px;">
-                                    <button class="btn-refuser" onclick="retirerParticipant(${b.id})">🚫 Retirer (Empêchement / Invalider)</button>
+                                <div style="margin-top: 15px;">
+                                    <button class="btn-refuser" onclick="retirerParticipant(${b.id})">🚫 Retirer (Supprimer définitivement)</button>
                                 </div>
                             </div>
                         `;
                     }
                 } else {
-                    // Les autres statuts (en attente ou refusés) restent dans l'onglet des paiements
                     countPaiements++;
                     containerPaiements.innerHTML += `
                         <div class="billet-card">
@@ -209,7 +484,7 @@
                             <p><strong>Capture du paiement :</strong></p>
                             <a href="${b.preuve_url}" target="_blank"><img src="${b.preuve_url}" alt="Preuve de paiement"></a>
                             <br>
-                            <div style="margin-top: 10px;">
+                            <div style="margin-top: 15px;">
                                 <button class="btn-confirmer" onclick="changerStatut(${b.id}, 'confirme')">✅ J'ai reçu</button>
                                 <button class="btn-refuser" onclick="changerStatut(${b.id}, 'refuse')">❌ Non reçu</button>
                                 <button class="btn-attente" onclick="changerStatut(${b.id}, 'attente')">⏳ Mettre en attente</button>
@@ -219,15 +494,21 @@
                 }
             });
 
-            if (countPaiements === 0) containerPaiements.innerHTML = "<p>Aucune demande en cours.</p>";
-            if (countValidees === 0) containerValidees.innerHTML = "<p>Aucun participant validé pour le moment (les validations y apparaîtront après 5 minutes).</p>";
+            if (countPaiements === 0) containerPaiements.innerHTML = "<p style='text-align:center; color:#64748b;'>Aucune demande en cours.</p>";
+            if (countValidees === 0) containerValidees.innerHTML = "<p style='text-align:center; color:#64748b;'>Aucun participant validé pour le moment.</p>";
+
+            mettreAJourCompteurs(countValidees);
         }
 
-        // Mettre à jour le statut du billet (enregistre aussi l'heure actuelle pour le calcul des 5 min)
+        function mettreAJourCompteurs(nombre) {
+            document.getElementById("btnTabValidees").textContent = `2. Demandes Validées (${nombre})`;
+            document.getElementById("titreSectionValidees").textContent = `Participants Confirmés & Validés (${nombre})`;
+        }
+
         async function changerStatut(billetId, nouveauStatut) {
             let updateData = { 
                 statut: nouveauStatut,
-                updated_at: new Date().toISOString() // Horodatage pour le délai de 5 minutes
+                updated_at: new Date().toISOString()
             };
 
             if (nouveauStatut === 'confirme') {
@@ -249,39 +530,32 @@
             chargerToutesLesDemandes();
         }   
 
-        // Fonction pour retirer un participant (Désistement -> Invalide le billet)
         async function retirerParticipant(billetId) {
-            if (!confirm("Voulez-vous vraiment retirer ce participant ? Son billet ne sera plus valable.")) return;
+            if (!confirm("Voulez-vous vraiment supprimer définitivement ce participant et son billet ? Cette action est irréversible.")) return;
 
             const { error } = await window.supabaseClient
                 .from("billets")
-                .update({ 
-                    statut: 'refuse', 
-                    utilise: true, // Bloque son utilisation au scan
-                    updated_at: new Date().toISOString()
-                })
+                .delete()
                 .eq("id", billetId);
 
             if (error) {
-                alert("Erreur lors du retrait : " + error.message);
+                alert("Erreur lors de la suppression : " + error.message);
                 return;
             }
 
-            alert("Le participant a été retiré et son billet a été invalidé.");
+            alert("Le participant et son billet ont été entièrement supprimés.");
             chargerToutesLesDemandes();
         }
 
-        // Mémoire pour stocker les derniers billets scannés
         let derniersBilletsScannes = {};
 
-        // Gestion centrale de la vérification avec délai de grâce de 30 secondes
         async function traiterVerificationBillet(codeScanne) {
             let resultatDiv = document.getElementById("resultatScan");
             let code = codeScanne ? codeScanne.trim() : "";
 
             if (!code) {
-                resultatDiv.style.background = "#fff3cd";
-                resultatDiv.style.color = "#856404";
+                resultatDiv.style.background = "#fef3c7";
+                resultatDiv.style.color = "#92400e";
                 resultatDiv.textContent = "⚠️ Veuillez entrer ou scanner un code de billet.";
                 return;
             }
@@ -295,8 +569,8 @@
                 .eq("evenement_id", eventId);
 
             if (error || !billets) {
-                resultatDiv.style.background = "#f8d7da";
-                resultatDiv.style.color = "#721c24";
+                resultatDiv.style.background = "#fee2e2";
+                resultatDiv.style.color = "#991b1b";
                 resultatDiv.textContent = "❌ Erreur de connexion avec la base de données.";
                 return;
             }
@@ -309,15 +583,15 @@
             );
 
             if (!b) {
-                resultatDiv.style.background = "#f8d7da";
-                resultatDiv.style.color = "#721c24";
+                resultatDiv.style.background = "#fee2e2";
+                resultatDiv.style.color = "#991b1b";
                 resultatDiv.textContent = `❌ Billet introuvable pour ce code (${code}).`;
                 return;
             }
 
             if (b.statut !== "confirme") {
-                resultatDiv.style.background = "#fff3cd";
-                resultatDiv.style.color = "#856404";
+                resultatDiv.style.background = "#fef3c7";
+                resultatDiv.style.color = "#92400e";
                 resultatDiv.textContent = `⚠️ Entrée refusée : Ce billet n'est pas confirmé ou a été invalidé (Statut : ${b.statut}).`;
                 return;
             }
@@ -325,11 +599,11 @@
             let maintenant = Date.now();
 
             if (derniersBilletsScannes[b.id] && (maintenant - derniersBilletsScannes[b.id] < 30000)) {
-                resultatDiv.style.background = "#d4edda";
-                resultatDiv.style.color = "#155724";
+                resultatDiv.style.background = "#d1fae5";
+                resultatDiv.style.color = "#065f46";
                 resultatDiv.innerHTML = `
                     ✅ <strong>ENTRÉE VALIDE (Déjà scanné à l'instant)</strong><br>
-                    <span style="font-size: 14px; font-weight: normal; color: #333;">
+                    <span style="font-size: 14px; font-weight: normal; color: #1e293b;">
                         Bienvenue à <strong>${b.nom_participant || 'N/A'}</strong><br>
                         Téléphone : ${b.telephone} | Billet N° : ${b.id}
                     </span>
@@ -338,11 +612,11 @@
             }
 
             if (b.utilise === true || b.utilise === "true") {
-                resultatDiv.style.background = "#f8d7da";
-                resultatDiv.style.color = "#721c24";
+                resultatDiv.style.background = "#fee2e2";
+                resultatDiv.style.color = "#991b1b";
                 resultatDiv.innerHTML = `
                     🚨 <strong>ENTRÉE NON VALIDE - BILLET DÉJÀ UTILISÉ !</strong><br>
-                    <span style="font-size: 14px; font-weight: normal; color: #333;">
+                    <span style="font-size: 14px; font-weight: normal; color: #1e293b;">
                         Propriétaire : <strong>${b.nom_participant || 'N/A'}</strong> | Tél : ${b.telephone}
                     </span>
                 `;
@@ -355,19 +629,19 @@
                 .eq("id", b.id);
 
             if (updateError) {
-                resultatDiv.style.background = "#f8d7da";
-                resultatDiv.style.color = "#721c24";
+                resultatDiv.style.background = "#fee2e2";
+                resultatDiv.style.color = "#991b1b";
                 resultatDiv.textContent = "❌ Erreur lors de la validation de l'entrée.";
                 return;
             }
 
             derniersBilletsScannes[b.id] = maintenant;
 
-            resultatDiv.style.background = "#d4edda";
-            resultatDiv.style.color = "#155724";
+            resultatDiv.style.background = "#d1fae5";
+            resultatDiv.style.color = "#065f46";
             resultatDiv.innerHTML = `
                 ✅ <strong>ENTRÉE VALIDE</strong><br>
-                <span style="font-size: 14px; font-weight: normal; color: #333;">
+                <span style="font-size: 14px; font-weight: normal; color: #1e293b;">
                     Bienvenue à <strong>${b.nom_participant || 'N/A'}</strong><br>
                     Téléphone : ${b.telephone} | Billet N° : ${b.id}
                 </span>
@@ -380,7 +654,6 @@
             document.getElementById("codeBilletInput").value = "";
         }
 
-        // Gestion des trois onglets et activation de la caméra
         function changerOnglet(nomOnglet, eventElement) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
@@ -388,11 +661,15 @@
             if (nomOnglet === 'paiements') {
                 eventElement.currentTarget.classList.add('active');
                 document.getElementById('section-paiements').classList.add('active');
-                if (html5QrCode && html5QrCode.isScanning) html5QrCode.stop();
+                if (html5QrCode && html5QrCode.isScanning) {
+                    html5QrCode.stop();
+                }
             } else if (nomOnglet === 'validees') {
                 eventElement.currentTarget.classList.add('active');
                 document.getElementById('section-validees').classList.add('active');
-                if (html5QrCode && html5QrCode.isScanning) html5QrCode.stop();
+                if (html5QrCode && html5QrCode.isScanning) {
+                    html5QrCode.stop();
+                }
             } else {
                 eventElement.currentTarget.classList.add('active');
                 document.getElementById('section-scanner').classList.add('active');

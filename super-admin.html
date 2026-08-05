@@ -3,71 +3,343 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Admin - Création d'Événement</title>
+    <title>Super Admin - Création d'Événement | DIELTIX</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; background: #f4f7f6; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        input, textarea { width: 100%; padding: 10px; margin: 10px 0 20px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        textarea { height: 80px; resize: vertical; }
-        button { background: #007bff; color: white; border: none; padding: 12px; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer; }
-        button:hover { background: #0056b3; }
-        .links-box { background: #e9ecef; padding: 15px; border-radius: 5px; margin-top: 20px; word-break: break-all; display: none; }
-        .links-box p { margin-bottom: 15px; }
+        :root {
+            --primary: #6366f1;
+            --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            --bg-main: #0f172a;
+            --card-bg: #1e293b;
+            --input-bg: #0f172a;
+            --border-color: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --radius-lg: 20px;
+            --radius-md: 12px;
+        }
+
+        * { box-sizing: border-box; }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: var(--bg-main); 
+            color: var(--text-main); 
+            margin: 0; 
+            padding: 40px 20px; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .admin-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 580px;
+            padding: 35px 30px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+        }
+
+        .admin-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .brand-badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            color: #818cf8;
+            background: rgba(99, 102, 241, 0.15);
+            padding: 6px 14px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .admin-header h1 {
+            font-size: 26px;
+            font-weight: 800;
+            margin: 0 0 8px 0;
+            letter-spacing: -0.5px;
+            color: #ffffff;
+        }
+
+        .admin-header p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        input[type="text"], 
+        input[type="date"], 
+        input[type="time"], 
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: #ffffff;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        textarea {
+            height: 90px;
+            resize: vertical;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+        }
+
+        /* Uploader personnalisé */
+        .file-upload-wrapper {
+            position: relative;
+            background: var(--input-bg);
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .file-upload-wrapper:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .file-upload-wrapper input[type="file"] {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-upload-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+            pointer-events: none;
+            word-break: break-all;
+        }
+
+        /* Bouton Action */
+        button#btnCreerEvent {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35);
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        button#btnCreerEvent:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+
+        button#btnCreerEvent:disabled {
+            background: #475569;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Zone des Liens Générés */
+        .links-box {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-top: 25px;
+            display: none;
+        }
+
+        .links-box h3 {
+            margin: 0 0 15px 0;
+            font-size: 16px;
+            color: #34d399;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .link-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px 14px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+
+        .link-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .link-card strong {
+            display: block;
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .link-card a {
+            color: #38bdf8;
+            font-size: 13px;
+            word-break: break-all;
+            text-decoration: underline;
+            font-weight: 600;
+        }
+
+        .creator-footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #64748b;
+        }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Créer un Événement</h1>
-        <p>Remplis les infos pour générer l'événement et obtenir les liens uniques.</p>
+    <div class="admin-card">
+        <div class="admin-header">
+            <span class="brand-badge">Espace Super Admin</span>
+            <h1>Créer un Événement</h1>
+            <p>Remplissez les informations ci-dessous pour générer l'événement et vos accès unique.</p>
+        </div>
 
-        <label>Nom de l'événement :</label>
-        <input type="text" id="titreEvent" placeholder="ex: Concert JEEAM">
+        <div class="form-grid">
+            <div class="form-group full-width">
+                <label for="titreEvent">Nom de l'événement</label>
+                <input type="text" id="titreEvent" placeholder="ex: Concert JEEAM">
+            </div>
 
-        <label>Date :</label>
-        <input type="date" id="dateEvent">
+            <div class="form-group">
+                <label for="dateEvent">Date</label>
+                <input type="date" id="dateEvent">
+            </div>
 
-        <label>Heure :</label>
-        <input type="time" id="heureEvent">
+            <div class="form-group">
+                <label for="heureEvent">Heure</label>
+                <input type="time" id="heureEvent">
+            </div>
 
-        <label>Lieu :</label>
-        <input type="text" id="lieuEvent" placeholder="ex: Canal Olympia">
+            <div class="form-group">
+                <label for="lieuEvent">Lieu</label>
+                <input type="text" id="lieuEvent" placeholder="ex: Canal Olympia">
+            </div>
 
-        <label>Prix du billet :</label>
-        <input type="text" id="prixEvent" placeholder="ex: 50">
+            <div class="form-group">
+                <label for="prixEvent">Prix du billet</label>
+                <input type="text" id="prixEvent" placeholder="ex: 50 DHS">
+            </div>
 
-        <label>Nom du bénéficiaire (qui reçoit l'argent) :</label>
-        <input type="text" id="beneficiaireNom" placeholder="ex: Trésorière JEEAM">
+            <div class="form-group full-width">
+                <label for="beneficiaireNom">Nom du bénéficiaire (qui reçoit l'argent)</label>
+                <input type="text" id="beneficiaireNom" placeholder="ex: Trésorière JEEAM">
+            </div>
 
-        <label>Coordonnées de paiement (Mobile Money, RIB, etc.) :</label>
-        <textarea id="beneficiaireInfos" placeholder="ex: Mobile Money: +226 ... / CIH Bank: ..."></textarea>
+            <div class="form-group full-width">
+                <label for="beneficiaireInfos">Coordonnées de paiement (Mobile Money, RIB, etc.)</label>
+                <textarea id="beneficiaireInfos" placeholder="ex: Mobile Money: +226 ... / CIH Bank: ..."></textarea>
+            </div>
 
-        <!-- AJOUTÉ : Champ pour l'image du RIB / QR Code -->
-        <label>Image du RIB ou QR Code de paiement :</label>
-        <input type="file" id="ribEvent" accept="image/*">
+            <!-- Upload RIB -->
+            <div class="form-group full-width">
+                <label>Image du RIB ou QR Code de paiement</label>
+                <div class="file-upload-wrapper">
+                    <input type="file" id="ribEvent" accept="image/*" onchange="updateFileName(this, 'labelRib')">
+                    <span class="file-upload-label" id="labelRib">📷 Cliquez pour choisir le RIB / QR Code</span>
+                </div>
+            </div>
 
-        <label>Affiche de l'événement (Image) :</label>
-        <input type="file" id="afficheEvent" accept="image/*">
+            <!-- Upload Affiche -->
+            <div class="form-group full-width">
+                <label>Affiche de l'événement (Image)</label>
+                <div class="file-upload-wrapper">
+                    <input type="file" id="afficheEvent" accept="image/*" onchange="updateFileName(this, 'labelAffiche')">
+                    <span class="file-upload-label" id="labelAffiche">🖼️ Cliquez pour choisir l'affiche</span>
+                </div>
+            </div>
+        </div>
 
-        <button id="btnCreerEvent">Créer l'événement et générer les liens</button>
+        <button id="btnCreerEvent">🚀 Créer l'événement et générer les liens</button>
 
         <!-- Zone d'affichage des liens générés -->
         <div id="resultatLiens" class="links-box">
-            <h3>Événement créé avec succès ! 🎉</h3>
-            <p><strong>1. Lien Public (Achat pour les participants) :</strong><br>
+            <h3>🎉 Événement créé avec succès !</h3>
+            
+            <div class="link-card">
+                <strong>1. Lien Public (Achat pour les participants)</strong>
                 <a id="lienPublic" href="#" target="_blank"></a>
-            </p>
-            <p><strong>2. Lien Organisateur (Validations & Scanner) :</strong><br>
+            </div>
+
+            <div class="link-card">
+                <strong>2. Lien Organisateur (Validations & Scanner)</strong>
                 <a id="lienAdmin" href="#" target="_blank"></a>
-            </p>
+            </div>
         </div>
     </div>
+
+    <footer class="creator-footer">
+        Plateforme propulsée par <strong>DIELTIX</strong>
+    </footer>
 
     <!-- Scripts Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase.js"></script>
     <script>
+        // Fonction pour afficher le nom des fichiers sélectionnés
+        function updateFileName(input, labelId) {
+            const label = document.getElementById(labelId);
+            if (input.files && input.files[0]) {
+                label.innerHTML = `<span style="color: #34d399; font-weight: 700;">✅ ${input.files[0].name}</span>`;
+            }
+        }
+
         document.getElementById("btnCreerEvent").onclick = async function() {
             let titre = document.getElementById("titreEvent").value.trim();
             let date = document.getElementById("dateEvent").value.trim();
@@ -117,7 +389,7 @@
                             beneficiaire_nom: beneficiaireNom,
                             beneficiaire_infos: beneficiaireInfos,
                             affiche_url: afficheUrl,
-                            rib_image_url: ribImageUrl // <-- On enregistre le lien du RIB
+                            rib_image_url: ribImageUrl
                         }
                     ])
                     .select();
@@ -143,7 +415,7 @@
                 document.getElementById("lienAdmin").textContent = urlOrganisateur;
 
                 document.getElementById("resultatLiens").style.display = "block";
-                btn.textContent = "Événement créé avec succès !";
+                btn.textContent = "Événement créé avec succès ! 🎉";
 
             } catch (err) {
                 console.error(err);

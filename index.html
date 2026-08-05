@@ -4,48 +4,364 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Achat de Billet</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Achat de Billet | DIELTIX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-    body { font-family: Arial, sans-serif; background: #f4f7f6; padding: 20px; margin: 0; }
-    .container { max-width: 600px; margin: 0 auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    
-    #detailsEvenement img:first-of-type { 
-        width: 100%; 
-        max-height: 350px; 
-        object-fit: contain; 
-        border-radius: 8px; 
-        margin-bottom: 15px; 
-        background: white; 
-    }
+        :root {
+            --primary: #6366f1;
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --primary-glow: rgba(99, 102, 241, 0.4);
+            --bg-main: #0b0f19;
+            --card-bg: rgba(23, 31, 48, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --input-bg: rgba(15, 23, 42, 0.6);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --radius-lg: 24px;
+            --radius-md: 14px;
+        }
 
-    .payment-box { background: #e9ecef; padding: 15px; border-radius: 5px; margin: 20px 0; text-align: center; }
-    
-    .rib-image { 
-        max-width: 250px; 
-        width: 100%; 
-        height: auto; 
-        border-radius: 5px; 
-        margin-top: 10px; 
-        display: block; 
-        margin-left: auto; 
-        margin-right: auto; 
-        border: 1px solid #ccc;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    input { width: 100%; padding: 10px; margin: 10px 0 20px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-    button { background: #007bff; color: white; border: none; padding: 12px; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer; }
-    button:hover { background: #0056b3; }
-</style>
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg-main);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.15) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main); 
+            padding: 20px 20px 60px 20px; 
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* En-tête */
+        .top-navbar {
+            max-width: 1100px;
+            margin: 10px auto 35px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-title {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: #ffffff;
+        }
+
+        .brand-title span {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .secure-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.1);
+            color: #34d399;
+            border: 1px solid rgba(52, 211, 153, 0.25);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 700;
+            backdrop-filter: blur(8px);
+        }
+
+        /* Container & Layout 2 Colonnes */
+        .main-wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1.15fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Cartes en Glassmorphism */
+        .event-card, .form-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        /* --- CORRECTION AFFICHE COMMENCE ICI --- */
+        .event-poster-wrapper {
+            width: 100%;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            background: rgba(15, 23, 42, 0.9);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            padding: 10px; /* Petit espace interne esthétique */
+        }
+
+        .event-poster-wrapper img {
+            width: 100%;
+            height: auto;
+            max-height: 520px; /* Hauteur max augmentée pour bien voir l'affiche */
+            object-fit: contain; /* GARANTIT QUE L'AFFICHE N'EST JAMAIS COUPÉE */
+            border-radius: 8px;
+        }
+        /* --- CORRECTION AFFICHE FINI ICI --- */
+
+        .event-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: #ffffff;
+            margin: 0 0 16px 0;
+            letter-spacing: -0.5px;
+            line-height: 1.3;
+        }
+
+        .event-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 15px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .price-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: var(--primary-gradient);
+            color: #ffffff;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 18px;
+            box-shadow: 0 8px 20px var(--primary-glow);
+        }
+
+        /* Zone Paiement (Droite) */
+        .payment-box {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            border-radius: var(--radius-md);
+            padding: 22px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .payment-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--primary-gradient);
+        }
+
+        .payment-box h3 {
+            margin: 0 0 14px 0;
+            font-size: 14px;
+            font-weight: 800;
+            color: #818cf8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .payment-box p {
+            font-size: 14px;
+            color: #e2e8f0;
+            margin-bottom: 6px;
+        }
+
+        .payment-box p strong {
+            color: #94a3b8;
+        }
+
+        .rib-image { 
+            max-width: 100%; 
+            max-height: 220px; 
+            object-fit: contain; 
+            border-radius: 12px; 
+            margin: 18px auto 0 auto;
+            display: block; 
+            border: 1px solid var(--card-border);
+            background: #ffffff;
+            padding: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-section-title {
+            font-size: 17px;
+            font-weight: 800;
+            margin: 0 0 20px 0;
+            color: #ffffff;
+            letter-spacing: -0.3px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: #c7d2fe;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="text"],
+        input[type="tel"],
+        input[type="file"] {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 14px;
+            font-family: inherit;
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-md);
+            outline: none;
+            background: var(--input-bg);
+            color: #ffffff;
+            transition: all 0.25s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="tel"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-glow);
+            background: rgba(15, 23, 42, 0.9);
+        }
+
+        input[type="file"] {
+            padding: 10px;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        input[type="file"]::file-selector-button {
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            color: #c7d2fe;
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 12px;
+            transition: all 0.2s ease;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            background: var(--primary);
+            color: #ffffff;
+        }
+
+        button#btnValiderAchat { 
+            background: var(--primary-gradient); 
+            color: white; 
+            border: none; 
+            padding: 16px 24px; 
+            width: 100%; 
+            border-radius: var(--radius-md); 
+            font-size: 16px;
+            font-weight: 800; 
+            cursor: pointer; 
+            transition: all 0.25s ease;
+            box-shadow: 0 10px 25px var(--primary-glow);
+            margin-top: 10px;
+            letter-spacing: 0.3px;
+        }
+
+        button#btnValiderAchat:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.5);
+        }
+
+        button#btnValiderAchat:disabled {
+            background: #475569;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Pied de page DIELTIX */
+        .creator-footer {
+            max-width: 1100px;
+            margin: 50px auto 0 auto;
+            padding-top: 25px;
+            border-top: 1px solid var(--card-border);
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .creator-footer a {
+            color: #818cf8;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+
+        .creator-footer a:hover {
+            color: #ffffff;
+            text-decoration: underline;
+        }
+    </style>
 </head>
 
 <body>
 
-    <div class="container">
+    <!-- Barre supérieure -->
+    <div class="top-navbar">
+        <div class="brand-title">DIEL<span>TIX</span></div>
+        <span class="secure-badge">🔒 Billetterie fiable & Sécurisée</span>
+    </div>
+
+    <!-- Conteneur Principal -->
+    <div class="main-wrapper">
         <div id="detailsEvenement">
-            <p>Chargement de l'événement...</p>
+            <div class="event-card" style="text-align: center; padding: 60px 20px;">
+                <p style="color: var(--text-muted); font-size: 16px;">⏳ Chargement des informations de l'événement...</p>
+            </div>
         </div>
     </div>
+
+    <!-- Pied de page officiel DIELTIX -->
+    <footer class="creator-footer">
+        <p style="margin-bottom: 6px; font-weight: 600;">— Vos événements, notre priorité —</p>
+        <p style="margin: 0;">
+            Plateforme propulsée par <strong>DIELTIX</strong> | Développée par <strong>Abdiel KABRE</strong><br>
+            📧 <a href="mailto:abdielkabre2@gmail.com">abdielkabre2@gmail.com</a> | 
+            📞 <a href="https://wa.me/22653107345" target="_blank">+226 53 10 73 45</a> / <a href="https://wa.me/212770967646" target="_blank">+212 770-967646</a>
+        </p>
+    </footer>
 
     <!-- Scripts Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -59,7 +375,7 @@
             console.log("ID d'événement récupéré de l'URL :", eventId);
 
             if (!eventId) {
-                container.innerHTML = "<h2>Erreur</h2><p>Aucun événement spécifié dans le lien.</p>";
+                container.innerHTML = "<div class='event-card' style='text-align:center;'><h2>Erreur</h2><p style='color: var(--text-muted); margin-top: 10px;'>Aucun événement spécifié dans le lien.</p></div>";
                 return;
             }
 
@@ -70,35 +386,57 @@
                 .single();
 
             if (error || !ev) {
-                container.innerHTML = "<h2>Oups</h2><p>Événement introuvable.</p>";
+                container.innerHTML = "<div class='event-card' style='text-align:center;'><h2>Événement introuvable</h2><p style='color: var(--text-muted); margin-top: 10px;'>Ce lien est expiré ou invalide.</p></div>";
                 return;
             }
 
+            // Injection du HTML structuré
             container.innerHTML = `
-                <img src="${ev.affiche_url}" alt="Affiche">
-                <h1>${ev.titre}</h1>
-                <p>📅 Date : ${ev.date} à ${ev.heure}</p>
-                <p>📍 Lieu : ${ev.lieu}</p>
-                <p>💰 <strong>Prix du billet : ${ev.prix} </strong></p>
+                <div class="grid-container">
+                    
+                    <!-- Colonne Gauche : Détails de l'événement -->
+                    <div class="event-card">
+                        <div class="event-poster-wrapper">
+                            <img src="${ev.affiche_url}" alt="Affiche" onerror="this.parentElement.innerHTML='<p style=\\'color:#64748b;padding:30px;\\'>🖼️ Affiche non disponible</p>'">
+                        </div>
+                        <h1 class="event-title">${ev.titre}</h1>
+                        <div class="event-meta-item">📅 <span><strong>Date :</strong> ${ev.date} à ${ev.heure}</span></div>
+                        <div class="event-meta-item">📍 <span><strong>Lieu :</strong> ${ev.lieu}</span></div>
+                        <div>
+                            <span class="price-badge">💳 Billet : ${ev.prix}</span>
+                        </div>
+                    </div>
 
-                <div class="payment-box">
-                    <h3>Informations de paiement</h3>
-                    <p><strong>Bénéficiaire :</strong> ${ev.beneficiaire_nom}</p>
-                    <p><strong>Coordonnées :</strong> ${ev.beneficiaire_infos}</p>
-                    ${ev.rib_image_url ? `<img src="${ev.rib_image_url}" alt="RIB ou QR Code" class="rib-image">` : ''}
+                    <!-- Colonne Droite : Formulaire & Consignes de paiement -->
+                    <div class="form-card">
+                        <div class="payment-box">
+                            <h3>📲 Étape 1 : Effectuer le paiement</h3>
+                            <p><strong>Bénéficiaire :</strong> ${ev.beneficiaire_nom}</p>
+                            <p><strong>Coordonnées :</strong> ${ev.beneficiaire_infos}</p>
+                            ${ev.rib_image_url ? `<img src="${ev.rib_image_url}" alt="RIB ou QR Code" class="rib-image">` : ''}
+                        </div>
+
+                        <h3 class="form-section-title">📩 Étape 2 : Confirmez votre achat</h3>
+                        
+                        <div class="form-group">
+                            <label for="nomParticipant">Nom et Prénom :</label>
+                            <input type="text" id="nomParticipant" placeholder="ex: Jean Ouédraogo">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="telParticipant">Numéro WhatsApp :</label>
+                            <input type="tel" id="telParticipant" placeholder="ex: +226 ... / +212 ...">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="preuvePaiement">Preuve de paiement (Capture / Reçu) :</label>
+                            <input type="file" id="preuvePaiement" accept="image/*">
+                        </div>
+
+                        <button id="btnValiderAchat"> Valider mon paiement & obtenir mon billet</button>
+                    </div>
+
                 </div>
-
-                <h3>Remplissez les informations pour confirmer votre paiement</h3>
-                <label>Votre Nom et Prénom :</label>
-                <input type="text" id="nomParticipant" placeholder="ex: Jean Ouédraogo">
-
-                <label>Votre contact WhatsApp :</label>
-                <input type="tel" id="telParticipant" placeholder="ex: +226 ...">
-
-                <label>Capture du paiement :</label>
-                <input type="file" id="preuvePaiement" accept="image/*">
-
-                <button id="btnValiderAchat">J'ai effectué le paiement</button>
             `;
 
             document.getElementById("btnValiderAchat").onclick = async function() {
@@ -113,7 +451,7 @@
 
                 let btn = document.getElementById("btnValiderAchat");
                 btn.disabled = true;
-                btn.textContent = "Envoi en cours...";
+                btn.textContent = "⏳ Validation et envoi en cours...";
 
                 try {
                     let fileExt = fichierPreuve.name.split('.').pop();
@@ -127,7 +465,7 @@
                     if (uploadError) {
                         alert("Erreur lors de l'envoi de la preuve : " + uploadError.message);
                         btn.disabled = false;
-                        btn.textContent = "J'ai effectué le paiement";
+                        btn.textContent = "🚀 Valider mon achat & obtenir mon billet";
                         return;
                     }
 
@@ -146,7 +484,7 @@
                                 nom_participant: nom,
                                 telephone: tel,
                                 preuve_url: preuveUrl,
-                                statut: "attente", // <-- Corrigé ici ("attente" au lieu de "en_attente")
+                                statut: "attente",
                                 utilise: false
                             }
                         ])
@@ -155,7 +493,7 @@
                     if (insertError) {
                         alert("Erreur lors de l'enregistrement du billet : " + insertError.message);
                         btn.disabled = false;
-                        btn.textContent = "J'ai effectué le paiement";
+                        btn.textContent = "🚀 Valider mon achat & obtenir mon billet";
                         return;
                     }
 
@@ -168,7 +506,7 @@
                     alert("Une erreur inattendue est survenue.");
                     let btn = document.getElementById("btnValiderAchat");
                     btn.disabled = false;
-                    btn.textContent = "J'ai effectué le paiement";
+                    btn.textContent = "🚀 Valider mon achat & obtenir mon billet";
                 }
             };
         }
