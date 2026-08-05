@@ -106,7 +106,6 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
 
-        /* --- CORRECTION AFFICHE COMMENCE ICI --- */
         .event-poster-wrapper {
             width: 100%;
             border-radius: var(--radius-md);
@@ -118,17 +117,16 @@
             justify-content: center;
             border: 1px solid var(--card-border);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            padding: 10px; /* Petit espace interne esthétique */
+            padding: 10px;
         }
 
         .event-poster-wrapper img {
             width: 100%;
             height: auto;
-            max-height: 520px; /* Hauteur max augmentée pour bien voir l'affiche */
-            object-fit: contain; /* GARANTIT QUE L'AFFICHE N'EST JAMAIS COUPÉE */
+            max-height: 520px;
+            object-fit: contain;
             border-radius: 8px;
         }
-        /* --- CORRECTION AFFICHE FINI ICI --- */
 
         .event-title {
             font-size: 26px;
@@ -372,8 +370,6 @@
             let eventId = urlParams.get("event");
             let container = document.getElementById("detailsEvenement");
 
-            console.log("ID d'événement récupéré de l'URL :", eventId);
-
             if (!eventId) {
                 container.innerHTML = "<div class='event-card' style='text-align:center;'><h2>Erreur</h2><p style='color: var(--text-muted); margin-top: 10px;'>Aucun événement spécifié dans le lien.</p></div>";
                 return;
@@ -397,7 +393,7 @@
                     <!-- Colonne Gauche : Détails de l'événement -->
                     <div class="event-card">
                         <div class="event-poster-wrapper">
-                            <img src="${ev.affiche_url}" alt="Affiche" onerror="this.parentElement.innerHTML='<p style=\\'color:#64748b;padding:30px;\\'>🖼️ Affiche non disponible</p>'">
+                            <img src="${ev.affiche_url || ''}" alt="Affiche" onerror="this.parentElement.innerHTML='<p style=\\'color:#64748b;padding:30px;\\'>🖼️ Affiche non disponible</p>'">
                         </div>
                         <h1 class="event-title">${ev.titre}</h1>
                         <div class="event-meta-item">📅 <span><strong>Date :</strong> ${ev.date} à ${ev.heure}</span></div>
@@ -411,8 +407,8 @@
                     <div class="form-card">
                         <div class="payment-box">
                             <h3>📲 Étape 1 : Effectuer le paiement</h3>
-                            <p><strong>Bénéficiaire :</strong> ${ev.beneficiaire_nom}</p>
-                            <p><strong>Coordonnées :</strong> ${ev.beneficiaire_infos}</p>
+                            <p><strong>Bénéficiaire :</strong> ${ev.beneficiaire_nom || 'Non spécifié'}</p>
+                            <p><strong>Coordonnées :</strong> ${ev.beneficiaire_infos || 'Non spécifiées'}</p>
                             ${ev.rib_image_url ? `<img src="${ev.rib_image_url}" alt="RIB ou QR Code" class="rib-image">` : ''}
                         </div>
 
@@ -433,7 +429,7 @@
                             <input type="file" id="preuvePaiement" accept="image/*">
                         </div>
 
-                        <button id="btnValiderAchat"> Valider mon paiement & obtenir mon billet</button>
+                        <button id="btnValiderAchat">🚀 Valider mon achat & obtenir mon billet</button>
                     </div>
 
                 </div>
@@ -454,13 +450,15 @@
                 btn.textContent = "⏳ Validation et envoi en cours...";
 
                 try {
-                    let fileExt = fichierPreuve.name.split('.').pop();
-                    let fileName = `preuve-${Date.now()}.${fileExt}`;
+                    // Nettoyage de l'extension et création d'un nom unique sécurisé
+                    let fileExt = fichierPreuve.name.split('.').pop().toLowerCase();
+                    let fileName = `preuve-${Date.now()}-${Math.floor(Math.random() * 1000)}.${fileExt}`;
 
+                    // Upload dans le bucket Supabase
                     const { error: uploadError } = await window.supabaseClient
                         .storage
                         .from("preuves")
-                        .upload(fileName, fichierPreuve);
+                        .upload(fileName, fichierPreuve, { cacheControl: '3600', upsert: false });
 
                     if (uploadError) {
                         alert("Erreur lors de l'envoi de la preuve : " + uploadError.message);
@@ -469,6 +467,7 @@
                         return;
                     }
 
+                    // Récupération de l'URL publique
                     const { data: urlData } = window.supabaseClient
                         .storage
                         .from("preuves")
@@ -476,6 +475,7 @@
 
                     let preuveUrl = urlData.publicUrl;
 
+                    // Enregistrement de la commande dans la base de données
                     const { data: insertedBillet, error: insertError } = await window.supabaseClient
                         .from("billets")
                         .insert([
@@ -502,9 +502,8 @@
                         window.location.href = `billet.html?id=${idBilletCree}`;
                     }
                 } catch (err) {
-                    console.error(err);
-                    alert("Une erreur inattendue est survenue.");
-                    let btn = document.getElementById("btnValiderAchat");
+                    console.error("Erreur inattendue :", err);
+                    alert("Une erreur inattendue est survenue lors du traitement.");
                     btn.disabled = false;
                     btn.textContent = "🚀 Valider mon achat & obtenir mon billet";
                 }
