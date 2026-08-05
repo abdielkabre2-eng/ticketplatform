@@ -437,16 +437,15 @@
                     </div>
                 `;
             } else {
-                // On vérifie d'abord rib_image, puis beneficiaire_infos si l'image y a été stockée
-                let infosRib = ev.rib_image || ev.beneficiaire_infos || "";
+                // Gestion de l'affichage du texte des consignes / instructions
+                let infosCoordonnees = ev.beneficiaire_infos || "";
+                
+                // Gestion de l'affichage de l'image du RIB / QR Code stockée dans Supabase (rib_image_url)
+                let ribImageUrl = ev.rib_image_url || ev.rib_image || "";
                 let affichageRibHtml = "";
                 
-                if (infosRib.startsWith("http://") || infosRib.startsWith("https://")) {
-                    affichageRibHtml = `<img src="${infosRib}" alt="Image RIB / QR Code" style="max-width: 100%; max-height: 240px; display: block; margin: 12px auto 0 auto; border-radius: 12px; border: 1px solid rgba(217, 119, 6, 0.3); box-shadow: 0 4px 15px rgba(0,0,0,0.06); object-fit: contain;">`;
-                } else if (infosRib) {
-                    affichageRibHtml = `<p style="margin-top: 6px; font-weight: 600; color: #1e293b;">${infosRib}</p>`;
-                } else {
-                    affichageRibHtml = `<p style="margin-top: 6px; color: #64748b; font-style: italic;">Aucun visuel de RIB fourni.</p>`;
+                if (ribImageUrl && (ribImageUrl.startsWith("http://") || ribImageUrl.startsWith("https://"))) {
+                    affichageRibHtml = `<div style="margin-top: 12px; text-align: center;"><img src="${ribImageUrl}" alt="RIB ou QR Code" style="max-width: 100%; max-height: 220px; border-radius: 10px; border: 1px solid rgba(217, 119, 6, 0.25); box-shadow: 0 4px 12px rgba(0,0,0,0.05); object-fit: contain;"></div>`;
                 }
 
                 contenuColonneDroite = `
@@ -455,6 +454,7 @@
                             <h3>📱 ÉTAPE 1 : EFFECTUER LE PAIEMENT</h3>
                             <p><strong>Bénéficiaire :</strong> <span>${ev.beneficiaire_nom || 'Non renseigné'}</span></p>
                             <p style="margin-top: 8px;"><strong>Instructions / Coordonnées :</strong></p>
+                            <p style="margin-top: 2px; font-weight: 600; color: #1e293b;">${infosCoordonnees || 'Aucune consigne particuliere.'}</p>
                             ${affichageRibHtml}
                         </div>
                         

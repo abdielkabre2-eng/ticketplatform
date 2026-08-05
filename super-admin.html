@@ -247,24 +247,32 @@
                     <label>Lieu</label>
                     <input type="text" id="lieu" required placeholder="Ex: Canal Olympia, Ouagadougou">
                 </div>
+                <div class="form-group">
+                    <label>Prix du billet</label>
+                    <input type="number" id="prix" required placeholder="Ex: 5000 (sans unité fixe)">
+                </div>
                 
                 <!-- CHAMP FICHIER : Affiche de l'événement -->
                 <div class="form-group">
                     <label>🖼️ Affiche de l'événement (Image)</label>
                     <input type="file" id="fileAffiche" accept="image/*" required>
-                    <small style="color: var(--text-muted); font-size: 11px;">Sélectionnez l'affiche envoyée par l'organisateur.</small>
                 </div>
 
                 <div class="form-group">
                     <label>Nom du Bénéficiaire (Paiement)</label>
                     <input type="text" id="beneficiaire_nom" required placeholder="Ex: Jean KABRE">
                 </div>
-                
-                <!-- CHAMP FICHIER : Image du RIB / QR Code du Bénéficiaire -->
+
                 <div class="form-group">
-                    <label>💳 Image du RIB / QR Code Mobile Money (Paiement)</label>
+                    <label>Coordonnées / Téléphone du Bénéficiaire</label>
+                    <input type="text" id="beneficiaire_infos" required placeholder="Ex: +226 53 10 73 45 / Orange Money">
+                    <small style="color: var(--text-muted); font-size: 11px;">Ce texte s'affichera proprement pour contacter l'organisateur.</small>
+                </div>
+                
+                <!-- CHAMP FICHIER : Image du RIB / QR Code -->
+                <div class="form-group">
+                    <label>💳 Image du RIB / QR Code (Paiement)</label>
                     <input type="file" id="fileRib" accept="image/*" required>
-                    <small style="color: var(--text-muted); font-size: 11px;">Sélectionnez la capture ou l'image du compte où l'acheteur doit payer.</small>
                 </div>
 
                 <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
@@ -346,7 +354,8 @@
                     <h3 class="event-title">${ev.titre}</h3>
                     <p class="event-info">📅 ${ev.date || 'Non précisée'} à ${ev.heure || ''}</p>
                     <p class="event-info">📍 ${ev.lieu || 'Non précisé'}</p>
-                    <p class="event-info">💳 ${ev.beneficiaire_nom || ''}</p>
+                    <p class="event-info">💵 Prix : ${ev.prix !== null && ev.prix !== undefined ? ev.prix : 'Gratuit'}</p>
+                    <p class="event-info">💳 Bénéficiaire : ${ev.beneficiaire_nom || ''}</p>
                 </div>
             `).join("");
 
@@ -384,18 +393,16 @@
         alert("Lien copié dans le presse-papier !");
     }
 
-    // Fonction d'upload d'image vers Supabase Storage
     async function uploaderFichierSupabase(file, dossier) {
         const fileName = `${dossier}/${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
         const { data, error } = await window.supabaseClient.storage
-            .from('preuves') // Utilise ton bucket existant ou un bucket public de stockage
+            .from('preuves')
             .upload(fileName, file);
 
         if (error) {
             throw new Error("Erreur d'upload : " + error.message);
         }
 
-        // Récupérer l'URL publique de l'image
         const { data: publicUrlData } = window.supabaseClient.storage
             .from('preuves')
             .getPublicUrl(fileName);
@@ -415,13 +422,12 @@
             const fileRibInput = document.getElementById("fileRib").files[0];
 
             if (!fileAfficheInput || !fileRibInput) {
-                alert("Veuillez sélectionner l'affiche et l'image du RIB.");
+                alert("Veuillez sélectionner l'affiche et l'image du RIB/QR code.");
                 btnSubmit.disabled = false;
                 btnSubmit.textContent = "Enregistrer";
                 return;
             }
 
-            // Upload de l'affiche et du RIB vers Supabase Storage
             const afficheUrl = await uploaderFichierSupabase(fileAfficheInput, 'affiches');
             const ribUrl = await uploaderFichierSupabase(fileRibInput, 'ribs');
 
@@ -430,9 +436,11 @@
                 date: document.getElementById("date").value,
                 heure: document.getElementById("heure").value,
                 lieu: document.getElementById("lieu").value,
+                prix: parseFloat(document.getElementById("prix").value) || 0,
                 affiche_url: afficheUrl,
                 beneficiaire_nom: document.getElementById("beneficiaire_nom").value,
-                beneficiaire_infos: ribUrl // On stocke l'URL de l'image du RIB ici
+                beneficiaire_infos: document.getElementById("beneficiaire_infos").value,
+                rib_image_url: ribUrl
             };
 
             const { error } = await window.supabaseClient
