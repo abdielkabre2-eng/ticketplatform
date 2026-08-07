@@ -730,7 +730,7 @@
         <div id="section-paiements" class="section-content active">
             <h2>Gestion des paiements</h2>
             <p>Examinez et validez les captures d'écran des paiements reçus.
-                Le participant recevra son billet après que vous ayez appuyer sur "J'ai reçu"
+                Le participant recevra son billet après que vous ayez appuyer sur "'ai reçu"
             </p>
             <div id="listePaiements">
                 <p>Chargement des demandes...</p>
@@ -1031,149 +1031,152 @@ async function chargerEspaceOrganisateur() {
 
         let derniersBilletsScannes = {};
 
-        async function traiterVerificationBillet(codeScanne) {
-            let resultatDiv = document.getElementById("resultatScan");
-            let code = codeScanne ? codeScanne.trim() : "";
+async function traiterVerificationBillet(codeScanne) {
+    let resultatDiv = document.getElementById("resultatScan");
+    let code = codeScanne ? codeScanne.trim() : "";
 
-            if (!code) {
-                resultatDiv.style.background = "#fef3c7";
-                resultatDiv.style.color = "#92400e";
-                resultatDiv.textContent = "⚠️ Veuillez entrer ou scanner un code de billet.";
-                return;
-            }
+    if (!code) {
+        resultatDiv.style.background = "#fef3c7";
+        resultatDiv.style.color = "#92400e";
+        resultatDiv.textContent = "⚠️ Veuillez entrer ou scanner un code de billet.";
+        return;
+    }
 
-            let chiffresTrouves = code.match(/\d+/g);
-            let idBilletExtrait = chiffresTrouves ? chiffresTrouves[chiffresTrouves.length - 1] : code;
+    let chiffresTrouves = code.match(/\d+/g);
+    let idBilletExtrait = chiffresTrouves ? chiffresTrouves[chiffresTrouves.length - 1] : code;
 
-            const { data: billets, error } = await window.supabaseClient
-                .from("billets")
-                .select("*")
-                .eq("evenement_id", eventId);
+    const { data: billets, error } = await window.supabaseClient
+        .from("billets")
+        .select("*")
+        .eq("evenement_id", eventId);
 
-            if (error || !billets) {
-                resultatDiv.style.background = "#fee2e2";
-                resultatDiv.style.color = "#991b1b";
-                resultatDiv.textContent = "❌ Erreur de connexion avec la base de données.";
-                return;
-            }
+    if (error || !billets) {
+        resultatDiv.style.background = "#fee2e2";
+        resultatDiv.style.color = "#991b1b";
+        resultatDiv.textContent = "❌ Erreur de connexion avec la base de données.";
+        return;
+    }
 
-            let b = billets.find(item => 
-                item.id.toString() === idBilletExtrait || 
-                item.id.toString() === code ||
-                (item.numero_billet && code.includes(item.numero_billet)) || 
-                (item.qr_code && code.includes(item.qr_code))
-            );
+    let b = billets.find(item => 
+        item.id.toString() === idBilletExtrait || 
+        item.id.toString() === code ||
+        (item.numero_billet && code.includes(item.numero_billet)) || 
+        (item.qr_code && code.includes(item.qr_code))
+    );
 
-            if (!b) {
-                resultatDiv.style.background = "#fee2e2";
-                resultatDiv.style.color = "#991b1b";
-                resultatDiv.textContent = `❌ Billet introuvable pour ce code (${code}).`;
-                return;
-            }
+    if (!b) {
+        resultatDiv.style.background = "#fee2e2";
+        resultatDiv.style.color = "#991b1b";
+        resultatDiv.textContent = `❌ Billet introuvable pour ce code (${code}).`;
+        return;
+    }
 
-            if (b.statut !== "confirme") {
-                resultatDiv.style.background = "#fef3c7";
-                resultatDiv.style.color = "#92400e";
-                resultatDiv.textContent = `⚠️ Entrée refusée : Ce billet n'est pas confirmé (Statut : ${b.statut}).`;
-                return;
-            }
+    if (b.statut !== "confirme") {
+        resultatDiv.style.background = "#fef3c7";
+        resultatDiv.style.color = "#92400e";
+        resultatDiv.textContent = `⚠️ Entrée refusée : Ce billet n'est pas confirmé (Statut : ${b.statut}).`;
+        return;
+    }
 
-            let maintenant = Date.now();
-            if (derniersBilletsScannes[b.id] && (maintenant - derniersBilletsScannes[b.id] < 30000)) {
-                resultatDiv.style.background = "#d1fae5";
-                resultatDiv.style.color = "#065f46";
-                resultatDiv.innerHTML = `✅ <strong>ENTRÉE VALIDE (Déjà scanné)</strong><br>${b.nom_participant || 'N/A'}`;
-                return;
-            }
+    let maintenant = Date.now();
+    if (derniersBilletsScannes[b.id] && (maintenant - derniersBilletsScannes[b.id] < 30000)) {
+        resultatDiv.style.background = "#d1fae5";
+        resultatDiv.style.color = "#065f46";
+        resultatDiv.innerHTML = `✅ <strong>ENTRÉE VALIDE (Déjà scanné)</strong><br>${b.nom_participant || 'N/A'}`;
+        return;
+    }
 
-            if (b.utilise === true || b.utilise === "true") {
-                resultatDiv.style.background = "#fee2e2";
-                resultatDiv.style.color = "#991b1b";
-                resultatDiv.innerHTML = `🚨 <strong>BILLET DÉJÀ UTILISÉ !</strong><br>${b.nom_participant || 'N/A'}`;
-                return;
-            }
+    if (b.utilise === true || b.utilise === "true") {
+        resultatDiv.style.background = "#fee2e2";
+        resultatDiv.style.color = "#991b1b";
+        resultatDiv.innerHTML = `🚨 <strong>BILLET DÉJÀ UTILISÉ !</strong><br>${b.nom_participant || 'N/A'}`;
+        return;
+    }
 
-            const { error: updateError } = await window.supabaseClient
-                .from("billets")
-                .update({ utilise: true })
-                .eq("id", b.id);
+    const { error: updateError } = await window.supabaseClient
+        .from("billets")
+        .update({ utilise: true })
+        .eq("id", b.id);
 
-            if (updateError) {
-                result_div.style.background = "#fee2e2";
-                resultatDiv.style.color = "#991b1b";
-                resultatDiv.textContent = "❌ Erreur lors de la validation.";
-                return;
-            }
+    if (updateError) {
+        resultatDiv.style.background = "#fee2e2"; // Correction de la variable ici
+        resultatDiv.style.color = "#991b1b";
+        resultatDiv.textContent = "❌ Erreur lors de la validation.";
+        return;
+    }
 
-            derniersBilletsScannes[b.id] = maintenant;
-            resultatDiv.style.background = "#d1fae5";
-            resultatDiv.style.color = "#065f46";
-            resultatDiv.innerHTML = `✅ <strong>ENTRÉE VALIDE</strong><br>Bienvenue à <strong>${b.nom_participant || 'N/A'}</strong>`;
+    derniersBilletsScannes[b.id] = maintenant;
+    resultatDiv.style.background = "#d1fae5";
+    resultatDiv.style.color = "#065f46";
+    resultatDiv.innerHTML = `✅ <strong>ENTRÉE VALIDE</strong><br>Bienvenue à <strong>${b.nom_participant || 'N/A'}</strong>`;
+}
+
+function verifierBilletManuel() {
+    let code = document.getElementById("codeBilletInput").value;
+    traiterVerificationBillet(code);
+    document.getElementById("codeBilletInput").value = "";
+}
+
+function changerOnglet(nomOnglet, buttonElement) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
+
+    if (buttonElement) buttonElement.classList.add('active');
+
+    if (nomOnglet === 'paiements') {
+        document.getElementById('section-paiements').classList.add('active');
+        if (html5QrCode && html5QrCode.isScanning) {
+            html5QrCode.stop().catch(err => console.log("Arrêt caméra :", err));
         }
-
-        function verifierBilletManuel() {
-            let code = document.getElementById("codeBilletInput").value;
-            traiterVerificationBillet(code);
-            document.getElementById("codeBilletInput").value = "";
+    } else if (nomOnglet === 'validees') {
+        document.getElementById('section-validees').classList.add('active');
+        if (html5QrCode && html5QrCode.isScanning) {
+            html5QrCode.stop().catch(err => console.log("Arrêt caméra :", err));
         }
+    } else {
+        document.getElementById('section-scanner').classList.add('active');
+        if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
+        html5QrCode.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: 250 },
+            (decodedText) => traiterVerificationBillet(decodedText),
+            (errorMessage) => {}
+        ).catch(err => console.log("Caméra non dispo :", err));
+    }
+}
 
-        function changerOnglet(nomOnglet, buttonElement) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
+async function toggleVentes() {
+    statutVentesFermees = !statutVentesFermees;
+    const { error } = await window.supabaseClient
+        .from("evenements")
+        .update({ ventes_fermees: statutVentesFermees })
+        .eq("id", eventId);
 
-            if (buttonElement) buttonElement.classList.add('active');
+    if (error) {
+        alert("Erreur : " + error.message);
+        statutVentesFermees = !statutVentesFermees;
+        return;
+    }
+    mettreAJourBoutonVentes();
+}
 
-            if (nomOnglet === 'paiements') {
-                document.getElementById('section-paiements').classList.add('active');
-                if (html5QrCode && html5QrCode.isScanning) html5QrCode.stop();
-            } else if (nomOnglet === 'validees') {
-                document.getElementById('section-validees').classList.add('active');
-                if (html5QrCode && html5QrCode.isScanning) html5QrCode.stop();
-            } else {
-                document.getElementById('section-scanner').classList.add('active');
-                if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
-                html5QrCode.start(
-                    { facingMode: "environment" },
-                    { fps: 10, qrbox: 250 },
-                    (decodedText) => traiterVerificationBillet(decodedText),
-                    (errorMessage) => {}
-                ).catch(err => console.log("Caméra non dispo :", err));
-            }
-        }
+function mettreAJourBoutonVentes() {
+    let label = document.getElementById("labelStatutVentes");
+    let btn = document.getElementById("btnToggleVentes");
+    if (!label || !btn) return;
 
-        async function toggleVentes() {
-            statutVentesFermees = !statutVentesFermees;
-            const { error } = await window.supabaseClient
-                .from("evenements")
-                .update({ ventes_fermees: statutVentesFermees })
-                .eq("id", eventId);
-
-            if (error) {
-                alert("Erreur : " + error.message);
-                statutVentesFermees = !statutVentesFermees;
-                return;
-            }
-            mettreAJourBoutonVentes();
-        }
-
-        function mettreAJourBoutonVentes() {
-            let label = document.getElementById("labelStatutVentes");
-            let btn = document.getElementById("btnToggleVentes");
-            if (!label || !btn) return;
-
-            if (statutVentesFermees) {
-                label.innerHTML = "Vente des billets : <span style='color: #ef4444;'>FERMÉE</span>";
-                btn.textContent = "Ouvrir la vente";
-                btn.style.background = "#10b981";
-                btn.style.color = "#ffffff";
-            } else {
-                label.innerHTML = "Vente des billets : <span style='color: #10b981;'>OUVERTE</span>";
-                btn.textContent = "Fermer la vente";
-                btn.style.background = "#ef4444";
-                btn.style.color = "#ffffff";
-            }
-        }
-    </script>
-      </script>
+    if (statutVentesFermees) {
+        label.innerHTML = "Vente des billets : <span style='color: #ef4444;'>FERMÉE</span>";
+        btn.textContent = "Ouvrir la vente";
+        btn.style.background = "#10b981";
+        btn.style.color = "#ffffff";
+    } else {
+        label.innerHTML = "Vente des billets : <span style='color: #10b981;'>OUVERTE</span>";
+        btn.textContent = "Fermer la vente";
+        btn.style.background = "#ef4444";
+        btn.style.color = "#ffffff";
+    }
+}
+</script>
 </body>
 </html>
