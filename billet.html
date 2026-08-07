@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mon Billet | GoldTix</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -14,36 +14,40 @@
             --danger: #ef4444;
             --success: #10b981;
             
-            /* Fond tout blanc avec une très légère touche dorée */
             --bg-main: #fcfbf9;
             --card-bg: #ffffff;
             --text-main: #0f172a;
             --text-muted: #64748b;
-            --border-color: rgba(217, 119, 6, 0.15);
-            --radius-lg: 24px;
+            --border-color: rgba(217, 119, 6, 0.2);
+            --radius-lg: 20px;
             --radius-md: 12px;
-            --shadow-lg: 0 20px 40px -10px rgba(217, 119, 6, 0.08), 0 10px 25px -5px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 20px 40px -15px rgba(217, 119, 6, 0.15), 0 0 0 1px rgba(245, 158, 11, 0.1);
         }
 
-        * { box-sizing: border-box; }
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent;
+        }
 
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             background-color: var(--bg-main); 
             background-image: 
-                radial-gradient(at 0% 0%, rgba(245, 158, 11, 0.06) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(217, 119, 6, 0.05) 0px, transparent 50%);
+                radial-gradient(at 0% 0%, rgba(245, 158, 11, 0.08) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(217, 119, 6, 0.06) 0px, transparent 50%);
             background-attachment: fixed;
             color: var(--text-main); 
             margin: 0; 
-            padding: 20px 20px 60px 20px; 
+            padding: 12px 12px 40px 12px; 
             line-height: 1.5;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         .top-navbar {
-            max-width: 440px;
-            margin: 0 auto 20px auto;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto 14px auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -52,26 +56,23 @@
         .logo-container {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .site-logo {
-            height: 38px;
+            height: 30px;
             width: auto;
             object-fit: contain;
         }
 
         .brand-title {
-            font-size: 22px;
+            font-size: 18px;
             font-weight: 800;
             letter-spacing: -0.5px;
             line-height: 1;
         }
 
-        .brand-title .text-gold {
-            color: #0f172a;
-        }
-
+        .brand-title .text-gold { color: #0f172a; }
         .brand-title .text-tix {
             background: var(--primary-gradient);
             -webkit-background-clip: text;
@@ -81,18 +82,19 @@
         .secure-badge {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             background: rgba(16, 185, 129, 0.08);
             color: #059669;
             border: 1px solid rgba(16, 185, 129, 0.25);
-            padding: 6px 14px;
+            padding: 4px 10px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 10px;
             font-weight: 700;
         }
 
         .ticket-wrapper {
-            max-width: 440px;
+            width: 100%;
+            max-width: 400px;
             margin: 0 auto;
         }
 
@@ -104,27 +106,76 @@
             position: relative;
             overflow: hidden;
             border: 1px solid var(--border-color);
+            width: 100%;
+        }
+        .ticket::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+            z-index: 10;
+        }
+
+        /* --- SYSTÈME DE DESIGN PAR TIERS --- */
+        .ticket.tier-0 {
+            border: 1px solid rgba(217, 119, 6, 0.2);
+            background: #ffffff;
+        }
+
+        .ticket.tier-1 {
+            border: 2px solid #d97706;
+            background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%);
+            box-shadow: 0 25px 50px -12px rgba(217, 119, 6, 0.25);
+        }
+        .ticket.tier-1::before {
+            height: 6px;
+            background: linear-gradient(90deg, #f59e0b, #b45309);
+        }
+
+        .ticket.tier-2 {
+            border: 2px solid #059669;
+            background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%);
+            box-shadow: 0 25px 50px -12px rgba(5, 150, 105, 0.25);
+        }
+        .ticket.tier-2::before {
+            height: 6px;
+            background: linear-gradient(90deg, #34d399, #059669);
+        }
+
+        .ticket.tier-3 {
+            border: 2px solid #dc2626;
+            background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
+            box-shadow: 0 25px 50px -12px rgba(220, 38, 38, 0.25);
+        }
+        .ticket.tier-3::before {
+            height: 6px;
+            background: linear-gradient(90deg, #f87171, #dc2626);
         }
 
         .ticket-header {
             position: relative;
-            padding: 35px 25px;
+            padding: 35px 16px 25px 16px;
             text-align: center;
             overflow: hidden;
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, rgba(20, 18, 16, 0.92) 0%, rgba(40, 28, 10, 0.90) 100%);
             color: white;
         }
 
-        .header-bg-blur {
+        .ticket-header .event-bg-img {
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-size: cover;
-            background-position: center;
-            filter: brightness(0.45);
-            transform: scale(1);
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        .ticket-header::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.7);
             z-index: 1;
         }
 
@@ -133,167 +184,174 @@
             z-index: 2;
         }
 
-        .ticket-header::after {
-            content: "";
+        .ticket-header .ticket-tear {
             position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
-            height: 10px;
-            background: radial-gradient(circle, transparent, transparent 50%, white 50%, white);
-            background-size: 15px 20px;
+            height: 6px;
+            background: radial-gradient(circle, transparent, transparent 40%, var(--card-bg) 40%, var(--card-bg));
+            background-size: 10px 14px;
             z-index: 3;
         }
 
         .ticket-title {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 800;
-            margin: 12px 0 0 0;
+            margin: 8px 0 0 0;
             letter-spacing: -0.5px;
             color: #ffffff;
             line-height: 1.2;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+            word-break: break-word;
         }
 
         .badge-confirme {
-            background: rgba(255, 255, 255, 0.25);
             backdrop-filter: blur(8px);
-            color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            padding: 6px 16px;
+            padding: 5px 12px;
             border-radius: 30px;
             font-weight: 800;
-            font-size: 11px;
+            font-size: 9px;
             letter-spacing: 1px;
             text-transform: uppercase;
             display: inline-block;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
         }
 
         .ticket-body {
-            padding: 25px;
+            padding: 16px;
             position: relative;
         }
 
         .ticket-details {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 8px;
         }
 
         .ticket-card {
-            background: #f8fafc;
-            border: 1px solid #f1f5f9;
-            padding: 12px 16px;
+            background: #fafaf9;
+            border: 1px solid rgba(217, 119, 6, 0.1);
+            padding: 10px 12px;
             border-radius: var(--radius-md);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 8px;
         }
 
         .ticket-info-label {
             color: var(--text-muted);
             font-weight: 600;
-            font-size: 13px;
+            font-size: 11px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            flex-shrink: 0;
         }
 
         .ticket-info-value {
             color: var(--text-main);
             font-weight: 700;
-            font-size: 14px;
+            font-size: 12px;
             text-align: right;
+            word-break: break-word;
         }
 
         .separator-container {
             position: relative;
-            margin: 20px 0;
+            margin: 14px 0;
         }
 
         .ticket-divider {
             border: none;
-            border-top: 2px dashed #cbd5e1;
+            border-top: 2px dashed #e2e8f0;
             margin: 0;
         }
 
         .notch-left, .notch-right {
             position: absolute;
-            width: 24px;
-            height: 24px;
+            width: 18px;
+            height: 18px;
             background-color: var(--bg-main);
+            border: 1px solid var(--border-color);
             border-radius: 50%;
             top: 50%;
             transform: translateY(-50%);
+            z-index: 5;
         }
-        .notch-left { left: -37px; }
-        .notch-right { right: -37px; }
+        .notch-left { left: -10px; }
+        .notch-right { right: -10px; }
 
         .qr-container-wrapper { 
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding-bottom: 10px;
+            padding-bottom: 4px;
         }
 
         #qrcode {
-            padding: 14px;
+            padding: 10px;
             background: #fff;
             border: 2px dashed var(--primary);
-            border-radius: 18px;
+            border-radius: 14px;
             display: inline-block;
-            box-shadow: 0 8px 20px rgba(217, 119, 6, 0.12);
+            box-shadow: 0 6px 20px rgba(217, 119, 6, 0.12);
+        }
+
+        #qrcode canvas, #qrcode img {
+            display: block;
+            max-width: 100%;
+            height: auto !important;
         }
 
         .info-text { 
-            font-size: 12px; 
+            font-size: 10px; 
             color: var(--text-muted); 
             text-align: center; 
-            margin-top: 14px;
+            margin-top: 10px;
             font-weight: 500;
         }
 
         .thanks-text {
-            font-size: 13px;
+            font-size: 11px;
             font-weight: 700;
             color: var(--primary);
             text-align: center;
-            margin-top: 8px;
+            margin-top: 4px;
             margin-bottom: 0;
-            letter-spacing: -0.2px;
         }
 
         .btn-action { 
             width: 100%; 
-            padding: 16px; 
+            padding: 14px; 
             border: none; 
-            border-radius: 16px; 
-            font-size: 15px;
+            border-radius: var(--radius-md); 
+            font-size: 13px;
             font-weight: 700; 
             cursor: pointer; 
             transition: all 0.2s ease;
-            margin-top: 15px;
+            margin-top: 12px;
             font-family: inherit;
         }
 
         .btn-primary { 
             background: var(--primary-gradient); 
             color: white; 
-            box-shadow: 0 8px 20px rgba(217, 119, 6, 0.3); 
+            box-shadow: 0 6px 16px rgba(217, 119, 6, 0.3); 
         }
-        .btn-primary:hover { opacity: 0.95; transform: translateY(-1px); }
         .btn-warning { background: var(--warning); color: #fff; }
         .btn-success { background: var(--success); color: white; }
 
         .creator-footer {
-            max-width: 440px;
-            margin: 30px auto 0 auto;
-            padding-top: 15px;
+            width: 100%;
+            max-width: 400px;
+            margin: 20px auto 0 auto;
+            padding-top: 12px;
             border-top: 1px solid #e2e8f0;
             text-align: center;
-            font-size: 12px;
+            font-size: 10px;
             color: var(--text-muted);
         }
 
@@ -301,11 +359,6 @@
             color: #d97706;
             text-decoration: none;
             font-weight: 600;
-        }
-
-        .creator-footer a:hover {
-            color: #b45309;
-            text-decoration: underline;
         }
     </style>
 </head>
@@ -323,8 +376,8 @@
 
     <div class="ticket-wrapper">
         <div class="ticket" id="ticketContent">
-            <div style="padding: 40px 20px; text-align: center; color: var(--text-muted);">
-                <h3>Chargement de votre billet...</h3>
+            <div style="padding: 30px 16px; text-align: center; color: var(--text-muted);">
+                <p style="font-size: 13px; font-weight: 600; margin:0;">Chargement de votre pass...</p>
             </div>
         </div>
 
@@ -334,20 +387,34 @@
     </div>
 
     <footer class="creator-footer">
-        <p style="margin-bottom: 4px; font-weight: 600;">— LA BILLETTERIE EN OR —</p>
-        <p style="margin: 0;">
+        <p style="margin-bottom: 2px; font-weight: 600;">— LA BILLETTERIE EN OR —</p>
+        <p style="margin: 0; line-height: 1.4;">
             Plateforme propulsée par <strong>GoldTix</strong> | Développée par <strong>Abdiel KABRE</strong><br>
-            📧 <a href="mailto:abdielkabre2@gmail.com">abdielkabre2@gmail.com</a> | 
+            📧 <a href="mailto:abdielkabre2@gmail.com">abdielkabre2@gmail.com</a><br>
             📞 <a href="https://wa.me/22653107345" target="_blank">+226 53 10 73 45</a> / <a href="https://wa.me/212770967646" target="_blank">+212 770-967646</a>
         </p>
     </footer>
 
+    <!-- Scripts Supabase et Librairies Externes -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <script>
+    function appliquerAfficheHeader(headerElement, afficheUrl) {
+        if (!headerElement) return;
+        if (afficheUrl) {
+            let imgElement = headerElement.querySelector(".event-bg-img");
+            if (!imgElement) {
+                imgElement = document.createElement("img");
+                imgElement.className = "event-bg-img";
+                headerElement.insertBefore(imgElement, headerElement.firstChild);
+            }
+            imgElement.src = afficheUrl;
+        }
+    }
+
     async function chargerBillet() {
         const urlParams = new URLSearchParams(window.location.search);
         let billetId = urlParams.get("id");
@@ -355,12 +422,12 @@
         let btnDownload = document.getElementById("downloadTicket");
 
         if (!billetId) {
-            container.innerHTML = "<div style='padding:30px; text-align:center;'><h3>Erreur</h3><p>Aucun identifiant de billet trouvé dans l'URL.</p></div>";
+            container.innerHTML = "<div style='padding:20px; text-align:center;'><h3 style='font-size:16px; margin:0 0 8px 0;'>Erreur</h3><p style='font-size:12px; margin:0;'>Aucun identifiant de billet trouvé.</p></div>";
             return;
         }
 
         if (!window.supabaseClient) {
-            container.innerHTML = "<div style='padding:30px; text-align:center;'><h3>Erreur Configuration</h3><p>Connexion Supabase introuvable dans supabase.js.</p></div>";
+            container.innerHTML = "<div style='padding:20px; text-align:center;'><h3 style='font-size:16px; margin:0 0 8px 0;'>Erreur</h3><p style='font-size:12px; margin:0;'>Connexion Supabase introuvable.</p></div>";
             return;
         }
 
@@ -372,7 +439,7 @@
                 .maybeSingle();
 
             if (errBillet || !billet) {
-                container.innerHTML = `<div style='padding:30px; text-align:center;'><h3>Oups</h3><p>Impossible de trouver le billet #${billetId}.</p></div>`;
+                container.innerHTML = `<div style='padding:20px; text-align:center;'><h3 style='font-size:16px; margin:0 0 8px 0;'>Oups</h3><p style='font-size:12px; margin:0;'>Billet #${billetId} introuvable.</p></div>`;
                 return;
             }
 
@@ -383,23 +450,102 @@
                 .maybeSingle();
 
             if (errEv || !ev) {
-                container.innerHTML = "<div style='padding:30px; text-align:center;'><h3>Oups</h3><p>Impossible de trouver l'événement lié à ce billet.</p></div>";
+                container.innerHTML = "<div style='padding:20px; text-align:center;'><h3 style='font-size:16px; margin:0 0 8px 0;'>Oups</h3><p style='font-size:12px; margin:0;'>Événement introuvable.</p></div>";
                 return;
             }
 
-            const afficheUrl = ev.affiche_url || '';
-            const bgStyle = afficheUrl ? `background-image: url('${afficheUrl}');` : '';
+            const afficheUrl = ev.affiche_url || ev.image_url || ev.affiche || '';
+            const nomBeneficiaire = ev.beneficiaire_nom || "l'organisateur";
+            const contactBeneficiaire = ev.beneficiaire_infos || "";
+
+            // --- DÉTERMINATION DE LA CATÉGORIE ET DE SON INDEX ---
+            let nomCategorieBillet = 'Standard';
+            let rawCategorie = billet.type_billet ?? billet.nom_categorie ?? billet.categorie_id;
+            let categorieIndex = 0; 
+
+            if (ev.categories_data && Array.isArray(ev.categories_data)) {
+                let indexTrouve = -1;
+                let catTrouvee = null;
+
+                if (rawCategorie !== null && rawCategorie !== undefined && !isNaN(rawCategorie)) {
+                    indexTrouve = parseInt(rawCategorie, 10);
+                    if (ev.categories_data[indexTrouve]) {
+                        catTrouvee = ev.categories_data[indexTrouve];
+                    }
+                }
+
+                if (!catTrouvee && rawCategorie !== null && rawCategorie !== undefined) {
+                    indexTrouve = ev.categories_data.findIndex(c => 
+                        String(c.id) === String(rawCategorie) || 
+                        String(c.nom).trim().toLowerCase() === String(rawCategorie).trim().toLowerCase()
+                    );
+                    if (indexTrouve !== -1) {
+                        catTrouvee = ev.categories_data[indexTrouve];
+                    }
+                }
+
+                if (catTrouvee) {
+                    let prixTxt = (catTrouvee.prix !== undefined && catTrouvee.prix !== null && catTrouvee.prix !== '') ? ` - ${catTrouvee.prix}` : '';
+                    nomCategorieBillet = `${catTrouvee.nom}${prixTxt}`;
+                    if (indexTrouve >= 0) {
+                        categorieIndex = indexTrouve;
+                    }
+                } else if (rawCategorie !== null && rawCategorie !== undefined && String(rawCategorie).trim() !== '') {
+                    nomCategorieBillet = String(rawCategorie);
+                    const partialIndex = ev.categories_data.findIndex(c => 
+                        String(rawCategorie).toLowerCase().includes(String(c.nom).toLowerCase()) ||
+                        String(c.nom).toLowerCase().includes(String(rawCategorie).toLowerCase())
+                    );
+                    if (partialIndex !== -1) {
+                        categorieIndex = partialIndex;
+                    }
+                }
+            } else if (rawCategorie !== null && rawCategorie !== undefined && String(rawCategorie).trim() !== '') {
+                nomCategorieBillet = String(rawCategorie);
+            }
+
+            // --- ATTRIBUTION DES COULEURS SELON LE NOMBRE DE CATÉGORIES & LE RANG ---
+            let totalCategories = (ev.categories_data && Array.isArray(ev.categories_data)) ? ev.categories_data.length : 1;
+            let tierClass = `tier-${Math.min(categorieIndex, 3)}`;
+
+            let badgeBgStyle = "";
+            let passCardStyle = "background: #fafaf9; border: 1px solid rgba(217, 119, 6, 0.1);";
+
+            if (totalCategories === 1) {
+                // 1 seule catégorie : Reste comme le billet actuel (Standard)
+                badgeBgStyle = "background: #d97706; color: #fff;";
+                passCardStyle = "background: #fafaf9; border: 1px solid rgba(217, 119, 6, 0.1);";
+                tierClass = "tier-0";
+            } else {
+                if (categorieIndex === 0) {
+                    // Type 1 : Reste comme le billet actuel
+                    badgeBgStyle = "background: #d97706; color: #fff;";
+                    passCardStyle = "background: #fafaf9; border: 1px solid rgba(217, 119, 6, 0.1);";
+                } else if (categorieIndex === 1) {
+                    // Type 2 : Doré
+                    badgeBgStyle = "background: linear-gradient(135deg, #d97706 0%, #b45309 100%); color: #fff; border: 1px solid #fef08a;";
+                    passCardStyle = "background: linear-gradient(135deg, #fffbeb 0%, #fef9c3 100%); border-color: rgba(245, 158, 11, 0.4);";
+                } else if (categorieIndex === 2) {
+                    // Type 3 : Vert
+                    badgeBgStyle = "background: linear-gradient(135deg, #059669 0%, #047857 100%); color: #fff; border: 1px solid #34d399;";
+                    passCardStyle = "background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border-color: rgba(5, 150, 105, 0.3);";
+                } else if (categorieIndex >= 3) {
+                    // Type 4 (et plus) : Rouge
+                    badgeBgStyle = "background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: #fff; border: 1px solid #f87171;";
+                    passCardStyle = "background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border-color: rgba(220, 38, 38, 0.3);";
+                }
+            }
 
             // --- CAS 1 : PAIEMENT EN ATTENTE ---
             if (billet.statut === "attente" || !billet.statut) {
                 btnDownload.style.display = "none";
                 container.innerHTML = `
-                    <div class="ticket-header" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%);">
-                        ${afficheUrl ? `<div class="header-bg-blur" style="${bgStyle}"></div>` : ''}
+                    <div class="ticket-header" id="ticketHeaderBlock">
                         <div class="header-content">
-                            <span class="badge-confirme" style="background: rgba(245, 158, 11, 0.5); border-color: rgba(253, 230, 138, 0.6);">⏳ PAIEMENT EN ATTENTE DE VALIDATION</span>
+                            <span class="badge-confirme" style="color: #fef08a; background: rgba(0,0,0,0.5);">⏳ EN ATTENTE DE VALIDATION</span>
                             <h1 class="ticket-title">${ev.titre}</h1>
                         </div>
+                        <div class="ticket-tear"></div>
                     </div>
 
                     <div class="ticket-body">
@@ -413,7 +559,11 @@
                                 <span class="ticket-info-value">${billet.telephone || ''}</span>
                             </div>
                             <div class="ticket-card">
-                                <span class="ticket-info-label">📅 Date & Heure</span>
+                                <span class="ticket-info-label">🎟️ Catégorie / Pass</span>
+                                <span class="ticket-info-value" style="color: var(--primary); font-weight: 800;">${nomCategorieBillet}</span>
+                            </div>
+                            <div class="ticket-card">
+                                <span class="ticket-info-label">📅 Date</span>
                                 <span class="ticket-info-value">${ev.date || ''} à ${ev.heure || ''}</span>
                             </div>
                             <div class="ticket-card">
@@ -422,14 +572,21 @@
                             </div>
                         </div>
 
-                        <div style="border-top: 1px dashed #cbd5e1; margin-top: 20px; padding-top: 15px;">
-                            <p style="font-size: 13px; color: var(--text-muted); text-align: center; margin-bottom: 15px; line-height: 1.5;">
-                                Votre preuve de paiement a bien été reçue. Le numéro de Pass et le QR Code d'accès seront débloqués dès confirmation du règlement par l'organisateur.
+                        <div style="border-top: 1px dashed #cbd5e1; margin-top: 14px; padding-top: 12px;">
+                            <p style="font-size: 11px; color: var(--text-muted); text-align: center; margin-bottom: 12px; line-height: 1.4;">
+                                Votre preuve de paiement a été transmise. Vous n'aurez qu'à appuyer sur "Rafraîchir" et votre billet apparaîtra ici dès confirmation par le bénéficiaire.
                             </p>
-                            <button onclick="location.reload()" class="btn-action btn-warning">🔄 Rafraîchir la page</button>
+                          <p style="text-align: center; font-size: 12px; color: #64748b; margin-top: 15px;">
+    💡 <i>Une fois validé, votre billet s'ouvrira dans cette même fenêtre. 
+    <strong>Ne fermez pas cette page avant d'avoir enregistré ou téléchargé votre billet !</strong></i>
+</p>  
+</p>
+                            
+                            <button onclick="location.reload()" class="btn-action btn-warning" style="margin-top:0;">🔄 Rafraîchir</button>
                         </div>
                     </div>
                 `;
+                appliquerAfficheHeader(document.getElementById("ticketHeaderBlock"), afficheUrl);
                 return;
             }
 
@@ -437,37 +594,39 @@
             if (billet.statut === "refuse") {
                 btnDownload.style.display = "none";
                 container.innerHTML = `
-                    <div class="ticket-header" style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);">
-                        ${afficheUrl ? `<div class="header-bg-blur" style="${bgStyle}"></div>` : ''}
+                    <div class="ticket-header" id="ticketHeaderBlock">
                         <div class="header-content">
-                            <span class="badge-confirme" style="background: rgba(239, 68, 68, 0.5); border-color: rgba(254, 202, 202, 0.6);">❌ PAIEMENT NON VALIDÉ</span>
+                            <span class="badge-confirme" style="color: #fca5a5; background: rgba(0,0,0,0.5);">❌ PAIEMENT NON VALIDÉ</span>
                             <h1 class="ticket-title">${ev.titre}</h1>
                         </div>
+                        <div class="ticket-tear"></div>
                     </div>
                     <div class="ticket-body" style="text-align: center;">
-                        <p style="font-size: 14px; color: var(--text-main); margin-bottom: 15px;">
-                            Le paiement n'a pas pu être confirmé par l'organisateur.
+                        <p style="font-size: 12px; color: var(--text-main); margin-bottom: 12px;">
+                            Le paiement n'a pas été validé par le bénéficiaire.
                         </p>
-                        <div style="background: #fffbeb; padding: 12px; border-radius: var(--radius-md); border: 1px solid #fde68a; margin-bottom: 15px;">
-                            <p style="margin:0; font-size: 12px; color: #b45309;">
-                                💡 Contactez l'organisateur <strong>${ev.beneficiaire_nom || 'l\'organisateur'}</strong> au : <strong>${ev.organisateur_telephone || '+226 53 10 73 45'}</strong>
-                            </p>
-                        </div>
-                        <button onclick="location.reload()" class="btn-action btn-success">🔄 Re-vérifier l'état</button>
+                        <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5;">
+                            Veuillez contacter <strong>${nomBeneficiaire}</strong> ${contactBeneficiaire ? 'au <strong>' + contactBeneficiaire + '</strong>' : ''} pour plus d'informations ou pour toute réclamation.
+                        </p>
+                        <button onclick="location.reload()" class="btn-action btn-success" style="margin-top:0;">🔄 Réessayer</button>
                     </div>
                 `;
+                appliquerAfficheHeader(document.getElementById("ticketHeaderBlock"), afficheUrl);
                 return;
             }
 
             // --- CAS 3 : PAIEMENT CONFIRMÉ ---
             if (billet.statut === "confirme") {
+                container.className = `ticket ${tierClass}`;
+                let badgeHtml = `<span class="badge-confirme" style="${badgeBgStyle}">✨ ${nomCategorieBillet.toUpperCase()}</span>`;
+
                 container.innerHTML = `
-                    <div class="ticket-header">
-                        ${afficheUrl ? `<div class="header-bg-blur" style="${bgStyle}"></div>` : ''}
+                    <div class="ticket-header" id="ticketHeaderBlock">
                         <div class="header-content">
-                            <span class="badge-confirme">✓ ACCÈS CONFIRMÉ</span>
+                            ${badgeHtml}
                             <h1 class="ticket-title">${ev.titre}</h1>
                         </div>
+                        <div class="ticket-tear"></div>
                     </div>
 
                     <div class="ticket-body">
@@ -480,17 +639,21 @@
                                 <span class="ticket-info-label">📞 Téléphone</span>
                                 <span class="ticket-info-value">${billet.telephone || ''}</span>
                             </div>
+                            <div class="ticket-card" style="${passCardStyle}">
+                                <span class="ticket-info-label">🎟️ Catégorie / Pass</span>
+                                <span class="ticket-info-value" style="font-weight: 800;">${nomCategorieBillet}</span>
+                            </div>
                             <div class="ticket-card">
-                                <span class="ticket-info-label">📅 Date & Heure</span>
+                                <span class="ticket-info-label">📅 Date/⏱️ Heure</span>
                                 <span class="ticket-info-value">${ev.date || ''} à ${ev.heure || ''}</span>
                             </div>
                             <div class="ticket-card">
                                 <span class="ticket-info-label">📍 Lieu</span>
                                 <span class="ticket-info-value">${ev.lieu || ''}</span>
                             </div>
-                            <div class="ticket-card" style="background: #fefce8; border-color: #fde68a;">
-                                <span class="ticket-info-label" style="color: var(--primary);">🎟️ Pass N°</span>
-                                <span class="ticket-info-value" style="color: var(--primary); font-family: monospace; font-size: 16px;">#${billet.numero_billet || billet.id}</span>
+                            <div class="ticket-card" style="${passCardStyle}">
+                                <span class="ticket-info-label">🔢 Réf Pass</span>
+                                <span class="ticket-info-value" style="font-family: monospace; font-size: 13px;">#${billet.numero_billet || billet.id}</span>
                             </div>
                         </div>
 
@@ -502,31 +665,36 @@
 
                         <div class="qr-container-wrapper">
                             <div id="qrcode"></div>
-                            <p class="info-text">Veillez présenter ce QR Code à l'entrée </p>
+                            <p class="info-text">Présentez ce QR Code à l'entrée</p>
                             <p class="thanks-text">✨ Merci d'avoir choisi GoldTix !</p>
                         </div>
                     </div>
                 `;
 
-                const qrContainer = document.getElementById("qrcode");
-                qrContainer.innerHTML = "";
+                appliquerAfficheHeader(document.getElementById("ticketHeaderBlock"), afficheUrl);
 
-                new QRCode(qrContainer, {
-                    text: String(billet.numero_billet || billet.id),
-                    width: 150,
-                    height: 150,
-                    colorDark : "#0f172a",
-                    colorLight : "#ffffff",
-                    correctLevel : QRCode.CorrectLevel.H
-                });
+                setTimeout(() => {
+                    const qrContainer = document.getElementById("qrcode");
+                    if (qrContainer) {
+                        qrContainer.innerHTML = "";
+                        new QRCode(qrContainer, {
+                            text: String(billet.numero_billet || billet.id),
+                            width: 128,
+                            height: 128,
+                            colorDark : "#0f172a",
+                            colorLight : "#ffffff",
+                            correctLevel : QRCode.CorrectLevel.H
+                        });
+                    }
+                }, 100);
 
                 btnDownload.style.display = "block";
                 return;
             }
 
         } catch (err) {
-            console.error("Erreur d'exécution :", err);
-            container.innerHTML = `<div style='padding:30px; text-align:center;'><h3>Erreur Inattendue</h3><p>${err.message}</p></div>`;
+            console.error("Erreur :", err);
+            container.innerHTML = `<div style='padding:20px; text-align:center;'><h3 style='font-size:16px; margin:0 0 8px 0;'>Erreur</h3><p style='font-size:12px; margin:0;'>${err.message}</p></div>`;
         }
     }
 
@@ -537,12 +705,12 @@
         window.scrollTo(0, 0);
 
         let opt = {
-            margin:       [5, 5, 5, 5],
-            filename:     `Pass-GoldTix-${Date.now()}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
+            margin:      [4, 4, 4, 4],
+            filename:    `Pass-GoldTix-${Date.now()}.pdf`,
+            image:       { type: 'jpeg', quality: 0.98 },
             html2canvas:  { scale: 2, useCORS: true, scrollY: 0, scrollX: 0 },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak:    { mode: 'avoid-all' }
+            jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak:   { mode: 'avoid-all' }
         };
 
         if (btnDownload) btnDownload.style.opacity = '0.5';

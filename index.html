@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 
 <head>
@@ -12,15 +12,11 @@
             --primary-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
             --primary-glow: rgba(217, 119, 6, 0.25);
             
-            /* Fond global tout blanc avec une très légère touche dorée */
             --bg-main: #fcfbf9;
-            
-            /* Cartes en Glassmorphism blanc/lumineux avec bordures dorées très douces */
             --card-bg: rgba(255, 255, 255, 0.85);
             --card-border: rgba(217, 119, 6, 0.15);
             --input-bg: rgba(248, 250, 252, 0.9);
             
-            /* Textes sombres ajustés pour fond clair */
             --text-main: #0f172a;
             --text-muted: #64748b;
             --radius-lg: 24px;
@@ -72,6 +68,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .brand-container {
@@ -101,15 +99,16 @@
         .secure-badge {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             background: rgba(16, 185, 129, 0.08);
             color: #059669;
             border: 1px solid rgba(16, 185, 129, 0.25);
-            padding: 8px 16px;
-            border-radius: 30px;
-            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
             font-weight: 700;
             backdrop-filter: blur(8px);
+            white-space: nowrap;
         }
 
         .main-wrapper {
@@ -196,7 +195,6 @@
             box-shadow: 0 8px 20px var(--primary-glow);
         }
 
-        /* Zone Paiement (Droite) */
         .payment-box {
             background: #fefce8;
             border: 1px solid rgba(245, 158, 11, 0.25);
@@ -212,24 +210,6 @@
             position: absolute;
             top: 0; left: 0; width: 4px; height: 100%;
             background: var(--primary-gradient);
-        }
-
-        .payment-box h3 {
-            margin: 0 0 14px 0;
-            font-size: 14px;
-            font-weight: 800;
-            color: #b45309;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .payment-box p {
-            font-size: 14px;
-            color: #334155;
-            margin-bottom: 6px;
         }
 
         .form-section-title {
@@ -256,7 +236,8 @@
 
         input[type="text"],
         input[type="tel"],
-        input[type="file"] {
+        input[type="file"],
+        select {
             width: 100%;
             padding: 14px 16px;
             font-size: 14px;
@@ -270,7 +251,8 @@
         }
 
         input[type="text"]:focus,
-        input[type="tel"]:focus {
+        input[type="tel"]:focus,
+        select:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 4px var(--primary-glow);
             background: #ffffff;
@@ -292,11 +274,6 @@
             font-weight: 600;
             margin-right: 12px;
             transition: all 0.2s ease;
-        }
-
-        input[type="file"]::file-selector-button:hover {
-            background: var(--primary);
-            color: #ffffff;
         }
 
         button#btnValiderAchat { 
@@ -380,7 +357,7 @@
             <img src="logo.png" alt="GoldTix Logo" class="site-logo">
             <div class="brand-title">Gold<span>Tix</span></div>
         </div>
-        <span class="secure-badge">🔒 Billetterie fiable & Sécurisée</span>
+        <span class="secure-badge">🔒 Billetterie Sécurisée</span>
     </div>
 
     <div class="main-wrapper">
@@ -403,7 +380,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase.js"></script>
     <script>
-        async function chargerPageAchatUnique() {
+       async function chargerPageAchatUnique() {
             const urlParams = new URLSearchParams(window.location.search);
             let eventId = urlParams.get("event");
             let container = document.getElementById("detailsEvenement");
@@ -437,28 +414,52 @@
                     </div>
                 `;
             } else {
-                let infosCoordonnees = ev.beneficiaire_infos || "";
-                
-                // Récupération de l'image du RIB depuis la colonne rib_image_url
-                let ribImageUrl = ev.rib_image_url || "";
-                let affichageRibHtml = "";
-                
-                if (ribImageUrl && (ribImageUrl.startsWith("http://") || ribImageUrl.startsWith("https://"))) {
-                    affichageRibHtml = `<div style="margin-top: 12px; text-align: center;"><img src="${ribImageUrl}" alt="Image du RIB / QR Code" style="max-width: 100%; max-height: 220px; border-radius: 10px; border: 1px solid rgba(217, 119, 6, 0.25); box-shadow: 0 4px 12px rgba(0,0,0,0.05); object-fit: contain;"></div>`;
+                let infosCoordonnees = ev.beneficiaire_infos ? ev.beneficiaire_infos : 'Non renseigné';
+
+                let selectionCategorieHTML = "";
+                if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_data.length > 0) {
+                    let optionsHTML = ev.categories_data.map(cat => `<option value="${cat.nom} - ${cat.prix}">${cat.nom} (${cat.prix})</option>`).join("");
+                    selectionCategorieHTML = `
+                        <div class="form-group">
+                            <label for="selectCategorie">Choisissez votre catégorie de billet :</label>
+                            <select id="selectCategorie">
+                                ${optionsHTML}
+                            </select>
+                        </div>
+                    `;
                 }
 
                 contenuColonneDroite = `
                     <div class="form-card">
-                        <div class="payment-box">
-                            <h3>📱 ÉTAPE 1 : EFFECTUER LE PAIEMENT</h3>
-                            <p><strong>Bénéficiaire :</strong> <span>${ev.beneficiaire_nom || 'Non renseigné'}</span></p>
-                            <p style="margin-top: 8px;"><strong>Instructions / Coordonnées :</strong></p>
-                            <p style="margin-top: 2px; font-weight: 600; color: #1e293b;">${infosCoordonnees || 'Aucune consigne particulière.'}</p>
-                            ${affichageRibHtml}
+                       <div class="payment-box">
+                            <h3 style="margin-bottom: 16px; font-size: 15px; color: var(--text-main);">📱 ÉTAPE 1 : EFFECTUER LE PAIEMENT</h3>
+                            
+                            <div style="display: flex; flex-direction: column; gap: 10px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 10px 14px; border-radius: 10px; border: 1px solid #f1f5f9;">
+                                    <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;">👤 Bénéficiaire</span>
+                                    <span style="font-size: 13px; font-weight: 700; color: var(--text-main);">${ev.beneficiaire_nom || 'Non renseigné'}</span>
+                                </div>
+
+                                <div style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 10px 14px; border-radius: 10px; border: 1px solid #f1f5f9;">
+                                    <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;">📞 Contact</span>
+                                    <span style="font-size: 13px; font-weight: 700; color: var(--text-main);">${infosCoordonnees}</span>
+                                </div>
+                            </div>
+
+                            ${ev.rib_image_url || ev.qr_code_paiement ? `
+                            <div style="margin-top: 12px; background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid #f1f5f9;">
+                                <span style="font-size: 12px; color: var(--text-muted); font-weight: 600; display: block; margin-bottom: 10px;">💳 RIB / Détails bancaires</span>
+                                <div style="text-align: center; margin-top: 4px;">
+                                    <img src="${ev.rib_image_url || ev.qr_code_paiement}" alt="Support de paiement" style="max-width: 200px; width: 100%; height: auto; border-radius: 8px; display: inline-block; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; background: #fff; padding: 4px; object-fit: contain;">
+                                </div>
+                            </div>
+                            ` : ''}
                         </div>
+
+                        <h3 class="form-section-title">📩 Étape 2 : Confirmez votre paiement</h3>
                         
-                        <h3 class="form-section-title">📩 Étape 2 : Confirmez votre achat</h3>
-                        
+                        ${selectionCategorieHTML}
+
                         <div class="form-group">
                             <label for="nomParticipant">Nom et Prénom:</label>
                             <input type="text" id="nomParticipant" placeholder="ex: KONATE Jean">
@@ -470,13 +471,20 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="preuvePaiement">Preuve de paiement (Capture / Reçu) :</label>
+                            <label for="preuvePaiement">Preuve de paiement (Capture du reçu) :</label>
                             <input type="file" id="preuvePaiement" accept="image/*">
                         </div>
 
                         <button id="btnValiderAchat">Valider mon paiement & obtenir mon ticket</button>
                     </div>
                 `;
+            }
+
+            let affichagePrixHTML = "";
+            if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_data.length > 0) {
+                affichagePrixHTML = ev.categories_data.map(c => `<div>🎫 <strong>${c.nom}</strong> : ${c.prix}</div>`).join("");
+            } else {
+                affichagePrixHTML = `💳 Prix du ticket : ${ev.prix || 'Gratuit'}`;
             }
 
             container.innerHTML = `
@@ -487,10 +495,12 @@
                             <img src="${ev.affiche_url || ''}" alt="Affiche" onerror="this.parentElement.innerHTML='<p style=\\'color:#64748b;padding:30px;\\'>🖼️ Affiche non disponible</p>'">
                         </div>
                         <h1 class="event-title">${ev.titre}</h1>
-                        <div class="event-meta-item">📅 <span><strong>Date :</strong> ${ev.date} à ${ev.heure}</span></div>
+                        <div class="event-meta-item">📅 <span><strong>Date :</strong> ${ev.date}</span> <span style="margin-left: 15px;"><strong>Heure :</strong> ${ev.heure}</span></div>
                         <div class="event-meta-item">📍 <span><strong>Lieu :</strong> ${ev.lieu}</span></div>
                         <div>
-                            <span class="price-badge">💳 Prix du ticket : ${ev.prix}</span>
+                            <div class="price-badge" style="flex-direction: column; align-items: flex-start; gap: 4px; font-size: 15px;" id="badgePrixContainer">
+                                ${affichagePrixHTML}
+                            </div>
                         </div>
                     </div>
 
@@ -506,6 +516,14 @@
                     let nom = document.getElementById("nomParticipant").value.trim();
                     let tel = document.getElementById("telParticipant").value.trim();
                     let fichierPreuve = document.getElementById("preuvePaiement").files[0];
+                    
+                    let typeBilletChoisi = "Standard";
+                    const selectCat = document.getElementById("selectCategorie");
+                    if (selectCat) {
+                        typeBilletChoisi = selectCat.value; // Ex: "VIP - 30 DHS"
+                    } else if (ev.prix) {
+                        typeBilletChoisi = String(ev.prix);
+                    }
 
                     if (!nom || !tel || !fichierPreuve) {
                         alert("Veuillez remplir tous les champs et joindre la capture de paiement.");
@@ -551,6 +569,7 @@
 
                         let preuveUrl = urlData.publicUrl;
 
+                        // On insère directement dans la colonne existante "type_billet"
                         const { data: insertedBillet, error: insertError } = await window.supabaseClient
                             .from("billets")
                             .insert([
@@ -559,6 +578,7 @@
                                     nom_participant: nom,
                                     telephone: tel,
                                     preuve_url: preuveUrl,
+                                    type_billet: typeBilletChoisi, 
                                     statut: "attente",
                                     utilise: false
                                 }

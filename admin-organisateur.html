@@ -15,7 +15,6 @@
             --danger: #ef4444;
             --warning: #f59e0b;
             
-            /* Fond clair lumineux avec halo doré léger */
             --bg-main: #fcfbf9;
             --card-bg: #ffffff;
             --text-main: #0f172a;
@@ -31,7 +30,6 @@
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             background-color: var(--bg-main); 
-            /* Arrière-plan avec les halos dorés caractéristiques sur les côtés */
             background-image: 
                 radial-gradient(circle at 0% 15%, rgba(245, 158, 11, 0.18) 0px, transparent 35%),
                 radial-gradient(circle at 100% 15%, rgba(245, 158, 11, 0.18) 0px, transparent 35%),
@@ -45,7 +43,6 @@
             overflow-x: hidden;
         }
 
-        /* Animation d'apparition fluide similaire à tes autres pages */
         @keyframes slideDownFade {
             0% {
                 opacity: 0;
@@ -61,7 +58,6 @@
             animation: slideDownFade 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
         }
 
-        /* Barre supérieure avec Logo + Nom GoldTix et Badge */
         .top-navbar {
             max-width: 900px;
             margin: 0 auto 20px auto;
@@ -124,34 +120,81 @@
             border: 1px solid var(--border-color);
         }
 
-        .header-top {
+      .header-top {
             text-align: center;
             margin-bottom: 25px;
             padding-bottom: 20px;
             border-bottom: 1px dashed var(--border-color);
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            padding: 40px 20px;
+            background: var(--primary-gradient); 
+            color: white;
+            box-shadow: 0 8px 20px rgba(217, 119, 6, 0.15);
+        }
+
+        /* Style si une image d'événement est présente */
+        .header-top.has-image {
+            background: none !important; /* Supprime le dégradé doré de fond */
+            background-image: var(--bg-image) !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
+        }
+
+        /* ON RETIRE LE VOILE SOMBRE (::before) pour que l'affiche apparaisse claire et nette */
+        .header-top.has-image::before {
+            display: none !important; 
+        }
+
+        .header-top > * {
+            position: relative;
+            z-index: 2;
+        }  
+
+        /* Style si une image d'événement est présente */
+        .header-top.has-image {
+            background-size: cover;
+            background-position: center;
+        }
+
+        .header-top.has-image::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55); /* Voile sombre pour la lisibilité */
+            z-index: 1;
+        }
+
+        .header-top > * {
+            position: relative;
+            z-index: 2;
         }
 
         h1#titreEvenementOrg {
-            font-size: 26px;
+            font-size: 28px;
             font-weight: 800;
             margin: 0;
-            color: var(--text-main);
+            color: #ffffff;
             letter-spacing: -0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
         #infosEvenementOrg {
-            background: #fefce8;
-            border: 1px solid #fde68a;
-            padding: 12px 18px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 16px;
             border-radius: var(--radius-md);
             font-size: 14px;
-            color: #b45309;
-            margin-bottom: 15px;
+            color: #ffffff;
+            margin-top: 15px;
+            margin-bottom: 0;
             font-weight: 600;
-            text-align: center;
+            display: inline-block;
         }
 
-        /* Onglets stylés GoldTix - Correction du débordement mobile */
         .tabs { 
             display: flex; 
             gap: 8px; 
@@ -203,7 +246,6 @@
             margin-bottom: 20px;
         }
 
-        /* Champ de recherche pour l'onglet Demandes Validées */
         .search-container {
             margin-bottom: 20px;
         }
@@ -224,7 +266,6 @@
             box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15);
         }
         
-        /* Cartes de billets / demandes */
         .billet-card { 
             background: #fff; 
             border: 1px solid var(--border-color); 
@@ -256,7 +297,6 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.06);
         }
         
-        /* Boutons d'action */
         .btn-confirmer { background: var(--success); color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 13px; transition: background 0.2s; font-family: inherit; }
         .btn-confirmer:hover { background: #059669; }
 
@@ -266,13 +306,11 @@
         .btn-attente { background: var(--warning); color: #fff; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 13px; margin-left: 6px; transition: background 0.2s; font-family: inherit; }
         .btn-attente:hover { background: #d97706; }
         
-        /* Badges de statut */
         .badge-statut { display: inline-block; padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 12px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
         .badge-attente { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
         .badge-confirme { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
         .badge-refuse { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
 
-        /* Scanner QR et recherche manuelle */
         #resultatScan {
             margin-top: 20px;
             padding: 18px;
@@ -329,7 +367,6 @@
             opacity: 0.95;
         }
 
-        /* Adaptabilité Mobile */
         @media (max-width: 600px) {
             .container {
                 padding: 20px 15px;
@@ -343,7 +380,6 @@
             }
         }
 
-        /* Pied de page officiel GoldTix par Abdiel KABRE */
         .creator-footer {
             max-width: 900px;
             margin: 35px auto 0 auto;
@@ -379,10 +415,282 @@
             text-decoration: underline;
         }
     </style>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Organisateur - GoldTix</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+        :root {
+            --primary: #d97706;
+            --primary-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --success: #10b981;
+            --bg-main: #fcfbf9;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: rgba(217, 119, 6, 0.15);
+            --radius-lg: 24px;
+            --radius-md: 12px;
+            --shadow-lg: 0 20px 40px -10px rgba(217, 119, 6, 0.08), 0 10px 25px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        * { box-sizing: border-box; }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg-main); 
+            color: var(--text-main); 
+            margin: 0; 
+            padding: 20px 20px 60px 20px; 
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        .top-navbar {
+            max-width: 600px;
+            margin: 0 auto 20px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .site-logo { height: 38px; width: auto; object-fit: contain; }
+
+        .brand-title {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            line-height: 1;
+        }
+        .brand-title .text-gold { color: #0f172a; }
+        .brand-title .text-tix {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .badge-espace {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(217, 119, 6, 0.08);
+            color: var(--primary);
+            border: 1px solid rgba(217, 119, 6, 0.25);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* --- HEADER & BANNIÈRE ÉVÉNEMENT --- */
+        .header-top {
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            padding: 40px 20px;
+            background: var(--primary-gradient); 
+            color: white;
+            box-shadow: 0 8px 20px rgba(217, 119, 6, 0.15);
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        /* Image d'arrière-plan injectée par le JS */
+        .header-top .event-bg-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* Voile sombre unique et propre pour contraster l'affiche */
+        .header-top::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            z-index: 1;
+        }
+
+        /* Tout le contenu textuel passe au-dessus du voile et de l'image */
+        .header-top > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .header-top h1 {
+            font-size: 24px;
+            margin: 0 0 10px 0;
+            font-weight: 800;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Encadré Date & Lieu ultra lisible peu importe l'affiche */
+       #infosEvenementOrg {
+            background: linear-gradient(135deg, rgba(20, 18, 16, 0.90) 0%, rgba(40, 28, 10, 0.88) 100%);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(245, 158, 11, 0.4); /* Bordure subtilement dorée */
+            padding: 10px 18px;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            color: #ffffff;
+            margin-top: 12px;
+            margin-bottom: 0;
+            font-weight: 600;
+            display: inline-block;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4), 0 0 10px rgba(245, 158, 11, 0.15); /* Légère lueur dorée diffuse */
+        }
+
+        /* --- ONGLETS & CONTENU --- */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            background: #e2e8f0;
+            padding: 4px;
+            border-radius: 14px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--text-muted);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .tab-btn.active {
+            background: #ffffff;
+            color: var(--text-main);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .section-content { display: none; }
+        .section-content.active { display: block; }
+
+        .billet-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 18px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        }
+
+        .billet-card p {
+            margin: 6px 0;
+            font-size: 14px;
+        }
+
+        .billet-card img {
+            max-width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-top: 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .badge-statut {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .badge-confirme { background: #d1fae5; color: #065f46; }
+        .badge-refuse { background: #fee2e2; color: #991b1b; }
+        .badge-attente { background: #fef3c7; color: #92400e; }
+
+        button { font-family: inherit; cursor: pointer; }
+
+        .btn-confirmer { background: #10b981; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 12px; margin-right: 5px; }
+        .btn-refuser { background: #ef4444; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 12px; margin-right: 5px; }
+        .btn-attente { background: #f59e0b; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 12px; }
+
+        .search-container { margin-bottom: 15px; }
+        .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .scanner-input-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .scanner-input-group input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .scanner-input-group button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 20px;
+            border-radius: 8px;
+            font-weight: 700;
+        }
+
+        #resultatScan {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            text-align: center;
+        }
+
+        #reader { width: 100%; border-radius: 12px; overflow: hidden; }
+
+        .creator-footer {
+            max-width: 600px;
+            margin: 40px auto 0 auto;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        .creator-footer a { color: var(--primary); text-decoration: none; font-weight: 600; }
+    </style>
 </head>
 <body class="animate-slide-down">
 
-    <!-- Barre supérieure : Logo GoldTix + Badge Espace Organisateur -->
     <div class="top-navbar">
         <div class="logo-container">
             <img src="logo.png" alt="GoldTix Logo" class="site-logo">
@@ -394,48 +702,45 @@
     </div>
 
     <div class="container">
-        <!-- Titre de l'événement -->
-        <div class="header-top">
+        <!-- En-tête dynamique -->
+        <div class="header-top" id="headerTopContainer">
             <h1 id="titreEvenementOrg">Chargement de l'événement...</h1>
+            <div>
+                <p id="infosEvenementOrg"></p>
+            </div>
         </div>
 
         <div id="statusVentesContainer" style="margin-bottom: 25px; text-align: center;">
-            <!-- Les infos de l'événement s'affichent ici -->
-            <p id="infosEvenementOrg" style="margin-bottom: 15px;"></p>
-            
-            <!-- Boîte contenant le statut actuel et le bouton d'action -->
             <div style="background: #ffffff; border: 1px solid var(--border-color); padding: 15px 20px; border-radius: var(--radius-md); display: inline-block; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                 <span id="labelStatutVentes" style="font-weight: 700; margin-right: 15px; font-size: 14px;">
                     Statut : Chargement...
                 </span>
-                <button id="btnToggleVentes" onclick="toggleVentes()" style="padding: 9px 18px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; font-family: inherit; font-size: 13px; transition: all 0.2s;">
+                <button id="btnToggleVentes" onclick="toggleVentes()" style="padding: 9px 18px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; font-family: inherit; font-size: 13px;">
                     Patientez...
                 </button>
             </div>
         </div>
 
-        <!-- Les trois onglets -->
         <div class="tabs">
-            <button class="tab-btn active" onclick="changerOnglet('paiements', event)">1. Paiements</button>
-            <button class="tab-btn" id="btnTabValidees" onclick="changerOnglet('validees', event)">2. Validées (0)</button>
-            <button class="tab-btn" onclick="changerOnglet('scanner', event)">3. Scanner Billets</button>
+            <button class="tab-btn active" onclick="changerOnglet('paiements', this)">1. En attente</button>
+            <button class="tab-btn" id="btnTabValidees" onclick="changerOnglet('validees', this)">2. Validés (0)</button>
+            <button class="tab-btn" onclick="changerOnglet('scanner', this)">3. Scanner</button>
         </div>
 
-        <!-- SECTION 1 : DEMANDES DE PAIEMENT -->
         <div id="section-paiements" class="section-content active">
             <h2>Gestion des paiements</h2>
-            <p>Examinez et validez les captures d'écran des paiements reçus.</p>
+            <p>Examinez et validez les captures d'écran des paiements reçus.
+                Le participant recevra son billet après que vous ayez appuyer sur "J'ai reçu"
+            </p>
             <div id="listePaiements">
                 <p>Chargement des demandes...</p>
             </div>
         </div>
 
-        <!-- SECTION 2 : DEMANDES VALIDÉES -->
         <div id="section-validees" class="section-content">
             <h2 id="titreSectionValidees">Participants Confirmés & Validés (0)</h2>
-            <p>Liste des personnes validées. En cas d'empêchement, vous pouvez retirer un participant pour supprimer son billet :</p>
+            <p>Liste des personnes validées. En cas d'empêchement, vous pouvez retirer un participant et son billet sera automatiquement supprimé  :</p>
             
-            <!-- Champ de recherche dynamique -->
             <div class="search-container">
                 <input type="text" id="searchValidees" class="search-input" placeholder="🔍 Rechercher un participant par son nom..." oninput="filtrerParticipants()">
             </div>
@@ -445,10 +750,9 @@
             </div>
         </div>
 
-        <!-- SECTION 3 : SCANNER -->
         <div id="section-scanner" class="section-content">
             <h2>Contrôle des Billets (Jour J)</h2>
-            <p>Scannez le QR Code avec la caméra du téléphone ou entrez le code manuellement :</p>
+            <p>Scannez le QR Code ou entrez le code manuellement :</p>
             
             <div id="reader"></div>
 
@@ -461,7 +765,6 @@
         </div>
     </div>
 
-    <!-- Pied de page officiel GoldTix par Abdiel KABRE -->
     <footer class="creator-footer">
         <p class="slogan">— LA BILLETTERIE EN OR —</p>
         <p>Plateforme propulsée par <strong>GoldTix</strong> | Développée par <strong>Abdiel KABRE</strong></p>
@@ -477,100 +780,153 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
-
-    <script>
+<script>
         const urlParams = new URLSearchParams(window.location.search);
         let eventId = urlParams.get("event");
         let html5QrCode = null;
         let listeParticipantsValidesGlobal = []; 
         let statutVentesFermees = false;
 
-        async function chargerEspaceOrganisateur() {
-            if (!eventId) {
-                document.getElementById("titreEvenementOrg").textContent = "Erreur";
-                document.getElementById("infosEvenementOrg").textContent = "Aucun événement spécifié dans l'URL (ex: ?event=1).";
-                return;
-            }
+        document.addEventListener("DOMContentLoaded", () => {
+            chargerEspaceOrganisateur();
 
-            const { data: ev, error } = await window.supabaseClient
-                .from("evenements")
-                .select("*")
-                .eq("id", eventId)
-                .single();
+            // Actualisation automatique toutes les 2 minutes (120000 ms) pour synchroniser la base
+            setInterval(() => {
+                chargerToutesLesDemandes();
+            }, 120000);
 
-            if (error || !ev) {
-                document.getElementById("infosEvenementOrg").textContent = "Événement introuvable.";
-                return;
-            }
+            document.addEventListener("click", function(event) {
+                let targetBtn = event.target.closest(".btn-changer-statut");
+                if (targetBtn) {
+                    let id = targetBtn.getAttribute("data-id");
+                    let statut = targetBtn.getAttribute("data-statut");
+                    changerStatut(id, statut);
+                    return;
+                }
+                let targetRetirer = event.target.closest(".btn-retirer-participant");
+                if (targetRetirer) {
+                    let id = targetRetirer.getAttribute("data-id");
+                    retirerParticipant(id);
+                    return;
+                }
+            });
+        });
 
-            document.getElementById("titreEvenementOrg").textContent = ev.titre;
-            document.getElementById("infosEvenementOrg").innerHTML = `📅 Date : ${ev.date} à ${ev.heure} &nbsp;&nbsp;|&nbsp;&nbsp; 📍 Lieu : ${ev.lieu}`;
+async function chargerEspaceOrganisateur() {
+    if (!eventId) {
+        document.getElementById("titreEvenementOrg").textContent = "Erreur";
+        document.getElementById("infosEvenementOrg").textContent = "Aucun événement spécifié dans l'URL.";
+        return;
+    }
 
-            // Récupération et mise à jour de l'état du bouton des ventes
-            statutVentesFermees = ev.ventes_fermees || false;
-            mettreAJourBoutonVentes();
+    try {
+        const { data: ev, error } = await window.supabaseClient
+            .from("evenements")
+            .select("*")
+            .eq("id", eventId)
+            .single();
 
-            chargerToutesLesDemandes();
+        if (error || !ev) {
+            document.getElementById("infosEvenementOrg").textContent = "Événement introuvable.";
+            return;
         }
 
+        // DEBUG TECHNIQUE : Ouvre ta console F12 pour voir EXACTEMENT le contenu de ton objet et l'URL de l'affiche
+        console.log("Données de l'événement chargées depuis Supabase :", ev);
+        console.log("URL de l'affiche trouvée :", ev.affiche_url || ev.image_url || ev.affiche || ev.photo);
+
+        document.getElementById("titreEvenementOrg").textContent = ev.titre;
+        document.getElementById("infosEvenementOrg").innerHTML = `📅 Date: ${ev.date} <span style="margin-left: 15px;">Heure ${ev.heure} &nbsp;&nbsp;|&nbsp;&nbsp; 📍 Lieu : ${ev.lieu}`;
+
+        let headerContainer = document.getElementById("headerTopContainer");
+        let eventImage = ev.affiche_url || ev.image_url || ev.affiche || ev.photo; 
+
+        if (headerContainer && eventImage) {
+            // Solution radicale et propre : On injecte une balise <img> en absolute 
+            // pour forcer l'affichage de l'image sans dépendre du background CSS.
+            headerContainer.classList.add("has-image");
+            
+            // On vérifie si l'élément <img> existe déjà pour éviter les doublons
+            let imgElement = headerContainer.querySelector(".event-bg-img");
+            if (!imgElement) {
+                imgElement = document.createElement("img");
+                imgElement.className = "event-bg-img";
+                // On insère l'image tout au début du conteneur
+                headerContainer.insertBefore(imgElement, headerContainer.firstChild);
+            }
+            imgElement.src = eventImage;
+        }
+
+        statutVentesFermees = ev.ventes_fermees || false;
+        mettreAJourBoutonVentes();
+
+        await chargerToutesLesDemandes();
+    } catch (err) {
+        console.error("Erreur chargement organisateur :", err);
+    }
+}        
         async function chargerToutesLesDemandes() {
             let containerPaiements = document.getElementById("listePaiements");
 
-            const { data: billets, error } = await window.supabaseClient
-                .from("billets")
-                .select("*")
-                .eq("evenement_id", eventId)
-                .order("id", { ascending: false });
+            try {
+                const { data: billets, error } = await window.supabaseClient
+                    .from("billets")
+                    .select("*")
+                    .eq("evenement_id", eventId)
+                    .order("id", { ascending: false });
 
-            if (error) {
-                containerPaiements.innerHTML = "<p>Erreur lors du chargement.</p>";
-                document.getElementById("listeValidees").innerHTML = "<p>Erreur lors du chargement.</p>";
-                return;
-            }
-
-            if (!billets || billets.length === 0) {
-                containerPaiements.innerHTML = "<p style='text-align:center; color:#64748b;'>Aucune demande de paiement pour le moment.</p>";
-                document.getElementById("listeValidees").innerHTML = "<p style='text-align:center; color:#64748b;'>Aucun participant validé pour le moment.</p>";
-                mettreAJourCompteurs(0);
-                return;
-            }
-
-            containerPaiements.innerHTML = "";
-            listeParticipantsValidesGlobal = [];
-
-            let now = Date.now();
-            let countPaiements = 0;
-
-            billets.forEach(function(b) {
-                let statutHtml = "";
-                if (b.statut === "confirme") {
-                    statutHtml = `<span class="badge-statut badge-confirme">✅ Confirmé / Payé</span>`;
-                } else if (b.statut === "refuse") {
-                    statutHtml = `<span class="badge-statut badge-refuse">❌ Refusé / Annulé</span>`;
-                } else {
-                    statutHtml = `<span class="badge-statut badge-attente">⏳ En attente</span>`;
+                if (error || !billets) {
+                    containerPaiements.innerHTML = "<p>Erreur lors du chargement.</p>";
+                    return;
                 }
 
-                if (b.statut === 'confirme') {
-                    let tempsConfirmation = b.updated_at ? new Date(b.updated_at).getTime() : now;
-                    let diffMinutes = (now - tempsConfirmation) / (1000 * 60);
+                containerPaiements.innerHTML = "";
+                listeParticipantsValidesGlobal = [];
+                let countPaiements = 0;
+                let maintenant = new Date().getTime();
 
-                    if (diffMinutes < 5) {
+                billets.forEach(function(b) {
+                    let statutHtml = "";
+                    if (b.statut === "confirme") {
+                        statutHtml = `<span class="badge-statut badge-confirme">✅ Confirmé / Payé</span>`;
+                    } else if (b.statut === "refuse") {
+                        statutHtml = `<span class="badge-statut badge-refuse">❌ Refusé / Annulé</span>`;
+                    } else {
+                        statutHtml = `<span class="badge-statut badge-attente">⏳ En attente</span>`;
+                    }
+
+                    // Si le billet est confirmé
+                    if (b.statut === 'confirme') {
+                        listeParticipantsValidesGlobal.push(b);
+
+                        // On vérifie le champ updated_at s'il existe
+                        if (b.updated_at) {
+                            let tempsMaj = new Date(b.updated_at).getTime();
+                            let tempsEcoule = maintenant - tempsMaj;
+
+                            // S'il a été confirmé il y a moins d'1 minute (60000 ms), on l'affiche temporairement dans l'onglet en attente
+                            if (tempsEcoule < 60000) {
+                                countPaiements++;
+                                let secondesRestantes = Math.ceil((60000 - tempsEcoule) / 1000);
+                                let statutTemporaire = `<span class="badge-statut badge-confirme">⏳ Validé (Disparaît dans ${secondesRestantes}s)</span>`;
+                                containerPaiements.innerHTML += HTMLCartePaiement(b, statutTemporaire);
+                            }
+                        }
+                    } else {
                         countPaiements++;
                         containerPaiements.innerHTML += HTMLCartePaiement(b, statutHtml);
-                    } else {
-                        listeParticipantsValidesGlobal.push(b);
                     }
-                } else {
-                    countPaiements++;
-                    containerPaiements.innerHTML += HTMLCartePaiement(b, statutHtml);
+                });
+
+                if (countPaiements === 0) {
+                    containerPaiements.innerHTML = "<p style='text-align:center; color:#64748b;'>Aucune demande en attente de validation.</p>";
                 }
-            });
 
-            if (countPaiements === 0) containerPaiements.innerHTML = "<p style='text-align:center; color:#64748b;'>Aucune demande en cours.</p>";
-
-            afficherParticipantsValides(listeParticipantsValidesGlobal);
-            mettreAJourCompteurs(listeParticipantsValidesGlobal.length);
+                afficherParticipantsValides(listeParticipantsValidesGlobal);
+                mettreAJourCompteurs(listeParticipantsValidesGlobal.length);
+            } catch (err) {
+                console.error("Erreur chargement demandes :", err);
+            }
         }
 
         function HTMLCartePaiement(b, statutHtml) {
@@ -583,9 +939,9 @@
                     <a href="${b.preuve_url}" target="_blank"><img src="${b.preuve_url}" alt="Preuve de paiement"></a>
                     <br>
                     <div style="margin-top: 15px;">
-                        <button class="btn-confirmer" onclick="changerStatut(${b.id}, 'confirme')">✅ J'ai reçu</button>
-                        <button class="btn-refuser" onclick="changerStatut(${b.id}, 'refuse')">❌ Non reçu</button>
-                        <button class="btn-attente" onclick="changerStatut(${b.id}, 'attente')">⏳ Mettre en attente</button>
+                        <button type="button" class="btn-confirmer btn-changer-statut" data-id="${b.id}" data-statut="confirme">✅ J'ai reçu</button>
+                        <button type="button" class="btn-refuser btn-changer-statut" data-id="${b.id}" data-statut="refuse">❌ Non reçu</button>
+                        <button type="button" class="btn-attente btn-changer-statut" data-id="${b.id}" data-statut="attente">⏳ Mettre en attente</button>
                     </div>
                 </div>
             `;
@@ -594,7 +950,7 @@
         function afficherParticipantsValides(liste) {
             let containerValidees = document.getElementById("listeValidees");
             if (liste.length === 0) {
-                containerValidees.innerHTML = "<p style='text-align:center; color:#64748b;'>Aucun participant trouvé.</p>";
+                containerValidees.innerHTML = "<p style='text-align:center; color:#64748b;'>Aucun participant validé pour le moment.</p>";
                 return;
             }
 
@@ -607,7 +963,7 @@
                         <p><strong>Téléphone WhatsApp :</strong> ${b.telephone || 'N/A'}</p>
                         <p><strong>Billet N° :</strong> ${b.id}</p>
                         <div style="margin-top: 15px;">
-                            <button class="btn-refuser" onclick="retirerParticipant(${b.id})">🚫 Retirer (Supprimer définitivement)</button>
+                            <button type="button" class="btn-refuser btn-retirer-participant" data-id="${b.id}">🚫 Retirer (Supprimer définitivement)</button>
                         </div>
                     </div>
                 `;
@@ -625,22 +981,24 @@
         }
 
         function mettreAJourCompteurs(nombre) {
-            document.getElementById("btnTabValidees").textContent = `2. Validées (${nombre})`;
-            document.getElementById("titreSectionValidees").textContent = `Participants Confirmés & Validés (${nombre})`;
+            let btnTabValidees = document.getElementById("btnTabValidees");
+            let titreValidees = document.getElementById("titreSectionValidees");
+            if (btnTabValidees) btnTabValidees.textContent = `2. Validés (${nombre})`;
+            if (titreValidees) titreValidees.textContent = `Participants Confirmés & Validés (${nombre})`;
         }
 
         async function changerStatut(billetId, nouveauStatut) {
             let updateData = { 
                 statut: nouveauStatut,
-                updated_at: new Date().toISOString()
+                updated_at: new Date().toISOString() // On met à jour l'horodatage directement dans la base de données
             };
 
             if (nouveauStatut === 'confirme') {
-                let codeUnique = `${billetId}`;
-                updateData.qr_code = codeUnique;
-                updateData.numero_billet = codeUnique;
+                updateData.qr_code = `${billetId}`;
+                updateData.numero_billet = `${billetId}`;
             }
 
+            // Mise à jour immédiate dans Supabase (l'acheteur obtient son billet instantanément)
             const { error } = await window.supabaseClient
                 .from("billets")
                 .update(updateData)
@@ -651,11 +1009,12 @@
                 return;
             }
 
-            chargerToutesLesDemandes();
-        }   
+            // Actualise les listes pour refléter le changement
+            await chargerToutesLesDemandes();
+        }  
 
         async function retirerParticipant(billetId) {
-            if (!confirm("Voulez-vous vraiment supprimer définitivement ce participant et son billet ? Cette action est irréversible.")) return;
+            if (!confirm("Voulez-vous vraiment supprimer définitivement ce participant et son billet ?")) return;
 
             const { error } = await window.supabaseClient
                 .from("billets")
@@ -667,8 +1026,7 @@
                 return;
             }
 
-            alert("Le participant et son billet ont été entièrement supprimés.");
-            chargerToutesLesDemandes();
+            await chargerToutesLesDemandes();
         }
 
         let derniersBilletsScannes = {};
@@ -716,34 +1074,22 @@
             if (b.statut !== "confirme") {
                 resultatDiv.style.background = "#fef3c7";
                 resultatDiv.style.color = "#92400e";
-                resultatDiv.textContent = `⚠️ Entrée refusée : Ce billet n'est pas confirmé ou a été invalidé (Statut : ${b.statut}).`;
+                resultatDiv.textContent = `⚠️ Entrée refusée : Ce billet n'est pas confirmé (Statut : ${b.statut}).`;
                 return;
             }
 
             let maintenant = Date.now();
-
             if (derniersBilletsScannes[b.id] && (maintenant - derniersBilletsScannes[b.id] < 30000)) {
                 resultatDiv.style.background = "#d1fae5";
                 resultatDiv.style.color = "#065f46";
-                resultatDiv.innerHTML = `
-                    ✅ <strong>ENTRÉE VALIDE (Déjà scanné à l'instant)</strong><br>
-                    <span style="font-size: 14px; font-weight: normal; color: #1e293b;">
-                        Bienvenue à <strong>${b.nom_participant || 'N/A'}</strong><br>
-                        Téléphone : ${b.telephone} | Billet N° : ${b.id}
-                    </span>
-                `;
+                resultatDiv.innerHTML = `✅ <strong>ENTRÉE VALIDE (Déjà scanné)</strong><br>${b.nom_participant || 'N/A'}`;
                 return;
             }
 
             if (b.utilise === true || b.utilise === "true") {
                 resultatDiv.style.background = "#fee2e2";
                 resultatDiv.style.color = "#991b1b";
-                resultatDiv.innerHTML = `
-                    🚨 <strong>ENTRÉE NON VALIDE - BILLET DÉJÀ UTILISÉ !</strong><br>
-                    <span style="font-size: 14px; font-weight: normal; color: #1e293b;">
-                        Propriétaire : <strong>${b.nom_participant || 'N/A'}</strong> | Tél : ${b.telephone}
-                    </span>
-                `;
+                resultatDiv.innerHTML = `🚨 <strong>BILLET DÉJÀ UTILISÉ !</strong><br>${b.nom_participant || 'N/A'}`;
                 return;
             }
 
@@ -753,23 +1099,16 @@
                 .eq("id", b.id);
 
             if (updateError) {
-                resultatDiv.style.background = "#fee2e2";
+                result_div.style.background = "#fee2e2";
                 resultatDiv.style.color = "#991b1b";
-                resultatDiv.textContent = "❌ Erreur lors de la validation de l'entrée.";
+                resultatDiv.textContent = "❌ Erreur lors de la validation.";
                 return;
             }
 
             derniersBilletsScannes[b.id] = maintenant;
-
             resultatDiv.style.background = "#d1fae5";
             resultatDiv.style.color = "#065f46";
-            resultatDiv.innerHTML = `
-                ✅ <strong>ENTRÉE VALIDE</strong><br>
-                <span style="font-size: 14px; font-weight: normal; color: #1e293b;">
-                    Bienvenue à <strong>${b.nom_participant || 'N/A'}</strong><br>
-                    Téléphone : ${b.telephone} | Billet N° : ${b.id}
-                </span>
-            `;
+            resultatDiv.innerHTML = `✅ <strong>ENTRÉE VALIDE</strong><br>Bienvenue à <strong>${b.nom_participant || 'N/A'}</strong>`;
         }
 
         function verifierBilletManuel() {
@@ -778,82 +1117,63 @@
             document.getElementById("codeBilletInput").value = "";
         }
 
-        function changerOnglet(nomOnglet, eventElement) {
+        function changerOnglet(nomOnglet, buttonElement) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
 
-            if (nomOnglet === 'paiements') {
-                eventElement.currentTarget.classList.add('active');
-                document.getElementById('section-paiements').classList.add('active');
-                if (html5QrCode && html5QrCode.isScanning) {
-                    html5QrCode.stop();
-                }
-            } else if (nomOnglet === 'validees') {
-                eventElement.currentTarget.classList.add('active');
-                document.getElementById('section-validees').classList.add('active');
-                if (html5QrCode && html5QrCode.isScanning) {
-                    html5QrCode.stop();
-                }
-            } else {
-                eventElement.currentTarget.classList.add('active');
-                document.getElementById('section-scanner').classList.add('active');
+            if (buttonElement) buttonElement.classList.add('active');
 
-                if (!html5QrCode) {
-                    html5QrCode = new Html5Qrcode("reader");
-                }
+            if (nomOnglet === 'paiements') {
+                document.getElementById('section-paiements').classList.add('active');
+                if (html5QrCode && html5QrCode.isScanning) html5QrCode.stop();
+            } else if (nomOnglet === 'validees') {
+                document.getElementById('section-validees').classList.add('active');
+                if (html5QrCode && html5QrCode.isScanning) html5QrCode.stop();
+            } else {
+                document.getElementById('section-scanner').classList.add('active');
+                if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
                 html5QrCode.start(
                     { facingMode: "environment" },
                     { fps: 10, qrbox: 250 },
-                    (decodedText) => {
-                        traiterVerificationBillet(decodedText);
-                    },
+                    (decodedText) => traiterVerificationBillet(decodedText),
                     (errorMessage) => {}
-                ).catch(err => {
-                    console.log("Caméra non disponible :", err);
-                });
+                ).catch(err => console.log("Caméra non dispo :", err));
             }
+        }
+
+        async function toggleVentes() {
+            statutVentesFermees = !statutVentesFermees;
+            const { error } = await window.supabaseClient
+                .from("evenements")
+                .update({ ventes_fermees: statutVentesFermees })
+                .eq("id", eventId);
+
+            if (error) {
+                alert("Erreur : " + error.message);
+                statutVentesFermees = !statutVentesFermees;
+                return;
+            }
+            mettreAJourBoutonVentes();
         }
 
         function mettreAJourBoutonVentes() {
             let label = document.getElementById("labelStatutVentes");
             let btn = document.getElementById("btnToggleVentes");
+            if (!label || !btn) return;
 
             if (statutVentesFermees) {
-                label.innerHTML = "Vente des billets : <span style='color: #ef4444;'>🔴 FERMÉE</span>";
-                btn.textContent = "🟢 Rouvrir la vente";
+                label.innerHTML = "Vente des billets : <span style='color: #ef4444;'>FERMÉE</span>";
+                btn.textContent = "Ouvrir la vente";
                 btn.style.background = "#10b981";
                 btn.style.color = "#ffffff";
             } else {
-                label.innerHTML = "Vente des billets : <span style='color: #10b981;'>🟢 OUVERTE</span>";
-                btn.textContent = "🔴 Fermer la vente";
+                label.innerHTML = "Vente des billets : <span style='color: #10b981;'>OUVERTE</span>";
+                btn.textContent = "Fermer la vente";
                 btn.style.background = "#ef4444";
                 btn.style.color = "#ffffff";
             }
         }
-
-        async function toggleVentes() {
-            let nouvelEtat = !statutVentesFermees;
-            let texteAction = nouvelEtat ? "FERMER" : "ROUVRIR";
-
-            if (!confirm(`Êtes-vous sûr de vouloir ${texteAction} la vente des billets pour cet événement ?`)) {
-                return;
-            }
-
-            const { error } = await window.supabaseClient
-                .from("evenements")
-                .update({ ventes_fermees: nouvelEtat })
-                .eq("id", eventId);
-
-            if (error) {
-                alert("Erreur lors de la mise à jour : " + error.message);
-                return;
-            }
-
-            statutVentesFermees = nouvelEtat;
-            mettreAJourBoutonVentes();
-        }
-
-        chargerEspaceOrganisateur();
     </script>
+      </script>
 </body>
 </html>

@@ -163,7 +163,7 @@
 
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--text-main); }
-        .form-group input, .form-group textarea { 
+        .form-group input, .form-group textarea, .form-group select { 
             width: 100%; 
             padding: 11px 14px; 
             border: 1px solid #cbd5e1; 
@@ -178,7 +178,7 @@
             background: #f8fafc;
             cursor: pointer;
         }
-        .form-group input:focus, .form-group textarea:focus {
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15);
         }
@@ -247,10 +247,19 @@
                     <label>Lieu</label>
                     <input type="text" id="lieu" required placeholder="Ex: Canal Olympia, Ouagadougou">
                 </div>
+                
                 <div class="form-group">
-                    <label>Prix du billet</label>
-                    <input type="number" id="prix" required placeholder="Ex: 5000 (sans unité fixe)">
+                    <label for="nombreCategories">Nombre de catégories de billets :</label>
+                    <select id="nombreCategories" class="form-control" onchange="genererChampsCategories()">
+                        <option value="1">1 catégorie (Classique)</option>
+                        <option value="2">2 catégories</option>
+                        <option value="3">3 catégories</option>
+                        <option value="4">4 catégories</option>
+                    </select>
                 </div>
+
+                <!-- Conteneur dynamique où les champs de prix/catégories vont s'injecter -->
+                <div id="dynamicCategoriesContainer" style="margin-top: 15px;"></div>
                 
                 <!-- CHAMP FICHIER : Affiche de l'événement -->
                 <div class="form-group">
@@ -349,21 +358,60 @@
 
             listeGlobaleEvenements = evenements;
 
-            container.innerHTML = evenements.map(ev => `
-                <div class="event-card" onclick="ouvrirModalDetails('${ev.id}')">
-                    <h3 class="event-title">${ev.titre}</h3>
-                    <p class="event-info">📅 ${ev.date || 'Non précisée'} à ${ev.heure || ''}</p>
-                    <p class="event-info">📍 ${ev.lieu || 'Non précisé'}</p>
-                    <p class="event-info">💵 Prix : ${ev.prix !== null && ev.prix !== undefined ? ev.prix : 'Gratuit'}</p>
-                    <p class="event-info">💳 Bénéficiaire : ${ev.beneficiaire_nom || ''}</p>
-                </div>
-            `).join("");
+            container.innerHTML = evenements.map(ev => {
+                let affichagePrix = "Gratuit";
+                if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_data.length > 0) {
+                    affichagePrix = ev.categories_data.map(c => `${c.nom}: ${c.prix}`).join(" | ");
+                } else if (ev.prix) {
+                    affichagePrix = ev.prix;
+                }
+
+                return `
+                    <div class="event-card" onclick="ouvrirModalDetails('${ev.id}')">
+                        <h3 class="event-title">${ev.titre}</h3>
+                        <p class="event-info">📅 ${ev.date || 'Non précisée'} à ${ev.heure || ''}</p>
+                        <p class="event-info">📍 ${ev.lieu || 'Non précisé'}</p>
+                        <p class="event-info">💵 Tarifs : ${affichagePrix}</p>
+                        <p class="event-info">👤 Bénéficiaire des paiements : ${ev.beneficiaire_nom || ''}</p>
+                    </div>
+                `;
+            }).join("");
 
         } catch (err) {
             console.error("Erreur :", err);
             container.innerHTML = `<p>Erreur lors du chargement : ${err.message}</p>`;
         }
     }
+
+    function genererChampsCategories() {
+        const nb = document.getElementById("nombreCategories").value;
+        const container = document.getElementById("dynamicCategoriesContainer");
+        container.innerHTML = "";
+
+        for (let i = 1; i <= nb; i++) {
+            container.innerHTML += `
+                <div style="background: #fafaf9; border: 1px solid rgba(217, 119, 6, 0.2); padding: 12px; border-radius: 12px; margin-bottom: 10px;">
+                    <p style="margin: 0 0 8px 0; font-weight: 700; font-size: 12px; color: #d97706;">Type ${i}</p>
+                    <div style="display: flex; gap: 8px;">
+                        <div style="flex: 1;">
+                            <label style="font-size: 10px; color: #64748b;">Nom de catégorie (ex: Standard, VIP)</label>
+                            <input type="text" id="cat_nom_${i}" class="form-control" placeholder="Nom ${i}" required style="width:100%; padding:8px; border-radius:8px; border:1px solid #cbd5e1;">
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="font-size: 10px; color: #64748b;">Prix (ex: 20dhs ou 2000 FCFA)</label>
+                            <input type="text" id="cat_prix_${i}" class="form-control" placeholder="Prix ${i}" required style="width:100%; padding:8px; border-radius:8px; border:1px solid #cbd5e1;">
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        if (document.getElementById("nombreCategories")) {
+            genererChampsCategories();
+        }
+    });
 
     function ouvrirModalCreation() { document.getElementById("modalEvent").style.display = "flex"; }
     function fermerModalCreation() { document.getElementById("modalEvent").style.display = "none"; }
@@ -373,7 +421,7 @@
         if (!ev) return;
 
         document.getElementById("detail-titre").innerText = "Gérer : " + ev.titre;
-        const baseUrl = "https://ticketplatformbyabdiel.netlify.app";
+        const baseUrl = "https://ticketplatform-kappa.vercel.app";
         
         document.getElementById("lien-acheteur").value = `${baseUrl}/index.html?event=${ev.id}`;
         document.getElementById("lien-vendeur").value = `${baseUrl}/admin-organisateur.html?event=${ev.id}`;
@@ -393,8 +441,12 @@
         alert("Lien copié dans le presse-papier !");
     }
 
+    // FONCTION CORRIGÉE : Sécurisation du nom de fichier pour éviter les erreurs "Invalid key" de Supabase Storage
     async function uploaderFichierSupabase(file, dossier) {
-        const fileName = `${dossier}/${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+        const fileExt = file.name.split('.').pop().toLowerCase();
+        const randomString = Math.random().toString(36).substring(2, 8);
+        const fileName = `${dossier}/${Date.now()}_${randomString}.${fileExt}`;
+
         const { data, error } = await window.supabaseClient.storage
             .from('preuves')
             .upload(fileName, file);
@@ -428,6 +480,19 @@
                 return;
             }
 
+            const nombreCategories = parseInt(document.getElementById("nombreCategories").value);
+            let categoriesArray = [];
+
+            for (let i = 1; i <= nombreCategories; i++) {
+                let nom = document.getElementById(`cat_nom_${i}`).value;
+                let prix = document.getElementById(`cat_prix_${i}`).value;
+                categoriesArray.push({
+                    type: String(i),
+                    nom: nom,
+                    prix: prix
+                });
+            }
+
             const afficheUrl = await uploaderFichierSupabase(fileAfficheInput, 'affiches');
             const ribUrl = await uploaderFichierSupabase(fileRibInput, 'ribs');
 
@@ -436,7 +501,8 @@
                 date: document.getElementById("date").value,
                 heure: document.getElementById("heure").value,
                 lieu: document.getElementById("lieu").value,
-                prix: parseFloat(document.getElementById("prix").value) || 0,
+                nombre_categories: nombreCategories,
+                categories_data: categoriesArray,
                 affiche_url: afficheUrl,
                 beneficiaire_nom: document.getElementById("beneficiaire_nom").value,
                 beneficiaire_infos: document.getElementById("beneficiaire_infos").value,
@@ -451,10 +517,12 @@
 
             document.getElementById("formEvent").reset();
             fermerModalCreation();
+            genererChampsCategories();
             chargerMesEvenements();
             alert("Événement créé avec succès !");
 
         } catch (err) {
+            console.error("Erreur :", err);
             alert("Erreur : " + err.message);
         } finally {
             btnSubmit.disabled = false;
