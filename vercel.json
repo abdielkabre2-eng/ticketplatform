@@ -1,7 +1,6 @@
 {
-  "cleanUrls": true,
   "rewrites": [
-    { "source": "/event/:id", "destination": "/index.html?event=:id" },
-    { "source": "/admin-event/:id", "destination": "/admin-organisateur.html?event=:id" }
+    { "source": "/event/:id", "destination": "/index.html" },
+    { "source": "/admin-event/:id", "destination": "/admin-organisateur.html" }
   ]
 }
