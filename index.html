@@ -11,12 +11,10 @@
             --primary: #d97706;
             --primary-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
             --primary-glow: rgba(217, 119, 6, 0.25);
-            
             --bg-main: #fcfbf9;
             --card-bg: rgba(255, 255, 255, 0.85);
             --card-border: rgba(217, 119, 6, 0.15);
             --input-bg: rgba(248, 250, 252, 0.9);
-            
             --text-main: #0f172a;
             --text-muted: #64748b;
             --radius-lg: 24px;
@@ -235,6 +233,7 @@
         }
 
         input[type="text"],
+        input[type="email"],
         input[type="tel"],
         input[type="file"],
         select {
@@ -251,6 +250,7 @@
         }
 
         input[type="text"]:focus,
+        input[type="email"]:focus,
         input[type="tel"]:focus,
         select:focus {
             border-color: var(--primary);
@@ -380,7 +380,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase.js"></script>
     <script>
-       async function chargerPageAchatUnique() {
+        async function chargerPageAchatUnique() {
             const urlParams = new URLSearchParams(window.location.search);
             let eventId = urlParams.get("event");
             let container = document.getElementById("detailsEvenement");
@@ -431,7 +431,7 @@
 
                 contenuColonneDroite = `
                     <div class="form-card">
-                       <div class="payment-box">
+                        <div class="payment-box">
                             <h3 style="margin-bottom: 16px; font-size: 15px; color: var(--text-main);">📱 ÉTAPE 1 : EFFECTUER LE PAIEMENT</h3>
                             
                             <div style="display: flex; flex-direction: column; gap: 10px;">
@@ -463,6 +463,11 @@
                         <div class="form-group">
                             <label for="nomParticipant">Nom et Prénom:</label>
                             <input type="text" id="nomParticipant" placeholder="ex: KONATE Jean">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="emailParticipant">Adresse E-mail (pour recevoir votre billet en PDF) :</label>
+                            <input type="email" id="emailParticipant" placeholder="ex: nom@exemple.com" required>
                         </div>
 
                         <div class="form-group">
@@ -514,19 +519,20 @@
             if (!ev.ventes_fermees) {
                 document.getElementById("btnValiderAchat").onclick = async function() {
                     let nom = document.getElementById("nomParticipant").value.trim();
+                    let email = document.getElementById("emailParticipant").value.trim();
                     let tel = document.getElementById("telParticipant").value.trim();
                     let fichierPreuve = document.getElementById("preuvePaiement").files[0];
                     
                     let typeBilletChoisi = "Standard";
                     const selectCat = document.getElementById("selectCategorie");
                     if (selectCat) {
-                        typeBilletChoisi = selectCat.value; // Ex: "VIP - 30 DHS"
+                        typeBilletChoisi = selectCat.value; 
                     } else if (ev.prix) {
                         typeBilletChoisi = String(ev.prix);
                     }
 
-                    if (!nom || !tel || !fichierPreuve) {
-                        alert("Veuillez remplir tous les champs et joindre la capture de paiement.");
+                    if (!nom || !email || !tel || !fichierPreuve) {
+                        alert("Veuillez remplir tous les champs (y compris l'e-mail) et joindre la capture de paiement.");
                         return;
                     }
 
@@ -569,13 +575,13 @@
 
                         let preuveUrl = urlData.publicUrl;
 
-                        // On insère directement dans la colonne existante "type_billet"
                         const { data: insertedBillet, error: insertError } = await window.supabaseClient
                             .from("billets")
                             .insert([
                                 {
                                     evenement_id: ev.id,
                                     nom_participant: nom,
+                                    email: email, // Enregistrement de l'email ici
                                     telephone: tel,
                                     preuve_url: preuveUrl,
                                     type_billet: typeBilletChoisi, 
@@ -609,4 +615,4 @@
         chargerPageAchatUnique();
     </script>
 </body>
-</html>
+</html>        

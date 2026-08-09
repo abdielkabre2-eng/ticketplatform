@@ -417,17 +417,20 @@
     function fermerModalCreation() { document.getElementById("modalEvent").style.display = "none"; }
 
     function ouvrirModalDetails(idEvenement) {
-        const ev = listeGlobaleEvenements.find(e => e.id == idEvenement);
-        if (!ev) return;
+    const ev = listeGlobaleEvenements.find(e => e.id == idEvenement);
+    if (!ev) return;
 
-        document.getElementById("detail-titre").innerText = "Gérer : " + ev.titre;
-        const baseUrl = "https://ticketplatform-kappa.vercel.app";
-        
-        document.getElementById("lien-acheteur").value = `${baseUrl}/index.html?event=${ev.id}`;
-        document.getElementById("lien-vendeur").value = `${baseUrl}/admin-organisateur.html?event=${ev.id}`;
+    document.getElementById("detail-titre").innerText = "Gérer : " + ev.titre;
+    
+    // On utilise la racine du site sans fichier précis
+    const baseUrl = "https://ticketplatform-kappa.vercel.app";
+    
+    // Voici les nouveaux liens "propres"
+    document.getElementById("lien-acheteur").value = `${baseUrl}/event/${ev.id}`;
+    document.getElementById("lien-vendeur").value = `${baseUrl}/admin-event/${ev.id}`;
 
-        document.getElementById("modalDetails").style.display = "flex";
-    }
+    document.getElementById("modalDetails").style.display = "flex";
+}
 
     function fermerModalDetails() { 
         document.getElementById("modalDetails").style.display = "none"; 

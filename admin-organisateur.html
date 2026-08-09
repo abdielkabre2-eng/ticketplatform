@@ -688,6 +688,27 @@
         }
         .creator-footer a { color: var(--primary); text-decoration: none; font-weight: 600; }
     </style>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoldTix - Espace Organisateur</title>
+    
+    <!-- Scripts EmailJS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+       (function(){
+          emailjs.init({
+            publicKey: "YPI814w1CnLbyKiQC",
+          });
+       })();
+    </script>
+
+    <!-- Tes styles CSS existants (ajoute tes liens de styles ici si nécessaire) -->
+    <style>
+        /* Tu peux conserver tes styles habituels ici */
+    </style>
 </head>
 <body class="animate-slide-down">
 
@@ -998,7 +1019,7 @@ async function chargerEspaceOrganisateur() {
                 updateData.numero_billet = `${billetId}`;
             }
 
-            // Mise à jour immédiate dans Supabase (l'acheteur obtient son billet instantanément)
+            // Mise à jour immédiate dans Supabase
             const { error } = await window.supabaseClient
                 .from("billets")
                 .update(updateData)
@@ -1007,6 +1028,32 @@ async function chargerEspaceOrganisateur() {
             if (error) {
                 alert("Erreur lors de la mise à jour : " + error.message);
                 return;
+            }
+
+            // Si le statut devient confirmé, on déclenche l'envoi de l'e-mail au participant
+            if (nouveauStatut === 'confirme') {
+                try {
+                    const { data: b, error: errBillet } = await window.supabaseClient
+                        .from("billets")
+                        .select("email, nom_participant")
+                        .eq("id", billetId)
+                        .single();
+
+                    if (!errBillet && b && b.email) {
+                        let lienBillet = `${window.location.origin}/billet.html?id=${billetId}`;
+
+                        const templateParams = {
+                            email: b.email,
+                            nom_participant: b.nom_participant,
+                            lien_billet: lienBillet
+                        };
+
+                        await emailjs.send('service_p8rnipf', 'template_ilhe1ca', templateParams);
+                        console.log('E-mail du billet envoyé avec succès au participant !');
+                    }
+                } catch (mailErr) {
+                    console.error('Erreur lors de l\'envoi de l\'e-mail via EmailJS :', mailErr);
+                }
             }
 
             // Actualise les listes pour refléter le changement
@@ -1099,7 +1146,7 @@ async function traiterVerificationBillet(codeScanne) {
         .eq("id", b.id);
 
     if (updateError) {
-        resultatDiv.style.background = "#fee2e2"; // Correction de la variable ici
+        resultatDiv.style.background = "#fee2e2"; 
         resultatDiv.style.color = "#991b1b";
         resultatDiv.textContent = "❌ Erreur lors de la validation.";
         return;
