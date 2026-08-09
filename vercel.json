@@ -1,6 +1,0 @@
-{
-  "rewrites": [
-    { "source": "/event/:id", "destination": "/index.html" },
-    { "source": "/admin-event/:id", "destination": "/admin-organisateur.html" }
-  ]
-}
