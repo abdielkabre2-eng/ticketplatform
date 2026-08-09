@@ -852,7 +852,6 @@ async function chargerEspaceOrganisateur() {
             return;
         }
 
-        // DEBUG TECHNIQUE : Ouvre ta console F12 pour voir EXACTEMENT le contenu de ton objet et l'URL de l'affiche
         console.log("Données de l'événement chargées depuis Supabase :", ev);
         console.log("URL de l'affiche trouvée :", ev.affiche_url || ev.image_url || ev.affiche || ev.photo);
 
@@ -863,16 +862,12 @@ async function chargerEspaceOrganisateur() {
         let eventImage = ev.affiche_url || ev.image_url || ev.affiche || ev.photo; 
 
         if (headerContainer && eventImage) {
-            // Solution radicale et propre : On injecte une balise <img> en absolute 
-            // pour forcer l'affichage de l'image sans dépendre du background CSS.
             headerContainer.classList.add("has-image");
             
-            // On vérifie si l'élément <img> existe déjà pour éviter les doublons
             let imgElement = headerContainer.querySelector(".event-bg-img");
             if (!imgElement) {
                 imgElement = document.createElement("img");
                 imgElement.className = "event-bg-img";
-                // On insère l'image tout au début du conteneur
                 headerContainer.insertBefore(imgElement, headerContainer.firstChild);
             }
             imgElement.src = eventImage;
@@ -916,16 +911,13 @@ async function chargerEspaceOrganisateur() {
                         statutHtml = `<span class="badge-statut badge-attente">⏳ En attente</span>`;
                     }
 
-                    // Si le billet est confirmé
                     if (b.statut === 'confirme') {
                         listeParticipantsValidesGlobal.push(b);
 
-                        // On vérifie le champ updated_at s'il existe
                         if (b.updated_at) {
                             let tempsMaj = new Date(b.updated_at).getTime();
                             let tempsEcoule = maintenant - tempsMaj;
 
-                            // S'il a été confirmé il y a moins d'1 minute (60000 ms), on l'affiche temporairement dans l'onglet en attente
                             if (tempsEcoule < 60000) {
                                 countPaiements++;
                                 let secondesRestantes = Math.ceil((60000 - tempsEcoule) / 1000);
@@ -1011,7 +1003,7 @@ async function chargerEspaceOrganisateur() {
         async function changerStatut(billetId, nouveauStatut) {
             let updateData = { 
                 statut: nouveauStatut,
-                updated_at: new Date().toISOString() // On met à jour l'horodatage directement dans la base de données
+                updated_at: new Date().toISOString()
             };
 
             if (nouveauStatut === 'confirme') {
@@ -1019,7 +1011,35 @@ async function chargerEspaceOrganisateur() {
                 updateData.numero_billet = `${billetId}`;
             }
 
-            // Mise à jour immédiate dans Supabase
+            // 1. Si on confirme, on envoie l'e-mail AVANT de recharger la page
+            if (nouveauStatut === 'confirme') {
+                try {
+                    const { data: bInfo, error: errBillet } = await window.supabaseClient
+                        .from("billets")
+                        .select("email, nom_participant")
+                        .eq("id", billetId)
+                        .single();
+
+                    if (!errBillet && bInfo && bInfo.email) {
+                        let lienBillet = `${window.location.origin}/billet.html?id=${billetId}`;
+
+                        const templateParams = {
+                            email: bInfo.email,
+                            nom_participant: bInfo.nom_participant,
+                            lien_billet: lienBillet
+                        };
+
+                        await emailjs.send('service_p8rnipf', 'template_ilhe1ca', templateParams);
+                        console.log('E-mail du billet envoyé avec succès au participant !');
+                    } else {
+                        console.warn("Aucun e-mail trouvé pour ce billet.");
+                    }
+                } catch (mailErr) {
+                    console.error('Erreur lors de l\'envoi de l\'e-mail via EmailJS :', mailErr);
+                }
+            }
+
+            // 2. Mise à jour dans Supabase
             const { error } = await window.supabaseClient
                 .from("billets")
                 .update(updateData)
@@ -1030,33 +1050,7 @@ async function chargerEspaceOrganisateur() {
                 return;
             }
 
-            // Si le statut devient confirmé, on déclenche l'envoi de l'e-mail au participant
-            if (nouveauStatut === 'confirme') {
-                try {
-                    const { data: b, error: errBillet } = await window.supabaseClient
-                        .from("billets")
-                        .select("email, nom_participant")
-                        .eq("id", billetId)
-                        .single();
-
-                    if (!errBillet && b && b.email) {
-                        let lienBillet = `${window.location.origin}/billet.html?id=${billetId}`;
-
-                        const templateParams = {
-                            email: b.email,
-                            nom_participant: b.nom_participant,
-                            lien_billet: lienBillet
-                        };
-
-                        await emailjs.send('service_p8rnipf', 'template_ilhe1ca', templateParams);
-                        console.log('E-mail du billet envoyé avec succès au participant !');
-                    }
-                } catch (mailErr) {
-                    console.error('Erreur lors de l\'envoi de l\'e-mail via EmailJS :', mailErr);
-                }
-            }
-
-            // Actualise les listes pour refléter le changement
+            // 3. Rafraîchissement des listes
             await chargerToutesLesDemandes();
         }  
 
