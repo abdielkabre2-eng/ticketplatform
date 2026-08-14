@@ -336,6 +336,15 @@
     <script>
     let listeGlobaleEvenements = [];
 
+    // FONCTIONS D'OUVERTURE ET FERMETURE DE LA MODALE DE CRÉATION (AJOUTÉES ICI)
+    function ouvrirModalCreation() {
+        document.getElementById("modalEvent").style.display = "flex";
+    }
+
+    function fermerModalCreation() {
+        document.getElementById("modalEvent").style.display = "none";
+    }
+
     async function chargerMesEvenements() {
         const container = document.getElementById("listeEvenements");
         if (!window.supabaseClient) {
@@ -413,21 +422,20 @@
         }
     });
 
-   function ouvrirModalDetails(idEvenement) {
+    function ouvrirModalDetails(idEvenement) {
         const ev = listeGlobaleEvenements.find(e => e.id == idEvenement);
         if (!ev) return;
 
         document.getElementById("detail-titre").innerText = "Gérer : " + ev.titre;
         
-        // On utilise la racine du site avec les paramètres ?event=ID
         const baseUrl = "https://ticketplatform-kappa.vercel.app";
         
-        // Liens corrigés pour fonctionner sans vercel.json
         document.getElementById("lien-acheteur").value = `${baseUrl}/index.html?event=${ev.id}`;
         document.getElementById("lien-vendeur").value = `${baseUrl}/admin-organisateur.html?event=${ev.id}`;
 
         document.getElementById("modalDetails").style.display = "flex";
     }
+    
     function fermerModalDetails() { 
         document.getElementById("modalDetails").style.display = "none"; 
     }
@@ -440,7 +448,6 @@
         alert("Lien copié dans le presse-papier !");
     }
 
-    // FONCTION CORRIGÉE : Sécurisation du nom de fichier pour éviter les erreurs "Invalid key" de Supabase Storage
     async function uploaderFichierSupabase(file, dossier) {
         const fileExt = file.name.split('.').pop().toLowerCase();
         const randomString = Math.random().toString(36).substring(2, 8);
