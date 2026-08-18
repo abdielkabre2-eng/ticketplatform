@@ -1115,6 +1115,8 @@
         let listeParticipantsValidesGlobal = [];
         let statutVentesFermees = false;
         let derniersBilletsScannes = {};
+        let scannerActif = false;
+        let dernierScanOkAt = 0;
 
         /* =============================================
            INITIALISATION
@@ -1540,6 +1542,70 @@
             document.getElementById("codeBilletInput").value = "";
         }
 
+        async function arreterScanner() {
+            try {
+                if (html5QrCode && scannerActif) {
+                    await html5QrCode.stop();
+                }
+            } catch (err) {
+                console.log("Arret camera :", err);
+            } finally {
+                scannerActif = false;
+            }
+        }
+
+        async function demarrerScannerCamera() {
+            const resultatDiv = document.getElementById("resultatScan");
+
+            try {
+                if (!window.Html5Qrcode) {
+                    setResultat(resultatDiv, "warning", "Scanner QR non pris en charge par ce navigateur.");
+                    return;
+                }
+
+                if (!html5QrCode) {
+                    html5QrCode = new Html5Qrcode("reader");
+                }
+
+                if (scannerActif) {
+                    await arreterScanner();
+                }
+
+                const cameras = await Html5Qrcode.getCameras();
+                if (!cameras || cameras.length === 0) {
+                    setResultat(resultatDiv, "warning", "Aucune caméra détectée sur cet appareil.");
+                    return;
+                }
+
+                const cameraId = cameras.find(camera => /back|environment|rear/i.test(camera.label || ''))?.id || cameras[0].id;
+
+                await html5QrCode.start(
+                    cameraId,
+                    {
+                        fps: 10,
+                        qrbox: { width: 260, height: 260 },
+                        aspectRatio: 1,
+                        disableFlip: false
+                    },
+                    (decodedText) => {
+                        const maintenant = Date.now();
+                        if (maintenant - dernierScanOkAt < 2500) return;
+                        dernierScanOkAt = maintenant;
+                        traiterVerificationBillet(decodedText);
+                    },
+                    (errorMessage) => {
+                        // Ignorer les erreurs de lecture temporaires ; le scanner continue en arrière-plan.
+                    }
+                );
+
+                scannerActif = true;
+                setResultat(resultatDiv, "warning", "Caméra active — pointez le QR code.");
+            } catch (err) {
+                console.error("Camera non dispo :", err);
+                setResultat(resultatDiv, "error", "Impossible d'activer la caméra. Vérifie les permissions et réessaie, ou utilise l'ID manuellement.");
+            }
+        }
+
         /* =============================================
            NAVIGATION ONGLETS
         ============================================= */
@@ -1551,23 +1617,13 @@
 
             if (nomOnglet === 'paiements') {
                 document.getElementById('section-paiements').classList.add('active');
-                if (html5QrCode && html5QrCode.isScanning) {
-                    html5QrCode.stop().catch(err => console.log("Arret camera :", err));
-                }
+                arreterScanner();
             } else if (nomOnglet === 'validees') {
                 document.getElementById('section-validees').classList.add('active');
-                if (html5QrCode && html5QrCode.isScanning) {
-                    html5QrCode.stop().catch(err => console.log("Arret camera :", err));
-                }
+                arreterScanner();
             } else {
                 document.getElementById('section-scanner').classList.add('active');
-                if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
-                html5QrCode.start(
-                    { facingMode: "environment" },
-                    { fps: 10, qrbox: 250 },
-                    (decodedText) => traiterVerificationBillet(decodedText),
-                    (errorMessage) => {}
-                ).catch(err => console.log("Camera non dispo :", err));
+                demarrerScannerCamera();
             }
         }
 
