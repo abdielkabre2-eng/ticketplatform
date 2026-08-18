@@ -3,752 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GoldTix - Espace Organisateur</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>GoldTix — Espace Organisateur</title>
+
+    <!-- EmailJS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function(){ emailjs.init({ publicKey: "YPl814w1CnLbyKiQC" }); })();
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
     <style>
+        /* ============================================
+           DESIGN TOKENS
+        ============================================ */
         :root {
-            --primary: #d97706;
-            --primary-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            --secondary: #0ea5e9;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            
-            --bg-main: #fcfbf9;
-            --card-bg: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border-color: rgba(217, 119, 6, 0.18);
-            --radius-lg: 20px;
-            --radius-md: 12px;
-            --shadow-lg: 0 20px 40px -10px rgba(217, 119, 6, 0.08), 0 10px 25px -5px rgba(0, 0, 0, 0.04);
-        }
+            --gold-50:  #fffbeb;
+            --gold-100: #fef3c7;
+            --gold-200: #fde68a;
+            --gold-400: #fbbf24;
+            --gold-500: #f59e0b;
+            --gold-600: #d97706;
+            --gold-700: #b45309;
+            --gold-800: #92400e;
+            --gold-900: #78350f;
 
-        * { box-sizing: border-box; }
+            --ink-50:  #f8fafc;
+            --ink-100: #f1f5f9;
+            --ink-200: #e2e8f0;
+            --ink-300: #cbd5e1;
+            --ink-400: #94a3b8;
+            --ink-500: #64748b;
+            --ink-700: #334155;
+            --ink-900: #0f172a;
 
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: var(--bg-main); 
-            background-image: 
-                radial-gradient(circle at 0% 15%, rgba(245, 158, 11, 0.18) 0px, transparent 35%),
-                radial-gradient(circle at 100% 15%, rgba(245, 158, 11, 0.18) 0px, transparent 35%),
-                radial-gradient(at 0% 0%, rgba(245, 158, 11, 0.06) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(217, 119, 6, 0.05) 0px, transparent 50%);
-            background-attachment: fixed;
-            color: var(--text-main); 
-            margin: 0; 
-            padding: 20px 20px 50px 20px; 
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+            --green-100: #d1fae5;
+            --green-700: #065f46;
+            --green-500: #10b981;
+            --green-600: #059669;
 
-        @keyframes slideDownFade {
-            0% {
-                opacity: 0;
-                transform: translateY(-40px) scale(0.98);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
+            --red-100: #fee2e2;
+            --red-700: #991b1b;
+            --red-500: #ef4444;
 
-        .animate-slide-down {
-            animation: slideDownFade 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-        }
+            --amber-100: #fef3c7;
+            --amber-800: #92400e;
+            --amber-500: #f59e0b;
 
-        .top-navbar {
-            max-width: 900px;
-            margin: 0 auto 20px auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+            --grad-gold: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+            --grad-dark: linear-gradient(135deg, #1e1208 0%, #3b1f07 100%);
+            --grad-page: linear-gradient(160deg, #fffdf7 0%, #fef9ee 50%, #fffbf0 100%);
 
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .site-logo {
-            height: 38px;
-            width: auto;
-            object-fit: contain;
-        }
-
-        .brand-title {
-            font-size: 22px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            line-height: 1;
-        }
-
-        .brand-title .text-gold {
-            color: #0f172a;
-        }
-
-        .brand-title .text-tix {
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .badge-espace {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(217, 119, 6, 0.08);
-            color: #b45309;
-            border: 1px solid rgba(217, 119, 6, 0.25);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .container { 
-            max-width: 900px; 
-            margin: 0 auto; 
-            background: var(--card-bg); 
-            padding: 35px; 
-            border-radius: var(--radius-lg); 
-            box-shadow: var(--shadow-lg); 
-            border: 1px solid var(--border-color);
-        }
-
-      .header-top {
-            text-align: center;
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 1px dashed var(--border-color);
-            position: relative;
-            border-radius: 16px;
-            overflow: hidden;
-            padding: 40px 20px;
-            background: var(--primary-gradient); 
-            color: white;
-            box-shadow: 0 8px 20px rgba(217, 119, 6, 0.15);
-        }
-
-        /* Style si une image d'événement est présente */
-        .header-top.has-image {
-            background: none !important; /* Supprime le dégradé doré de fond */
-            background-image: var(--bg-image) !important;
-            background-size: cover !important;
-            background-position: center !important;
-            background-repeat: no-repeat !important;
-        }
-
-        /* ON RETIRE LE VOILE SOMBRE (::before) pour que l'affiche apparaisse claire et nette */
-        .header-top.has-image::before {
-            display: none !important; 
-        }
-
-        .header-top > * {
-            position: relative;
-            z-index: 2;
-        }  
-
-        /* Style si une image d'événement est présente */
-        .header-top.has-image {
-            background-size: cover;
-            background-position: center;
-        }
-
-        .header-top.has-image::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.55); /* Voile sombre pour la lisibilité */
-            z-index: 1;
-        }
-
-        .header-top > * {
-            position: relative;
-            z-index: 2;
-        }
-
-        h1#titreEvenementOrg {
-            font-size: 28px;
-            font-weight: 800;
-            margin: 0;
-            color: #ffffff;
-            letter-spacing: -0.5px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-
-        #infosEvenementOrg {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 10px 16px;
-            border-radius: var(--radius-md);
-            font-size: 14px;
-            color: #ffffff;
-            margin-top: 15px;
-            margin-bottom: 0;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .tabs { 
-            display: flex; 
-            gap: 8px; 
-            margin-bottom: 30px; 
-            border-bottom: 2px solid #f1f5f9; 
-            padding-bottom: 0;
-            overflow-x: auto;
-            white-space: nowrap;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .tab-btn { 
-            background: transparent; 
-            border: none; 
-            font-size: 14px; 
-            font-weight: 700; 
-            cursor: pointer; 
-            padding: 12px 14px; 
-            color: var(--text-muted); 
-            border-bottom: 3px solid transparent; 
-            transition: all 0.2s ease;
-            margin-bottom: -2px;
-            font-family: inherit;
-            flex: 1 1 auto;
-            text-align: center;
-        }
-
-        .tab-btn:hover {
-            color: var(--primary);
-        }
-
-        .tab-btn.active { 
-            color: var(--primary); 
-            border-bottom: 3px solid var(--primary); 
-        }
-
-        .section-content { display: none; }
-        .section-content.active { display: block; }
-
-        .section-content h2 {
-            font-size: 19px;
-            font-weight: 800;
-            margin-bottom: 8px;
-        }
-
-        .section-content > p {
-            font-size: 14px;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-        }
-
-        .search-container {
-            margin-bottom: 20px;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #cbd5e1;
-            border-radius: var(--radius-md);
-            font-size: 14px;
-            font-family: inherit;
-            outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-
-        .search-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15);
-        }
-        
-        .billet-card { 
-            background: #fff; 
-            border: 1px solid var(--border-color); 
-            padding: 24px; 
-            border-radius: var(--radius-md); 
-            margin-bottom: 20px; 
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03); 
-            text-align: center; 
-            transition: transform 0.2s;
-        }
-
-        .billet-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(217, 119, 6, 0.1);
-        }
-
-        .billet-card p {
-            margin: 8px 0;
-            font-size: 15px;
-        }
-
-        .billet-card img { 
-            max-width: 220px; 
-            max-height: 250px; 
-            display: block; 
-            margin: 15px auto; 
-            border-radius: 10px; 
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.06);
-        }
-        
-        .btn-confirmer { background: var(--success); color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 13px; transition: background 0.2s; font-family: inherit; }
-        .btn-confirmer:hover { background: #059669; }
-
-        .btn-refuser { background: var(--danger); color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 13px; margin-left: 6px; transition: background 0.2s; font-family: inherit; }
-        .btn-refuser:hover { background: #dc2626; }
-
-        .btn-attente { background: var(--warning); color: #fff; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 13px; margin-left: 6px; transition: background 0.2s; font-family: inherit; }
-        .btn-attente:hover { background: #d97706; }
-        
-        .badge-statut { display: inline-block; padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 12px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .badge-attente { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
-        .badge-confirme { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
-        .badge-refuse { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
-
-        #resultatScan {
-            margin-top: 20px;
-            padding: 18px;
-            border-radius: var(--radius-md);
-            font-size: 15px;
-            font-weight: 600;
-            text-align: center;
-        }
-        #reader { 
-            width: 100%; 
-            max-width: 400px; 
-            margin: 0 auto; 
-            border-radius: var(--radius-md); 
-            overflow: hidden; 
-            border: 2px dashed var(--primary); 
-            box-shadow: 0 8px 20px rgba(217, 119, 6, 0.1);
-        }
-
-        .scanner-input-group {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .scanner-input-group input {
-            padding: 12px 16px;
-            width: 60%;
-            border: 1px solid #cbd5e1;
-            border-radius: 10px;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.2s;
-            font-family: inherit;
-        }
-
-        .scanner-input-group input:focus {
-            border-color: var(--primary);
-        }
-
-        .scanner-input-group button {
-            padding: 12px 20px;
-            background: var(--primary-gradient);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: opacity 0.2s;
-            font-family: inherit;
-        }
-
-        .scanner-input-group button:hover {
-            opacity: 0.95;
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px 15px;
-            }
-            .tab-btn {
-                padding: 10px 8px;
-                font-size: 13px;
-            }
-            .scanner-input-group input {
-                width: 100%;
-            }
-        }
-
-        .creator-footer {
-            max-width: 900px;
-            margin: 35px auto 0 auto;
-            padding-top: 25px;
-            border-top: 1px solid #e2e8f0;
-            text-align: center;
-            font-size: 12px;
-            color: var(--text-muted);
-            line-height: 1.6;
-        }
-
-        .creator-footer .slogan {
-            font-weight: 700;
-            color: var(--primary);
-            letter-spacing: 0.5px;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            font-size: 11px;
-        }
-
-        .creator-footer p {
-            margin: 4px 0;
-        }
-
-        .creator-footer a {
-            color: #d97706;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .creator-footer a:hover {
-            color: #b45309;
-            text-decoration: underline;
-        }
-    </style>
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Espace Organisateur - GoldTix</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-        :root {
-            --primary: #d97706;
-            --primary-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --success: #10b981;
-            --bg-main: #fcfbf9;
-            --card-bg: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border-color: rgba(217, 119, 6, 0.15);
+            --radius-xs: 8px;
+            --radius-sm: 12px;
+            --radius-md: 16px;
             --radius-lg: 24px;
-            --radius-md: 12px;
-            --shadow-lg: 0 20px 40px -10px rgba(217, 119, 6, 0.08), 0 10px 25px -5px rgba(0, 0, 0, 0.04);
+            --radius-xl: 32px;
+
+            --shadow-gold-sm: 0 4px 14px rgba(217,119,6,0.15);
+            --shadow-gold-md: 0 8px 30px rgba(217,119,6,0.20);
+            --shadow-gold-lg: 0 20px 60px rgba(217,119,6,0.15), 0 8px 25px rgba(0,0,0,0.06);
+            --shadow-card:    0 2px 8px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+            --shadow-card-hover: 0 8px 30px rgba(217,119,6,0.12), 0 4px 12px rgba(0,0,0,0.06);
+
+            --border-gold: rgba(217,119,6,0.20);
+            --border-gold-strong: rgba(217,119,6,0.40);
+            --border-light: rgba(0,0,0,0.06);
+
+            --font-display: 'Sora', sans-serif;
+            --font-body: 'DM Sans', sans-serif;
         }
 
-        * { box-sizing: border-box; }
+        /* ============================================
+           RESET & BASE
+        ============================================ */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: var(--bg-main); 
-            color: var(--text-main); 
-            margin: 0; 
-            padding: 20px 20px 60px 20px; 
-            line-height: 1.5;
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--grad-page);
+            background-attachment: fixed;
+            color: var(--ink-900);
             min-height: 100vh;
+            padding: 24px 16px 80px;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .top-navbar {
-            max-width: 600px;
-            margin: 0 auto 20px auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .site-logo { height: 38px; width: auto; object-fit: contain; }
-
-        .brand-title {
-            font-size: 22px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            line-height: 1;
-        }
-        .brand-title .text-gold { color: #0f172a; }
-        .brand-title .text-tix {
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .badge-espace {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(217, 119, 6, 0.08);
-            color: var(--primary);
-            border: 1px solid rgba(217, 119, 6, 0.25);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* --- HEADER & BANNIÈRE ÉVÉNEMENT --- */
-        .header-top {
-            text-align: center;
-            margin-bottom: 25px;
-            position: relative;
-            border-radius: 16px;
-            overflow: hidden;
-            padding: 40px 20px;
-            background: var(--primary-gradient); 
-            color: white;
-            box-shadow: 0 8px 20px rgba(217, 119, 6, 0.15);
-            border-bottom: 1px dashed var(--border-color);
-        }
-
-        /* Image d'arrière-plan injectée par le JS */
-        .header-top .event-bg-img {
-            position: absolute;
+        body::before {
+            content: '';
+            position: fixed;
             inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            background:
+                radial-gradient(ellipse 60% 40% at 5% 10%, rgba(245,158,11,0.10) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 35% at 95% 8%, rgba(245,158,11,0.08) 0%, transparent 55%),
+                radial-gradient(ellipse 70% 50% at 50% 100%, rgba(180,83,9,0.05) 0%, transparent 60%);
+            pointer-events: none;
             z-index: 0;
         }
 
-        /* Voile sombre unique et propre pour contraster l'affiche */
-        .header-top::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.55);
-            z-index: 1;
+        body > * { position: relative; z-index: 1; }
+
+        /* ============================================
+           KEYFRAMES
+        ============================================ */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
-        /* Tout le contenu textuel passe au-dessus du voile et de l'image */
-        .header-top > * {
-            position: relative;
-            z-index: 2;
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
         }
 
-        .header-top h1 {
-            font-size: 24px;
-            margin: 0 0 10px 0;
-            font-weight: 800;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        @keyframes shimmer {
+            0%   { background-position: -200% center; }
+            100% { background-position: 200% center; }
         }
 
-        /* Encadré Date & Lieu ultra lisible peu importe l'affiche */
-       #infosEvenementOrg {
-            background: linear-gradient(135deg, rgba(20, 18, 16, 0.90) 0%, rgba(40, 28, 10, 0.88) 100%);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(245, 158, 11, 0.4); /* Bordure subtilement dorée */
-            padding: 10px 18px;
-            border-radius: var(--radius-md);
-            font-size: 13px;
-            color: #ffffff;
-            margin-top: 12px;
-            margin-bottom: 0;
-            font-weight: 600;
-            display: inline-block;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4), 0 0 10px rgba(245, 158, 11, 0.15); /* Légère lueur dorée diffuse */
+        @keyframes pulse-ring {
+            0%   { transform: scale(1); opacity: 0.6; }
+            100% { transform: scale(1.4); opacity: 0; }
         }
 
-        /* --- ONGLETS & CONTENU --- */
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            background: #e2e8f0;
-            padding: 4px;
-            border-radius: 14px;
+        @keyframes spin-slow {
+            to { transform: rotate(360deg); }
         }
 
-        .tab-btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            background: transparent;
-            font-weight: 700;
-            font-size: 13px;
-            color: var(--text-muted);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-family: inherit;
-        }
-
-        .tab-btn.active {
-            background: #ffffff;
-            color: var(--text-main);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
-
-        .section-content { display: none; }
-        .section-content.active { display: block; }
-
-        .billet-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 18px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-        }
-
-        .billet-card p {
-            margin: 6px 0;
-            font-size: 14px;
-        }
-
-        .billet-card img {
-            max-width: 100%;
-            height: 180px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-top: 10px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .badge-statut {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-        .badge-confirme { background: #d1fae5; color: #065f46; }
-        .badge-refuse { background: #fee2e2; color: #991b1b; }
-        .badge-attente { background: #fef3c7; color: #92400e; }
-
-        button { font-family: inherit; cursor: pointer; }
-
-        .btn-confirmer { background: #10b981; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 12px; margin-right: 5px; }
-        .btn-refuser { background: #ef4444; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 12px; margin-right: 5px; }
-        .btn-attente { background: #f59e0b; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 12px; }
-
-        .search-container { margin-bottom: 15px; }
-        .search-input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            font-size: 14px;
-            outline: none;
-            font-family: inherit;
-        }
-
-        .scanner-input-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        .scanner-input-group input {
-            flex: 1;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 14px;
-        }
-        .scanner-input-group button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0 20px;
-            border-radius: 8px;
-            font-weight: 700;
-        }
-
-        #resultatScan {
-            margin-top: 15px;
-            padding: 15px;
-            border-radius: var(--radius-md);
-            font-weight: 600;
-            text-align: center;
-        }
-
-        #reader { width: 100%; border-radius: 12px; overflow: hidden; }
-
-        .creator-footer {
-            max-width: 600px;
-            margin: 40px auto 0 auto;
-            padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
-            text-align: center;
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-        .creator-footer a { color: var(--primary); text-decoration: none; font-weight: 600; }
-    </style>
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GoldTix - Espace Organisateur</title>
-    
-    <!-- Scripts EmailJS -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script type="text/javascript">
-       (function(){
-          emailjs.init({
-            publicKey: "YPl814w1CnLbyKiQC",
-          });
-       })();
-    </script>
-
-    <!-- STYLE CLAIR, LUMINEUX & ULTRA-PRO -->
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-
-        :root {
-            --bg-page: #f8fafc;
-            --card-white: #ffffff;
-            --gold-primary: #d97706;
-            --gold-light: #fef3c7;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --radius-box: 20px;
-            --shadow-subtle: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
-            --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.03);
-        }
-
-        * { box-sizing: border-box; }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-page);
-            color: var(--text-main);
-            margin: 0;
-            padding: 20px 20px 80px 20px;
-            min-height: 100vh;
-        }
-
-        .container, .top-navbar {
-            max-width: 600px;
+        /* ============================================
+           LAYOUT WRAPPERS
+        ============================================ */
+        .page-wrapper {
+            max-width: 680px;
             margin: 0 auto;
+            animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
         }
 
-        /* --- NAVBAR --- */
+        /* ============================================
+           NAVBAR
+        ============================================ */
         .top-navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            padding: 15px 20px;
-            background: var(--card-white);
-            border-radius: var(--radius-box);
-            box-shadow: var(--shadow-subtle);
-            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+            padding: 14px 20px;
+            background: rgba(255,255,255,0.88);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-gold);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-gold-sm), 0 1px 0 rgba(255,255,255,0.8) inset;
+            animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
         }
 
         .logo-container {
@@ -758,361 +170,947 @@
         }
 
         .site-logo {
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-xs);
             object-fit: cover;
+            border: 1.5px solid var(--border-gold-strong);
+            box-shadow: 0 2px 8px rgba(217,119,6,0.2);
         }
 
         .brand-title {
+            font-family: var(--font-display);
             font-size: 22px;
             font-weight: 800;
-            letter-spacing: -0.5px;
+            letter-spacing: -0.8px;
+            line-height: 1;
         }
-        .brand-title .text-gold { color: #0f172a; }
-        .brand-title .text-tix { color: var(--gold-primary); }
+
+        .brand-title .text-dark { color: var(--ink-900); }
+        .brand-title .text-gold {
+            background: var(--grad-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
 
         .badge-espace {
-            background: var(--gold-light);
-            color: #b45309;
-            border: 1px solid rgba(217, 119, 6, 0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: linear-gradient(135deg, rgba(217,119,6,0.10) 0%, rgba(245,158,11,0.07) 100%);
+            color: var(--gold-700);
+            border: 1px solid var(--border-gold-strong);
             padding: 8px 16px;
             border-radius: 50px;
+            font-family: var(--font-display);
             font-size: 11px;
             font-weight: 700;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
         }
 
-        /* --- CONTENEUR PRINCIPAL BLANC --- */
-        .main-wrapper {
-            background: var(--card-white);
-            border-radius: 28px;
-            padding: 30px 25px;
-            box-shadow: var(--shadow-subtle);
-            border: 1px solid var(--border-color);
-        }
-
-        /* --- HEADER / BANNIÈRE ÉVÉNEMENT --- */
-        .header-top {
-            text-align: center;
-            margin-bottom: 25px;
+        .badge-espace .badge-dot {
+            width: 7px;
+            height: 7px;
+            background: var(--gold-500);
+            border-radius: 50%;
             position: relative;
-            border-radius: 20px;
-            overflow: hidden;
-            padding: 40px 20px;
-            background: linear-gradient(135deg, #b45309 0%, #78350f 100%);
-            color: #ffffff;
-            box-shadow: 0 10px 25px -5px rgba(180, 83, 9, 0.3);
         }
 
-        .header-top .event-bg-img {
+        .badge-espace .badge-dot::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            background: rgba(245,158,11,0.35);
+            animation: pulse-ring 1.8s ease-out infinite;
+        }
+
+        /* ============================================
+           MAIN CARD WRAPPER
+        ============================================ */
+        .main-card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--border-gold);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-gold-lg);
+            overflow: hidden;
+            animation: fadeUp 0.6s 0.1s cubic-bezier(0.22,1,0.36,1) both;
+        }
+
+        /* Gold top accent line */
+        .main-card::before {
+            content: '';
+            display: block;
+            height: 3px;
+            background: var(--grad-gold);
+        }
+
+        .main-card-inner {
+            padding: 28px 28px 32px;
+        }
+
+        @media (max-width: 520px) {
+            .main-card-inner { padding: 20px 16px 24px; }
+        }
+
+        /* ============================================
+           EVENT HEADER / BANNER
+        ============================================ */
+        .header-top {
+            position: relative;
+            text-align: center;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            padding: 48px 24px 36px;
+            background: var(--grad-dark);
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-gold-md);
+        }
+
+        /* Shimmering gold corner accents */
+        .header-top::after {
+            content: '';
+            position: absolute;
+            top: -60px; right: -60px;
+            width: 180px; height: 180px;
+            background: radial-gradient(circle, rgba(245,158,11,0.25) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        /* Gold bottom glow line */
+        .header-banner-glow {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 2px;
+            background: var(--grad-gold);
+            opacity: 0.7;
+        }
+
+        .event-bg-img {
             position: absolute;
             inset: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
-            opacity: 0.25;
+            z-index: 0;
         }
 
-        .header-top > * {
-            position: relative;
-            z-index: 2;
+        .header-top::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg,
+                rgba(10,6,2,0.60) 0%,
+                rgba(20,12,4,0.72) 100%);
+            z-index: 1;
         }
 
-        .header-top h1 {
-            font-size: 24px;
+        .header-top > * { position: relative; z-index: 2; }
+
+        .header-label {
+            display: inline-block;
+            background: rgba(245,158,11,0.18);
+            border: 1px solid rgba(245,158,11,0.35);
+            color: var(--gold-400);
+            font-family: var(--font-display);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 5px 14px;
+            border-radius: 50px;
+            margin-bottom: 14px;
+        }
+
+        #titreEvenementOrg {
+            font-family: var(--font-display);
+            font-size: 26px;
             font-weight: 800;
-            margin: 0 0 12px 0;
+            color: #ffffff;
             letter-spacing: -0.5px;
+            line-height: 1.2;
+            margin-bottom: 16px;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.4);
         }
 
         #infosEvenementOrg {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 8px 16px;
-            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0;
+            background: rgba(15,10,3,0.80);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(245,158,11,0.35);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-family: var(--font-body);
             font-size: 12px;
             font-weight: 600;
-            display: inline-block;
-            margin: 0;
-            color: #ffffff;
+            color: rgba(255,255,255,0.92);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.30), 0 0 0 1px rgba(245,158,11,0.10) inset;
+            letter-spacing: 0.2px;
         }
 
-        /* --- STATUT VENTES --- */
+        /* ============================================
+           STATUS BOX
+        ============================================ */
         .status-box {
-            background: #f8fafc;
-            border: 1px solid var(--border-color);
-            padding: 15px 20px;
-            border-radius: 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            background: var(--ink-50);
+            border: 1px solid var(--ink-200);
+            border-radius: var(--radius-md);
+            padding: 14px 18px;
+            margin-bottom: 24px;
+            gap: 12px;
         }
 
-        /* --- ONGLETS --- */
+        .status-box-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .status-indicator.open {
+            background: var(--green-500);
+            box-shadow: 0 0 0 3px rgba(16,185,129,0.2);
+        }
+
+        .status-indicator.closed {
+            background: var(--red-500);
+            box-shadow: 0 0 0 3px rgba(239,68,68,0.2);
+        }
+
+        #labelStatutVentes {
+            font-family: var(--font-display);
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--ink-700);
+        }
+
+        .btn-toggle-ventes {
+            font-family: var(--font-display);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 9px 18px;
+            border-radius: var(--radius-xs);
+            border: none;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+            white-space: nowrap;
+        }
+
+        .btn-toggle-ventes:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-toggle-ventes:active { transform: translateY(0); }
+
+        /* ============================================
+           TABS
+        ============================================ */
         .tabs {
             display: flex;
-            gap: 8px;
-            margin-bottom: 30px;
-            background: #f1f5f9;
-            padding: 6px;
-            border-radius: 16px;
+            gap: 6px;
+            margin-bottom: 28px;
+            background: var(--ink-100);
+            padding: 5px;
+            border-radius: var(--radius-md);
         }
 
         .tab-btn {
             flex: 1;
-            padding: 12px;
+            padding: 11px 8px;
             border: none;
             background: transparent;
+            font-family: var(--font-display);
             font-weight: 700;
             font-size: 12px;
-            color: var(--text-muted);
-            border-radius: 12px;
+            color: var(--ink-500);
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.22s cubic-bezier(0.22,1,0.36,1);
+            letter-spacing: 0.2px;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: var(--gold-700);
+            background: rgba(217,119,6,0.06);
         }
 
         .tab-btn.active {
-            background: var(--card-white);
-            color: var(--text-main);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            background: #ffffff;
+            color: var(--gold-700);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05);
         }
 
-        .section-content { display: none; }
-        .section-content.active { display: block; }
+        /* Gold dot on active tab */
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            background: var(--gold-500);
+            border-radius: 50%;
+        }
 
-        /* --- CARTES DE BILLETS / DEMANDES --- */
-        .billet-card {
-            background: #f8fafc;
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 18px;
+        /* ============================================
+           SECTION CONTENT
+        ============================================ */
+        .section-content { display: none; }
+        .section-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease both;
+        }
+
+        .section-header {
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            font-family: var(--font-display);
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--ink-900);
+            letter-spacing: -0.3px;
+            margin-bottom: 4px;
+        }
+
+        .section-header p {
+            font-size: 13px;
+            color: var(--ink-500);
+            line-height: 1.55;
+        }
+
+        /* ============================================
+           SEARCH INPUT
+        ============================================ */
+        .search-container { margin-bottom: 18px; }
+
+        .search-wrapper {
             position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--ink-400);
+            pointer-events: none;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 13px 16px 13px 42px;
+            background: var(--ink-50);
+            border: 1px solid var(--ink-200);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 14px;
+            color: var(--ink-900);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--gold-500);
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(245,158,11,0.12);
+        }
+
+        .search-input::placeholder { color: var(--ink-400); }
+
+        /* ============================================
+           BILLET CARD
+        ============================================ */
+        .billet-card {
+            background: #ffffff;
+            border: 1px solid var(--ink-200);
+            border-radius: var(--radius-md);
+            padding: 0;
+            margin-bottom: 16px;
+            overflow: hidden;
             box-shadow: var(--shadow-card);
-            transition: all 0.2s ease;
+            transition: box-shadow 0.25s, border-color 0.25s, transform 0.25s;
         }
 
         .billet-card:hover {
-            border-color: #cbd5e1;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+            box-shadow: var(--shadow-card-hover);
+            border-color: var(--border-gold-strong);
+            transform: translateY(-2px);
         }
 
-        .billet-card p {
-            margin: 8px 0;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-        
-        .billet-card strong {
-            color: var(--text-main);
+        .billet-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px 0;
         }
 
-        .billet-card img {
-            width: 100%;
-            height: 160px;
-            object-fit: cover;
-            border-radius: 12px;
-            margin-top: 12px;
-            border: 1px solid var(--border-color);
+        .billet-card-body {
+            padding: 10px 18px 18px;
         }
 
-        /* BADGES */
-        .badge-statut {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 10px;
-            font-weight: 800;
-            margin-bottom: 10px;
-            text-transform: uppercase;
+        .billet-info-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 0;
+            border-bottom: 1px solid var(--ink-100);
         }
-        .badge-confirme { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
-        .badge-refuse { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
-        .badge-attente { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
 
-        /* BOUTONS */
-        button { font-family: inherit; cursor: pointer; }
+        .billet-info-row:last-of-type { border-bottom: none; }
 
-        .btn-confirmer, .btn-refuser, .btn-attente, .scanner-input-group button, .status-box button {
-            border-radius: 10px;
-            font-weight: 700;
+        .billet-info-label {
+            font-family: var(--font-display);
             font-size: 11px;
-            padding: 9px 14px;
-            border: none;
+            font-weight: 700;
+            color: var(--ink-400);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            width: 80px;
+            flex-shrink: 0;
+        }
+
+        .billet-info-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--ink-900);
+        }
+
+        .billet-card .preuve-label {
+            font-family: var(--font-display);
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--ink-400);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .billet-card a img,
+        .billet-card img.preuve-img {
+            width: 100%;
+            height: 170px;
+            object-fit: cover;
+            border-radius: var(--radius-sm);
+            display: block;
+            border: 1px solid var(--ink-200);
             transition: opacity 0.2s;
         }
-        .btn-confirmer:hover, .btn-refuser:hover, .btn-attente:hover { opacity: 0.9; }
 
-        .btn-confirmer { background: #10b981; color: #ffffff; margin-right: 5px; }
-        .btn-refuser { background: #ef4444; color: #ffffff; margin-right: 5px; }
-        .btn-attente { background: #f59e0b; color: #ffffff; }
+        .billet-card a:hover img { opacity: 0.9; }
 
-        /* RECHERCHE & SCANNER */
-        .search-container { margin-bottom: 20px; }
-        .search-input, .scanner-input-group input {
-            width: 100%;
-            padding: 14px 16px;
-            background: #f8fafc;
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            font-size: 13px;
-            color: var(--text-main);
-            outline: none;
-            font-family: inherit;
+        .billet-card-actions {
+            display: flex;
+            gap: 8px;
+            padding: 14px 18px;
+            background: var(--ink-50);
+            border-top: 1px solid var(--ink-100);
+            flex-wrap: wrap;
         }
-        .search-input:focus, .scanner-input-group input:focus {
-            border-color: var(--gold-primary);
-            background: #ffffff;
+
+        /* ============================================
+           BADGES
+        ============================================ */
+        .badge-statut {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-family: var(--font-display);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
         }
+
+        .badge-statut .badge-icon {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .badge-confirme {
+            background: var(--green-100);
+            color: var(--green-700);
+            border: 1px solid rgba(16,185,129,0.25);
+        }
+        .badge-confirme .badge-icon { background: var(--green-500); }
+
+        .badge-refuse {
+            background: var(--red-100);
+            color: var(--red-700);
+            border: 1px solid rgba(239,68,68,0.25);
+        }
+        .badge-refuse .badge-icon { background: var(--red-500); }
+
+        .badge-attente {
+            background: var(--amber-100);
+            color: var(--amber-800);
+            border: 1px solid rgba(245,158,11,0.30);
+        }
+        .badge-attente .badge-icon { background: var(--amber-500); }
+
+        /* ============================================
+           ACTION BUTTONS
+        ============================================ */
+        button { font-family: var(--font-display); cursor: pointer; }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 16px;
+            border-radius: var(--radius-xs);
+            border: none;
+            font-family: var(--font-display);
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+            letter-spacing: 0.2px;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-action:active { transform: translateY(0); box-shadow: none; }
+
+        .btn-confirmer {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #ffffff;
+        }
+
+        .btn-refuser {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #ffffff;
+        }
+
+        .btn-attente {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #ffffff;
+        }
+
+        .btn-retirer {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #ffffff;
+        }
+
+        /* ============================================
+           EMPTY STATE
+        ============================================ */
+        .empty-state {
+            text-align: center;
+            padding: 48px 20px;
+        }
+
+        .empty-state-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--ink-100);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            color: var(--ink-400);
+            font-weight: 500;
+        }
+
+        /* ============================================
+           SCANNER SECTION
+        ============================================ */
+        .scanner-frame {
+            position: relative;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 2px solid var(--border-gold-strong);
+            box-shadow: var(--shadow-gold-md), 0 0 0 4px rgba(245,158,11,0.08);
+            background: #000;
+        }
+
+        .scanner-corner {
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            z-index: 10;
+            pointer-events: none;
+        }
+        .scanner-corner.tl { top: 10px; left: 10px; border-top: 3px solid var(--gold-400); border-left: 3px solid var(--gold-400); }
+        .scanner-corner.tr { top: 10px; right: 10px; border-top: 3px solid var(--gold-400); border-right: 3px solid var(--gold-400); }
+        .scanner-corner.bl { bottom: 10px; left: 10px; border-bottom: 3px solid var(--gold-400); border-left: 3px solid var(--gold-400); }
+        .scanner-corner.br { bottom: 10px; right: 10px; border-bottom: 3px solid var(--gold-400); border-right: 3px solid var(--gold-400); }
+
+        #reader { width: 100%; }
 
         .scanner-input-group {
             display: flex;
             gap: 10px;
-            margin-top: 15px;
+            margin-top: 16px;
         }
-        .scanner-input-group button {
-            background: var(--gold-primary);
+
+        .scanner-input-group input {
+            flex: 1;
+            padding: 13px 16px;
+            background: var(--ink-50);
+            border: 1px solid var(--ink-200);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 14px;
+            color: var(--ink-900);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+
+        .scanner-input-group input:focus {
+            border-color: var(--gold-500);
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(245,158,11,0.12);
+        }
+
+        .scanner-input-group input::placeholder { color: var(--ink-400); }
+
+        .scanner-input-group .btn-scan-manual {
+            background: var(--grad-gold);
             color: #ffffff;
+            border: none;
             padding: 0 22px;
-            border-radius: 14px;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-display);
             font-weight: 800;
+            font-size: 13px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: transform 0.15s, box-shadow 0.15s;
+            box-shadow: var(--shadow-gold-sm);
         }
 
+        .scanner-input-group .btn-scan-manual:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-gold-md);
+        }
+
+        /* ============================================
+           SCAN RESULT
+        ============================================ */
         #resultatScan {
-            margin-top: 20px;
-            padding: 18px;
-            border-radius: 14px;
+            margin-top: 16px;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            font-family: var(--font-display);
             font-weight: 700;
+            font-size: 15px;
             text-align: center;
-            background: #f8fafc;
-            border: 1px solid var(--border-color);
+            background: var(--ink-50);
+            border: 1px solid var(--ink-200);
+            color: var(--ink-500);
+            line-height: 1.5;
+            transition: all 0.3s ease;
         }
 
-        #reader { 
-            width: 100%; 
-            border-radius: 14px; 
-            overflow: hidden; 
-            border: 1px solid var(--border-color); 
-            background: #000;
+        /* ============================================
+           DIVIDER
+        ============================================ */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--ink-200), transparent);
+            margin: 24px 0;
         }
 
+        /* ============================================
+           FOOTER
+        ============================================ */
         .creator-footer {
-            max-width: 600px;
-            margin: 40px auto 0 auto;
+            margin-top: 32px;
             text-align: center;
-            font-size: 12px;
-            color: var(--text-muted);
-            letter-spacing: 0.5px;
+            animation: fadeUp 0.6s 0.3s cubic-bezier(0.22,1,0.36,1) both;
         }
-        .creator-footer a { color: var(--gold-primary); text-decoration: none; font-weight: 600; }
+
+        .footer-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .footer-brand-line {
+            height: 1px;
+            width: 40px;
+            background: linear-gradient(90deg, transparent, var(--gold-500));
+        }
+
+        .footer-brand-line.right {
+            background: linear-gradient(90deg, var(--gold-500), transparent);
+        }
+
+        .footer-slogan {
+            font-family: var(--font-display);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            background: var(--grad-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-text {
+            font-size: 12px;
+            color: var(--ink-400);
+            line-height: 1.8;
+        }
+
+        .footer-text strong { color: var(--ink-700); font-weight: 700; }
+
+        .footer-text a {
+            color: var(--gold-600);
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.2s;
+        }
+
+        .footer-text a:hover { color: var(--gold-800); text-decoration: underline; }
+
+        /* ============================================
+           LOADING SPINNER
+        ============================================ */
+        .loading-dots {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            padding: 40px;
+        }
+
+        .loading-dots span {
+            width: 8px;
+            height: 8px;
+            background: var(--gold-400);
+            border-radius: 50%;
+            animation: bounce-dot 1.2s infinite ease-in-out;
+        }
+
+        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce-dot {
+            0%, 80%, 100% { transform: scale(0.7); opacity: 0.4; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        /* ============================================
+           RESPONSIVE
+        ============================================ */
+        @media (max-width: 480px) {
+            body { padding: 16px 12px 70px; }
+            .top-navbar { padding: 12px 14px; }
+            .brand-title { font-size: 19px; }
+            .badge-espace { font-size: 10px; padding: 6px 12px; }
+            #titreEvenementOrg { font-size: 21px; }
+            .tab-btn { font-size: 11px; padding: 10px 4px; }
+            .billet-card-actions { gap: 6px; }
+            .btn-action { padding: 8px 12px; font-size: 11px; }
+            .scanner-input-group { flex-direction: column; }
+            .scanner-input-group .btn-scan-manual { padding: 14px; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="top-navbar">
-        <div class="logo-container">
-            <img src="logo.png" alt="GoldTix Logo" class="site-logo">
-            <span class="brand-title">
-                <span class="text-gold">Gold</span><span class="text-tix">Tix</span>
-            </span>
-        </div>
-        <span class="badge-espace">⚙️ Espace Organisateur</span>
-    </div>
+    <div class="page-wrapper">
 
-    <div class="container">
-        <div class="main-wrapper">
-            <!-- En-tête dynamique -->
-            <div class="header-top" id="headerTopContainer">
-                <h1 id="titreEvenementOrg">Chargement de l'événement...</h1>
-                <div>
-                    <p id="infosEvenementOrg">Patientez...</p>
-                </div>
-            </div>
-
-            <div class="status-box">
-                <span id="labelStatutVentes" style="font-weight: 700; font-size: 13px;">
-                    Statut : Chargement...
+        <!-- ==================== NAVBAR ==================== -->
+        <nav class="top-navbar">
+            <div class="logo-container">
+                <img src="logo.png" alt="GoldTix Logo" class="site-logo">
+                <span class="brand-title">
+                    <span class="text-dark">Gold</span><span class="text-gold">Tix</span>
                 </span>
-                <button id="btnToggleVentes" onclick="toggleVentes()" style="background: #0f172a; color: white;">
-                    Patientez...
-                </button>
             </div>
+            <span class="badge-espace">
+                <span class="badge-dot"></span>
+                Espace Organisateur
+            </span>
+        </nav>
 
-            <div class="tabs">
-                <button class="tab-btn active" onclick="changerOnglet('paiements', this)">1. En attente</button>
-                <button class="tab-btn" id="btnTabValidees" onclick="changerOnglet('validees', this)">2. Validés (0)</button>
-                <button class="tab-btn" onclick="changerOnglet('scanner', this)">3. Scanner</button>
-            </div>
+        <!-- ==================== MAIN CARD ==================== -->
+        <div class="main-card">
+            <div class="main-card-inner">
 
-            <div id="section-paiements" class="section-content active">
-                <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 6px;">Gestion des paiements</h2>
-                <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Examinez et validez les captures d'écran des paiements reçus. Le participant recevra son billet après avoir cliqué sur "J'ai reçu".</p>
-                <div id="listePaiements">
-                    <p style="color: var(--text-muted); text-align: center;">Chargement des demandes...</p>
-                </div>
-            </div>
-
-            <div id="section-validees" class="section-content">
-                <h2 id="titreSectionValidees" style="font-size: 18px; font-weight: 800; margin-bottom: 6px;">Participants Confirmés & Validés (0)</h2>
-                <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Liste des personnes validées. En cas d'empêchement, vous pouvez retirer un participant :</p>
-                
-                <div class="search-container">
-                    <input type="text" id="searchValidees" class="search-input" placeholder="🔍 Rechercher un participant par son nom..." oninput="filtrerParticipants()">
+                <!-- EVENT HEADER BANNER -->
+                <div class="header-top" id="headerTopContainer">
+                    <span class="header-label">Votre evenement</span>
+                    <h1 id="titreEvenementOrg">Chargement...</h1>
+                    <p id="infosEvenementOrg">Connexion en cours...</p>
+                    <div class="header-banner-glow"></div>
                 </div>
 
-                <div id="listeValidees">
-                    <p style="color: var(--text-muted); text-align: center;">Chargement des participants validés...</p>
+                <!-- STATUS BOX -->
+                <div class="status-box">
+                    <div class="status-box-left">
+                        <span class="status-indicator" id="statusIndicator"></span>
+                        <span id="labelStatutVentes">Statut : chargement...</span>
+                    </div>
+                    <button
+                        id="btnToggleVentes"
+                        class="btn-toggle-ventes"
+                        onclick="toggleVentes()"
+                        style="background: var(--ink-900); color: white;">
+                        Patientez...
+                    </button>
                 </div>
-            </div>
 
-            <div id="section-scanner" class="section-content">
-                <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 6px;">Contrôle des Billets (Jour J)</h2>
-                <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Scannez le QR Code ou entrez le code manuellement :</p>
-                
-                <div id="reader"></div>
-
-                <div class="scanner-input-group">
-                    <input type="text" id="codeBilletInput" placeholder="ID ou Code du billet...">
-                    <button onclick="verifierBilletManuel()">Vérifier</button>
+                <!-- TABS -->
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="changerOnglet('paiements', this)">En attente</button>
+                    <button class="tab-btn" id="btnTabValidees" onclick="changerOnglet('validees', this)">Confirmes (0)</button>
+                    <button class="tab-btn" onclick="changerOnglet('scanner', this)">Scanner QR</button>
                 </div>
 
-                <div id="resultatScan">En attente de scan...</div>
+                <!-- ========== SECTION : PAIEMENTS ========== -->
+                <div id="section-paiements" class="section-content active">
+                    <div class="section-header">
+                        <h2>Gestion des paiements</h2>
+                        <p>Examinez et validez les preuves de paiement. Le participant recevra son billet apres confirmation.</p>
+                    </div>
+                    <div id="listePaiements">
+                        <div class="loading-dots">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== SECTION : VALIDES ========== -->
+                <div id="section-validees" class="section-content">
+                    <div class="section-header">
+                        <h2 id="titreSectionValidees">Participants confirmes (0)</h2>
+                        <p>Liste complete des participants valides. Vous pouvez retirer un participant en cas d'empechement.</p>
+                    </div>
+                    <div class="search-container">
+                        <div class="search-wrapper">
+                            <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+                            </svg>
+                            <input
+                                type="text"
+                                id="searchValidees"
+                                class="search-input"
+                                placeholder="Rechercher un participant..."
+                                oninput="filtrerParticipants()">
+                        </div>
+                    </div>
+                    <div id="listeValidees">
+                        <div class="loading-dots">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== SECTION : SCANNER ========== -->
+                <div id="section-scanner" class="section-content">
+                    <div class="section-header">
+                        <h2>Controle des billets - Jour J</h2>
+                        <p>Scannez le QR Code ou entrez le code manuellement pour valider l'entree.</p>
+                    </div>
+
+                    <div class="scanner-frame">
+                        <span class="scanner-corner tl"></span>
+                        <span class="scanner-corner tr"></span>
+                        <span class="scanner-corner bl"></span>
+                        <span class="scanner-corner br"></span>
+                        <div id="reader"></div>
+                    </div>
+
+                    <div class="scanner-input-group">
+                        <input type="text" id="codeBilletInput" placeholder="ID ou code du billet...">
+                        <button class="btn-scan-manual" onclick="verifierBilletManuel()">Verifier</button>
+                    </div>
+
+                    <div id="resultatScan">En attente de scan...</div>
+                </div>
+
+            </div><!-- /.main-card-inner -->
+        </div><!-- /.main-card -->
+
+        <!-- ==================== FOOTER ==================== -->
+        <footer class="creator-footer">
+            <div class="footer-brand">
+                <div class="footer-brand-line"></div>
+                <span class="footer-slogan">La Billetterie en Or</span>
+                <div class="footer-brand-line right"></div>
             </div>
-        </div>
-    </div>
+            <div class="footer-text">
+                <p>Plateforme <strong>GoldTix</strong> &mdash; Developpee par <strong>Abdiel KABRE</strong></p>
+                <p>
+                    Email : <a href="mailto:abdielkabre2@gmail.com">abdielkabre2@gmail.com</a>
+                </p>
+                <p>
+                    WhatsApp :
+                    <a href="https://wa.me/22653107345" target="_blank">+226 53 10 73 45</a>
+                    &nbsp;&middot;&nbsp;
+                    <a href="https://wa.me/212770967646" target="_blank">+212 770 967 646</a>
+                </p>
+            </div>
+        </footer>
 
-    <footer class="creator-footer">
-        <p style="font-weight: 700; margin-bottom: 4px;">— LA BILLETTERIE EN OR —</p>
-        <p>Plateforme propulsée par <strong>GoldTix</strong> | Développée par <strong>Abdiel KABRE</strong></p>
-        <p>
-            📧 Email : <a href="mailto:abdielkabre2@gmail.com">abdielkabre2@gmail.com</a><br>
-            📞 WhatsApp / Tel : 
-            <a href="https://wa.me/22653107345" target="_blank">+226 53 10 73 45</a> &nbsp;|&nbsp; 
-            <a href="https://wa.me/212770967646" target="_blank">+212 770-967646</a>
-        </p>
-    </footer>
+    </div><!-- /.page-wrapper -->
 
-    <!-- Scripts Supabase et Scanner QR -->
+    <!-- ==================== SCRIPTS ==================== -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
+
     <script>
+        /* =============================================
+           ÉTAT GLOBAL
+        ============================================= */
         const urlParams = new URLSearchParams(window.location.search);
         let eventId = urlParams.get("event");
         let html5QrCode = null;
-        let listeParticipantsValidesGlobal = []; 
+        let listeParticipantsValidesGlobal = [];
         let statutVentesFermees = false;
+        let derniersBilletsScannes = {};
 
+        /* =============================================
+           INITIALISATION
+        ============================================= */
         document.addEventListener("DOMContentLoaded", () => {
             chargerEspaceOrganisateur();
 
-            setInterval(() => {
-                chargerToutesLesDemandes();
-            }, 120000);
+            // Rafraîchissement auto toutes les 2 minutes
+            setInterval(() => { chargerToutesLesDemandes(); }, 120000);
 
+            // Délégation de clics (boutons dans les cartes dynamiques)
             document.addEventListener("click", function(event) {
                 let targetBtn = event.target.closest(".btn-changer-statut");
                 if (targetBtn) {
@@ -1130,10 +1128,13 @@
             });
         });
 
+        /* =============================================
+           CHARGEMENT ÉVÉNEMENT
+        ============================================= */
         async function chargerEspaceOrganisateur() {
             if (!eventId) {
-                document.getElementById("titreEvenementOrg").textContent = "Erreur";
-                document.getElementById("infosEvenementOrg").textContent = "Aucun événement spécifié dans l'URL.";
+                document.getElementById("titreEvenementOrg").textContent = "Erreur : aucun evenement specifie.";
+                document.getElementById("infosEvenementOrg").textContent = "Ajoutez ?event=ID dans l'URL.";
                 return;
             }
 
@@ -1145,15 +1146,17 @@
                     .single();
 
                 if (error || !ev) {
-                    document.getElementById("infosEvenementOrg").textContent = "Événement introuvable.";
+                    document.getElementById("infosEvenementOrg").textContent = "Evenement introuvable.";
                     return;
                 }
 
                 document.getElementById("titreEvenementOrg").textContent = ev.titre;
-                document.getElementById("infosEvenementOrg").innerHTML = `📅 Date : ${ev.date} &nbsp;|&nbsp; ⏰ Heure : ${ev.heure} &nbsp;|&nbsp; 📍 Lieu : ${ev.lieu}`;
+                document.getElementById("infosEvenementOrg").innerHTML =
+                    `Date : ${ev.date} &nbsp;&middot;&nbsp; Heure : ${ev.heure} &nbsp;&middot;&nbsp; Lieu : ${ev.lieu}`;
 
+                // Image de fond de la bannière
                 let headerContainer = document.getElementById("headerTopContainer");
-                let eventImage = ev.affiche_url || ev.image_url || ev.affiche || ev.photo; 
+                let eventImage = ev.affiche_url || ev.image_url || ev.affiche || ev.photo;
 
                 if (headerContainer && eventImage) {
                     let imgElement = headerContainer.querySelector(".event-bg-img");
@@ -1167,13 +1170,16 @@
 
                 statutVentesFermees = ev.ventes_fermees || false;
                 mettreAJourBoutonVentes();
-
                 await chargerToutesLesDemandes();
+
             } catch (err) {
                 console.error("Erreur chargement organisateur :", err);
             }
         }
-        
+
+        /* =============================================
+           CHARGEMENT DEMANDES / BILLETS
+        ============================================= */
         async function chargerToutesLesDemandes() {
             let containerPaiements = document.getElementById("listePaiements");
 
@@ -1185,7 +1191,7 @@
                     .order("id", { ascending: false });
 
                 if (error || !billets) {
-                    containerPaiements.innerHTML = "<p style='color:var(--text-muted); text-align:center;'>Erreur lors du chargement.</p>";
+                    containerPaiements.innerHTML = renderEmptyState("Erreur lors du chargement des donnees.");
                     return;
                 }
 
@@ -1197,14 +1203,14 @@
                 billets.forEach(function(b) {
                     let statutHtml = "";
                     if (b.statut === "confirme") {
-                        statutHtml = `<span class="badge-statut badge-confirme">✅ Confirmé / Payé</span>`;
+                        statutHtml = renderBadge("confirme", "Confirme / Paye");
                     } else if (b.statut === "refuse") {
-                        statutHtml = `<span class="badge-statut badge-refuse">❌ Refusé / Annulé</span>`;
+                        statutHtml = renderBadge("refuse", "Refuse / Annule");
                     } else {
-                        statutHtml = `<span class="badge-statut badge-attente">⏳ En attente</span>`;
+                        statutHtml = renderBadge("attente", "En attente");
                     }
 
-                    if (b.statut === 'confirme') {
+                    if (b.statut === "confirme") {
                         listeParticipantsValidesGlobal.push(b);
 
                         if (b.updated_at) {
@@ -1214,7 +1220,7 @@
                             if (tempsEcoule < 60000) {
                                 countPaiements++;
                                 let secondesRestantes = Math.ceil((60000 - tempsEcoule) / 1000);
-                                let statutTemporaire = `<span class="badge-statut badge-confirme">⏳ Validé (${secondesRestantes}s)</span>`;
+                                let statutTemporaire = renderBadge("confirme", `Valide dans ${secondesRestantes}s`);
                                 containerPaiements.innerHTML += HTMLCartePaiement(b, statutTemporaire);
                             }
                         }
@@ -1225,38 +1231,87 @@
                 });
 
                 if (countPaiements === 0) {
-                    containerPaiements.innerHTML = "<p style='text-align:center; color:var(--text-muted);'>Aucune demande en attente de validation.</p>";
+                    containerPaiements.innerHTML = renderEmptyState("Aucune demande en attente de validation.");
                 }
 
                 afficherParticipantsValides(listeParticipantsValidesGlobal);
                 mettreAJourCompteurs(listeParticipantsValidesGlobal.length);
+
             } catch (err) {
                 console.error("Erreur chargement demandes :", err);
             }
         }
 
+        /* =============================================
+           RENDERERS HTML
+        ============================================= */
+        function renderBadge(type, texte) {
+            return `<span class="badge-statut badge-${type}">
+                        <span class="badge-icon"></span>
+                        ${texte}
+                    </span>`;
+        }
+
+        function renderEmptyState(message) {
+            return `
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#94a3b8" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2
+                                M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                    </div>
+                    <p>${message}</p>
+                </div>`;
+        }
+
         function HTMLCartePaiement(b, statutHtml) {
             return `
                 <div class="billet-card">
-                    ${statutHtml}
-                    <p><strong>Nom :</strong> ${b.nom_participant || 'Non renseigné'}</p>
-                    <p><strong>WhatsApp :</strong> ${b.telephone || 'N/A'}</p>
-                    <p><strong>Preuve :</strong></p>
-                    <a href="${b.preuve_url}" target="_blank"><img src="${b.preuve_url}" alt="Preuve de paiement"></a>
-                    <br>
-                    <div style="margin-top: 15px;">
-                        <button type="button" class="btn-confirmer btn-changer-statut" data-id="${b.id}" data-statut="confirme">✅ J'ai reçu</button>
-                        <button type="button" class="btn-refuser btn-changer-statut" data-id="${b.id}" data-statut="refuse">❌ Non reçu</button>
-                        <button type="button" class="btn-attente btn-changer-statut" data-id="${b.id}" data-statut="attente">⏳ Attente</button>
+                    <div class="billet-card-header">
+                        ${statutHtml}
                     </div>
-                </div>
-            `;
+                    <div class="billet-card-body">
+                        <div class="billet-info-row">
+                            <span class="billet-info-label">Nom</span>
+                            <span class="billet-info-value">${b.nom_participant || 'Non renseigne'}</span>
+                        </div>
+                        <div class="billet-info-row">
+                            <span class="billet-info-label">WhatsApp</span>
+                            <span class="billet-info-value">${b.telephone || 'N/A'}</span>
+                        </div>
+                        <div style="margin-top: 14px;">
+                            <span class="preuve-label">Preuve de paiement</span>
+                            <a href="${b.preuve_url}" target="_blank">
+                                <img src="${b.preuve_url}" alt="Preuve de paiement" class="preuve-img">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="billet-card-actions">
+                        <button type="button"
+                            class="btn-action btn-confirmer btn-changer-statut"
+                            data-id="${b.id}" data-statut="confirme">
+                            J'ai recu
+                        </button>
+                        <button type="button"
+                            class="btn-action btn-refuser btn-changer-statut"
+                            data-id="${b.id}" data-statut="refuse">
+                            Non recu
+                        </button>
+                        <button type="button"
+                            class="btn-action btn-attente btn-changer-statut"
+                            data-id="${b.id}" data-statut="attente">
+                            Mettre en attente
+                        </button>
+                    </div>
+                </div>`;
         }
 
         function afficherParticipantsValides(liste) {
             let containerValidees = document.getElementById("listeValidees");
             if (liste.length === 0) {
-                containerValidees.innerHTML = "<p style='text-align:center; color:var(--text-muted);'>Aucun participant validé pour le moment.</p>";
+                containerValidees.innerHTML = renderEmptyState("Aucun participant valide pour le moment.");
                 return;
             }
 
@@ -1264,19 +1319,38 @@
             liste.forEach(function(b) {
                 html += `
                     <div class="billet-card">
-                        <span class="badge-statut badge-confirme">✅ Validé & Actif</span>
-                        <p><strong>Nom :</strong> ${b.nom_participant || 'Non renseigné'}</p>
-                        <p><strong>WhatsApp :</strong> ${b.telephone || 'N/A'}</p>
-                        <p><strong>Billet N° :</strong> ${b.id}</p>
-                        <div style="margin-top: 15px;">
-                            <button type="button" class="btn-refuser btn-retirer-participant" data-id="${b.id}">🚫 Retirer (Supprimer)</button>
+                        <div class="billet-card-header">
+                            ${renderBadge("confirme", "Valide et Actif")}
                         </div>
-                    </div>
-                `;
+                        <div class="billet-card-body">
+                            <div class="billet-info-row">
+                                <span class="billet-info-label">Nom</span>
+                                <span class="billet-info-value">${b.nom_participant || 'Non renseigne'}</span>
+                            </div>
+                            <div class="billet-info-row">
+                                <span class="billet-info-label">WhatsApp</span>
+                                <span class="billet-info-value">${b.telephone || 'N/A'}</span>
+                            </div>
+                            <div class="billet-info-row">
+                                <span class="billet-info-label">Billet</span>
+                                <span class="billet-info-value">#${b.id}</span>
+                            </div>
+                        </div>
+                        <div class="billet-card-actions">
+                            <button type="button"
+                                class="btn-action btn-retirer btn-retirer-participant"
+                                data-id="${b.id}">
+                                Retirer ce participant
+                            </button>
+                        </div>
+                    </div>`;
             });
             containerValidees.innerHTML = html;
         }
 
+        /* =============================================
+           FILTRAGE PARTICIPANTS
+        ============================================= */
         function filtrerParticipants() {
             let recherche = document.getElementById("searchValidees").value.toLowerCase().trim();
             let resultats = listeParticipantsValidesGlobal.filter(b => {
@@ -1286,15 +1360,21 @@
             afficherParticipantsValides(resultats);
         }
 
+        /* =============================================
+           COMPTEURS
+        ============================================= */
         function mettreAJourCompteurs(nombre) {
             let btnTabValidees = document.getElementById("btnTabValidees");
             let titreValidees = document.getElementById("titreSectionValidees");
-            if (btnTabValidees) btnTabValidees.textContent = `2. Validés (${nombre})`;
-            if (titreValidees) titreValidees.textContent = `Participants Confirmés & Validés (${nombre})`;
+            if (btnTabValidees) btnTabValidees.textContent = `Confirmes (${nombre})`;
+            if (titreValidees) titreValidees.textContent = `Participants confirmes (${nombre})`;
         }
 
+        /* =============================================
+           CHANGER STATUT BILLET
+        ============================================= */
         async function changerStatut(billetId, nouveauStatut) {
-            let updateData = { 
+            let updateData = {
                 statut: nouveauStatut,
                 updated_at: new Date().toISOString()
             };
@@ -1304,6 +1384,7 @@
                 updateData.numero_billet = `${billetId}`;
             }
 
+            // Envoi email si confirmation
             if (nouveauStatut === 'confirme') {
                 try {
                     const { data: bInfo, error: errBillet } = await window.supabaseClient
@@ -1332,15 +1413,18 @@
                 .eq("id", billetId);
 
             if (error) {
-                alert("Erreur lors de la mise à jour : " + error.message);
+                alert("Erreur lors de la mise a jour : " + error.message);
                 return;
             }
 
             await chargerToutesLesDemandes();
-        }  
+        }
 
+        /* =============================================
+           RETIRER PARTICIPANT
+        ============================================= */
         async function retirerParticipant(billetId) {
-            if (!confirm("Voulez-vous vraiment supprimer définitivement ce participant et son billet ?")) return;
+            if (!confirm("Voulez-vous vraiment supprimer definitivement ce participant et son billet ?")) return;
 
             const { error } = await window.supabaseClient
                 .from("billets")
@@ -1355,16 +1439,15 @@
             await chargerToutesLesDemandes();
         }
 
-        let derniersBilletsScannes = {};
-
+        /* =============================================
+           VÉRIFICATION BILLET (SCANNER)
+        ============================================= */
         async function traiterVerificationBillet(codeScanne) {
             let resultatDiv = document.getElementById("resultatScan");
             let code = codeScanne ? codeScanne.trim() : "";
 
             if (!code) {
-                resultatDiv.style.background = "#fef3c7";
-                resultatDiv.style.color = "#92400e";
-                resultatDiv.textContent = "⚠️ Veuillez entrer ou scanner un code de billet.";
+                setResultat(resultatDiv, "warning", "Veuillez entrer ou scanner un code de billet.");
                 return;
             }
 
@@ -1377,45 +1460,35 @@
                 .eq("evenement_id", eventId);
 
             if (error || !billets) {
-                resultatDiv.style.background = "#fee2e2";
-                resultatDiv.style.color = "#991b1b";
-                resultatDiv.textContent = "❌ Erreur de connexion avec la base de données.";
+                setResultat(resultatDiv, "error", "Erreur de connexion avec la base de donnees.");
                 return;
             }
 
-            let b = billets.find(item => 
-                item.id.toString() === idBilletExtrait || 
+            let b = billets.find(item =>
+                item.id.toString() === idBilletExtrait ||
                 item.id.toString() === code ||
-                (item.numero_billet && code.includes(item.numero_billet)) || 
+                (item.numero_billet && code.includes(item.numero_billet)) ||
                 (item.qr_code && code.includes(item.qr_code))
             );
 
             if (!b) {
-                resultatDiv.style.background = "#fee2e2";
-                resultatDiv.style.color = "#991b1b";
-                resultatDiv.textContent = `❌ Billet introuvable pour ce code (${code}).`;
+                setResultat(resultatDiv, "error", `Billet introuvable pour ce code (${code}).`);
                 return;
             }
 
             if (b.statut !== "confirme") {
-                resultatDiv.style.background = "#fef3c7";
-                resultatDiv.style.color = "#92400e";
-                resultatDiv.textContent = `⚠️ Entrée refusée : Ce billet n'est pas confirmé (Statut : ${b.statut}).`;
+                setResultat(resultatDiv, "warning", `Entree refusee : Billet non confirme (statut : ${b.statut}).`);
                 return;
             }
 
             let maintenant = Date.now();
             if (derniersBilletsScannes[b.id] && (maintenant - derniersBilletsScannes[b.id] < 30000)) {
-                resultatDiv.style.background = "#d1fae5";
-                resultatDiv.style.color = "#065f46";
-                resultatDiv.innerHTML = `✅ <strong>ENTRÉE VALIDE (Déjà scanné)</strong><br>${b.nom_participant || 'N/A'}`;
+                setResultat(resultatDiv, "success", `ENTREE VALIDE (Deja scanne) — ${b.nom_participant || 'N/A'}`);
                 return;
             }
 
             if (b.utilise === true || b.utilise === "true") {
-                resultatDiv.style.background = "#fee2e2";
-                resultatDiv.style.color = "#991b1b";
-                resultatDiv.innerHTML = `🚨 <strong>BILLET DÉJÀ UTILISÉ !</strong><br>${b.nom_participant || 'N/A'}`;
+                setResultat(resultatDiv, "error", `BILLET DEJA UTILISE — ${b.nom_participant || 'N/A'}`);
                 return;
             }
 
@@ -1425,17 +1498,25 @@
                 .eq("id", b.id);
 
             if (updateError) {
-                resultatDiv.style.background = "#fee2e2"; 
-                resultatDiv.style.color = "#991b1b";
-                resultatDiv.textContent = "❌ Erreur lors de la validation.";
+                setResultat(resultatDiv, "error", "Erreur lors de la validation du billet.");
                 return;
             }
 
-            derniersBisletsScannes = derniersBilletsScannes || {};
             derniersBilletsScannes[b.id] = maintenant;
-            resultatDiv.style.background = "#d1fae5";
-            resultatDiv.style.color = "#065f46";
-            resultatDiv.innerHTML = `✅ <strong>ENTRÉE VALIDE</strong><br>Bienvenue à <strong>${b.nom_participant || 'N/A'}</strong>`;
+            setResultat(resultatDiv, "success", `ENTREE VALIDE — Bienvenue, ${b.nom_participant || 'N/A'} !`);
+        }
+
+        function setResultat(el, type, message) {
+            const styles = {
+                success: { bg: "#d1fae5", border: "rgba(16,185,129,0.3)", color: "#065f46" },
+                error:   { bg: "#fee2e2", border: "rgba(239,68,68,0.3)",  color: "#991b1b" },
+                warning: { bg: "#fef3c7", border: "rgba(245,158,11,0.3)", color: "#92400e" }
+            };
+            let s = styles[type] || styles.warning;
+            el.style.background = s.bg;
+            el.style.borderColor = s.border;
+            el.style.color = s.color;
+            el.textContent = message;
         }
 
         function verifierBilletManuel() {
@@ -1444,6 +1525,9 @@
             document.getElementById("codeBilletInput").value = "";
         }
 
+        /* =============================================
+           NAVIGATION ONGLETS
+        ============================================= */
         function changerOnglet(nomOnglet, buttonElement) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
@@ -1453,12 +1537,12 @@
             if (nomOnglet === 'paiements') {
                 document.getElementById('section-paiements').classList.add('active');
                 if (html5QrCode && html5QrCode.isScanning) {
-                    html5QrCode.stop().catch(err => console.log("Arrêt caméra :", err));
+                    html5QrCode.stop().catch(err => console.log("Arret camera :", err));
                 }
             } else if (nomOnglet === 'validees') {
                 document.getElementById('section-validees').classList.add('active');
                 if (html5QrCode && html5QrCode.isScanning) {
-                    html5QrCode.stop().catch(err => console.log("Arrêt caméra :", err));
+                    html5QrCode.stop().catch(err => console.log("Arret camera :", err));
                 }
             } else {
                 document.getElementById('section-scanner').classList.add('active');
@@ -1468,12 +1552,16 @@
                     { fps: 10, qrbox: 250 },
                     (decodedText) => traiterVerificationBillet(decodedText),
                     (errorMessage) => {}
-                ).catch(err => console.log("Caméra non dispo :", err));
+                ).catch(err => console.log("Camera non dispo :", err));
             }
         }
 
+        /* =============================================
+           TOGGLE VENTES
+        ============================================= */
         async function toggleVentes() {
             statutVentesFermees = !statutVentesFermees;
+
             const { error } = await window.supabaseClient
                 .from("evenements")
                 .update({ ventes_fermees: statutVentesFermees })
@@ -1484,28 +1572,31 @@
                 statutVentesFermees = !statutVentesFermees;
                 return;
             }
+
             mettreAJourBoutonVentes();
         }
-
-        identityCheck = () => {};
 
         function mettreAJourBoutonVentes() {
             let label = document.getElementById("labelStatutVentes");
             let btn = document.getElementById("btnToggleVentes");
+            let indicator = document.getElementById("statusIndicator");
             if (!label || !btn) return;
 
             if (statutVentesFermees) {
-                label.innerHTML = "Vente des billets : <span style='color: #ef4444;'>FERMÉE</span>";
+                label.innerHTML = `Ventes : <span style="color:#ef4444;font-weight:800;">FERMEES</span>`;
                 btn.textContent = "Ouvrir la vente";
-                btn.style.background = "#10b981";
+                btn.style.background = "linear-gradient(135deg, #10b981, #059669)";
                 btn.style.color = "#ffffff";
+                if (indicator) { indicator.className = "status-indicator closed"; }
             } else {
-                label.innerHTML = "Vente des billets : <span style='color: #10b981;'>OUVERTE</span>";
+                label.innerHTML = `Ventes : <span style="color:#10b981;font-weight:800;">OUVERTES</span>`;
                 btn.textContent = "Fermer la vente";
-                btn.style.background = "#ef4444";
+                btn.style.background = "linear-gradient(135deg, #ef4444, #dc2626)";
                 btn.style.color = "#ffffff";
+                if (indicator) { indicator.className = "status-indicator open"; }
             }
         }
     </script>
+
 </body>
 </html>

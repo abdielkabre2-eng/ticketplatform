@@ -1,129 +1,142 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Achat de Billet | GoldTix</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* =============================================
+           VARIABLES & RESET
+        ============================================= */
         :root {
-            --primary: #d97706;
-            --primary-gradient: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
-            --primary-glow: rgba(217, 119, 6, 0.3);
-            --bg-main: #f8fafc;
-            --card-bg: rgba(255, 255, 255, 0.9);
-            --card-border: rgba(217, 119, 6, 0.12);
-            --input-bg: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --radius-lg: 28px;
-            --radius-md: 16px;
-            --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --gold-1: #f59e0b;
+            --gold-2: #d97706;
+            --gold-3: #b45309;
+            --gold-gradient: linear-gradient(135deg, var(--gold-1) 0%, var(--gold-3) 100%);
+            --gold-glow: rgba(217, 119, 6, 0.28);
+            --gold-glow-soft: rgba(245, 158, 11, 0.08);
+
+            --bg: #f7f8fa;
+            --surface: rgba(255, 255, 255, 0.92);
+            --surface-raised: #ffffff;
+            --border: rgba(217, 119, 6, 0.13);
+            --border-neutral: #e8ecf0;
+
+            --text: #0d1117;
+            --text-sub: #5a6478;
+            --text-muted: #8a94a6;
+
+            --green: #059669;
+            --green-bg: rgba(16, 185, 129, 0.09);
+            --green-border: rgba(16, 185, 129, 0.22);
+
+            --red: #dc2626;
+            --red-bg: #fef2f2;
+            --red-border: #fecaca;
+
+            --radius-xl: 28px;
+            --radius-lg: 18px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+
+            --shadow-card: 0 24px 48px -16px rgba(217, 119, 6, 0.09), 0 8px 24px -8px rgba(0,0,0,0.04);
+            --shadow-hover: 0 32px 64px -20px rgba(217, 119, 6, 0.17), 0 12px 32px -12px rgba(0,0,0,0.06);
+            --shadow-glow: 0 12px 30px var(--gold-glow);
+
+            --ease: cubic-bezier(0.16, 1, 0.3, 1);
+            --transition: all 0.4s var(--ease);
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: var(--bg-main);
-            background-image: 
-                radial-gradient(circle at 10% 10%, rgba(245, 158, 11, 0.08) 0px, transparent 50%),
-                radial-gradient(circle at 90% 90%, rgba(217, 119, 6, 0.06) 0px, transparent 50%),
-                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.8) 0px, transparent 100%);
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--bg);
+            background-image:
+                radial-gradient(ellipse at 8% 8%, rgba(245, 158, 11, 0.07) 0px, transparent 55%),
+                radial-gradient(ellipse at 92% 92%, rgba(217, 119, 6, 0.05) 0px, transparent 55%);
             background-attachment: fixed;
-            color: var(--text-main); 
-            padding: 30px 20px 80px 20px; 
+            color: var(--text);
+            padding: 28px 20px 90px;
             line-height: 1.6;
             min-height: 100vh;
             overflow-x: hidden;
         }
 
-        /* --- ANIMATIONS HORS DU COMMUN (CINÉMATIQUE) --- */
-        @keyframes heroEntrance {
-            0% {
-                opacity: 0;
-                transform: translateY(40px) scale(0.98);
-                filter: blur(10px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-                filter: blur(0);
-            }
+        /* =============================================
+           ANIMATIONS
+        ============================================= */
+        @keyframes entranceUp {
+            from { opacity: 0; transform: translateY(36px) scale(0.98); filter: blur(8px); }
+            to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
         }
-
         @keyframes pulseGlow {
-            0%, 100% { box-shadow: 0 0 20px rgba(217, 119, 6, 0.2); }
-            50% { box-shadow: 0 0 35px rgba(217, 119, 6, 0.45); }
+            0%, 100% { box-shadow: 0 0 18px rgba(217,119,6,0.2); }
+            50%       { box-shadow: 0 0 34px rgba(217,119,6,0.46); }
         }
-
-        @keyframes floatEffect {
+        @keyframes float {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-6px); }
+            50%       { transform: translateY(-5px); }
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        @keyframes shimmer {
+            0%   { background-position: -400px 0; }
+            100% { background-position: 400px 0; }
         }
 
-        .animate-entrance-1 {
-            animation: heroEntrance 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
+        .anim-1 { animation: entranceUp 0.9s var(--ease) both; }
+        .anim-2 { animation: entranceUp 0.9s var(--ease) 0.18s both; opacity: 0; }
+        .anim-3 { animation: entranceUp 0.9s var(--ease) 0.36s both; opacity: 0; }
 
-        .animate-entrance-2 {
-            opacity: 0;
-            animation: heroEntrance 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
-        }
-
-        .animate-entrance-3 {
-            opacity: 0;
-            animation: heroEntrance 1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
-        }
-
-        /* --- NAVBAR --- */
-        .top-navbar {
+        /* =============================================
+           NAVBAR
+        ============================================= */
+        .navbar {
             max-width: 1100px;
-            margin: 0 auto 40px auto;
+            margin: 0 auto 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            background: rgba(255, 255, 255, 0.8);
+            gap: 16px;
+            background: rgba(255,255,255,0.82);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            padding: 16px 28px;
+            padding: 14px 22px;
             border-radius: 20px;
-            border: 1px solid var(--card-border);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 28px rgba(0,0,0,0.03);
         }
 
-        .brand-container {
+        .brand {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
+            min-width: 0;
+            text-decoration: none;
         }
 
-        .site-logo {
-            height: 40px;
+        .brand-logo {
+            height: 34px;
             width: auto;
-            transition: var(--transition-smooth);
+            flex-shrink: 0;
+            transition: var(--transition);
         }
+        .brand-logo:hover { transform: scale(1.06) rotate(-3deg); }
 
-        .site-logo:hover {
-            transform: scale(1.05) rotate(-3deg);
-        }
-
-        .brand-title {
-            font-size: 26px;
+        .brand-name {
+            font-family: 'Syne', sans-serif;
+            font-size: 22px;
             font-weight: 800;
-            letter-spacing: -0.5px;
-            color: #0f172a;
+            letter-spacing: -0.4px;
+            color: var(--text);
+            white-space: nowrap;
         }
-
-        .brand-title span {
-            background: var(--primary-gradient);
+        .brand-name em {
+            font-style: normal;
+            background: var(--gold-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -131,320 +144,558 @@
         .secure-badge {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            background: rgba(16, 185, 129, 0.1);
-            color: #059669;
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            padding: 8px 16px;
+            gap: 7px;
+            background: var(--green-bg);
+            color: var(--green);
+            border: 1px solid var(--green-border);
+            padding: 7px 13px;
             border-radius: 30px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
-            backdrop-filter: blur(10px);
+            letter-spacing: 0.3px;
             white-space: nowrap;
+            flex-shrink: 0;
         }
+        .secure-badge svg { width: 12px; height: 12px; }
 
-        .main-wrapper {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
+        /* =============================================
+           LAYOUT
+        ============================================= */
+        .main-wrapper { max-width: 1100px; margin: 0 auto; }
 
-        .grid-container {
+        .grid {
             display: grid;
             grid-template-columns: 1fr 1.15fr;
-            gap: 36px;
+            gap: 32px;
             align-items: start;
         }
-
         @media (max-width: 900px) {
-            .grid-container {
-                grid-template-columns: 1fr;
-            }
+            .grid { grid-template-columns: 1fr; }
         }
 
-        .event-card, .form-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border-radius: var(--radius-lg);
-            padding: 36px;
-            border: 1px solid var(--card-border);
-            box-shadow: 0 20px 40px -15px rgba(217, 119, 6, 0.08), 0 10px 20px -10px rgba(0, 0, 0, 0.03);
-            transition: var(--transition-smooth);
+        /* =============================================
+           CARDS
+        ============================================= */
+        .card {
+            background: var(--surface);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            border-radius: var(--radius-xl);
+            padding: 32px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-card);
+            transition: var(--transition);
         }
+        .card--event:hover { box-shadow: var(--shadow-hover); }
 
-        .event-card:hover {
-            box-shadow: 0 30px 60px -20px rgba(217, 119, 6, 0.15), 0 15px 30px -15px rgba(0, 0, 0, 0.05);
-        }
-
-        .event-poster-wrapper {
+        /* =============================================
+           POSTER
+        ============================================= */
+        .poster-wrapper {
             width: 100%;
-            border-radius: var(--radius-md);
+            border-radius: var(--radius-lg);
             overflow: hidden;
-            background: #ffffff;
-            background-image: radial-gradient(circle at center, rgba(245, 158, 11, 0.05) 0%, #ffffff 80%);
-            margin-bottom: 24px;
+            background: var(--surface-raised);
+            margin-bottom: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid rgba(217, 119, 6, 0.1);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.04);
-            padding: 12px;
-            transition: var(--transition-smooth);
+            border: 1px solid rgba(217,119,6,0.1);
+            box-shadow: 0 10px 28px rgba(0,0,0,0.04);
+            padding: 10px;
+            transition: var(--transition);
         }
-
-        .event-poster-wrapper:hover {
-            transform: scale(1.01);
-        }
-
-        .event-poster-wrapper img {
+        .poster-wrapper:hover { transform: scale(1.012); }
+        .poster-wrapper img {
             width: 100%;
             height: auto;
             max-height: 500px;
             object-fit: contain;
-            border-radius: 10px;
+            border-radius: var(--radius-md);
+            display: block;
         }
+        .poster-fallback {
+            padding: 48px 24px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .poster-fallback svg { width: 40px; height: 40px; margin-bottom: 10px; opacity: 0.35; }
 
+        /* =============================================
+           EVENT INFO
+        ============================================= */
         .event-title {
-            font-size: 28px;
+            font-family: 'Syne', sans-serif;
+            font-size: 26px;
             font-weight: 800;
-            color: #0f172a;
-            margin: 0 0 18px 0;
-            letter-spacing: -0.8px;
+            color: var(--text);
+            margin: 0 0 18px;
+            letter-spacing: -0.6px;
             line-height: 1.25;
         }
 
-        .event-meta-item {
+        .meta-row {
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-size: 15px;
-            color: var(--text-muted);
-            margin-bottom: 14px;
+            gap: 10px;
+            font-size: 14.5px;
+            color: var(--text-sub);
+            margin-bottom: 12px;
             font-weight: 500;
         }
+        .meta-row svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--gold-2); }
+        .meta-row strong { color: var(--text); }
+        .meta-sep { color: var(--border-neutral); margin: 0 4px; }
 
         .price-badge {
             display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 20px;
-            padding: 14px 24px;
-            background: var(--primary-gradient);
-            color: #ffffff;
-            border-radius: var(--radius-md);
-            font-weight: 800;
-            font-size: 18px;
-            box-shadow: 0 10px 25px var(--primary-glow);
-            animation: floatEffect 4s ease-in-out infinite;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+            margin-top: 18px;
+            padding: 14px 22px;
+            background: var(--gold-gradient);
+            color: #fff;
+            border-radius: var(--radius-lg);
+            font-weight: 700;
+            font-size: 14.5px;
+            box-shadow: var(--shadow-glow);
+            animation: float 4s ease-in-out infinite;
+            width: 100%;
         }
+        .price-badge-item { display: flex; align-items: center; gap: 8px; }
+        .price-badge-item svg { width: 15px; height: 15px; opacity: 0.85; }
 
+        /* =============================================
+           PAYMENT BOX
+        ============================================= */
         .payment-box {
-            background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            border-radius: var(--radius-md);
-            padding: 24px;
-            margin-bottom: 30px;
+            background: linear-gradient(135deg, #fefce8, #fef9c3);
+            border: 1px solid rgba(245,158,11,0.28);
+            border-radius: var(--radius-lg);
+            padding: 22px;
+            margin-bottom: 28px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.05);
         }
-
         .payment-box::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; width: 5px; height: 100%;
-            background: var(--primary-gradient);
+            top: 0; left: 0;
+            width: 4px; height: 100%;
+            background: var(--gold-gradient);
         }
 
-        .form-section-title {
-            font-size: 18px;
+        .payment-box-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
             font-weight: 800;
-            margin: 0 0 20px 0;
-            color: #0f172a;
-            letter-spacing: -0.4px;
+            color: var(--text);
+            letter-spacing: 0.7px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+        .payment-box-title svg { width: 14px; height: 14px; color: var(--gold-2); }
+
+        .info-rows { display: flex; flex-direction: column; gap: 10px; }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.72);
+            padding: 11px 15px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(245,158,11,0.13);
+        }
+        .info-row-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11.5px;
+            color: var(--text-muted);
+            font-weight: 700;
+            white-space: nowrap;
+            letter-spacing: 0.2px;
+        }
+        .info-row-label svg { width: 13px; height: 13px; }
+        .info-row-value {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-align: right;
         }
 
-        .form-group {
-            margin-bottom: 22px;
+        .qr-wrapper {
+            margin-top: 14px;
+            background: rgba(255,255,255,0.8);
+            padding: 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(245,158,11,0.13);
+            text-align: center;
         }
+        .qr-label {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .qr-label svg { width: 13px; height: 13px; }
+        .qr-image {
+            max-width: 190px;
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            display: inline-block;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.07);
+            border: 1px solid var(--border-neutral);
+            background: #fff;
+            padding: 6px;
+            object-fit: contain;
+        }
+
+        /* =============================================
+           FORM
+        ============================================= */
+        .section-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 17px;
+            font-weight: 800;
+            margin: 0 0 20px;
+            color: var(--text);
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title svg { width: 18px; height: 18px; color: var(--gold-2); }
+
+        .form-group { margin-bottom: 20px; }
 
         .form-group label {
             display: block;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 800;
-            color: #b45309;
+            color: var(--gold-3);
             margin-bottom: 8px;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
+            letter-spacing: 0.9px;
         }
 
         input[type="text"],
         input[type="email"],
         input[type="tel"],
-        input[type="file"],
         select {
             width: 100%;
-            padding: 16px 18px;
-            font-size: 15px;
-            font-family: inherit;
-            border: 2px solid #e2e8f0;
-            border-radius: var(--radius-md);
+            padding: 15px 17px;
+            font-size: 14.5px;
+            font-family: 'DM Sans', sans-serif;
+            border: 2px solid var(--border-neutral);
+            border-radius: var(--radius-lg);
             outline: none;
-            background: var(--input-bg);
-            color: #0f172a;
-            transition: var(--transition-smooth);
+            background: var(--surface-raised);
+            color: var(--text);
+            transition: var(--transition);
+            -webkit-appearance: none;
+            appearance: none;
         }
-
         input[type="text"]:focus,
         input[type="email"]:focus,
         input[type="tel"]:focus,
         select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 6px var(--primary-glow);
-            background: #ffffff;
+            border-color: var(--gold-2);
+            box-shadow: 0 0 0 5px var(--gold-glow);
+            background: #fff;
             transform: translateY(-2px);
         }
+        input::placeholder { color: var(--text-muted); }
 
-        input[type="file"] {
-            padding: 12px;
+        /* File Input Custom */
+        .file-input-wrapper {
+            position: relative;
+            border: 2px dashed var(--border-neutral);
+            border-radius: var(--radius-lg);
+            background: #fbfcfd;
+            transition: var(--transition);
+            overflow: hidden;
+        }
+        .file-input-wrapper:hover {
+            border-color: var(--gold-2);
+            background: #fffdf5;
+        }
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
             cursor: pointer;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+        .file-input-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            gap: 8px;
+            pointer-events: none;
+        }
+        .file-input-display svg { width: 28px; height: 28px; color: var(--gold-2); opacity: 0.7; }
+        .file-input-display span {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--text-sub);
+        }
+        .file-input-display em {
+            font-style: normal;
+            font-size: 12px;
             color: var(--text-muted);
-            background: #f8fafc;
         }
-
-        input[type="file"]::file-selector-button {
-            background: #fef3c7;
-            border: 1px solid #fde68a;
-            color: #b45309;
-            padding: 10px 16px;
-            border-radius: 10px;
-            cursor: pointer;
+        .file-name-preview {
+            font-size: 12px;
             font-weight: 700;
-            margin-right: 14px;
-            transition: var(--transition-smooth);
+            color: var(--gold-3);
+            margin-top: 4px;
+            display: none;
         }
 
-        input[type="file"]::file-selector-button:hover {
-            background: #fde68a;
-        }
-
-        button#btnValiderAchat { 
-            background: var(--primary-gradient); 
-            color: white; 
-            border: none; 
-            padding: 18px 24px; 
-            width: 100%; 
-            border-radius: var(--radius-md); 
-            font-size: 16px;
-            font-weight: 800; 
-            cursor: pointer; 
-            transition: var(--transition-smooth);
-            box-shadow: 0 12px 30px var(--primary-glow);
-            margin-top: 10px;
-            letter-spacing: 0.5px;
+        /* Submit Button */
+        .btn-submit {
+            background: var(--gold-gradient);
+            color: #fff;
+            border: none;
+            padding: 17px 24px;
+            width: 100%;
+            border-radius: var(--radius-lg);
+            font-size: 15.5px;
+            font-weight: 700;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-glow);
+            margin-top: 8px;
+            letter-spacing: 0.3px;
             animation: pulseGlow 3s infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
-
-        button#btnValiderAchat:hover { 
+        .btn-submit:hover {
             transform: translateY(-3px) scale(1.01);
-            box-shadow: 0 20px 40px rgba(217, 119, 6, 0.45);
+            box-shadow: 0 20px 40px rgba(217,119,6,0.45);
         }
-
-        button#btnValiderAchat:active {
-            transform: translateY(1px);
-        }
-
-        button#btnValiderAchat:disabled {
-            background: #cbd5e1;
-            color: #64748b;
+        .btn-submit:active { transform: translateY(1px); }
+        .btn-submit:disabled {
+            background: #d1d9e0;
+            color: #8a94a6;
             cursor: not-allowed;
             box-shadow: none;
             transform: none;
             animation: none;
         }
+        .btn-submit svg { width: 18px; height: 18px; }
+        .btn-submit .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2.5px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+        .btn-submit.loading .btn-icon { display: none; }
+        .btn-submit.loading .spinner { display: block; }
 
-        .closed-sales-box {
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            border-radius: var(--radius-md);
-            padding: 35px 25px;
+        /* =============================================
+           STATES
+        ============================================= */
+        .loading-card {
+            text-align: center;
+            padding: 70px 24px;
+        }
+        .loading-shimmer {
+            height: 18px;
+            border-radius: 6px;
+            background: linear-gradient(90deg, #f0f2f5 25%, #e8ecf0 50%, #f0f2f5 75%);
+            background-size: 400px 100%;
+            animation: shimmer 1.4s infinite linear;
+            margin: 0 auto;
+        }
+        .loading-text {
+            color: var(--text-muted);
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .loading-text .spinner {
+            width: 18px; height: 18px;
+            border: 2.5px solid var(--border-neutral);
+            border-top-color: var(--gold-2);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .closed-box {
+            background: var(--red-bg);
+            border: 1px solid var(--red-border);
+            border-radius: var(--radius-lg);
+            padding: 40px 28px;
             text-align: center;
         }
-
-        .closed-sales-box h3 {
-            color: #dc2626;
-            font-size: 22px;
-            font-weight: 800;
-            margin-bottom: 12px;
+        .closed-box-icon {
+            width: 52px; height: 52px;
+            background: rgba(220,38,38,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
         }
+        .closed-box-icon svg { width: 24px; height: 24px; color: var(--red); }
+        .closed-box h3 { color: var(--red); font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 10px; }
+        .closed-box p { color: #991b1b; font-size: 14.5px; line-height: 1.65; }
+        .closed-box p + p { margin-top: 10px; color: var(--text-muted); font-size: 13px; font-weight: 600; }
 
-        .closed-sales-box p {
-            color: #991b1b;
-            font-size: 15px;
-            line-height: 1.6;
+        .error-card {
+            text-align: center;
+            padding: 60px 24px;
         }
+        .error-card h2 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 10px; }
+        .error-card p { color: var(--text-sub); font-size: 14.5px; }
 
-        .creator-footer {
+        /* =============================================
+           FOOTER
+        ============================================= */
+        .footer {
             max-width: 1100px;
-            margin: 60px auto 0 auto;
-            padding-top: 30px;
-            border-top: 1px solid #e2e8f0;
+            margin: 64px auto 0;
+            padding-top: 28px;
+            border-top: 1px solid var(--border-neutral);
             text-align: center;
             font-size: 13px;
             color: var(--text-muted);
         }
-
-        .creator-footer a {
-            color: #d97706;
+        .footer-brand {
+            font-family: 'Syne', sans-serif;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--gold-2);
+            margin-bottom: 8px;
+        }
+        .footer a {
+            color: var(--gold-2);
             text-decoration: none;
             font-weight: 600;
-            transition: color 0.2s ease;
+            transition: color 0.2s;
         }
+        .footer a:hover { color: var(--gold-3); text-decoration: underline; }
+        .footer-dot { margin: 0 6px; color: var(--border-neutral); }
 
-        .creator-footer a:hover {
-            color: #b45309;
-            text-decoration: underline;
+        /* =============================================
+           RESPONSIVE TWEAKS
+        ============================================= */
+        @media (max-width: 600px) {
+            body { padding: 18px 14px 70px; }
+            .card { padding: 22px 18px; }
+            .event-title { font-size: 22px; }
         }
     </style>
 </head>
-
 <body>
 
-    <div class="top-navbar animate-entrance-1">
-        <div class="brand-container">
-            <img src="logo.png" alt="GoldTix Logo" class="site-logo">
-            <div class="brand-title">Gold<span>Tix</span></div>
+    <!-- NAVBAR -->
+    <nav class="navbar anim-1">
+        <div class="brand">
+            <img src="logo.png" alt="GoldTix" class="brand-logo">
+            <div class="brand-name">Gold<em>Tix</em></div>
         </div>
-        <span class="secure-badge">🔒 Billetterie Hautement Sécurisée</span>
-    </div>
+        <span class="secure-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            Billetterie Securisee
+        </span>
+    </nav>
 
-    <div class="main-wrapper">
-        <div id="detailsEvenement" class="animate-entrance-2">
-            <div class="event-card" style="text-align: center; padding: 60px 20px;">
-                <p style="color: var(--text-muted); font-size: 16px; font-weight: 600;">✨ Chargement de votre expérience...</p>
+    <!-- MAIN -->
+    <main class="main-wrapper">
+        <div id="detailsEvenement" class="anim-2">
+            <div class="card loading-card">
+                <p class="loading-text">
+                    <span class="spinner"></span>
+                    Chargement de votre experience...
+                </p>
             </div>
         </div>
-    </div>
+    </main>
 
-    <footer class="creator-footer animate-entrance-3">
-        <p style="margin-bottom: 6px; font-weight: 700; letter-spacing: 0.5px;">— LA BILLETTERIE EN OR —</p>
-        <p style="margin: 0;">
-            Plateforme propulsée par <strong>GoldTix</strong> | Développée par <strong>Abdiel KABRE</strong><br>
-            📧 <a href="mailto:abdielkabre2@gmail.com">abdielkabre2@gmail.com</a> | 
-            📞 <a href="https://wa.me/22653107345" target="_blank">+226 53 10 73 45</a> / <a href="https://wa.me/212770967646" target="_blank">+212 770-967646</a>
+    <!-- FOOTER -->
+    <footer class="footer anim-3">
+        <p class="footer-brand">— La Billetterie en Or —</p>
+        <p>
+            Propulsee par <strong>GoldTix</strong>
+            <span class="footer-dot">|</span>
+            Developpee par <strong>Abdiel KABRE</strong>
+        </p>
+        <p style="margin-top: 5px;">
+            <a href="mailto:abdielkabre2@gmail.com">abdielkabre2@gmail.com</a>
+            <span class="footer-dot">|</span>
+            <a href="https://wa.me/22653107345" target="_blank">+226 53 10 73 45</a>
+            <span class="footer-dot">/</span>
+            <a href="https://wa.me/212770967646" target="_blank">+212 770-967646</a>
         </p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase.js"></script>
     <script>
+        // ─── SVG ICONS ────────────────────────────────────────────────────────────
+        const ICONS = {
+            calendar: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+            clock:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+            pin:      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
+            ticket:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg>`,
+            user:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+            phone:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.65 3.27 2 2 0 0 1 3.62 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.29 6.29l1.02-.88a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`,
+            mobile:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>`,
+            card:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>`,
+            upload:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>`,
+            check:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
+            image:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
+            mail:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`,
+        };
+
+        // ─── MAIN LOADER ─────────────────────────────────────────────────────────
         async function chargerPageAchatUnique() {
             const urlParams = new URLSearchParams(window.location.search);
-            let eventId = urlParams.get("event");
-            let container = document.getElementById("detailsEvenement");
+            const eventId = urlParams.get("event");
+            const container = document.getElementById("detailsEvenement");
 
             if (!eventId) {
-                container.innerHTML = "<div class='event-card' style='text-align:center;'><h2>Erreur</h2><p style='color: var(--text-muted); margin-top: 10px;'>Aucun événement spécifié dans le lien.</p></div>";
+                container.innerHTML = `
+                    <div class="card error-card">
+                        <h2>Lien invalide</h2>
+                        <p>Aucun evenement specifie dans ce lien.</p>
+                    </div>`;
                 return;
             }
 
@@ -455,136 +706,188 @@
                 .single();
 
             if (error || !ev) {
-                container.innerHTML = "<div class='event-card' style='text-align:center;'><h2>Événement introuvable</h2><p style='color: var(--text-muted); margin-top: 10px;'>Ce lien est expiré ou invalide.</p></div>";
+                container.innerHTML = `
+                    <div class="card error-card">
+                        <h2>Evenement introuvable</h2>
+                        <p>Ce lien est expire ou invalide.</p>
+                    </div>`;
                 return;
             }
 
-            let contenuColonneDroite = "";
+            // ── Colonne droite ──────────────────────────────────────────────────
+            let rightColumn = "";
 
             if (ev.ventes_fermees) {
-                contenuColonneDroite = `
-                    <div class="form-card animate-entrance-3">
-                        <div class="closed-sales-box">
-                            <h3>🔴 Ventes fermées</h3>
-                            <p>Les ventes en ligne de billets pour cet événement sont désormais fermées par l'organisateur.</p>
-                            <p style="margin-top: 12px; font-size: 13px; color: #64748b; font-weight: 600;">Merci pour votre intérêt !</p>
+                rightColumn = `
+                    <div class="card anim-3">
+                        <div class="closed-box">
+                            <div class="closed-box-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+                                </svg>
+                            </div>
+                            <h3>Ventes Fermees</h3>
+                            <p>Les ventes en ligne de billets pour cet evenement sont desormais fermees par l'organisateur.</p>
+                            <p>Merci pour votre interet !</p>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             } else {
-                let infosCoordonnees = ev.beneficiaire_infos ? ev.beneficiaire_infos : 'Non renseigné';
+                const infosCoordonnees = ev.beneficiaire_infos || 'Non renseigne';
 
-                let selectionCategorieHTML = "";
+                // Categorie select
+                let categorieHTML = "";
                 if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_data.length > 0) {
-                    let optionsHTML = ev.categories_data.map(cat => `<option value="${cat.nom} - ${cat.prix}">${cat.nom} (${cat.prix})</option>`).join("");
-                    selectionCategorieHTML = `
+                    const options = ev.categories_data
+                        .map(cat => `<option value="${cat.nom} - ${cat.prix}">${cat.nom} (${cat.prix})</option>`)
+                        .join("");
+                    categorieHTML = `
                         <div class="form-group">
-                            <label for="selectCategorie">Choisissez votre catégorie de billet :</label>
-                            <select id="selectCategorie">
-                                ${optionsHTML}
-                            </select>
-                        </div>
-                    `;
+                            <label for="selectCategorie">Categorie de billet</label>
+                            <select id="selectCategorie">${options}</select>
+                        </div>`;
                 }
 
-                contenuColonneDroite = `
-                    <div class="form-card animate-entrance-3">
+                // QR / RIB
+                const qrSection = (ev.rib_image_url || ev.qr_code_paiement) ? `
+                    <div class="qr-wrapper">
+                        <p class="qr-label">
+                            ${ICONS.card}
+                            Scanner ou utiliser le RIB ci-dessous
+                        </p>
+                        <img src="${ev.rib_image_url || ev.qr_code_paiement}" alt="Support de paiement" class="qr-image">
+                    </div>` : "";
+
+                rightColumn = `
+                    <div class="card anim-3">
+
+                        <!-- ETAPE 1 : PAIEMENT -->
                         <div class="payment-box">
-                            <h3 style="margin-bottom: 16px; font-size: 14px; color: var(--text-main); font-weight: 800; letter-spacing: 0.5px;">📱 ÉTAPE 1 : EFFECTUER LE PAIEMENT</h3>
-                            
-                            <div style="display: flex; flex-direction: column; gap: 12px;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.7); padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.15);">
-                                    <span style="font-size: 12px; color: var(--text-muted); font-weight: 700;">👤 Bénéficiaire</span>
-                                    <span style="font-size: 14px; font-weight: 800; color: var(--text-main);">${ev.beneficiaire_nom || 'Non renseigné'}</span>
+                            <p class="payment-box-title">
+                                ${ICONS.mobile}
+                                Etape 1 — Effectuer le paiement
+                            </p>
+                            <div class="info-rows">
+                                <div class="info-row">
+                                    <span class="info-row-label">${ICONS.user} Beneficiaire</span>
+                                    <span class="info-row-value">${ev.beneficiaire_nom || 'Non renseigne'}</span>
                                 </div>
-
-                                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.7); padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.15);">
-                                    <span style="font-size: 12px; color: var(--text-muted); font-weight: 700;">📞 Contact</span>
-                                    <span style="font-size: 14px; font-weight: 800; color: var(--text-main);">${infosCoordonnees}</span>
-                                </div>
-                            </div>
-
-                            ${ev.rib_image_url || ev.qr_code_paiement ? `
-                            <div style="margin-top: 14px; background: rgba(255, 255, 255, 0.8); padding: 16px; border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.15);">
-                                <span style="font-size: 12px; color: var(--text-muted); font-weight: 700; display: block; margin-bottom: 12px; text-align: center;">💳 Scanner ou utiliser le RIB ci-dessous</span>
-                                <div style="text-align: center;">
-                                    <img src="${ev.rib_image_url || ev.qr_code_paiement}" alt="Support de paiement" style="max-width: 200px; width: 100%; height: auto; border-radius: 10px; display: inline-block; box-shadow: 0 8px 20px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; background: #fff; padding: 6px; object-fit: contain;">
+                                <div class="info-row">
+                                    <span class="info-row-label">${ICONS.phone} Contact</span>
+                                    <span class="info-row-value">${infosCoordonnees}</span>
                                 </div>
                             </div>
-                            ` : ''}
+                            ${qrSection}
                         </div>
 
-                        <h3 class="form-section-title">📩 Étape 2 : Confirmez votre paiement</h3>
-                        
-                        ${selectionCategorieHTML}
+                        <!-- ETAPE 2 : FORMULAIRE -->
+                        <h3 class="section-title">
+                            ${ICONS.mail}
+                            Etape 2 — Confirmez votre paiement
+                        </h3>
+
+                        ${categorieHTML}
 
                         <div class="form-group">
-                            <label for="nomParticipant">Nom et Prénom :</label>
-                            <input type="text" id="nomParticipant" placeholder="ex: KONATE Jean">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="emailParticipant">Adresse E-mail fonctionnelle (Réception du billet) :</label>
-                            <input type="email" id="emailParticipant" placeholder="ex: nom@gmail.com" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="telParticipant">Numéro WhatsApp :</label>
-                            <input type="tel" id="telParticipant" placeholder="ex: +226 ... / +212 ...">
+                            <label for="nomParticipant">Nom et Prenom</label>
+                            <input type="text" id="nomParticipant" placeholder="ex : KONATE Jean">
                         </div>
 
                         <div class="form-group">
-                            <label for="preuvePaiement">Preuve de paiement (Capture du reçu) :</label>
-                            <input type="file" id="preuvePaiement" accept="image/*">
+                            <label for="emailParticipant">Adresse e-mail (reception du billet)</label>
+                            <input type="email" id="emailParticipant" placeholder="ex : nom@gmail.com">
                         </div>
 
-                        <button id="btnValiderAchat">Valider mon paiement & obtenir mon billet</button>
-                    </div>
-                `;
+                        <div class="form-group">
+                            <label for="telParticipant">Numero WhatsApp</label>
+                            <input type="tel" id="telParticipant" placeholder="ex : +226 ... / +212 ...">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Preuve de paiement (capture du recu)</label>
+                            <div class="file-input-wrapper" id="fileWrapper">
+                                <input type="file" id="preuvePaiement" accept="image/*">
+                                <div class="file-input-display">
+                                    ${ICONS.upload}
+                                    <span>Cliquez pour choisir un fichier</span>
+                                    <em>JPG, PNG, WEBP acceptes</em>
+                                    <span class="file-name-preview" id="fileNamePreview"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="btn-submit" id="btnValiderAchat">
+                            <span class="btn-icon">${ICONS.check}</span>
+                            <div class="spinner"></div>
+                            Valider mon paiement et obtenir mon billet
+                        </button>
+
+                    </div>`;
             }
 
-            let affichagePrixHTML = "";
+            // ── Prix HTML ───────────────────────────────────────────────────────
+            let prixHTML = "";
             if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_data.length > 0) {
-                affichagePrixHTML = ev.categories_data.map(c => `<div>🎫 <strong>${c.nom}</strong> : ${c.prix}</div>`).join("");
+                prixHTML = ev.categories_data.map(c => `
+                    <div class="price-badge-item">
+                        ${ICONS.ticket}
+                        <strong>${c.nom}</strong>&nbsp;:&nbsp;${c.prix}
+                    </div>`).join("");
             } else {
-                affichagePrixHTML = `💳 Prix du ticket : ${ev.prix || 'Gratuit'}`;
+                prixHTML = `<div class="price-badge-item">${ICONS.card} Prix : ${ev.prix || 'Gratuit'}</div>`;
             }
 
+            // ── Affiche HTML ────────────────────────────────────────────────────
+            const posterHTML = ev.affiche_url
+                ? `<img src="${ev.affiche_url}" alt="Affiche de l'evenement" onerror="this.parentElement.innerHTML='<div class=\\'poster-fallback\\'>${ICONS.image}<p>Affiche non disponible</p></div>'">`
+                : `<div class="poster-fallback">${ICONS.image}<p>Affiche non disponible</p></div>`;
+
+            // ── Injection ───────────────────────────────────────────────────────
             container.innerHTML = `
-                <div class="grid-container">
-                    
-                    <div class="event-card">
-                        <div class="event-poster-wrapper">
-                            <img src="${ev.affiche_url || ''}" alt="Affiche" onerror="this.parentElement.innerHTML='<p style=\\'color:#64748b;padding:40px;\\'>🖼️ Affiche non disponible</p>'">
-                        </div>
+                <div class="grid">
+                    <div class="card card--event">
+                        <div class="poster-wrapper">${posterHTML}</div>
                         <h1 class="event-title">${ev.titre}</h1>
-                        <div class="event-meta-item">📅 <span><strong>Date :</strong> ${ev.date}</span> <span style="margin-left: 15px;"><strong>Heure :</strong> ${ev.heure}</span></div>
-                        <div class="event-meta-item">📍 <span><strong>Lieu :</strong> ${ev.lieu}</span></div>
-                        <div>
-                            <div class="price-badge" style="flex-direction: column; align-items: flex-start; gap: 4px; font-size: 15px;">
-                                ${affichagePrixHTML}
-                            </div>
+                        <div class="meta-row">
+                            ${ICONS.calendar}
+                            <strong>Date :</strong> ${ev.date}
+                            <span class="meta-sep">—</span>
+                            ${ICONS.clock}
+                            <strong>Heure :</strong> ${ev.heure}
                         </div>
+                        <div class="meta-row">
+                            ${ICONS.pin}
+                            <strong>Lieu :</strong> ${ev.lieu}
+                        </div>
+                        <div class="price-badge">${prixHTML}</div>
                     </div>
+                    <div>${rightColumn}</div>
+                </div>`;
 
-                    <div>
-                        ${contenuColonneDroite}
-                    </div>
-
-                </div>
-            `;
-
+            // ── File input preview ──────────────────────────────────────────────
             if (!ev.ventes_fermees) {
+                const fileInput = document.getElementById("preuvePaiement");
+                const filePreview = document.getElementById("fileNamePreview");
+
+                fileInput.addEventListener("change", function() {
+                    if (this.files && this.files[0]) {
+                        filePreview.textContent = this.files[0].name;
+                        filePreview.style.display = "block";
+                        document.getElementById("fileWrapper").style.borderColor = "var(--gold-2)";
+                        document.getElementById("fileWrapper").style.background = "#fffdf5";
+                    }
+                });
+
+                // ── Soumission ──────────────────────────────────────────────────
                 document.getElementById("btnValiderAchat").onclick = async function() {
-                    let nom = document.getElementById("nomParticipant").value.trim();
-                    let email = document.getElementById("emailParticipant").value.trim();
-                    let tel = document.getElementById("telParticipant").value.trim();
-                    let fichierPreuve = document.getElementById("preuvePaiement").files[0];
-                    
+                    const nom  = document.getElementById("nomParticipant").value.trim();
+                    const email = document.getElementById("emailParticipant").value.trim();
+                    const tel   = document.getElementById("telParticipant").value.trim();
+                    const fichierPreuve = document.getElementById("preuvePaiement").files[0];
+
                     let typeBilletChoisi = "Standard";
                     const selectCat = document.getElementById("selectCategorie");
                     if (selectCat) {
-                        typeBilletChoisi = selectCat.value; 
+                        typeBilletChoisi = selectCat.value;
                     } else if (ev.prix) {
                         typeBilletChoisi = String(ev.prix);
                     }
@@ -594,11 +897,17 @@
                         return;
                     }
 
-                    let btn = document.getElementById("btnValiderAchat");
+                    const btn = document.getElementById("btnValiderAchat");
                     btn.disabled = true;
-                    btn.textContent = "⏳ Validation et envoi sécurisé en cours...";
+                    btn.classList.add("loading");
+                    btn.querySelector(".btn-submit span:not(.btn-icon)") && (btn.textContent = "");
+                    // Remplace le texte
+                    const label = document.createElement("span");
+                    label.textContent = "Validation et envoi securise en cours...";
+                    btn.appendChild(label);
 
                     try {
+                        // Verification fermeture ventes en temps reel
                         const { data: verifEv } = await window.supabaseClient
                             .from("evenements")
                             .select("ventes_fermees")
@@ -606,13 +915,14 @@
                             .single();
 
                         if (verifEv && verifEv.ventes_fermees) {
-                            alert("Désolé, la vente des billets pour cet événement vient tout juste d'être fermée.");
+                            alert("Desole, la vente des billets pour cet evenement vient d'etre fermee.");
                             window.location.reload();
                             return;
                         }
 
-                        let fileExt = fichierPreuve.name.split('.').pop().toLowerCase();
-                        let fileName = `preuve-${Date.now()}-${Math.floor(Math.random() * 1000)}.${fileExt}`;
+                        // Upload preuve
+                        const fileExt = fichierPreuve.name.split('.').pop().toLowerCase();
+                        const fileName = `preuve-${Date.now()}-${Math.floor(Math.random() * 1000)}.${fileExt}`;
 
                         const { error: uploadError } = await window.supabaseClient
                             .storage
@@ -622,7 +932,7 @@
                         if (uploadError) {
                             alert("Erreur lors de l'envoi de la preuve : " + uploadError.message);
                             btn.disabled = false;
-                            btn.textContent = "Valider mon paiement & obtenir mon billet";
+                            btn.classList.remove("loading");
                             return;
                         }
 
@@ -631,40 +941,39 @@
                             .from("preuves")
                             .getPublicUrl(fileName);
 
-                        let preuveUrl = urlData.publicUrl;
+                        const preuveUrl = urlData.publicUrl;
 
+                        // Insertion billet
                         const { data: insertedBillet, error: insertError } = await window.supabaseClient
                             .from("billets")
-                            .insert([
-                                {
-                                    evenement_id: ev.id,
-                                    nom_participant: nom,
-                                    email: email,
-                                    telephone: tel,
-                                    preuve_url: preuveUrl,
-                                    type_billet: typeBilletChoisi, 
-                                    statut: "attente",
-                                    utilise: false
-                                }
-                            ])
+                            .insert([{
+                                evenement_id: ev.id,
+                                nom_participant: nom,
+                                email: email,
+                                telephone: tel,
+                                preuve_url: preuveUrl,
+                                type_billet: typeBilletChoisi,
+                                statut: "attente",
+                                utilise: false
+                            }])
                             .select();
 
                         if (insertError) {
                             alert("Erreur lors de l'enregistrement du billet : " + insertError.message);
                             btn.disabled = false;
-                            btn.textContent = "Valider mon paiement & obtenir mon billet";
+                            btn.classList.remove("loading");
                             return;
                         }
 
                         if (insertedBillet && insertedBillet.length > 0) {
-                            let idBilletCree = insertedBillet[0].id;
-                            window.location.href = `billet.html?id=${idBilletCree}`;
+                            window.location.href = `billet.html?id=${insertedBillet[0].id}`;
                         }
+
                     } catch (err) {
                         console.error("Erreur inattendue :", err);
                         alert("Une erreur inattendue est survenue lors du traitement.");
                         btn.disabled = false;
-                        btn.textContent = "Valider mon paiement & obtenir mon billet";
+                        btn.classList.remove("loading");
                     }
                 };
             }
