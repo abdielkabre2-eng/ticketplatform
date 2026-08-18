@@ -4,10 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>GoldTix – Mon Billet</title>
+
+  <!-- 1. Charger d'abord le SDK officiel de Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- 2. Ensuite seulement, charger ton fichier de configuration supabase.js -->
   <script src="supabase.js"></script>
+
+  <!-- 3. Enfin, les autres bibliothèques -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
   <style>
     /* ═══════════════════════════════════════════════════
        TOKENS & RESET
