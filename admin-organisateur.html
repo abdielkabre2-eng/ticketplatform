@@ -612,18 +612,28 @@
             display: block;
         }
 
+        .billet-card a,
+        .preuve-link {
+            display: block;
+            width: 100%;
+            text-decoration: none;
+        }
+
         .billet-card a img,
         .billet-card img.preuve-img {
             width: 100%;
-            height: 170px;
-            object-fit: cover;
+            max-width: 100%;
+            height: auto;
+            min-height: 170px;
+            object-fit: contain;
             border-radius: var(--radius-sm);
             display: block;
             border: 1px solid var(--ink-200);
-            transition: opacity 0.2s;
+            background: #f8fafc;
+            transition: opacity 0.2s, transform 0.2s ease;
         }
 
-        .billet-card a:hover img { opacity: 0.9; }
+        .billet-card a:hover img { opacity: 0.92; transform: scale(1.01); }
 
         .billet-card-actions {
             display: flex;
@@ -1287,8 +1297,8 @@
                         </div>
                         <div style="margin-top: 14px;">
                             <span class="preuve-label">Preuve de paiement</span>
-                            <a href="${b.preuve_url}" target="_blank">
-                                <img src="${b.preuve_url}" alt="Preuve de paiement" class="preuve-img">
+                            <a href="${b.preuve_url}" target="_blank" class="preuve-link">
+                                <img src="${b.preuve_url}" alt="Preuve de paiement" class="preuve-img" style="max-height: 420px;">
                             </a>
                         </div>
                     </div>
