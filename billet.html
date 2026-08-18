@@ -747,6 +747,7 @@
 
             const qrContainerElement = document.getElementById('qrcode');
 
+            qrContainerElement.innerHTML = '';
             qrContainerElement.replaceChildren();
             qrContainerElement.style.width = '150px';
             qrContainerElement.style.height = '150px';
@@ -763,6 +764,11 @@
               colorLight: '#ffffff',
               correctLevel: QRCode.CorrectLevel.H
             });
+
+            const qrNodes = qrContainerElement.querySelectorAll('canvas, img');
+            if (qrNodes.length > 1) {
+              Array.from(qrNodes).slice(1).forEach(node => node.remove());
+            }
           }
 
           showTicket();
