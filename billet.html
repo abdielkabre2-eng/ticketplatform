@@ -901,7 +901,7 @@
   <!-- ═══════════════════════════════════════════════════
        JAVASCRIPT – CORRIGÉ ET OPTIMISÉ
   ═══════════════════════════════════════════════════ -->
-  <script>
+<script>
   document.addEventListener('DOMContentLoaded', async () => {
 
     /* ── Helpers UI ── */
@@ -929,8 +929,8 @@
     ════════════════════════════════════════ */
     async function chargerBillet() {
       try {
-        /* 1. Charger le billet */
-        const { data: billet, error: billetError } = await supabase
+        /* 1. Charger le billet (CORRIGÉ avec supabaseClient) */
+        const { data: billet, error: billetError } = await supabaseClient
           .from('billets')
           .select('*')
           .eq('id', billetId)
@@ -938,8 +938,8 @@
 
         if (billetError || !billet) { showError('Billet introuvable.'); return; }
 
-        /* 2. Charger l'événement */
-        const { data: ev, error: evError } = await supabase
+        /* 2. Charger l'événement (CORRIGÉ avec supabaseClient) */
+        const { data: ev, error: evError } = await supabaseClient
           .from('evenements')
           .select('*')
           .eq('id', billet.evenement_id)
@@ -1108,7 +1108,7 @@
           </div>
         `;
 
-        /* ── STATUS BANNER CORRIGÉ & SÉCURISÉ ── */
+        /* ── STATUS BANNER ── */
         const statut = (billet.statut || 'attente').trim().toLowerCase();
         const statusZone = document.getElementById('statusBannerZone');
 
@@ -1142,7 +1142,6 @@
               </div>
             </div>`;
         }
-        // Si le statut est 'confirme' ou 'valide', le banner reste vide.
 
         /* ── INFO GRID ── */
         const infoGrid = document.getElementById('infoGrid');
@@ -1291,5 +1290,3 @@
     chargerBillet();
   });
   </script>
-</body>
-</html>
