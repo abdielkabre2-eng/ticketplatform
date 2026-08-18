@@ -535,24 +535,20 @@
     }
 
     #qrcode {
-      width: 150px;
-      height: 150px;
+      width: 200px;
+      height: 200px;
       margin: 0 auto;
       display: flex;
       justify-content: center;
       align-items: center;
     }
 
-    #qrcode canvas, #qrcode img {
-      width: 150px !important;
-      height: 150px !important;
-      max-width: 150px !important;
-      max-height: 150px !important;
-      object-fit: contain !important;
-      display: block !important;
-      border-radius: 4px;
-    }
-
+   #qrcode canvas,
+#qrcode img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain;
+}
     .qr-corner {
       position: absolute; width: 16px; height: 16px;
       border-color: var(--tier-a, var(--gold-500));
