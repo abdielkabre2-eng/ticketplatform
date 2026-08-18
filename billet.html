@@ -328,7 +328,9 @@
     .qr-section { padding: 20px 18px 22px; display: flex; flex-direction: column; align-items: center; gap: 14px; animation: fadeUp .6s ease .55s both; }
     .qr-frame {
       position: relative; z-index: 11;
+      width: 182px; height: 182px;
       padding: 14px; border-radius: var(--radius-md); background: #fff;
+      display: flex; align-items: center; justify-content: center;
       box-shadow:
         0 0 0 1px rgba(255,255,255,.12),
         0 8px 32px rgba(0,0,0,.4),
@@ -343,22 +345,25 @@
         0 0 60px var(--tier-glow, var(--t0-glow));
     }
 
-    /* QR CODE : cadre fixe CARRE et centre. NB : on ne force plus la taille du canvas (cause du double/etirement) */
     #qrcode {
-      width: 164px !important;
-      height: 164px !important;
-      margin: 0 auto !important;
+      width: 150px !important;
+      height: 150px !important;
       display: flex !important;
-      justify-content: center !important;
       align-items: center !important;
+      justify-content: center !important;
+      margin: 0 !important;
       background: #fff !important;
+      overflow: hidden !important;
     }
 
     #qrcode canvas,
     #qrcode img {
       display: block !important;
-      max-width: 100% !important;
-      max-height: 100% !important;
+      width: 150px !important;
+      height: 150px !important;
+      max-width: 150px !important;
+      max-height: 150px !important;
+      margin: 0 auto !important;
       border-radius: 4px;
     }
 
@@ -742,13 +747,13 @@
 
             const qrContainerElement = document.getElementById('qrcode');
 
-            // CORRECTION : nettoyage total pour eviter le QR doublé
             qrContainerElement.replaceChildren();
-
-            // Cadre fixe carré + centré (le canvas reste à sa taille native, net)
-            qrContainerElement.style.width  = '150px';
+            qrContainerElement.style.width = '150px';
             qrContainerElement.style.height = '150px';
-            qrContainerElement.style.margin = '0 auto';
+            qrContainerElement.style.margin = '0';
+            qrContainerElement.style.display = 'flex';
+            qrContainerElement.style.alignItems = 'center';
+            qrContainerElement.style.justifyContent = 'center';
 
             new QRCode(qrContainerElement, {
               text: qrData,
