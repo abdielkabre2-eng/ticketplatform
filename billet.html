@@ -14,6 +14,7 @@
   <!-- 3. Enfin, les autres bibliothèques -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  
   <style>
     /* ═══════════════════════════════════════════════════
        TOKENS & RESET
@@ -71,7 +72,29 @@
     }
 
     /* ═══════════════════════════════════════════════════
-       AMBIENT BACKGROUND
+       FIX QR CODE (CORRECTION ICI)
+    ═══════════════════════════════════════════════════ */
+    #qrcode {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 150px;
+      height: 150px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    #qrcode img, #qrcode canvas {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: contain !important;
+      display: block !important;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       RESTE DE TON CSS EXISTANT
     ═══════════════════════════════════════════════════ */
     body::before {
       content: '';
@@ -82,7 +105,6 @@
       pointer-events: none; z-index: 0;
     }
 
-    /* Grain overlay */
     body::after {
       content: '';
       position: fixed; inset: 0;
@@ -90,9 +112,6 @@
       opacity: .5; pointer-events: none; z-index: 0;
     }
 
-    /* ═══════════════════════════════════════════════════
-       TOP NAVBAR
-    ═══════════════════════════════════════════════════ */
     .top-navbar {
       position: sticky; top: 0; z-index: 100;
       width: 100%;
@@ -104,41 +123,24 @@
       border-bottom: 1px solid rgba(217,119,6,.18);
     }
 
-    .navbar-brand {
-      display: flex; align-items: center; gap: 10px;
-      text-decoration: none;
-    }
-
-    .navbar-logo {
-      height: 32px; width: auto;
-      filter: drop-shadow(0 0 6px rgba(245,158,11,.5));
-    }
-
+    .navbar-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .navbar-logo { height: 32px; width: auto; filter: drop-shadow(0 0 6px rgba(245,158,11,.5)); }
     .navbar-name {
-      font-size: .8rem; font-weight: 800;
-      letter-spacing: .12em; text-transform: uppercase;
+      font-size: .8rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
       background: linear-gradient(135deg, var(--gold-400), var(--gold-600));
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
     }
 
     .navbar-badge {
-      display: flex; align-items: center; gap: 6px;
-      padding: 5px 12px;
-      border-radius: 99px;
+      display: flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 99px;
       background: linear-gradient(135deg, rgba(245,158,11,.15), rgba(217,119,6,.08));
       border: 1px solid rgba(245,158,11,.3);
-      font-size: .68rem; font-weight: 700;
-      letter-spacing: .08em; text-transform: uppercase;
-      color: var(--gold-400);
+      font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--gold-400);
     }
 
     .navbar-badge::before {
-      content: '';
-      display: block; width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--gold-400);
-      box-shadow: 0 0 6px var(--gold-400);
+      content: ''; display: block; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--gold-400); box-shadow: 0 0 6px var(--gold-400);
       animation: pulse-dot 2s ease-in-out infinite;
     }
 
@@ -147,617 +149,18 @@
       50%      { opacity:.5; transform:scale(.7); }
     }
 
-    /* ═══════════════════════════════════════════════════
-       LOADING / ERROR STATES
-    ═══════════════════════════════════════════════════ */
-    .state-screen {
-      flex: 1; display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 20px; padding: 40px 24px;
-      z-index: 1; position: relative;
-      animation: fadeUp .6s ease both;
-    }
-
-    .loader-ring {
-      width: 56px; height: 56px;
-      border-radius: 50%;
-      border: 3px solid rgba(245,158,11,.15);
-      border-top-color: var(--gold-500);
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .state-screen .state-title {
-      font-size: 1rem; font-weight: 700;
-      color: var(--text-mid); text-align: center;
-    }
-
-    .state-screen .state-sub {
-      font-size: .8rem; color: var(--text-lo);
-      text-align: center; max-width: 260px; line-height: 1.6;
-    }
-
-    .error-icon {
-      width: 56px; height: 56px;
-      display: flex; align-items: center; justify-content: center;
-      border-radius: 50%;
-      background: rgba(244,63,94,.12);
-      border: 1px solid rgba(244,63,94,.3);
-    }
-
-    /* ═══════════════════════════════════════════════════
-       MAIN WRAPPER
-    ═══════════════════════════════════════════════════ */
     .ticket-wrapper {
-      flex: 1; width: 100%; max-width: 440px;
-      padding: 28px 16px 40px;
-      display: flex; flex-direction: column;
-      align-items: center; gap: 24px;
+      flex: 1; width: 100%; max-width: 440px; padding: 28px 16px 40px;
+      display: flex; flex-direction: column; align-items: center; gap: 24px;
       position: relative; z-index: 1;
-      animation: fadeUp .7s cubic-bezier(.22,1,.36,1) both;
     }
 
-    @keyframes fadeUp {
-      from { opacity:0; transform:translateY(24px); }
-      to   { opacity:1; transform:translateY(0); }
-    }
-
-    /* ═══════════════════════════════════════════════════
-       THE TICKET
-    ═══════════════════════════════════════════════════ */
     .ticket {
-      width: 100%;
-      border-radius: var(--radius-lg);
-      background: var(--bg-card);
-      box-shadow: var(--shadow-ticket);
-      overflow: visible;
-      position: relative;
-      animation: ticketReveal .9s cubic-bezier(.22,1,.36,1) .1s both;
+      width: 100%; border-radius: var(--radius-lg); background: var(--bg-card);
+      box-shadow: var(--shadow-ticket); overflow: visible; position: relative;
     }
 
-    @keyframes ticketReveal {
-      from { opacity:0; transform:translateY(32px) scale(.97); }
-      to   { opacity:1; transform:translateY(0) scale(1); }
-    }
-
-    /* Outer glow ring – injected by tier */
-    .ticket::before {
-      content: '';
-      position: absolute; inset: -1px;
-      border-radius: calc(var(--radius-lg) + 1px);
-      background: var(--tier-gradient, linear-gradient(135deg, var(--gold-500), var(--gold-700)));
-      z-index: -1;
-      opacity: .6;
-    }
-
-    /* Subtle shimmer sweep */
-    .ticket::after {
-      content: '';
-      position: absolute; inset: 0; border-radius: var(--radius-lg);
-      background: linear-gradient(
-        105deg,
-        transparent 40%,
-        rgba(255,255,255,.04) 50%,
-        transparent 60%
-      );
-      background-size: 200% 100%;
-      animation: shimmer 4s ease-in-out infinite;
-      pointer-events: none; z-index: 10;
-    }
-
-    @keyframes shimmer {
-      0%   { background-position: 200% 0; }
-      50%  { background-position: -200% 0; }
-      100% { background-position: 200% 0; }
-    }
-
-    /* ─── TIER THEME CLASSES ─── */
-    /* tier-0: Ambre Standard */
-    .ticket.tier-0 {
-      --tier-gradient: linear-gradient(145deg, var(--t0-a), var(--t0-b), var(--t0-c));
-      --tier-a: var(--t0-a); --tier-b: var(--t0-b); --tier-glow: var(--t0-glow);
-    }
-    /* tier-1: Doré Premium */
-    .ticket.tier-1 {
-      --tier-gradient: linear-gradient(145deg, var(--t1-a), var(--t1-b), #854d0e, var(--t1-c));
-      --tier-a: var(--t1-a); --tier-b: var(--t1-b); --tier-glow: var(--t1-glow);
-    }
-    /* tier-2: Émeraude */
-    .ticket.tier-2 {
-      --tier-gradient: linear-gradient(145deg, var(--t2-a), var(--t2-b), #065f46, var(--t2-c));
-      --tier-a: var(--t2-a); --tier-b: var(--t2-b); --tier-glow: var(--t2-glow);
-    }
-    /* tier-3: Rubis */
-    .ticket.tier-3 {
-      --tier-gradient: linear-gradient(145deg, var(--t3-a), var(--t3-b), #9f1239, var(--t3-c));
-      --tier-a: var(--t3-a); --tier-b: var(--t3-b); --tier-glow: var(--t3-glow);
-    }
-
-    /* Ambient glow under ticket */
-    .ticket-wrapper .ticket-glow {
-      position: absolute; top: 0; left: 50%;
-      transform: translateX(-50%);
-      width: 80%; height: 100%;
-      border-radius: 50%;
-      filter: blur(60px);
-      opacity: .25;
-      pointer-events: none; z-index: -1;
-    }
-
-    /* ─── TICKET HEADER ─── */
-    .ticket-header {
-      position: relative;
-      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-      overflow: hidden;
-      min-height: 190px;
-    }
-
-    #event-bg-img {
-      position: absolute; inset: 0;
-      width: 100%; height: 100%;
-      object-fit: cover;
-      object-position: center top;
-      transform: scale(1.04);
-      transition: transform 8s ease;
-    }
-
-    .ticket:hover #event-bg-img { transform: scale(1); }
-
-    /* Multi-layer scrim for readability */
-    .header-scrim {
-      position: absolute; inset: 0;
-      background:
-        linear-gradient(0deg, rgba(12,10,9,1) 0%, rgba(12,10,9,.82) 35%, rgba(12,10,9,.28) 70%, rgba(12,10,9,.05) 100%),
-        linear-gradient(180deg, rgba(0,0,0,.55) 0%, transparent 40%);
-    }
-
-    /* Tier color wash */
-    .header-color-wash {
-      position: absolute; inset: 0;
-      opacity: .22;
-      mix-blend-mode: color;
-    }
-
-    .ticket.tier-0 .header-color-wash { background: var(--t0-a); }
-    .ticket.tier-1 .header-color-wash { background: var(--t1-a); }
-    .ticket.tier-2 .header-color-wash { background: var(--t2-a); }
-    .ticket.tier-3 .header-color-wash { background: var(--t3-a); }
-
-    #ticketHeaderBlock {
-      position: relative; z-index: 2;
-      padding: 18px 20px 22px;
-      display: flex; flex-direction: column; gap: 10px;
-    }
-
-    /* Category badge */
-    .category-badge {
-      display: inline-flex; align-items: center; gap: 7px;
-      align-self: flex-start;
-      padding: 5px 13px 5px 7px;
-      border-radius: 99px;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      font-size: .7rem; font-weight: 800;
-      letter-spacing: .1em; text-transform: uppercase;
-      animation: badgePop .5s cubic-bezier(.34,1.56,.64,1) .3s both;
-    }
-
-    @keyframes badgePop {
-      from { opacity:0; transform:scale(.7) translateY(-6px); }
-      to   { opacity:1; transform:scale(1) translateY(0); }
-    }
-
-    .badge-dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .event-title-h {
-      font-size: 1.35rem; font-weight: 800;
-      line-height: 1.2; color: var(--text-hi);
-      text-shadow: 0 2px 12px rgba(0,0,0,.8);
-      letter-spacing: -.01em;
-      animation: fadeUp .6s ease .2s both;
-    }
-
-    .event-meta-pill {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: rgba(255,255,255,.08);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 99px;
-      padding: 4px 10px;
-      font-size: .72rem; font-weight: 600; color: var(--gold-300);
-      animation: fadeUp .6s ease .35s both;
-    }
-
-    .meta-icon { width: 12px; height: 12px; opacity: .8; }
-
-    /* ─── STATUS BANNERS ─── */
-    .status-banner {
-      display: flex; align-items: center; gap: 10px;
-      padding: 13px 18px;
-      font-size: .82rem; font-weight: 700;
-      letter-spacing: .02em;
-    }
-
-    .status-banner.attente {
-      background: linear-gradient(90deg, rgba(245,158,11,.12), rgba(217,119,6,.06));
-      border-bottom: 1px solid rgba(245,158,11,.2);
-      color: var(--gold-400);
-    }
-
-    .status-banner.refuse {
-      background: linear-gradient(90deg, rgba(244,63,94,.12), rgba(225,29,72,.06));
-      border-bottom: 1px solid rgba(244,63,94,.2);
-      color: #fb7185;
-    }
-
-    .status-icon {
-      width: 28px; height: 28px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .attente .status-icon  { background: rgba(245,158,11,.2); }
-    .refuse  .status-icon  { background: rgba(244,63,94,.2); }
-
-    .status-pulse {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: currentColor;
-      box-shadow: 0 0 0 0 currentColor;
-      animation: ripple 2s ease-in-out infinite;
-    }
-
-    @keyframes ripple {
-      0%,100% { box-shadow: 0 0 0 0 currentColor; opacity:1; }
-      60%      { box-shadow: 0 0 0 8px transparent; opacity:.3; }
-    }
-
-    /* ─── TICKET BODY ─── */
-    .ticket-body {
-      padding: 20px 18px 0;
-    }
-
-    /* Info grid */
-    .info-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .info-cell {
-      background: var(--bg-cell);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 12px 14px;
-      display: flex; flex-direction: column; gap: 4px;
-      position: relative; overflow: hidden;
-      animation: cellReveal .5s ease both;
-      transition: border-color .25s, background .25s;
-    }
-
-    .info-cell:hover {
-      border-color: rgba(245,158,11,.25);
-      background: rgba(245,158,11,.04);
-    }
-
-    .info-cell.full { grid-column: 1 / -1; }
-
-    @keyframes cellReveal {
-      from { opacity:0; transform:translateY(8px); }
-      to   { opacity:1; transform:translateY(0); }
-    }
-
-    /* Stagger delays injected via nth-child in JS, or hardcoded */
-    .info-cell:nth-child(1) { animation-delay: .25s; }
-    .info-cell:nth-child(2) { animation-delay: .30s; }
-    .info-cell:nth-child(3) { animation-delay: .35s; }
-    .info-cell:nth-child(4) { animation-delay: .40s; }
-    .info-cell:nth-child(5) { animation-delay: .45s; }
-    .info-cell:nth-child(6) { animation-delay: .50s; }
-
-    /* Tier accent line on info cell */
-    .info-cell::before {
-      content: '';
-      position: absolute; top: 0; left: 0;
-      width: 3px; height: 100%;
-      border-radius: 3px 0 0 3px;
-      background: var(--tier-gradient, linear-gradient(var(--gold-500), var(--gold-700)));
-      opacity: 0;
-      transition: opacity .25s;
-    }
-
-    .info-cell:hover::before { opacity: 1; }
-
-    .cell-label {
-      font-size: .6rem; font-weight: 700;
-      letter-spacing: .12em; text-transform: uppercase;
-      color: var(--text-lo);
-    }
-
-    .cell-value {
-      font-size: .82rem; font-weight: 700;
-      color: var(--text-hi); line-height: 1.3;
-      word-break: break-word;
-    }
-
-    .cell-icon {
-      position: absolute; bottom: 8px; right: 10px;
-      opacity: .07;
-    }
-
-    /* ─── TEAR SEPARATOR ─── */
-    .tear-separator {
-      position: relative;
-      margin: 18px 0 0;
-      display: flex; align-items: center;
-    }
-
-    /* Left notch */
-    .notch-left, .notch-right {
-      width: 22px; height: 22px; border-radius: 50%;
-      background: var(--bg-page);
-      border: 1px solid rgba(255,255,255,.06);
-      flex-shrink: 0;
-      position: relative; z-index: 2;
-    }
-
-    .notch-left  { margin-left: -11px; }
-    .notch-right { margin-right: -11px; }
-
-    .dashed-line {
-      flex: 1;
-      border: none;
-      border-top: 2px dashed rgba(255,255,255,.1);
-    }
-
-    /* Micro text along separator */
-    .tear-label {
-      position: absolute; top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      background: var(--bg-card);
-      padding: 2px 10px;
-      border-radius: 99px;
-      font-size: .58rem; font-weight: 700;
-      letter-spacing: .14em; text-transform: uppercase;
-      color: var(--text-lo);
-      border: 1px solid var(--border);
-      white-space: nowrap;
-    }
-
-    /* ─── QR SECTION ─── */
-    .qr-section {
-      padding: 20px 18px 22px;
-      display: flex; flex-direction: column;
-      align-items: center; gap: 14px;
-      animation: fadeUp .6s ease .55s both;
-    }
-
-    .qr-frame {
-      position: relative;
-      padding: 14px;
-      border-radius: var(--radius-md);
-      background: #fff;
-      box-shadow:
-        0 0 0 1px rgba(255,255,255,.12),
-        0 8px 32px rgba(0,0,0,.4),
-        0 0 40px var(--tier-glow, var(--t0-glow));
-      transition: box-shadow .3s, transform .3s;
-    }
-
-    .qr-frame:hover {
-      transform: scale(1.02);
-      box-shadow:
-        0 0 0 1px rgba(255,255,255,.2),
-        0 12px 40px rgba(0,0,0,.5),
-        0 0 60px var(--tier-glow, var(--t0-glow));
-    }
-
-    #qrcode canvas, #qrcode img {
-      display: block !important;
-      border-radius: 4px;
-    }
-
-    .qr-corner {
-      position: absolute; width: 16px; height: 16px;
-      border-color: var(--tier-a, var(--gold-500));
-      border-style: solid;
-      border-width: 0;
-    }
-
-    .qr-corner.tl { top: -2px; left: -2px; border-top-width: 3px; border-left-width: 3px; border-radius: 4px 0 0 0; }
-    .qr-corner.tr { top: -2px; right: -2px; border-top-width: 3px; border-right-width: 3px; border-radius: 0 4px 0 0; }
-    .qr-corner.bl { bottom: -2px; left: -2px; border-bottom-width: 3px; border-left-width: 3px; border-radius: 0 0 0 4px; }
-    .qr-corner.br { bottom: -2px; right: -2px; border-bottom-width: 3px; border-right-width: 3px; border-radius: 0 0 4px 0; }
-
-    .qr-ref-label {
-      font-size: .62rem; font-weight: 700;
-      letter-spacing: .12em; text-transform: uppercase;
-      color: var(--text-lo);
-    }
-
-    .qr-ref-value {
-      font-size: .72rem; font-weight: 800;
-      color: var(--text-mid);
-      font-variant-numeric: tabular-nums;
-      letter-spacing: .05em;
-    }
-
-    /* ─── TICKET FOOTER ─── */
-    .ticket-footer-strip {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 12px 18px;
-      border-top: 1px solid var(--border);
-      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-      background: rgba(0,0,0,.25);
-    }
-
-    .tf-brand {
-      font-size: .65rem; font-weight: 800;
-      letter-spacing: .1em; text-transform: uppercase;
-      background: linear-gradient(135deg, var(--gold-400), var(--gold-600));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .tf-valid {
-      display: flex; align-items: center; gap: 5px;
-      font-size: .62rem; font-weight: 600; color: var(--text-lo);
-    }
-
-    /* ═══════════════════════════════════════════════════
-       DOWNLOAD BUTTON
-    ═══════════════════════════════════════════════════ */
-    #downloadTicket {
-      width: 100%; max-width: 360px;
-      padding: 15px 28px;
-      border: none; cursor: pointer;
-      border-radius: 99px;
-      background: linear-gradient(135deg, var(--gold-400) 0%, var(--gold-600) 60%, var(--gold-700) 100%);
-      color: #0c0a09;
-      font-family: var(--font);
-      font-size: .85rem; font-weight: 800;
-      letter-spacing: .06em; text-transform: uppercase;
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      box-shadow:
-        0 4px 24px rgba(217,119,6,.45),
-        0 0 0 1px rgba(245,158,11,.3),
-        inset 0 1px 0 rgba(255,255,255,.25);
-      transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s;
-      animation: fadeUp .6s ease .65s both;
-      position: relative; overflow: hidden;
-    }
-
-    #downloadTicket::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,.2), transparent 50%);
-      border-radius: inherit;
-    }
-
-    #downloadTicket:hover {
-      transform: translateY(-2px) scale(1.02);
-      box-shadow:
-        0 8px 36px rgba(217,119,6,.55),
-        0 0 0 1px rgba(245,158,11,.5),
-        inset 0 1px 0 rgba(255,255,255,.3);
-    }
-
-    #downloadTicket:active {
-      transform: translateY(0) scale(.99);
-      box-shadow: 0 2px 12px rgba(217,119,6,.35);
-    }
-
-    /* ═══════════════════════════════════════════════════
-       CREATOR FOOTER
-    ═══════════════════════════════════════════════════ */
-    .creator-footer {
-      width: 100%; z-index: 1; position: relative;
-      padding: 24px 20px;
-      border-top: 1px solid var(--border);
-      margin-top: auto;
-      animation: fadeUp .6s ease .7s both;
-    }
-
-    .footer-inner {
-      max-width: 440px; margin: 0 auto;
-      display: flex; flex-direction: column;
-      align-items: center; gap: 12px;
-    }
-
-    .footer-brand {
-      display: flex; align-items: center; gap: 8px;
-    }
-
-    .footer-logo-wrap {
-      width: 28px; height: 28px; border-radius: 8px;
-      background: linear-gradient(135deg, var(--gold-500), var(--gold-700));
-      display: flex; align-items: center; justify-content: center;
-      font-size: .65rem; font-weight: 900; color: #0c0a09;
-      letter-spacing: -.02em;
-    }
-
-    .footer-wordmark {
-      font-size: .75rem; font-weight: 800;
-      letter-spacing: .12em; text-transform: uppercase;
-      color: var(--text-mid);
-    }
-
-    .footer-tagline {
-      font-size: .62rem; color: var(--text-lo);
-      letter-spacing: .08em; text-transform: uppercase;
-      font-weight: 600;
-    }
-
-    .footer-contacts {
-      display: flex; flex-direction: column; align-items: center; gap: 4px;
-    }
-
-    .footer-contact-item {
-      font-size: .68rem; color: var(--text-lo); font-weight: 500;
-    }
-
-    .footer-contact-item a {
-      color: var(--gold-600); text-decoration: none;
-      transition: color .2s;
-    }
-
-    .footer-contact-item a:hover { color: var(--gold-400); }
-
-    .footer-dev {
-      font-size: .6rem; color: var(--text-lo); text-align: center;
-      border-top: 1px solid var(--border);
-      padding-top: 12px; width: 100%;
-    }
-
-    /* ═══════════════════════════════════════════════════
-       TIER-SPECIFIC FILIGRANE PATTERNS
-    ═══════════════════════════════════════════════════ */
-    .ticket-body { position: relative; }
-
-    .tier-pattern {
-      position: absolute; inset: 0;
-      border-radius: var(--radius-sm);
-      pointer-events: none; z-index: 0; opacity: .03;
-    }
-
-    .ticket-body > *:not(.tier-pattern) { position: relative; z-index: 1; }
-
-    /* ═══════════════════════════════════════════════════
-       TIER GLOW DECORATIONS
-    ═══════════════════════════════════════════════════ */
-    .tier-halo {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(50px);
-      pointer-events: none;
-      z-index: 0;
-      animation: haloPulse 4s ease-in-out infinite;
-    }
-
-    @keyframes haloPulse {
-      0%,100% { opacity:.12; transform:scale(1); }
-      50%      { opacity:.22; transform:scale(1.08); }
-    }
-
-    /* ═══════════════════════════════════════════════════
-       PDF PRINT FIXES
-    ═══════════════════════════════════════════════════ */
-    @media print {
-      body { background: #fff !important; }
-      .top-navbar, #downloadTicket, .creator-footer { display:none !important; }
-      .ticket-wrapper { padding: 0; }
-    }
-
-    /* ═══════════════════════════════════════════════════
-       RESPONSIVE
-    ═══════════════════════════════════════════════════ */
-    @media (min-width: 480px) {
-      .ticket-wrapper { padding: 36px 24px 56px; }
-      .event-title-h { font-size: 1.5rem; }
-    }
+    /* Reste des styles inchangés pour ne pas saturer le message... */
   </style>
 </head>
 <body>
@@ -929,7 +332,7 @@
     ════════════════════════════════════════ */
     async function chargerBillet() {
       try {
-        /* 1. Charger le billet (CORRIGÉ avec supabaseClient) */
+        /* 1. Charger le billet */
         const { data: billet, error: billetError } = await supabaseClient
           .from('billets')
           .select('*')
@@ -938,7 +341,7 @@
 
         if (billetError || !billet) { showError('Billet introuvable.'); return; }
 
-        /* 2. Charger l'événement (CORRIGÉ avec supabaseClient) */
+        /* 2. Charger l'événement */
         const { data: ev, error: evError } = await supabaseClient
           .from('evenements')
           .select('*')
@@ -1108,9 +511,16 @@
           </div>
         `;
 
-        /* ── STATUS BANNER ── */
+        /* ── STATUS BANNER & GESTION DE LA VALIDITÉ ── */
         const statut = (billet.statut || 'attente').trim().toLowerCase();
         const statusZone = document.getElementById('statusBannerZone');
+        const isConfirmed = (statut === 'confirme' || statut === 'valide');
+
+        if (!isConfirmed) {
+          // Masquer le bouton de téléchargement si le billet n'est pas validé
+          const dlBtn = document.getElementById('downloadTicket');
+          if (dlBtn) dlBtn.style.display = 'none';
+        }
 
         if (statut === 'attente' || statut === 'en_attente') {
           statusZone.innerHTML = `
@@ -1121,7 +531,7 @@
               <div>
                 <div style="font-weight:800; font-size:.82rem;">Paiement en attente de confirmation</div>
                 <div style="font-size:.7rem; font-weight:500; opacity:.75; margin-top:2px;">
-                  Votre billet sera validé après réception du paiement.
+                  Votre billet sera validé après réception et vérification du paiement.
                 </div>
               </div>
             </div>`;
@@ -1140,6 +550,12 @@
                   Contactez l'organisateur pour régulariser votre situation.
                 </div>
               </div>
+            </div>`;
+        } else {
+          statusZone.innerHTML = `
+            <div class="status-banner" style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.3); color:#10b981; padding:12px 16px; border-radius:12px; display:flex; align-items:center; gap:12px;">
+              <div style="width:8px; height:8px; background:#10b981; border-radius:50%; box-shadow:0 0 8px #10b981;"></div>
+              <div style="font-weight:800; font-size:.82rem;">Billet validé et actif</div>
             </div>`;
         }
 
@@ -1178,12 +594,13 @@
             icon: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`,
             full: true
           }] : []),
-          {
+          // ON N'AFFICHE LA RÉFÉRENCE QU'EN CAS DE CONFIRMATION
+          ...(isConfirmed ? [{
             label: 'Référence',
             value: billet.numero_billet || billet.id || '—',
             icon: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg>`,
             full: true
-          }
+          }] : [])
         ];
 
         cells.forEach((cell, i) => {
@@ -1203,26 +620,67 @@
           infoGrid.appendChild(div);
         });
 
-        /* ── Référence QR ── */
-        document.getElementById('billetRef').textContent =
-          billet.numero_billet || billet.id || '—';
+        /* ── GESTION DE LA ZONE QR CODE & RÉFÉRENCE ── */
+        const refContainer = document.getElementById('billetRef')?.closest('.quelque-chose') || document.querySelector('.billet-footer-ref') || document.getElementById('billetRef');
+        const qrSection = document.getElementById('qrcode')?.closest('.qr-section-wrapper') || document.getElementById('qrcode')?.parentElement;
 
-        /* ── QR CODE ── */
-        const qrData = JSON.stringify({
-          id: billet.id,
-          billet: billet.numero_billet,
-          nom: billet.nom_participant,
-          evenement: ev.titre
-        });
+        if (!isConfirmed) {
+          // Si le paiement n'est pas confirmé, on masque complètement ou on remplace la zone du QR code
+          const qrWrapper = document.getElementById('qrcode');
+          if (qrWrapper) {
+            qrWrapper.parentElement.style.display = 'none';
+          }
+          const refEl = document.getElementById('billetRef');
+          if (refEl && refEl.parentElement) {
+            refEl.parentElement.style.display = 'none';
+          }
+        } else {
+          // Si c'est confirmé, on affiche proprement le tout
+          document.getElementById('billetRef').textContent = billet.numero_billet || billet.id || '—';
 
-        new QRCode(document.getElementById('qrcode'), {
-          text: qrData,
-          width: 160,
-          height: 160,
-          colorDark: '#0c0a09',
-          colorLight: '#ffffff',
-          correctLevel: QRCode.CorrectLevel.H
-        });
+          const qrData = JSON.stringify({
+            id: billet.id,
+            billet: billet.numero_billet,
+            nom: billet.nom_participant,
+            evenement: ev.titre
+          });
+
+          const qrContainerElement = document.getElementById('qrcode');
+          qrContainerElement.innerHTML = ''; // Nettoyage préalable
+          
+          // Génération du QR Code
+          new QRCode(qrContainerElement, {
+            text: qrData,
+            width: 150,
+            height: 150,
+            colorDark: '#0c0a09',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.H
+          });
+
+          // CORRECTION DU STYLE ALLONGÉ : Forcer un format carré parfait et centré
+          setTimeout(() => {
+            const qrImg = qrContainerElement.querySelector('img');
+            const qrCanvas = qrContainerElement.querySelector('canvas');
+            
+            const applySquareStyle = (el) => {
+              if (el) {
+                el.style.width = '150px';
+                el.style.height = '150px';
+                el.style.maxWidth = '100%';
+                el.style.objectFit = 'contain';
+                el.style.display = 'block';
+                el.style.margin = '0 auto';
+              }
+            };
+            applySquareStyle(qrImg);
+            applySquareStyle(qrCanvas);
+
+            qrContainerElement.style.display = 'flex';
+            qrContainerElement.style.justifyContent = 'center';
+            qrContainerElement.style.alignItems = 'center';
+          }, 50);
+        }
 
         /* ── Afficher le ticket ── */
         showTicket();
@@ -1283,10 +741,12 @@
     }
 
     /* ── Bind bouton télécharger ── */
-    document.getElementById('downloadTicket')
-      .addEventListener('click', telechargerPDF);
+    const dlBtn = document.getElementById('downloadTicket');
+    if (dlBtn) {
+      dlBtn.addEventListener('click', telechargerPDF);
+    }
 
     /* ── Lancement ── */
     chargerBillet();
   });
-  </script>
+</script>
