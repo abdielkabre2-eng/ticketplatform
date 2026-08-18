@@ -554,7 +554,7 @@
         0 12px 40px rgba(0,0,0,.5),
         0 0 60px var(--tier-glow, var(--t0-glow));
     }
-/* ─── QR SECTION ─── */
+/* ─── QR SECTION CORrigé ─── */
     #qrcode {
       width: 150px;
       height: 150px;
@@ -1126,7 +1126,6 @@
         const isConfirmed = (statut === 'confirme' || statut === 'valide');
 
         if (!isConfirmed) {
-          // Masquer le bouton de téléchargement si le billet n'est pas validé
           const dlBtn = document.getElementById('downloadTicket');
           if (dlBtn) dlBtn.style.display = 'none';
         }
@@ -1203,7 +1202,6 @@
             icon: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`,
             full: true
           }] : []),
-          // ON N'AFFICHE LA RÉFÉRENCE QU'EN CAS DE CONFIRMATION
           ...(isConfirmed ? [{
             label: 'Référence',
             value: billet.numero_billet || billet.id || '—',
@@ -1230,13 +1228,9 @@
         });
 
         /* ── GESTION DE LA ZONE QR CODE & RÉFÉRENCE ── */
-        const refContainer = document.getElementById('billetRef')?.closest('.quelque-chose') || document.querySelector('.billet-footer-ref') || document.getElementById('billetRef');
-        const qrSection = document.getElementById('qrcode')?.closest('.qr-section-wrapper') || document.getElementById('qrcode')?.parentElement;
-
         if (!isConfirmed) {
-          // Si le paiement n'est pas confirmé, on masque complètement ou on remplace la zone du QR code
           const qrWrapper = document.getElementById('qrcode');
-          if (qrWrapper) {
+          if (qrWrapper && qrWrapper.parentElement) {
             qrWrapper.parentElement.style.display = 'none';
           }
           const refEl = document.getElementById('billetRef');
@@ -1244,7 +1238,6 @@
             refEl.parentElement.style.display = 'none';
           }
         } else {
-          // Si c'est confirmé, on affiche proprement le tout
           document.getElementById('billetRef').textContent = billet.numero_billet || billet.id || '—';
 
           const qrData = JSON.stringify({
@@ -1255,9 +1248,20 @@
           });
 
           const qrContainerElement = document.getElementById('qrcode');
-          qrContainerElement.innerHTML = ''; // Nettoyage préalable
           
-          // Génération du QR Code
+          // 1. TRÈS IMPORTANT : Vider proprement le conteneur pour éviter les doublons collés
+          qrContainerElement.innerHTML = ''; 
+
+          // 2. Forcer des styles stricts sur le conteneur via JS pour immuniser le QR code
+          qrContainerElement.style.width = '150px';
+          qrContainerElement.style.height = '150px';
+          qrContainerElement.style.margin = '0 auto';
+          qrContainerElement.style.display = 'flex';
+          qrContainerElement.style.justifyContent = 'center';
+          qrContainerElement.style.alignItems = 'center';
+          qrContainerElement.style.background = '#ffffff';
+
+          // 3. Génération du QR Code
           new QRCode(qrContainerElement, {
             text: qrData,
             width: 150,
@@ -1267,28 +1271,15 @@
             correctLevel: QRCode.CorrectLevel.H
           });
 
-          // CORRECTION DU STYLE ALLONGÉ : Forcer un format carré parfait et centré
-          setTimeout(() => {
-            const qrImg = qrContainerElement.querySelector('img');
-            const qrCanvas = qrContainerElement.querySelector('canvas');
-            
-            const applySquareStyle = (el) => {
-              if (el) {
-                el.style.width = '150px';
-                el.style.height = '150px';
-                el.style.maxWidth = '100%';
-                el.style.objectFit = 'contain';
-                el.style.display = 'block';
-                el.style.margin = '0 auto';
-              }
-            };
-            applySquareStyle(qrImg);
-            applySquareStyle(qrCanvas);
-
-            qrContainerElement.style.display = 'flex';
-            qrContainerElement.style.justifyContent = 'center';
-            qrContainerElement.style.alignItems = 'center';
-          }, 50);
+          // 4. Forcer instantanément la taille de l'élément généré (canvas ou image)
+          const generatedElement = qrContainerElement.querySelector('canvas') || qrContainerElement.querySelector('img');
+          if (generatedElement) {
+            generatedElement.style.width = '150px !important';
+            generatedElement.style.height = '150px !important';
+            generatedElement.style.maxWidth = '100%';
+            generatedElement.style.objectFit = 'contain';
+            generatedElement.style.display = 'block';
+          }
         }
 
         /* ── Afficher le ticket ── */
