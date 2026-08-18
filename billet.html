@@ -343,32 +343,22 @@
         0 0 60px var(--tier-glow, var(--t0-glow));
     }
 
-    /* TAILLE CORRIGÉE DU QR CODE (130px pour rentrer parfaitement) */
+    /* QR CODE : cadre fixe CARRE et centre. NB : on ne force plus la taille du canvas (cause du double/etirement) */
     #qrcode {
-      width: 130px !important;
-      height: 130px !important;
-      min-width: 130px !important;
-      min-height: 130px !important;
-      max-width: 130px !important;
-      max-height: 130px !important;
+      width: 164px !important;
+      height: 164px !important;
       margin: 0 auto !important;
       display: flex !important;
       justify-content: center !important;
       align-items: center !important;
       background: #fff !important;
-      overflow: hidden !important;
     }
 
     #qrcode canvas,
     #qrcode img {
-      width: 130px !important;
-      height: 130px !important;
-      min-width: 130px !important;
-      min-height: 130px !important;
-      max-width: 130px !important;
-      max-height: 130px !important;
-      object-fit: contain !important;
       display: block !important;
+      max-width: 100% !important;
+      max-height: 100% !important;
       border-radius: 4px;
     }
 
@@ -491,7 +481,7 @@
         <img id="event-bg-img" src="" alt="Affiche" style="display:none;" />
         <div class="header-scrim"></div>
         <div class="header-color-wash"></div>
-        <div id="ticketHeaderBlock"></div>
+        <div id="ticketHeaderBlock"><!-- injecté par JS --></div>
       </div>
 
       <div id="statusBannerZone"></div>
@@ -561,18 +551,11 @@
         <p class="footer-contact-item"><a href="mailto:goldtix.bf@gmail.com">goldtix.bf@gmail.com</a></p>
         <p class="footer-contact-item">WhatsApp : <a href="https://wa.me/22601020304">+226 01 02 03 04</a></p>
       </div>
-      <p class="footer-dev">Développé par <strong style="color:var(--text-mid)">Abdiel KABRE</strong> · GoldTix &copy; 2026</p>
+      <p class="footer-dev">Développé par <strong style="color:var(--text-mid)">Abdiel KABRE</strong> · GoldTix &copy; 2025</p>
     </div>
   </footer>
 
   <script>
-    function escHTML(str) {
-      if (!str) return '';
-      return String(str).replace(/[&<>'"]/g, tag => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
-      }[tag] || tag));
-    }
-
     document.addEventListener('DOMContentLoaded', async () => {
       function showLoading(v) { document.getElementById('loadingScreen').style.display = v ? 'flex' : 'none'; }
       function showError(msg) {
@@ -585,187 +568,234 @@
         document.getElementById('ticketWrapper').style.display = 'flex';
       }
 
-      const params = new URLSearchParams(window.location.search);
+      const params   = new URLSearchParams(window.location.search);
       const billetId = params.get('id');
       if (!billetId) { showError('Aucun identifiant de billet fourni.'); return; }
 
-      try {
-        const { data: billet, error: billetError } = await window.supabaseClient
-          .from('billets').select('*').eq('id', billetId).single();
-        if (billetError || !billet) { showError('Billet introuvable.'); return; }
+      async function chargerBillet() {
+        try {
+          const { data: billet, error: billetError } = await supabaseClient
+            .from('billets').select('*').eq('id', billetId).single();
+          if (billetError || !billet) { showError('Billet introuvable.'); return; }
 
-        const { data: ev, error: evError } = await window.supabaseClient
-          .from('evenements').select('*').eq('id', billet.evenement_id).single();
-        if (evError || !ev) { showError("Événement introuvable."); return; }
+          const { data: ev, error: evError } = await supabaseClient
+            .from('evenements').select('*').eq('id', billet.evenement_id).single();
+          if (evError || !ev) { showError("Événement introuvable."); return; }
 
-        let categories_data = [];
-        if (ev.categories_data) {
-          try { categories_data = typeof ev.categories_data === 'string' ? JSON.parse(ev.categories_data) : ev.categories_data; }
-          catch(e) { categories_data = []; }
-        }
-
-        let nomCategorie = billet.nom_categorie || billet.type_billet || 'Standard';
-        let categorieIndex = 0;
-        let totalCategories = categories_data.length;
-
-        if (categories_data.length > 0) {
-          let foundIndex = -1;
-          if (billet.categorie_id) {
-            foundIndex = categories_data.findIndex(c => String(c.id) === String(billet.categorie_id));
+          let categories_data = [];
+          if (ev.categories_data) {
+            try { categories_data = typeof ev.categories_data === 'string' ? JSON.parse(ev.categories_data) : ev.categories_data; }
+            catch(e) { categories_data = []; }
           }
-          if (foundIndex === -1 && billet.nom_categorie) {
-            foundIndex = categories_data.findIndex(c => c.nom === billet.nom_categorie || c.name === billet.nom_categorie);
+
+          let nomCategorie = billet.nom_categorie || billet.type_billet || 'Standard';
+          let categorieIndex = 0;
+          let totalCategories = categories_data.length;
+
+          if (categories_data.length > 0) {
+            let foundIndex = -1;
+            if (billet.categorie_id) {
+              foundIndex = categories_data.findIndex(c => String(c.id) === String(billet.categorie_id));
+            }
+            if (foundIndex === -1 && billet.nom_categorie) {
+              foundIndex = categories_data.findIndex(c => c.nom === billet.nom_categorie || c.name === billet.nom_categorie);
+            }
+            if (foundIndex === -1 && billet.type_billet) {
+              foundIndex = categories_data.findIndex(c => c.nom === billet.type_billet || c.name === billet.type_billet);
+            }
+            if (foundIndex !== -1) {
+              categorieIndex = foundIndex;
+              const cat = categories_data[foundIndex];
+              nomCategorie = cat.nom || cat.name || nomCategorie;
+            }
           }
-          if (foundIndex === -1 && billet.type_billet) {
-            foundIndex = categories_data.findIndex(c => c.nom === billet.type_billet || c.name === billet.type_billet);
+
+          let tierClass = 'tier-0';
+          if (totalCategories <= 1) { tierClass = 'tier-0'; }
+          else if (totalCategories === 2) { tierClass = categorieIndex === 0 ? 'tier-1' : 'tier-0'; }
+          else if (totalCategories === 3) {
+            if (categorieIndex === 0) tierClass = 'tier-1';
+            else if (categorieIndex === 1) tierClass = 'tier-2';
+            else tierClass = 'tier-0';
+          } else {
+            if (categorieIndex === 0) tierClass = 'tier-1';
+            else if (categorieIndex === 1) tierClass = 'tier-2';
+            else if (categorieIndex === 2) tierClass = 'tier-3';
+            else tierClass = 'tier-0';
           }
-          if (foundIndex !== -1) {
-            categorieIndex = foundIndex;
-            const cat = categories_data[foundIndex];
-            nomCategorie = cat.nom || cat.name || nomCategorie;
-          }
-        }
 
-        let tierClass = 'tier-0';
-        if (totalCategories <= 1) { tierClass = 'tier-0'; }
-        else if (totalCategories === 2) { tierClass = categorieIndex === 0 ? 'tier-1' : 'tier-0'; }
-        else if (totalCategories === 3) {
-          if (categorieIndex === 0) tierClass = 'tier-1';
-          else if (categorieIndex === 1) tierClass = 'tier-2';
-          else tierClass = 'tier-0';
-        } else {
-          if (categorieIndex === 0) tierClass = 'tier-1';
-          else if (categorieIndex === 1) tierClass = 'tier-2';
-          else if (categorieIndex === 2) tierClass = 'tier-3';
-          else tierClass = 'tier-0';
-        }
-
-        const tierStyles = {
-          'tier-0': { badgeBg:'rgba(217,119,6,.22)', badgeBdr:'rgba(245,158,11,.45)', badgeClr:'#fcd34d', dotClr:'#f59e0b', glowClr:'rgba(245,158,11,.3)' },
-          'tier-1': { badgeBg:'rgba(250,204,21,.22)', badgeBdr:'rgba(250,204,21,.5)', badgeClr:'#fef08a', dotClr:'#facc15', glowClr:'rgba(250,204,21,.35)' },
-          'tier-2': { badgeBg:'rgba(16,185,129,.18)', badgeBdr:'rgba(16,185,129,.4)', badgeClr:'#6ee7b7', dotClr:'#10b981', glowClr:'rgba(16,185,129,.3)' },
-          'tier-3': { badgeBg:'rgba(244,63,94,.18)', badgeBdr:'rgba(244,63,94,.4)', badgeClr:'#fda4af', dotClr:'#f43f5e', glowClr:'rgba(244,63,94,.3)' }
-        };
-        const ts = tierStyles[tierClass];
-        const badgeBgStyle = `background:${ts.badgeBg}; border:1px solid ${ts.badgeBdr}; color:${ts.badgeClr};`;
-        const passCardStyle = `box-shadow: 0 0 0 2px ${ts.badgeBdr}, 0 24px 64px rgba(0,0,0,.7), 0 0 80px ${ts.glowClr};`;
-
-        const ticketEl = document.getElementById('ticketContent');
-        ticketEl.classList.add(tierClass);
-        ticketEl.style.cssText += passCardStyle;
-
-        const glowEl = document.getElementById('ticketGlow');
-        glowEl.style.cssText = `background: radial-gradient(ellipse, ${ts.dotClr} 0%, transparent 70%); width:120%; height:60%; top:10%; left:50%; transform:translateX(-50%); position:absolute; opacity:.18; filter:blur(40px);`;
-
-        const imgUrl = ev.affiche_url || ev.image_url || ev.affiche || null;
-        const bgImg = document.getElementById('event-bg-img');
-        if (imgUrl) {
-          bgImg.src = imgUrl;
-          bgImg.style.display = 'block';
-          bgImg.onerror = () => { bgImg.style.display = 'none'; applyHeaderFallback(ts.dotClr); };
-        } else { applyHeaderFallback(ts.dotClr); }
-
-        function applyHeaderFallback(color) {
-          const hdr = document.querySelector('.ticket-header');
-          if (hdr) { hdr.style.background = `linear-gradient(160deg, ${color}22 0%, #0c0a09 100%)`; hdr.style.minHeight = '140px'; }
-        }
-
-        const dateStr = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' }) : '—';
-        const headerEl = document.getElementById('ticketHeaderBlock');
-        headerEl.innerHTML = `
-          <div class="category-badge" style="${badgeBgStyle}">
-            <span class="badge-dot" style="background:${ts.dotClr}; box-shadow:0 0 6px ${ts.dotClr};"></span>
-            ${escHTML(nomCategorie)}
-          </div>
-          <h1 class="event-title-h">${escHTML(ev.titre || 'Événement')}</h1>
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <div class="event-meta-pill">
-              <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="${ts.dotClr}" stroke-width="2" stroke-linecap="round">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                <line x1="16" y1="2" x2="16" y2="6"/>
-                <line x1="8"  y1="2" x2="8"  y2="6"/>
-                <line x1="3"  y1="10" x2="21" y2="10"/>
-              </svg>
-              ${escHTML(dateStr)}
-            </div>
-            ${ev.heure ? `<div class="event-meta-pill">
-              <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="${ts.dotClr}" stroke-width="2" stroke-linecap="round">
-                <circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 12"/>
-              </svg>${escHTML(ev.heure)}</div>` : ''}
-          </div>
-        `;
-
-        const statut = billet.statut || 'valide';
-        if (statut === 'attente' || statut === 'refuse') {
-          const bannerZone = document.getElementById('statusBannerZone');
-          const isAttente = statut === 'attente';
-          bannerZone.innerHTML = `
-            <div class="status-banner ${isAttente ? 'attente' : 'refuse'}">
-              <div class="status-icon"><div class="status-pulse"></div></div>
-              <div>${isAttente ? 'Paiement en attente de validation par l’organisateur.' : 'Paiement refusé ou non validé.'}</div>
-            </div>
-          `;
-        }
-
-        const infoGrid = document.getElementById('infoGrid');
-        infoGrid.innerHTML = `
-          <div class="info-cell">
-            <span class="cell-label">Titulaire</span>
-            <span class="cell-value">${escHTML(billet.nom_client || billet.client_nom || 'Invité')}</span>
-          </div>
-          <div class="info-cell">
-            <span class="cell-label">Téléphone</span>
-            <span class="cell-value">${escHTML(billet.telephone || billet.client_telephone || '—')}</span>
-          </div>
-          <div class="info-cell">
-            <span class="cell-label">Catégorie</span>
-            <span class="cell-value">${escHTML(nomCategorie)}</span>
-          </div>
-          <div class="info-cell">
-            <span class="cell-label">Lieu</span>
-            <span class="cell-value">${escHTML(ev.lieu || '—')}</span>
-          </div>
-          <div class="info-cell full">
-            <span class="cell-label">Organisateur / Bénéficiaire</span>
-            <span class="cell-value">${escHTML(ev.beneficiaire_nom || 'GoldTix')} · ${escHTML(ev.beneficiaire_infos || '')}</span>
-          </div>
-          <div class="info-cell full">
-            <span class="cell-label">Référence</span>
-            <span class="cell-value" style="font-family:monospace;">${escHTML(billet.reference || billet.id)}</span>
-          </div>
-        `;
-
-        document.getElementById('billetRef').textContent = billet.reference || billet.id.substring(0, 8).toUpperCase();
-
-        // Génération du QR Code à la taille fixe correcte de 130px
-        document.getElementById('qrcode').innerHTML = "";
-        new QRCode(document.getElementById('qrcode'), {
-          text: window.location.href,
-          width: 130,
-          height: 130,
-          colorDark: '#0c0a09',
-          colorLight: '#ffffff',
-          correctLevel: QRCode.CorrectLevel.H
-        });
-
-        showTicket();
-
-        document.getElementById('downloadTicket').addEventListener('click', () => {
-          const element = document.getElementById('ticketContent');
-          const opt = {
-            margin:       10,
-            filename:     `Billet-${ev.titre || 'GoldTix'}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+          const tierStyles = {
+            'tier-0': { badgeBg:'rgba(217,119,6,.22)', badgeBdr:'rgba(245,158,11,.45)', badgeClr:'#fcd34d', dotClr:'#f59e0b', glowClr:'rgba(245,158,11,.3)', label:'Standard' },
+            'tier-1': { badgeBg:'rgba(250,204,21,.22)', badgeBdr:'rgba(250,204,21,.5)', badgeClr:'#fef08a', dotClr:'#facc15', glowClr:'rgba(250,204,21,.35)', label:'Premium' },
+            'tier-2': { badgeBg:'rgba(16,185,129,.18)', badgeBdr:'rgba(16,185,129,.4)', badgeClr:'#6ee7b7', dotClr:'#10b981', glowClr:'rgba(16,185,129,.3)', label:'Émeraude' },
+            'tier-3': { badgeBg:'rgba(244,63,94,.18)', badgeBdr:'rgba(244,63,94,.4)', badgeClr:'#fda4af', dotClr:'#f43f5e', glowClr:'rgba(244,63,94,.3)', label:'Rubis' }
           };
-          html2pdf().from(element).set(opt).save();
-        });
+          const ts = tierStyles[tierClass];
+          const badgeBgStyle  = `background:${ts.badgeBg}; border:1px solid ${ts.badgeBdr}; color:${ts.badgeClr};`;
+          const passCardStyle = `box-shadow: 0 0 0 2px ${ts.badgeBdr}, 0 24px 64px rgba(0,0,0,.7), 0 0 80px ${ts.glowClr};`;
 
-      } catch (err) {
-        console.error("Erreur lors du chargement du billet:", err);
-        showError("Une erreur est survenue lors du chargement du billet.");
+          const ticketEl = document.getElementById('ticketContent');
+          ticketEl.classList.add(tierClass);
+          ticketEl.style.cssText += passCardStyle;
+
+          const glowEl = document.getElementById('ticketGlow');
+          glowEl.style.cssText = `background: radial-gradient(ellipse, ${ts.dotClr} 0%, transparent 70%); width:120%; height:60%; top:10%; left:50%; transform:translateX(-50%); position:absolute; opacity:.18; filter:blur(40px);`;
+
+          const imgUrl = ev.affiche_url || ev.image_url || ev.affiche || null;
+          const bgImg = document.getElementById('event-bg-img');
+          if (imgUrl) {
+            bgImg.src = imgUrl;
+            bgImg.style.display = 'block';
+            bgImg.onerror = () => { bgImg.style.display = 'none'; applyHeaderFallback(ts.dotClr); };
+          } else { applyHeaderFallback(ts.dotClr); }
+
+          function applyHeaderFallback(color) {
+            const hdr = document.querySelector('.ticket-header');
+            if (hdr) { hdr.style.background = `linear-gradient(160deg, ${color}22 0%, #0c0a09 100%)`; hdr.style.minHeight = '140px'; }
+          }
+
+          const dateStr = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' }) : '—';
+          const headerEl = document.getElementById('ticketHeaderBlock');
+          headerEl.innerHTML = `
+            <div class="category-badge" style="${badgeBgStyle}">
+              <span class="badge-dot" style="background:${ts.dotClr}; box-shadow:0 0 6px ${ts.dotClr};"></span>
+              ${escHTML(nomCategorie)}
+            </div>
+            <h1 class="event-title-h">${escHTML(ev.titre || 'Événement')}</h1>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <div class="event-meta-pill">
+                <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="${ts.dotClr}" stroke-width="2" stroke-linecap="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8"  y1="2" x2="8"  y2="6"/>
+                  <line x1="3"  y1="10" x2="21" y2="10"/>
+                </svg>
+                ${escHTML(dateStr)}
+              </div>
+              ${ev.heure ? `<div class="event-meta-pill">
+                <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="${ts.dotClr}" stroke-width="2" stroke-linecap="round">
+                  <circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 12"/>
+                </svg>${escHTML(ev.heure)}</div>` : ''}
+            </div>`;
+
+          const statut = (billet.statut || 'attente').trim().toLowerCase();
+          const statusZone = document.getElementById('statusBannerZone');
+          const isConfirmed = (statut === 'confirme' || statut === 'valide');
+
+          if (!isConfirmed) { const dlBtn = document.getElementById('downloadTicket'); if (dlBtn) dlBtn.style.display = 'none'; }
+
+          if (statut === 'attente' || statut === 'en_attente') {
+            statusZone.innerHTML = `<div class="status-banner attente">
+                <div class="status-icon"><div class="status-pulse"></div></div>
+                <div>
+                  <div style="font-weight:800; font-size:.82rem;">Paiement en attente de confirmation</div>
+                  <div style="font-size:.7rem; font-weight:500; opacity:.75; margin-top:2px;">Votre billet sera validé après réception et vérification du paiement.</div>
+                </div>
+              </div>`;
+          } else if (statut === 'refuse' || statut === 'annule') {
+            statusZone.innerHTML = `<div class="status-banner refuse">
+                <div class="status-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+                <div>
+                  <div style="font-weight:800; font-size:.82rem;">Paiement refusé</div>
+                  <div style="font-size:.7rem; font-weight:500; opacity:.75; margin-top:2px;">Contactez l'organisateur pour régulariser votre situation.</div>
+                </div>
+              </div>`;
+          } else {
+            statusZone.innerHTML = `<div class="status-banner" style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.3); color:#10b981; padding:12px 16px; border-radius:12px; display:flex; align-items:center; gap:12px;">
+                <div style="width:8px; height:8px; background:#10b981; border-radius:50%; box-shadow:0 0 8px #10b981;"></div>
+                <div style="font-weight:800; font-size:.82rem;">Billet validé et actif</div>
+              </div>`;
+          }
+
+          const infoGrid = document.getElementById('infoGrid');
+          const cells = [
+            { label:'Titulaire', value: billet.nom_participant || '—', icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`, full:false },
+            { label:'Téléphone', value: billet.telephone || '—', icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><rect x="7" y="2" width="10" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>`, full:false },
+            { label:'Catégorie', value: nomCategorie, icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`, full:false, accent:true },
+            { label:'Lieu', value: ev.lieu || '—', icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>`, full:false },
+            ...(ev.beneficiaire_nom ? [{ label:'Bénéficiaire', value: ev.beneficiaire_nom + (ev.beneficiaire_infos ? ' · ' + ev.beneficiaire_infos : ''), icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`, full:true }] : []),
+            ...(isConfirmed ? [{ label:'Référence', value: billet.numero_billet || billet.id || '—', icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg>`, full:true }] : [])
+          ];
+          cells.forEach((cell, i) => {
+            const div = document.createElement('div');
+            div.className = 'info-cell' + (cell.full ? ' full' : '');
+            div.style.animationDelay = (0.25 + i * 0.055) + 's';
+            const valueStyle = cell.accent ? `color:${ts.badgeClr}; font-weight:800;` : '';
+            div.innerHTML = `<span class="cell-label">${cell.label}</span><span class="cell-value" style="${valueStyle}">${escHTML(String(cell.value))}</span><span class="cell-icon">${cell.icon}</span>`;
+            infoGrid.appendChild(div);
+          });
+
+          if (!isConfirmed) {
+            const qrWrapper = document.getElementById('qrcode');
+            if (qrWrapper && qrWrapper.parentElement) qrWrapper.parentElement.style.display = 'none';
+            const refEl = document.getElementById('billetRef');
+            if (refEl && refEl.parentElement) refEl.parentElement.style.display = 'none';
+          } else {
+            document.getElementById('billetRef').textContent = billet.numero_billet || billet.id || '—';
+
+            const qrData = JSON.stringify({
+              id: billet.id,
+              billet: billet.numero_billet,
+              nom: billet.nom_participant,
+              evenement: ev.titre
+            });
+
+            const qrContainerElement = document.getElementById('qrcode');
+
+            // CORRECTION : nettoyage total pour eviter le QR doublé
+            qrContainerElement.replaceChildren();
+
+            // Cadre fixe carré + centré (le canvas reste à sa taille native, net)
+            qrContainerElement.style.width  = '150px';
+            qrContainerElement.style.height = '150px';
+            qrContainerElement.style.margin = '0 auto';
+
+            new QRCode(qrContainerElement, {
+              text: qrData,
+              width: 150,
+              height: 150,
+              colorDark: '#0c0a09',
+              colorLight: '#ffffff',
+              correctLevel: QRCode.CorrectLevel.H
+            });
+          }
+
+          showTicket();
+        } catch(err) {
+          console.error('Erreur chargerBillet:', err);
+          showError('Une erreur est survenue. Veuillez réessayer.');
+        }
       }
+
+      function telechargerPDF() {
+        const element = document.getElementById('ticketContent');
+        const filename = 'billet-goldtix-' + (new URLSearchParams(window.location.search).get('id') || 'ticket') + '.pdf';
+        const opt = {
+          margin: [4, 4, 4, 4], filename: filename,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 3, useCORS: true, backgroundColor: '#0c0a09' },
+          jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' },
+          pagebreak: { mode: ['avoid-all'] }
+        };
+        const btn = document.getElementById('downloadTicket');
+        const original = btn.innerHTML;
+        btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9" stroke-dasharray="56" stroke-dashoffset="0" style="animation:spin 1s linear infinite;"/></svg> Génération du PDF…`;
+        btn.disabled = true;
+        btn.style.opacity = '.7';
+        html2pdf().set(opt).from(element).save()
+          .then(() => { btn.innerHTML = original; btn.disabled = false; btn.style.opacity = '1'; })
+          .catch(() => { btn.innerHTML = original; btn.disabled = false; btn.style.opacity = '1'; });
+      }
+
+      function escHTML(str) {
+        if (!str) return '';
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      }
+
+      const dlBtn = document.getElementById('downloadTicket');
+      if (dlBtn) dlBtn.addEventListener('click', telechargerPDF);
+
+      chargerBillet();
     });
   </script>
 </body>
