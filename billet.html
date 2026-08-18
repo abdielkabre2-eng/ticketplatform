@@ -805,7 +805,7 @@
         </div>
       </div>
 
-      <!-- STATUS BANNER (injecté si attente/refus) -->
+      <!-- STATUS BANNER (corrigé et sécurisé) -->
       <div id="statusBannerZone"></div>
 
       <!-- BODY -->
@@ -893,7 +893,7 @@
   </footer>
 
   <!-- ═══════════════════════════════════════════════════
-       JAVASCRIPT – LOGIQUE INTÉGRALEMENT CONSERVÉE
+       JAVASCRIPT – CORRIGÉ ET OPTIMISÉ
   ═══════════════════════════════════════════════════ -->
   <script>
   document.addEventListener('DOMContentLoaded', async () => {
@@ -919,7 +919,7 @@
     if (!billetId) { showError('Aucun identifiant de billet fourni.'); return; }
 
     /* ════════════════════════════════════════
-       chargerBillet() — logique CONSERVÉE
+       chargerBillet()
     ════════════════════════════════════════ */
     async function chargerBillet() {
       try {
@@ -941,7 +941,7 @@
 
         if (evError || !ev) { showError("Événement introuvable."); return; }
 
-        /* ── Détermination de la catégorie (logique CONSERVÉE) ── */
+        /* ── Détermination de la catégorie ── */
         let categories_data = [];
         if (ev.categories_data) {
           try {
@@ -980,7 +980,7 @@
           }
         }
 
-        /* ── Attribution des tierClass (logique CONSERVÉE) ── */
+        /* ── Attribution des tierClass ── */
         let tierClass = 'tier-0';
         if (totalCategories <= 1) {
           tierClass = 'tier-0';
@@ -997,7 +997,7 @@
           else                           tierClass = 'tier-0';
         }
 
-        /* ── Styles badge/pass (logique CONSERVÉE + enrichie CSS) ── */
+        /* ── Styles badge/pass ── */
         const tierStyles = {
           'tier-0': {
             badgeBg:  'rgba(217,119,6,.22)',
@@ -1035,7 +1035,6 @@
 
         const ts = tierStyles[tierClass];
 
-        /* passCardStyle & badgeBgStyle CONSERVÉS */
         const badgeBgStyle  = `background:${ts.badgeBg}; border:1px solid ${ts.badgeBdr}; color:${ts.badgeClr};`;
         const passCardStyle = `box-shadow: 0 0 0 2px ${ts.badgeBdr}, 0 24px 64px rgba(0,0,0,.7), 0 0 80px ${ts.glowClr};`;
 
@@ -1103,11 +1102,11 @@
           </div>
         `;
 
-        /* ── STATUS BANNER ── */
-        const statut     = billet.statut || 'confirme';
+        /* ── STATUS BANNER CORRIGÉ & SÉCURISÉ ── */
+        const statut = (billet.statut || 'attente').trim().toLowerCase();
         const statusZone = document.getElementById('statusBannerZone');
 
-        if (statut === 'attente') {
+        if (statut === 'attente' || statut === 'en_attente') {
           statusZone.innerHTML = `
             <div class="status-banner attente">
               <div class="status-icon">
@@ -1120,7 +1119,7 @@
                 </div>
               </div>
             </div>`;
-        } else if (statut === 'refuse') {
+        } else if (statut === 'refuse' || statut === 'annule') {
           statusZone.innerHTML = `
             <div class="status-banner refuse">
               <div class="status-icon">
@@ -1137,7 +1136,7 @@
               </div>
             </div>`;
         }
-        /* statut === 'confirme' : pas de banner */
+        // Si le statut est 'confirme' ou 'valide', le banner reste vide.
 
         /* ── INFO GRID ── */
         const infoGrid = document.getElementById('infoGrid');
@@ -1203,7 +1202,7 @@
         document.getElementById('billetRef').textContent =
           billet.numero_billet || billet.id || '—';
 
-        /* ── QR CODE (logique CONSERVÉE) ── */
+        /* ── QR CODE ── */
         const qrData = JSON.stringify({
           id: billet.id,
           billet: billet.numero_billet,
@@ -1230,7 +1229,7 @@
     }
 
     /* ════════════════════════════════════════
-       telechargerPDF() — logique CONSERVÉE
+       telechargerPDF()
     ════════════════════════════════════════ */
     function telechargerPDF() {
       const element  = document.getElementById('ticketContent');
@@ -1278,7 +1277,7 @@
         .replace(/"/g,'&quot;');
     }
 
-    /* ── Bind bouton télécharger (CONSERVÉ) ── */
+    /* ── Bind bouton télécharger ── */
     document.getElementById('downloadTicket')
       .addEventListener('click', telechargerPDF);
 
