@@ -137,6 +137,8 @@
         .brand-name em {
             font-style: normal;
             background: var(--gold-gradient);
+            background-clip: text;
+-webkit-background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -193,35 +195,59 @@
         ============================================= */
         .poster-wrapper {
             width: 100%;
+            min-height: 320px;
             border-radius: var(--radius-lg);
             overflow: hidden;
-            background: var(--surface-raised);
+            background: linear-gradient(180deg, #fffdf9 0%, #f8f5f0 100%);
             margin-bottom: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
             border: 1px solid rgba(217,119,6,0.1);
             box-shadow: 0 10px 28px rgba(0,0,0,0.04);
-            padding: 10px;
+            padding: 12px;
             transition: var(--transition);
+            position: relative;
         }
         .poster-wrapper:hover { transform: scale(1.012); }
         .poster-wrapper img {
-            width: 100%;
+            width: auto;
+            max-width: 100%;
             height: auto;
             max-height: 500px;
             object-fit: contain;
+            object-position: center center;
             border-radius: var(--radius-md);
             display: block;
+            margin: 0 auto;
         }
         .poster-fallback {
-            padding: 48px 24px;
+            width: 100%;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             text-align: center;
             color: var(--text-muted);
             font-size: 14px;
             font-weight: 600;
+            background: linear-gradient(135deg, rgba(245,158,11,0.04), rgba(217,119,6,0.02));
+            border-radius: var(--radius-md);
+            border: 1px dashed rgba(217,119,6,0.15);
+            padding: 24px 18px;
         }
-        .poster-fallback svg { width: 40px; height: 40px; margin-bottom: 10px; opacity: 0.35; }
+        .poster-fallback svg {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 10px;
+            opacity: 0.35;
+            display: block;
+        }
+        .poster-fallback p {
+            margin: 0;
+            line-height: 1.4;
+        }
 
         /* =============================================
            EVENT INFO
@@ -838,7 +864,7 @@
 
             // ── Affiche HTML ────────────────────────────────────────────────────
             const posterHTML = ev.affiche_url
-                ? `<img src="${ev.affiche_url}" alt="Affiche de l'evenement" onerror="this.parentElement.innerHTML='<div class=\\'poster-fallback\\'>${ICONS.image}<p>Affiche non disponible</p></div>'">`
+                ? `<img src="${ev.affiche_url}" alt="Affiche de l'événement" onerror="this.onerror=null; this.style.display='none'; this.parentElement.innerHTML='<div class=\'poster-fallback\'>${ICONS.image}<p>Affiche non disponible</p></div>'">`
                 : `<div class="poster-fallback">${ICONS.image}<p>Affiche non disponible</p></div>`;
 
             // ── Injection ───────────────────────────────────────────────────────
