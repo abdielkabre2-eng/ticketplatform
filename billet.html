@@ -82,7 +82,6 @@
       pointer-events: none; z-index: 0;
     }
 
-    /* Grain overlay */
     body::after {
       content: '';
       position: fixed; inset: 0;
@@ -534,21 +533,31 @@
         0 0 60px var(--tier-glow, var(--t0-glow));
     }
 
+    /* CORRECTION STRICTE DU QR CODE POUR QU'IL RESTE CARRÉ ET CENTRÉ */
     #qrcode {
-      width: 200px;
-      height: 200px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      width: 150px !important;
+      height: 150px !important;
+      min-width: 150px !important;
+      min-height: 150px !important;
+      margin: 0 auto !important;
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      background: #fff !important;
     }
 
-   #qrcode canvas,
-#qrcode img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: contain;
-}
+    #qrcode canvas, #qrcode img {
+      width: 150px !important;
+      height: 150px !important;
+      min-width: 150px !important;
+      min-height: 150px !important;
+      max-width: 150px !important;
+      max-height: 150px !important;
+      object-fit: contain !important;
+      display: block !important;
+      border-radius: 4px;
+    }
+
     .qr-corner {
       position: absolute; width: 16px; height: 16px;
       border-color: var(--tier-a, var(--gold-500));
@@ -750,7 +759,7 @@
   <!-- ═══ WRAPPER PRINCIPAL ═══ -->
   <div class="ticket-wrapper" id="ticketWrapper" style="display:none;">
 
-    <!-- Glow ambiant (coloré par JS) -->
+    <!-- Glow ambiant -->
     <div class="ticket-glow" id="ticketGlow"></div>
 
     <!-- ═══ LE BILLET ═══ -->
@@ -772,7 +781,6 @@
 
       <!-- BODY -->
       <div class="ticket-body">
-        <!-- Filigrane SVG pattern -->
         <svg class="tier-pattern" id="tierPattern" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
           <defs>
             <pattern id="hex" x="0" y="0" width="40" height="35" patternUnits="userSpaceOnUse">
@@ -782,7 +790,6 @@
           <rect width="100%" height="100%" fill="url(#hex)"/>
         </svg>
 
-        <!-- Info grid (injecté par JS) -->
         <div class="info-grid" id="infoGrid"></div>
       </div>
 
@@ -860,7 +867,6 @@
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
 
-      /* ── Helpers UI ── */
       function showLoading(v) {
         document.getElementById('loadingScreen').style.display = v ? 'flex' : 'none';
       }
@@ -874,18 +880,13 @@
         document.getElementById('ticketWrapper').style.display  = 'flex';
       }
 
-      /* ── Récupération de l'ID depuis l'URL ── */
       const params   = new URLSearchParams(window.location.search);
       const billetId = params.get('id');
 
       if (!billetId) { showError('Aucun identifiant de billet fourni.'); return; }
 
-      /* ════════════════════════════════════════
-         chargerBillet()
-      ════════════════════════════════════════ */
       async function chargerBillet() {
         try {
-          /* 1. Charger le billet */
           const { data: billet, error: billetError } = await supabaseClient
             .from('billets')
             .select('*')
@@ -894,7 +895,6 @@
 
           if (billetError || !billet) { showError('Billet introuvable.'); return; }
 
-          /* 2. Charger l'événement */
           const { data: ev, error: evError } = await supabaseClient
             .from('evenements')
             .select('*')
@@ -903,7 +903,6 @@
 
           if (evError || !ev) { showError("Événement introuvable."); return; }
 
-          /* ── Détermination de la catégorie ── */
           let categories_data = [];
           if (ev.categories_data) {
             try {
@@ -942,7 +941,6 @@
             }
           }
 
-          /* ── Attribution des tierClass ── */
           let tierClass = 'tier-0';
           if (totalCategories <= 1) {
             tierClass = 'tier-0';
@@ -959,7 +957,6 @@
             else                           tierClass = 'tier-0';
           }
 
-          /* ── Styles badge/pass ── */
           const tierStyles = {
             'tier-0': {
               badgeBg:  'rgba(217,119,6,.22)',
@@ -1000,18 +997,15 @@
           const badgeBgStyle  = `background:${ts.badgeBg}; border:1px solid ${ts.badgeBdr}; color:${ts.badgeClr};`;
           const passCardStyle = `box-shadow: 0 0 0 2px ${ts.badgeBdr}, 0 24px 64px rgba(0,0,0,.7), 0 0 80px ${ts.glowClr};`;
 
-          /* ── Appliquer tierClass au ticket ── */
           const ticketEl = document.getElementById('ticketContent');
           ticketEl.classList.add(tierClass);
           ticketEl.style.cssText += passCardStyle;
 
-          /* Glow ambiant sous le ticket */
           const glowEl = document.getElementById('ticketGlow');
           glowEl.style.cssText = `background: radial-gradient(ellipse, ${ts.dotClr} 0%, transparent 70%);
             width:120%; height:60%; top:10%; left:50%;
             transform:translateX(-50%); position:absolute; opacity:.18; filter:blur(40px);`;
 
-          /* ── Image d'affiche ── */
           const imgUrl = ev.affiche_url || ev.image_url || ev.affiche || null;
           const bgImg  = document.getElementById('event-bg-img');
           if (imgUrl) {
@@ -1030,12 +1024,10 @@
             }
           }
 
-          /* ── Formatage date ── */
           const dateStr = ev.date
             ? new Date(ev.date).toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' })
             : '—';
 
-          /* ── HEADER BLOCK ── */
           const headerEl = document.getElementById('ticketHeaderBlock');
           headerEl.innerHTML = `
             <div class="category-badge" style="${badgeBgStyle}">
@@ -1064,7 +1056,6 @@
             </div>
           `;
 
-          /* ── STATUS BANNER & GESTION DE LA VALIDITÉ ── */
           const statut = (billet.statut || 'attente').trim().toLowerCase();
           const statusZone = document.getElementById('statusBannerZone');
           const isConfirmed = (statut === 'confirme' || statut === 'valide');
@@ -1111,7 +1102,6 @@
               </div>`;
           }
 
-          /* ── INFO GRID ── */
           const infoGrid = document.getElementById('infoGrid');
 
           const cells = [
@@ -1171,7 +1161,6 @@
             infoGrid.appendChild(div);
           });
 
-          /* ── GESTION DE LA ZONE QR CODE & RÉFÉRENCE ── */
           if (!isConfirmed) {
             const qrWrapper = document.getElementById('qrcode');
             if (qrWrapper && qrWrapper.parentElement) {
@@ -1192,11 +1181,8 @@
             });
 
             const qrContainerElement = document.getElementById('qrcode');
-            
-            // 1. Vider proprement le conteneur pour éviter les doublons
             qrContainerElement.innerHTML = ''; 
 
-            // 2. Génération du QR Code
             new QRCode(qrContainerElement, {
               text: qrData,
               width: 150,
@@ -1205,21 +1191,8 @@
               colorLight: '#ffffff',
               correctLevel: QRCode.CorrectLevel.H
             });
-
-            // 3. Forcer la taille et supprimer les attributs natifs déformants du canvas/img
-            setTimeout(() => {
-              const generatedElement = qrContainerElement.querySelector('canvas') || qrContainerElement.querySelector('img');
-              if (generatedElement) {
-                generatedElement.removeAttribute('width');
-                generatedElement.removeAttribute('height');
-                generatedElement.style.cssText = 'width: 150px !important; height: 150px !important; min-width: 150px !important; min-height: 150px !important; max-width: 150px !important; max-height: 150px !important; object-fit: contain !important; display: block !important; margin: 0 auto !important;';
-              }
-              
-              qrContainerElement.style.cssText = 'width: 150px !important; height: 150px !important; min-width: 150px !important; min-height: 150px !important; margin: 0 auto !important; display: flex !important; justify-content: center !important; align-items: center !important; background: #ffffff !important; overflow: hidden !important;';
-            }, 10);
           }
 
-          /* ── Afficher le ticket ── */
           showTicket();
 
         } catch(err) {
@@ -1228,9 +1201,6 @@
         }
       }
 
-      /* ════════════════════════════════════════
-         telechargerPDF()
-      ════════════════════════════════════════ */
       function telechargerPDF() {
         const element  = document.getElementById('ticketContent');
         const filename = 'billet-goldtix-' + (new URLSearchParams(window.location.search).get('id') || 'ticket') + '.pdf';
@@ -1267,7 +1237,6 @@
           });
       }
 
-      /* ── Escape HTML ── */
       function escHTML(str) {
         if (!str) return '';
         return String(str)
@@ -1277,13 +1246,11 @@
           .replace(/"/g,'&quot;');
       }
 
-      /* ── Bind bouton télécharger ── */
       const dlBtn = document.getElementById('downloadTicket');
       if (dlBtn) {
         dlBtn.addEventListener('click', telechargerPDF);
       }
 
-      /* ── Lancement ── */
       chargerBillet();
     });
   </script>
