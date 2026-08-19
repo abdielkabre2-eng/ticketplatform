@@ -203,6 +203,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            text-align: center;
             border: 1px solid rgba(217,119,6,0.1);
             box-shadow: 0 10px 28px rgba(0,0,0,0.04);
             padding: 12px;
@@ -211,6 +212,7 @@
         }
         .poster-wrapper:hover { transform: scale(1.012); }
         .poster-wrapper img {
+            display: block;
             width: auto;
             max-width: 100%;
             height: auto;
@@ -218,7 +220,6 @@
             object-fit: contain;
             object-position: center center;
             border-radius: var(--radius-md);
-            display: block;
             margin: 0 auto;
         }
         .poster-fallback {
@@ -247,6 +248,8 @@
         .poster-fallback p {
             margin: 0;
             line-height: 1.4;
+            display: block;
+            text-align: center;
         }
 
         /* =============================================
@@ -864,7 +867,7 @@
 
             // ── Affiche HTML ────────────────────────────────────────────────────
             const posterHTML = ev.affiche_url
-                ? `<img src="${ev.affiche_url}" alt="Affiche de l'événement" onerror="this.onerror=null; this.style.display='none'; this.parentElement.innerHTML='<div class=\'poster-fallback\'>${ICONS.image}<p>Affiche non disponible</p></div>'">`
+                ? `<img src="${ev.affiche_url}" alt="Affiche de l'événement">`
                 : `<div class="poster-fallback">${ICONS.image}<p>Affiche non disponible</p></div>`;
 
             // ── Injection ───────────────────────────────────────────────────────
@@ -888,6 +891,16 @@
                     </div>
                     <div>${rightColumn}</div>
                 </div>`;
+
+            const posterImage = container.querySelector(".poster-wrapper img");
+            if (posterImage) {
+                posterImage.addEventListener("error", function() {
+                    const wrapper = this.closest(".poster-wrapper");
+                    if (wrapper) {
+                        wrapper.innerHTML = `<div class="poster-fallback">${ICONS.image}<p>Affiche non disponible</p></div>`;
+                    }
+                });
+            }
 
             // ── File input preview ──────────────────────────────────────────────
             if (!ev.ventes_fermees) {
