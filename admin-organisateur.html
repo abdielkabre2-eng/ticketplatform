@@ -4,11 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GoldTix — Espace Organisateur</title>
-<!-- 1. Le SDK officiel Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <!-- 2. Ton fichier de configuration supabase.js -->
-    <script src="supabase.js"></script>
+
     <!-- EmailJS -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script type="text/javascript">
@@ -551,7 +547,7 @@
             border: 1px solid var(--ink-200);
             border-radius: var(--radius-md);
             padding: 0;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
             overflow: hidden;
             box-shadow: var(--shadow-card);
             transition: box-shadow 0.25s, border-color 0.25s, transform 0.25s;
@@ -567,18 +563,18 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 16px 0;
+            padding: 14px 18px 0;
         }
 
         .billet-card-body {
-            padding: 8px 16px 14px;
+            padding: 10px 18px 18px;
         }
 
         .billet-info-row {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 6px 0;
+            padding: 7px 0;
             border-bottom: 1px solid var(--ink-100);
         }
 
@@ -586,20 +582,19 @@
 
         .billet-info-label {
             font-family: var(--font-display);
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 700;
             color: var(--ink-400);
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            width: 72px;
+            width: 80px;
             flex-shrink: 0;
         }
 
         .billet-info-value {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
             color: var(--ink-900);
-            line-height: 1.35;
         }
 
         .billet-card .preuve-label {
@@ -613,33 +608,23 @@
             display: block;
         }
 
-        .billet-card a,
-        .preuve-link {
-            display: block;
-            width: 100%;
-            text-decoration: none;
-        }
-
         .billet-card a img,
         .billet-card img.preuve-img {
             width: 100%;
-            max-width: 100%;
-            height: auto;
-            min-height: 170px;
-            object-fit: contain;
+            height: 170px;
+            object-fit: cover;
             border-radius: var(--radius-sm);
             display: block;
             border: 1px solid var(--ink-200);
-            background: #f8fafc;
-            transition: opacity 0.2s, transform 0.2s ease;
+            transition: opacity 0.2s;
         }
 
-        .billet-card a:hover img { opacity: 0.92; transform: scale(1.01); }
+        .billet-card a:hover img { opacity: 0.9; }
 
         .billet-card-actions {
             display: flex;
-            gap: 7px;
-            padding: 12px 16px;
+            gap: 8px;
+            padding: 14px 18px;
             background: var(--ink-50);
             border-top: 1px solid var(--ink-100);
             flex-wrap: wrap;
@@ -698,11 +683,11 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 8px 12px;
+            padding: 9px 16px;
             border-radius: var(--radius-xs);
             border: none;
             font-family: var(--font-display);
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 700;
             cursor: pointer;
             transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
@@ -1115,8 +1100,6 @@
         let listeParticipantsValidesGlobal = [];
         let statutVentesFermees = false;
         let derniersBilletsScannes = {};
-        let scannerActif = false;
-        let dernierScanOkAt = 0;
 
         /* =============================================
            INITIALISATION
@@ -1300,8 +1283,8 @@
                         </div>
                         <div style="margin-top: 14px;">
                             <span class="preuve-label">Preuve de paiement</span>
-                            <a href="${b.preuve_url}" target="_blank" class="preuve-link">
-                                <img src="${b.preuve_url}" alt="Preuve de paiement" class="preuve-img" style="max-height: 420px;">
+                            <a href="${b.preuve_url}" target="_blank">
+                                <img src="${b.preuve_url}" alt="Preuve de paiement" class="preuve-img">
                             </a>
                         </div>
                     </div>
@@ -1542,70 +1525,6 @@
             document.getElementById("codeBilletInput").value = "";
         }
 
-        async function arreterScanner() {
-            try {
-                if (html5QrCode && scannerActif) {
-                    await html5QrCode.stop();
-                }
-            } catch (err) {
-                console.log("Arret camera :", err);
-            } finally {
-                scannerActif = false;
-            }
-        }
-
-        async function demarrerScannerCamera() {
-            const resultatDiv = document.getElementById("resultatScan");
-
-            try {
-                if (!window.Html5Qrcode) {
-                    setResultat(resultatDiv, "warning", "Scanner QR non pris en charge par ce navigateur.");
-                    return;
-                }
-
-                if (!html5QrCode) {
-                    html5QrCode = new Html5Qrcode("reader");
-                }
-
-                if (scannerActif) {
-                    await arreterScanner();
-                }
-
-                const cameras = await Html5Qrcode.getCameras();
-                if (!cameras || cameras.length === 0) {
-                    setResultat(resultatDiv, "warning", "Aucune caméra détectée sur cet appareil.");
-                    return;
-                }
-
-                const cameraId = cameras.find(camera => /back|environment|rear/i.test(camera.label || ''))?.id || cameras[0].id;
-
-                await html5QrCode.start(
-                    cameraId,
-                    {
-                        fps: 10,
-                        qrbox: { width: 260, height: 260 },
-                        aspectRatio: 1,
-                        disableFlip: false
-                    },
-                    (decodedText) => {
-                        const maintenant = Date.now();
-                        if (maintenant - dernierScanOkAt < 2500) return;
-                        dernierScanOkAt = maintenant;
-                        traiterVerificationBillet(decodedText);
-                    },
-                    (errorMessage) => {
-                        // Ignorer les erreurs de lecture temporaires ; le scanner continue en arrière-plan.
-                    }
-                );
-
-                scannerActif = true;
-                setResultat(resultatDiv, "warning", "Caméra active — pointez le QR code.");
-            } catch (err) {
-                console.error("Camera non dispo :", err);
-                setResultat(resultatDiv, "error", "Impossible d'activer la caméra. Vérifie les permissions et réessaie, ou utilise l'ID manuellement.");
-            }
-        }
-
         /* =============================================
            NAVIGATION ONGLETS
         ============================================= */
@@ -1617,13 +1536,23 @@
 
             if (nomOnglet === 'paiements') {
                 document.getElementById('section-paiements').classList.add('active');
-                arreterScanner();
+                if (html5QrCode && html5QrCode.isScanning) {
+                    html5QrCode.stop().catch(err => console.log("Arret camera :", err));
+                }
             } else if (nomOnglet === 'validees') {
                 document.getElementById('section-validees').classList.add('active');
-                arreterScanner();
+                if (html5QrCode && html5QrCode.isScanning) {
+                    html5QrCode.stop().catch(err => console.log("Arret camera :", err));
+                }
             } else {
                 document.getElementById('section-scanner').classList.add('active');
-                demarrerScannerCamera();
+                if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
+                html5QrCode.start(
+                    { facingMode: "environment" },
+                    { fps: 10, qrbox: 250 },
+                    (decodedText) => traiterVerificationBillet(decodedText),
+                    (errorMessage) => {}
+                ).catch(err => console.log("Camera non dispo :", err));
             }
         }
 
