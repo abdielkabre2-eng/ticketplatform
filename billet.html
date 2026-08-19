@@ -519,7 +519,7 @@
           <div class="qr-corner br"></div>
           <div id="qrcode"></div>
         </div>
-        <div class="qr-ref-label">Référence du billet</div>
+        <div class="qr-ref-label">Code QR </div>
         <div class="qr-ref-value" id="billetRef">—</div>
       </div>
 
@@ -530,7 +530,7 @@
             <circle cx="5" cy="5" r="4.5" stroke="#d97706" stroke-width="1"/>
             <path d="M3 5l1.3 1.4L7 3.5" stroke="#d97706" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <span>Billet vérifié</span>
+          <span>Billet unique</span>
         </div>
       </div>
     </div>
@@ -719,7 +719,7 @@
             { label:'Catégorie', value: nomCategorie, icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`, full:false, accent:true },
             { label:'Lieu', value: ev.lieu || '—', icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>`, full:false },
             ...(ev.beneficiaire_nom ? [{ label:'Bénéficiaire', value: ev.beneficiaire_nom + (ev.beneficiaire_infos ? ' · ' + ev.beneficiaire_infos : ''), icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`, full:true }] : []),
-            ...(isConfirmed ? [{ label:'Référence', value: billet.numero_billet || billet.id || '—', icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg>`, full:true }] : [])
+            ...(isConfirmed ? [{ label:'Référence ID', value: billet.numero_billet || billet.id || '—', icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg>`, full:true }] : [])
           ];
           cells.forEach((cell, i) => {
             const div = document.createElement('div');
