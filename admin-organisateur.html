@@ -608,16 +608,19 @@
             display: block;
         }
 
-        .billet-card a img,
-        .billet-card img.preuve-img {
-            width: 100%;
-            height: 170px;
-            object-fit: cover;
-            border-radius: var(--radius-sm);
-            display: block;
-            border: 1px solid var(--ink-200);
-            transition: opacity 0.2s;
-        }
+.billet-card a img,
+.billet-card img.preuve-img {
+    width: 100%;
+    max-height: 170px;
+    height: auto;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+    background: #f8fafc;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--ink-200);
+    transition: opacity 0.2s;
+}
 
         .billet-card a:hover img { opacity: 0.9; }
 
