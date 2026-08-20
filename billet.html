@@ -586,7 +586,7 @@
       </div>
       <p class="footer-tagline">La Billetterie en Or</p>
       <div class="footer-contacts">
-        <p class="footer-contact-item">E-mail: <a href="mailto:goldtixbilletterie@gmail.com">goldtixbilletterie@gmail.com</a></p>
+        <p class="footer-contact-item">E-mail : <a href="mailto:goldtixbilletterie@gmail.com">goldtixbilletterie@gmail.com</a></p>
         <p class="footer-contact-item">WhatsApp : <a href="https://wa.me/22653107345">+226 53 10 73 45</a></p>
       </div>
       <p class="footer-dev">Développée par <strong style="color:var(--text-mid)">Abdiel KABRE</strong> · GoldTix &copy; 2026</p>
@@ -765,7 +765,8 @@
                 <div class="status-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
                 <div>
                   <div style="font-weight:800; font-size:.82rem;">Paiement refusé</div>
-                  <div style="font-size:.7rem; font-weight:500; opacity:.75; margin-top:2px;">Veuillez contacter le bénéficiaire pour régulariser votre paiement.</div>
+                  <div style="font-size:.7rem; font-weight:500; opacity:.75; margin-top:2px;">Votre paiement n’a pas encore été confirmé. Veuillez contacter le bénéficiaire pour vérifier sa réception.</div>
+                  <div style="font-size:.7rem; font-weight:500; opacity:.75; margin-top:2px;">Dès que votre paiement est confirmé, patientez quelques instants puis cliquez sur <strong>« Réessayer »</strong> afin de récupérer votre billet.</div>
                 </div>
               </div>`;
           } else {
@@ -781,7 +782,7 @@
             { label:'Téléphone', value: billet.telephone || '—', icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><rect x="7" y="2" width="10" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>`, full:false },
             { label:'Catégorie', value: nomCategorie, icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`, full:false, accent:true },
             { label:'Lieu', value: ev.lieu || '—', icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>`, full:false },
-            ...(ev.beneficiaire_nom ? [{ label:'Bénéficiaire', value: ev.beneficiaire_nom + (ev.beneficiaire_infos ? ' · ' + ev.beneficiaire_infos : ''), icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`, full:true }] : []),
+            ...(ev.beneficiaire_nom ? [{ label:'Bénéficiaire_paiements', value: ev.beneficiaire_nom + (ev.beneficiaire_infos ? ' · ' + ev.beneficiaire_infos : ''), icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`, full:true }] : []),
             ...(isConfirmed ? [{ label:'Référence', value: billet.numero_billet || billet.id || '—', icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg>`, full:true }] : [])
           ];
           cells.forEach((cell, i) => {
