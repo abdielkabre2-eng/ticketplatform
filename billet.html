@@ -380,13 +380,38 @@
       display: flex; align-items: center; justify-content: space-between;
       padding: 12px 18px; border-top: 1px solid var(--border);
       border-radius: 0 0 var(--radius-lg) var(--radius-lg); background: rgba(0,0,0,.25);
+      gap: 10px;
     }
     .tf-brand {
       font-size: .65rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
       background: linear-gradient(135deg, var(--gold-400), var(--gold-600));
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      flex-shrink: 0;
     }
-    .tf-valid { display: flex; align-items: center; gap: 5px; font-size: .62rem; font-weight: 600; color: var(--text-lo); }
+    .tf-valid { display: flex; align-items: center; gap: 5px; font-size: .62rem; font-weight: 600; color: var(--text-lo); flex-shrink: 0; }
+
+    .tf-reload-btn {
+      display: none;
+      align-items: center; gap: 6px;
+      padding: 6px 14px;
+      border-radius: 99px;
+      background: rgba(245,158,11,.08);
+      border: 1px solid rgba(245,158,11,.35);
+      color: var(--gold-400);
+      font-family: var(--font);
+      font-size: .64rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+      cursor: pointer;
+      transition: background .2s, border-color .2s, transform .2s, color .2s;
+      white-space: nowrap;
+    }
+    .tf-reload-btn svg { width: 12px; height: 12px; transition: transform .4s ease; flex-shrink: 0; }
+    .tf-reload-btn:hover {
+      background: rgba(245,158,11,.16);
+      border-color: rgba(245,158,11,.55);
+      color: var(--gold-300);
+    }
+    .tf-reload-btn:hover svg { transform: rotate(180deg); }
+    .tf-reload-btn:active { transform: scale(.96); }
 
     #downloadTicket {
       width: 100%; max-width: 360px; padding: 15px 28px;
@@ -525,6 +550,14 @@
 
       <div class="ticket-footer-strip">
         <span class="tf-brand">GoldTix</span>
+        <button id="tfReloadBtn" class="tf-reload-btn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"/>
+            <polyline points="1 20 1 14 7 14"/>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
+          <span id="tfReloadLabel">Rafraîchir</span>
+        </button>
         <div class="tf-valid">
           <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
             <circle cx="5" cy="5" r="4.5" stroke="#d97706" stroke-width="1"/>
@@ -553,7 +586,7 @@
       </div>
       <p class="footer-tagline">La Billetterie en Or</p>
       <div class="footer-contacts">
-        <p class="footer-contact-item">e-mail:<a href="mailto:goldtixbilletterie@gmail.com">goldtixbilletterie@gmail.com</a></p>
+        <p class="footer-contact-item">E-mail: <a href="mailto:goldtixbilletterie@gmail.com">goldtixbilletterie@gmail.com</a></p>
         <p class="footer-contact-item">WhatsApp : <a href="https://wa.me/22653107345">+226 53 10 73 45</a></p>
       </div>
       <p class="footer-dev">Développée par <strong style="color:var(--text-mid)">Abdiel KABRE</strong> · GoldTix &copy; 2026</p>
@@ -576,6 +609,33 @@
       const params   = new URLSearchParams(window.location.search);
       const billetId = params.get('id');
       if (!billetId) { showError('Aucun identifiant de billet fourni.'); return; }
+
+      // Bouton de rafraîchissement du footer (attente / refuse)
+      const tfReloadBtn = document.getElementById('tfReloadBtn');
+      if (tfReloadBtn) {
+        tfReloadBtn.addEventListener('click', () => {
+          location.reload();
+        });
+      }
+
+      function updateFooterReloadButton(statut) {
+        const btn = document.getElementById('tfReloadBtn');
+        const label = document.getElementById('tfReloadLabel');
+        if (!btn || !label) return;
+
+        const enAttente = (statut === 'attente' || statut === 'en_attente' || statut === 'pending');
+        const refuse    = (statut === 'refuse' || statut === 'rejected' || statut === 'annule');
+
+        if (enAttente) {
+          label.textContent = 'Rafraîchir';
+          btn.style.display = 'inline-flex';
+        } else if (refuse) {
+          label.textContent = 'Réessayer';
+          btn.style.display = 'inline-flex';
+        } else {
+          btn.style.display = 'none';
+        }
+      }
 
       async function chargerBillet() {
         try {
@@ -688,6 +748,9 @@
           const isConfirmed = (statut === 'confirme' || statut === 'valide');
 
           if (!isConfirmed) { const dlBtn = document.getElementById('downloadTicket'); if (dlBtn) dlBtn.style.display = 'none'; }
+
+          // Mise à jour du bouton de rafraîchissement dans le footer selon le statut
+          updateFooterReloadButton(statut);
 
           if (statut === 'attente' || statut === 'en_attente') {
             statusZone.innerHTML = `<div class="status-banner attente">
