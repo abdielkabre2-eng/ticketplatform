@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GoldTix — Espace Organisateur</title>
+    <title>Espace Organisateur - GoldTix</title>
 
     <!-- EmailJS -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
@@ -1004,7 +1004,7 @@
                 <div id="section-paiements" class="section-content active">
                     <div class="section-header">
                         <h2>Gestion des paiements</h2>
-                        <p>Examinez et validez les preuves de paiement. Le participant recevra son billet apres confirmation.</p>
+                        <p>Examinez et validez les preuves de paiement. Le participant recevra son billet après confirmation.</p>
                     </div>
                     <div id="listePaiements">
                         <div class="loading-dots">
@@ -1016,8 +1016,8 @@
                 <!-- ========== SECTION : VALIDES ========== -->
                 <div id="section-validees" class="section-content">
                     <div class="section-header">
-                        <h2 id="titreSectionValidees">Participants confirmes (0)</h2>
-                        <p>Liste complete des participants valides. Vous pouvez retirer un participant en cas d'empechement.</p>
+                        <h2 id="titreSectionValidees">Participants confirmés (0)</h2>
+                        <p>Liste complète des participants valides. Vous pouvez retirer un participant en cas d'empêchement.</p>
                     </div>
                     <div class="search-container">
                         <div class="search-wrapper">
@@ -1073,7 +1073,7 @@
                 <div class="footer-brand-line right"></div>
             </div>
             <div class="footer-text">
-                <p>Plateforme <strong>GoldTix</strong> &mdash; Developpee par <strong>Abdiel KABRE</strong></p>
+                <p>Plateforme <strong>GoldTix</strong> &mdash; Développée par <strong>Abdiel KABRE</strong></p>
                 <p>
                     Email : <a href="mailto:abdielkabre2@gmail.com">abdielkabre2@gmail.com</a>
                 </p>
@@ -1277,7 +1277,7 @@
                     </div>
                     <div class="billet-card-body">
                         <div class="billet-info-row">
-                            <span class="billet-info-label">Nom</span>
+                            <span class="billet-info-label">Nom et Prénom </span>
                             <span class="billet-info-value">${b.nom_participant || 'Non renseigne'}</span>
                         </div>
                         <div class="billet-info-row">
@@ -1295,12 +1295,12 @@
                         <button type="button"
                             class="btn-action btn-confirmer btn-changer-statut"
                             data-id="${b.id}" data-statut="confirme">
-                            J'ai recu
+                            J'ai reçu
                         </button>
                         <button type="button"
                             class="btn-action btn-refuser btn-changer-statut"
                             data-id="${b.id}" data-statut="refuse">
-                            Non recu
+                            Non reçu
                         </button>
                         <button type="button"
                             class="btn-action btn-attente btn-changer-statut"

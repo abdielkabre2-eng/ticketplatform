@@ -755,9 +755,9 @@
                                     <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
                                 </svg>
                             </div>
-                            <h3>Ventes Fermees</h3>
-                            <p>Les ventes en ligne de billets pour cet evenement sont desormais fermees par l'organisateur.</p>
-                            <p>Merci pour votre interet !</p>
+                            <h3>Ventes Fermées</h3>
+                            <p>Les ventes en ligne de billets pour cet évènement sont désormais fermées par l'organisateur.</p>
+                            <p>Merci pour votre intérêt !</p>
                         </div>
                     </div>`;
             } else {
@@ -817,7 +817,7 @@
                         ${categorieHTML}
 
                         <div class="form-group">
-                            <label for="nomParticipant">Nom et Prenom</label>
+                            <label for="nomParticipant">Nom et Prenom </label>
                             <input type="text" id="nomParticipant" placeholder="ex : KONATE Jean">
                         </div>
 
@@ -832,13 +832,13 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Preuve de paiement (capture du recu)</label>
+                            <label>Preuve de paiement (capture du reçu)</label>
                             <div class="file-input-wrapper" id="fileWrapper">
                                 <input type="file" id="preuvePaiement" accept="image/*">
                                 <div class="file-input-display">
                                     ${ICONS.upload}
                                     <span>Cliquez pour choisir un fichier</span>
-                                    <em>JPG, PNG, WEBP acceptes</em>
+                                    <em>JPG, PNG, WEBP acceptés(10MB max)</em>
                                     <span class="file-name-preview" id="fileNamePreview"></span>
                                 </div>
                             </div>
@@ -954,7 +954,7 @@
                             .single();
 
                         if (verifEv && verifEv.ventes_fermees) {
-                            alert("Desole, la vente des billets pour cet evenement vient d'etre fermee.");
+                            alert("Désolé, la vente des billets pour cet évènement vient d'etre fermée.");
                             window.location.reload();
                             return;
                         }
