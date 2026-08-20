@@ -850,103 +850,106 @@ showError('Une erreur est survenue. Veuillez réessayer.');
 // FONCTION  : telechargerPDF
 
 function telechargerPDF() {
-const element = document.getElementById('ticketContent');
-const filename = 'billet-goldtix-' + (new URLSearchParams(window.location.search).get('id') || 'ticket') + '.pdf';
-const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const element = document.getElementById('ticketContent');
+  const filename = 'billet-goldtix-' + (new URLSearchParams(window.location.search).get('id') || 'ticket') + '.pdf';
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-const btn = document.getElementById('downloadTicket');
-const original = btn.innerHTML;
-btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9" stroke-dasharray="56" stroke-dashoffset="0" style="animation:spin 1s linear infinite;"/></svg> Génération du PDF…`;
-btn.disabled = true;
-btn.style.opacity = '.7';
+  const btn = document.getElementById('downloadTicket');
+  const original = btn.innerHTML;
+  btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9" stroke-dasharray="56" stroke-dashoffset="0" style="animation:spin 1s linear infinite;"/></svg> Génération du PDF…`;
+  btn.disabled = true;
+  btn.style.opacity = '.7';
 
-const opt = {
-margin: [4, 4, 4, 4],
-filename: filename,
-image: { type: 'jpeg', quality: 0.98 },
-html2canvas: {
-// scale modéré et fixe : évite le dépassement de taille de canvas
-// sur mobile (scale réel = valeur ci-dessous, html2canvas gère déjà
-// le devicePixelRatio en interne selon la version, donc on reste bas)
-scale: isMobile ? 1.5 : 2.5,
-useCORS: true,
-allowTaint: false,
-backgroundColor: '#0c0a09',
-logging: false,
-windowWidth: element.scrollWidth,
-windowHeight: element.scrollHeight,
-// onclone : on nettoie une COPIE du DOM utilisée uniquement pour la
-// capture. La page réelle affichée à l'utilisateur n'est jamais touchée.
-onclone: (clonedDoc) => {
-const clonedEl = clonedDoc.getElementById('ticketContent');
-if (!clonedEl) return;
-clonedEl.querySelectorAll('*').forEach(node => {
-const style = clonedDoc.defaultView.getComputedStyle(node);
+  const opt = {
+    margin: [4, 4, 4, 4],
+    filename: filename,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: {
+      scale: isMobile ? 1.5 : 2.5,
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: '#0c0a09',
+      logging: false,
+      windowWidth: element.scrollWidth,
+      windowHeight: element.scrollHeight,
+      onclone: (clonedDoc) => {
+        const clonedEl = clonedDoc.getElementById('ticketContent');
+        if (!clonedEl) return;
+        clonedEl.querySelectorAll('*').forEach(node => {
+          const style = clonedDoc.defaultView.getComputedStyle(node);
 
-// 1) Neutraliser backdrop-filter (cause principale des zones noires)
-if (style.backdropFilter && style.backdropFilter !== 'none') {
-node.style.backdropFilter = 'none';
-node.style.webkitBackdropFilter = 'none';
-if (!node.style.backgroundColor || node.style.backgroundColor === '') {
-node.style.backgroundColor = 'rgba(20,18,17,0.85)';
-                  }
-                }
-
-// 2) Neutraliser mix-blend-mode (cause de surfaces en aplat)
-if (style.mixBlendMode && style.mixBlendMode !== 'normal') {
-node.style.mixBlendMode = 'normal';
-node.style.opacity = '0';
-                }
-
-// 3) Neutraliser les filter (blur, drop-shadow, etc.)
-if (style.filter && style.filter !== 'none') {
-node.style.filter = 'none';
-                }
-
-// 4) Figer l'état final des animations/transitions pour que la
-//    capture ne tombe pas sur un état intermédiaire (opacity 0,
-//    translateY décalé, etc.)
-node.style.animation = 'none';
-node.style.transition = 'none';
-if (getComputedStyle(node).opacity !== '0') {
-node.style.opacity = '1';
-                }
-node.style.transform = 'none';
-              });
+          // 1) Neutraliser backdrop-filter
+          if (style.backdropFilter && style.backdropFilter !== 'none') {
+            node.style.backdropFilter = 'none';
+            node.style.webkitBackdropFilter = 'none';
+            if (!node.style.backgroundColor || node.style.backgroundColor === '') {
+              node.style.backgroundColor = 'rgba(20,18,17,0.85)';
             }
-          },
-jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' },
-pagebreak: { mode: ['avoid-all'] }
-        };
+          }
 
-function resetButton() {
-btn.innerHTML = original;
-btn.disabled = false;
-btn.style.opacity = '1';
-        }
+          // 2) CORRECTION : Ne plus mettre opacity à '0' pour éviter le bloc noir !
+          if (style.mixBlendMode && style.mixBlendMode !== 'normal') {
+            node.style.mixBlendMode = 'normal';
+          }
 
-// On attend que l'image d'affiche soit chargée avant de capturer,
-// sinon le header peut être capturé vide ou incomplet.
-const bgImg = document.getElementById('event-bg-img');
-const attendreImage = () => new Promise((resolve) => {
-if (!bgImg || bgImg.style.display === 'none' || bgImg.complete) return resolve();
-bgImg.onload = resolve;
-bgImg.onerror = resolve;
-setTimeout(resolve, 3000); // filet de sécurité
-        });
+          // 3) Neutraliser les filter
+          if (style.filter && style.filter !== 'none') {
+            node.style.filter = 'none';
+          }
 
-attendreImage()
-.then(() => html2pdf().set(opt).from(element).save())
-.then(() => {
-resetButton();
-        })
-.catch((err) => {
-console.error("Erreur PDF:", err);
-alert("Erreur lors de la génération du PDF. Essayez sur un autre navigateur.");
-resetButton();
+          // 4) Figer l'état final des animations
+          node.style.animation = 'none';
+          node.style.transition = 'none';
+          if (getComputedStyle(node).opacity !== '0') {
+            node.style.opacity = '1';
+          }
+          node.style.transform = 'none';
         });
       }
+    },
+    jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' },
+    pagebreak: { mode: ['avoid-all'] }
+  };
 
+  function resetButton() {
+    btn.innerHTML = original;
+    btn.disabled = false;
+    btn.style.opacity = '1';
+  }
+
+  const bgImg = document.getElementById('event-bg-img');
+  const attendreImage = () => new Promise((resolve) => {
+    if (!bgImg || bgImg.style.display === 'none' || bgImg.complete) return resolve();
+    bgImg.onload = resolve;
+    bgImg.onerror = resolve;
+    setTimeout(resolve, 3000);
+  });
+
+  attendreImage()
+    .then(() => html2pdf().set(opt).from(element).outputPdf('blob'))
+    .then((pdfBlob) => {
+      const blobURL = URL.createObjectURL(pdfBlob);
+      
+      if (isMobile) {
+        // Sur mobile, on ouvre le blob dans un nouvel onglet pour garantir l'affichage/téléchargement
+        window.open(blobURL, '_blank');
+      } else {
+        // Sur PC, téléchargement direct
+        const downloadLink = document.createElement('a');
+        downloadLink.href = blobURL;
+        downloadLink.download = filename;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+      }
+      resetButton();
+    })
+    .catch((err) => {
+      console.error("Erreur PDF:", err);
+      alert("Erreur lors de la génération du PDF. Essayez sur un autre navigateur.");
+      resetButton();
+    });
+}
 function escHTML(str) {
 if (!str) return '';
 return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
