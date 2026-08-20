@@ -757,7 +757,7 @@
                 <div class="status-icon"><div class="status-pulse"></div></div>
                 <div>
                   <div style="font-weight:800; font-size:.82rem;">Paiement en attente de confirmation</div>
-                  <div style="font-size:.7rem; font-weight:500; opacity:.75; margin-top:2px;">Veuillez patienter quelques instants, puis cliquez sur « Rafraîchir » pour vérifier l’état de votre paiement. </div>
+                  <div style="font-size:.7rem; font-weight:500; opacity:.75; margin-top:2px;">Veuillez patienter quelques instants, puis cliquez sur «Rafraîchir» pour vérifier l’état de votre paiement.</div>
                   <div style="font-size:.65rem; font-weight:500; font-style:italic; opacity:.75; margin-top:10px;">Si votre billet n’est toujours pas disponible après 1 heure, veuillez contacter le bénéficiaire afin de vérifier que votre paiement a bien été reçu et validé.</div>
                 </div>
               </div>`;
@@ -767,7 +767,7 @@
                 <div>
                   <div style="font-weight:800; font-size:.82rem;">Paiement refusé</div>
                   <div style="font-size:.7rem; font-weight:500; opacity:.75; margin-top:2px;">Votre paiement n’a pas été confirmé. Veuillez contacter le bénéficiaire pour vérifier sa réception.</div>
-                  <div style="font-size:.7rem; font-weight:500; opacity:.75; margin-top:2px;">Dès que votre paiement est confirmé, patientez quelques instants puis cliquez sur <strong>« Réessayer »</strong> afin de récupérer votre billet.</div>
+                  <div style="font-size:.7rem; font-weight:500; opacity:.75; margin-top:2px;">Dès que votre paiement est confirmé, patientez quelques instants puis cliquez sur <strong>«Réessayer»</strong> afin de récupérer votre billet.</div>
                 </div>
               </div>`;
           } else {
@@ -844,24 +844,47 @@
       }
 
       function telechargerPDF() {
-        const element = document.getElementById('ticketContent');
-        const filename = 'billet-goldtix-' + (new URLSearchParams(window.location.search).get('id') || 'ticket') + '.pdf';
-        const opt = {
-          margin: [4, 4, 4, 4], filename: filename,
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { scale: 3, useCORS: true, backgroundColor: '#0c0a09' },
-          jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' },
-          pagebreak: { mode: ['avoid-all'] }
-        };
-        const btn = document.getElementById('downloadTicket');
-        const original = btn.innerHTML;
-        btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9" stroke-dasharray="56" stroke-dashoffset="0" style="animation:spin 1s linear infinite;"/></svg> Génération du PDF…`;
-        btn.disabled = true;
-        btn.style.opacity = '.7';
-        html2pdf().set(opt).from(element).save()
-          .then(() => { btn.innerHTML = original; btn.disabled = false; btn.style.opacity = '1'; })
-          .catch(() => { btn.innerHTML = original; btn.disabled = false; btn.style.opacity = '1'; });
-      }
+  const element = document.getElementById('ticketContent');
+  const filename = 'billet-goldtix-' + (new URLSearchParams(window.location.search).get('id') || 'ticket') + '.pdf';
+  
+  // 1. Détecter si l'utilisateur est sur mobile
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+  const opt = {
+    margin: [4, 4, 4, 4], 
+    filename: filename,
+    image: { type: 'jpeg', quality: 0.98 },
+    // 2. Adapter le scale : 1.5 sur mobile pour éviter le crash mémoire, 3 sur PC
+    html2canvas: { 
+      scale: isMobile ? 1.5 : 3, 
+      useCORS: true, 
+      backgroundColor: '#0c0a09',
+      logging: false
+    },
+    jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' },
+    pagebreak: { mode: ['avoid-all'] }
+  };
+
+  const btn = document.getElementById('downloadTicket');
+  const original = btn.innerHTML;
+  btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9" stroke-dasharray="56" stroke-dashoffset="0" style="animation:spin 1s linear infinite;"/></svg> Génération du PDF…`;
+  btn.disabled = true;
+  btn.style.opacity = '.7';
+
+  html2pdf().set(opt).from(element).save()
+    .then(() => { 
+      btn.innerHTML = original; 
+      btn.disabled = false; 
+      btn.style.opacity = '1'; 
+    })
+    .catch((err) => { 
+      console.error("Erreur PDF:", err);
+      alert("Erreur lors de la génération du PDF. Essayez sur un autre navigateur.");
+      btn.innerHTML = original; 
+      btn.disabled = false; 
+      btn.style.opacity = '1'; 
+    });
+}
 
       function escHTML(str) {
         if (!str) return '';

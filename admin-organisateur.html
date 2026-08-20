@@ -996,7 +996,7 @@
                 <!-- TABS -->
                 <div class="tabs">
                     <button class="tab-btn active" onclick="changerOnglet('paiements', this)">En attente</button>
-                    <button class="tab-btn" id="btnTabValidees" onclick="changerOnglet('validees', this)">Confirmes (0)</button>
+                    <button class="tab-btn" id="btnTabValidees" onclick="changerOnglet('validees', this)">Confirmés (0)</button>
                     <button class="tab-btn" onclick="changerOnglet('scanner', this)">Scanner QR</button>
                 </div>
 
@@ -1042,8 +1042,8 @@
                 <!-- ========== SECTION : SCANNER ========== -->
                 <div id="section-scanner" class="section-content">
                     <div class="section-header">
-                        <h2>Controle des billets - Jour J</h2>
-                        <p>Scannez le QR Code ou entrez le code manuellement pour valider l'entree.</p>
+                        <h2>Contrôle des billets</h2>
+                        <p>Scannez le QR Code ou entrez l'ID manuellement pour valider l'entrée.</p>
                     </div>
 
                     <div class="scanner-frame">
@@ -1055,11 +1055,11 @@
                     </div>
 
                     <div class="scanner-input-group">
-                        <input type="text" id="codeBilletInput" placeholder="ID ou code du billet...">
-                        <button class="btn-scan-manual" onclick="verifierBilletManuel()">Verifier</button>
+                        <input type="text" id="codeBilletInput" placeholder="Entrez l'ID du billet puis cliquez sur Vérifier...">
+                        <button class="btn-scan-manual" onclick="verifierBilletManuel()">Vérifier</button>
                     </div>
 
-                    <div id="resultatScan">En attente de scan...</div>
+                    <div id="resultatScan">En attente de vérification...</div>
                 </div>
 
             </div><!-- /.main-card-inner -->
@@ -1475,23 +1475,23 @@
             );
 
             if (!b) {
-                setResultat(resultatDiv, "error", `Billet introuvable pour ce code (${code}).`);
+                setResultat(resultatDiv, "error", `Billet introuvable pour cet ID (${code}).`);
                 return;
             }
 
             if (b.statut !== "confirme") {
-                setResultat(resultatDiv, "warning", `Entree refusee : Billet non confirme (statut : ${b.statut}).`);
+                setResultat(resultatDiv, "warning", `Entrée refusée : Billet non confirmé (statut actuel : ${b.statut}).`);
                 return;
             }
 
             let maintenant = Date.now();
-            if (derniersBilletsScannes[b.id] && (maintenant - derniersBilletsScannes[b.id] < 30000)) {
-                setResultat(resultatDiv, "success", `ENTREE VALIDE (Deja scanne) — ${b.nom_participant || 'N/A'}`);
+            if (derniersBilletsScannes[b.id] && (maintenant - derniersBilletsScannes[b.id] < 15000)) {
+                setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue ${b.nom_participant || 'N/A'}`);
                 return;
             }
 
             if (b.utilise === true || b.utilise === "true") {
-                setResultat(resultatDiv, "error", `BILLET DEJA UTILISE — ${b.nom_participant || 'N/A'}`);
+                setResultat(resultatDiv, "error", `BILLET DÉJÀ UTILISÉ — ${b.nom_participant || 'N/A'}`);
                 return;
             }
 
@@ -1506,7 +1506,7 @@
             }
 
             derniersBilletsScannes[b.id] = maintenant;
-            setResultat(resultatDiv, "success", `ENTREE VALIDE — Bienvenue, ${b.nom_participant || 'N/A'} !`);
+            setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue, ${b.nom_participant || 'N/A'} !`);
         }
 
         function setResultat(el, type, message) {
