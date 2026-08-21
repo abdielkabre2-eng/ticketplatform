@@ -1103,6 +1103,7 @@
         let listeParticipantsValidesGlobal = [];
         let statutVentesFermees = false;
         let derniersBilletsScannes = {};
+        let scanEnCours = false;
 
         /* =============================================
            INITIALISATION
@@ -1450,7 +1451,7 @@
             let code = codeScanne ? codeScanne.trim() : "";
 
             if (!code) {
-                setResultat(resultatDiv, "warning", "Veuillez entrer l'IDou scanner le QR Code du billet.");
+                setResultat(resultatDiv, "warning", "Veuillez entrer l'ID ou scanner le QR Code du billet.");
                 return;
             }
 
@@ -1548,15 +1549,21 @@
                     html5QrCode.stop().catch(err => console.log("Arret camera :", err));
                 }
             } else {
-                document.getElementById('section-scanner').classList.add('active');
-                if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
-                html5QrCode.start(
-                    { facingMode: "environment" },
-                    { fps: 10, qrbox: 250 },
-                    (decodedText) => traiterVerificationBillet(decodedText),
-                    (errorMessage) => {}
-                ).catch(err => console.log("Camera non dispo :", err));
-            }
+    document.getElementById('section-scanner').classList.add('active');
+    if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
+    html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        (decodedText) => {
+            if (scanEnCours) return;
+            scanEnCours = true;
+            traiterVerificationBillet(decodedText).finally(() => {
+                setTimeout(() => { scanEnCours = false; }, 2000);
+            });
+        },
+        (errorMessage) => {}
+    ).catch(err => console.log("Camera non dispo :", err));
+}
         }
 
         /* =============================================

@@ -808,11 +808,10 @@ if (refEl && refEl.parentElement) refEl.parentElement.style.display = 'none';
           } else {
 document.getElementById('billetRef').textContent = billet.numero_billet || billet.id || '—';
 
-const qrData = JSON.stringify({
-id: billet.id,
-nom: billet.nom_participant,
-evenement: ev.titre
-            });
+// On encode uniquement l'ID du billet, en texte brut (pas de JSON) :
+// léger, fiable, et ça matche directement "item.id.toString() === code"
+// côté scanner sans transformation supplémentaire.
+const qrData = billet.id;
 
 const qrContainerElement = document.getElementById('qrcode');
 
