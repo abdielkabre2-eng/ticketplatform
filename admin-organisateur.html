@@ -1446,70 +1446,100 @@
         /* =============================================
            VÉRIFICATION BILLET (SCANNER)
         ============================================= */
-        async function traiterVerificationBillet(codeScanne) {
-            let resultatDiv = document.getElementById("resultatScan");
-            let code = codeScanne ? codeScanne.trim() : "";
+        // Variable pour empêcher les scans en double trop rapides
+let isProcessingScan = false;
 
-            if (!code) {
-                setResultat(resultatDiv, "warning", "Veuillez entrer l'ID ou scanner le QR Code du billet.");
-                return;
-            }
+async function traiterVerificationBillet(codeScanne) {
+    // Si un scan est déjà en cours de traitement, on ignore les nouvelles frames de la caméra
+    if (isProcessingScan) return;
+    
+    let resultatDiv = document.getElementById("resultatScan");
+    let code = codeScanne ? codeScanne.trim() : "";
 
-            let chiffresTrouves = code.match(/\d+/g);
-            let idBilletExtrait = chiffresTrouves ? chiffresTrouves[chiffresTrouves.length - 1] : code;
+    if (!code) {
+        setResultat(resultatDiv, "warning", "Veuillez entrer l'ID ou scanner le QR Code du billet.");
+        return;
+    }
 
-            const { data: billets, error } = await window.supabaseClient
-                .from("billets")
-                .select("*")
-                .eq("evenement_id", eventId);
+    // On verrouille le traitement
+    isProcessingScan = true;
 
-            if (error || !billets) {
-                setResultat(resultatDiv, "error", "Erreur de connexion avec la base de données.");
-                return;
-            }
+    try {
+        let chiffresTrouves = code.match(/\d+/g);
+        let idBilletExtrait = chiffresTrouves ? chiffresTrouves[chiffresTrouves.length - 1] : code;
 
-            let b = billets.find(item =>
-                item.id.toString() === idBilletExtrait ||
-                item.id.toString() === code ||
-                (item.numero_billet && code.includes(item.numero_billet)) ||
-                (item.qr_code && code.includes(item.qr_code))
-            );
+        const { data: billets, error } = await window.supabaseClient
+            .from("billets")
+            .select("*")
+            .eq("evenement_id", eventId);
 
-            if (!b) {
-                setResultat(resultatDiv, "error", `Billet introuvable pour cet ID (${code}).`);
-                return;
-            }
-
-            if (b.statut !== "confirme") {
-                setResultat(resultatDiv, "warning", `Entrée refusée : Billet non confirmé (statut actuel : ${b.statut}).`);
-                return;
-            }
-
-            let maintenant = Date.now();
-            if (derniersBilletsScannes[b.id] && (maintenant - derniersBilletsScannes[b.id] < 15000)) {
-                setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue ${b.nom_participant || 'N/A'}`);
-                return;
-            }
-
-            if (b.utilise === true || b.utilise === "true") {
-                setResultat(resultatDiv, "error", `BILLET DÉJÀ UTILISÉ — ${b.nom_participant || 'N/A'}`);
-                return;
-            }
-
-            const { error: updateError } = await window.supabaseClient
-                .from("billets")
-                .update({ utilise: true })
-                .eq("id", b.id);
-
-            if (updateError) {
-                setResultat(resultatDiv, "error", "Erreur lors de la validation du billet.");
-                return;
-            }
-
-            derniersBilletsScannes[b.id] = maintenant;
-            setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue, ${b.nom_participant || 'N/A'} !`);
+        if (error || !billets) {
+            setResultat(resultatDiv, "error", "Erreur de connexion avec la base de données.");
+            isProcessingScan = false;
+            return;
         }
 
+        let b = billets.find(item =>
+            item.id.toString() === idBilletExtrait ||
+            item.id.toString() === code ||
+            (item.numero_billet && code.includes(item.numero_billet)) ||
+            (item.qr_code && code.includes(item.qr_code))
+        );
+
+        if (!b) {
+            setResultat(resultatDiv, "error", `Billet introuvable pour cet ID (${code}).`);
+            // On déverrouille rapidement pour lui permettre de rescanner un autre billet
+            setTimeout(() => { isProcessingScan = false; }, 2000);
+            return;
+        }
+
+        if (b.statut !== "confirme") {
+            setResultat(resultatDiv, "warning", `Entrée refusée : Billet non confirmé (statut actuel : ${b.statut}).`);
+            setTimeout(() => { isProcessingScan = false; }, 2000);
+            return;
+        }
+
+        let maintenant = Date.now();
+        if (derniersBilletsScannes[b.id] && (maintenant - derniersBilletsScannes[b.id] < 15000)) {
+            setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue ${b.nom_participant || 'N/A'}`);
+            setTimeout(() => { isProcessingScan = false; }, 2000);
+            return;
+        }
+
+        if (b.utilise === true || b.utilise === "true") {
+            setResultat(resultatDiv, "error", `BILLET DÉJÀ UTILISÉ — ${b.nom_participant || 'N/A'}`);
+            setTimeout(() => { isProcessingScan = false; }, 2000);
+            return;
+        }
+
+        const { error: updateError } = await window.supabaseClient
+            .from("billets")
+            .update({ utilise: true })
+            .eq("id", b.id);
+
+        if (updateError) {
+            setResultat(resultatDiv, "error", "Erreur lors de la validation du billet.");
+            isProcessingScan = false;
+            return;
+        }
+
+        derniersBilletsScannes[b.id] = maintenant;
+        setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue, ${b.nom_participant || 'N/A'} !`);
+        
+        // Optionnel : Arrêter la caméra temporairement après un succès pour laisser le temps de lire
+        arreterScanner();
+        
+        // Remettre le verrou à zéro après 3 secondes pour pouvoir scanner le client suivant
+        setTimeout(() => {
+            isProcessingScan = false;
+            demarrerScanner(); // Relance automatique de la caméra pour le prochain billet
+        }, 3000);
+
+    } catch (err) {
+        console.error("Erreur scan:", err);
+        isProcessingScan = false;
+    }
+}
         function setResultat(el, type, message) {
             const styles = {
                 success: { bg: "#d1fae5", border: "rgba(16,185,129,0.3)", color: "#065f46" },
