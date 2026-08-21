@@ -652,18 +652,18 @@
 <body>
 
     <!-- NAVBAR -->
-    <nav class="navbar anim-1">
-        <div class="brand">
-            <img src="logo.png" alt="GoldTix" class="brand-logo">
-            <div class="brand-name">Gold<em>Tix</em></div>
-        </div>
-        <span class="secure-badge">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            </svg>
-            Billetterie Securisée
-        </span>
-    </nav>
+    <nav class="navbar anim-1" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 10px 15px;">
+    <div class="brand" style="display: flex; align-items: center; gap: 8px;">
+        <img src="logo.png" alt="GoldTix" class="brand-logo" style="height: 35px; width: auto;">
+        <div class="brand-name" style="font-size: 1.2rem; font-weight: bold;">Gold<em>Tix</em></div>
+    </div>
+    <span class="secure-badge" style="display: flex; align-items: center; gap: 5px; font-size: 0.85rem; white-space: nowrap;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        Billetterie Sécurisée
+    </span>
+</nav>
 
     <!-- MAIN -->
     <main class="main-wrapper">

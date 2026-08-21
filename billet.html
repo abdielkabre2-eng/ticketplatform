@@ -848,6 +848,7 @@ showError('Une erreur est survenue. Veuillez réessayer.');
       }
 
 // FONCTION  : telechargerPDF
+// FONCTION : telechargerPDF
 
 function telechargerPDF() {
   const element = document.getElementById('ticketContent');
@@ -884,8 +885,6 @@ function telechargerPDF() {
       windowWidth: element.scrollWidth,
       windowHeight: element.scrollHeight,
       onclone: (clonedDoc, clonedEl) => {
-        // Désactive proprement les pseudo-éléments et le pattern SVG
-        // qui provoquent le bloc noir avec html2canvas
         const style = clonedDoc.createElement('style');
         style.textContent = `
           #${clonedEl.id}::before, #${clonedEl.id}::after { content: none !important; display: none !important; }
@@ -911,9 +910,6 @@ function telechargerPDF() {
           node.style.animation = 'none';
           node.style.transition = 'none';
           node.style.transform = 'none';
-          // ⚠️ On NE force plus opacity à 1 : c'était ça qui rendait
-          // les calques semi-transparents (.22 / .6 / .03) opaques
-          // et créait le bloc noir.
         });
       }
     }))
@@ -921,11 +917,8 @@ function telechargerPDF() {
       const imgData = canvas.toDataURL('image/jpeg', 0.98);
       const { jsPDF } = window.jspdf;
 
-      // On calcule un format de PDF qui colle EXACTEMENT au ratio
-      // du ticket capturé → toujours une seule page, quelle que
-      // soit la hauteur réelle du contenu.
       const marginMm = 4;
-      const maxWidthMm = 148; // largeur type A5 portrait
+      const maxWidthMm = 148;
       const pxToMm = maxWidthMm / canvas.width;
       const imgWidthMm = canvas.width * pxToMm;
       const imgHeightMm = canvas.height * pxToMm;
@@ -962,21 +955,16 @@ function telechargerPDF() {
     });
 }
 
-  function resetButton() {
-    btn.innerHTML = original;
-    btn.disabled = false;
-    btn.style.opacity = '1';
-  }
-
 function escHTML(str) {
   if (!str) return '';
-  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 const dlBtn = document.getElementById('downloadTicket');
 if (dlBtn) dlBtn.addEventListener('click', telechargerPDF);
 
 chargerBillet();
+})
 </script>
 </body>
 </html>
