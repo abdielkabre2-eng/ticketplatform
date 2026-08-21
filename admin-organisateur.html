@@ -1328,7 +1328,7 @@
                         </div>
                         <div class="billet-card-body">
                             <div class="billet-info-row">
-                                <span class="billet-info-label">Nom</span>
+                                <span class="billet-info-label">Participant</span>
                                 <span class="billet-info-value">${b.nom_participant || 'Non renseigne'}</span>
                             </div>
                             <div class="billet-info-row">
@@ -1336,7 +1336,7 @@
                                 <span class="billet-info-value">${b.telephone || 'N/A'}</span>
                             </div>
                             <div class="billet-info-row">
-                                <span class="billet-info-label">Billet</span>
+                                <span class="billet-info-label">ID-Billet</span>
                                 <span class="billet-info-value">#${b.id}</span>
                             </div>
                         </div>
@@ -1498,7 +1498,7 @@ async function traiterVerificationBillet(codeScanne) {
 
         let maintenant = Date.now();
         if (derniersBilletsScannes[b.id] && (maintenant - derniersBilletsScannes[b.id] < 15000)) {
-            setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue ${b.nom_participant || 'N/A'}`);
+            setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue Mr/Mme ${b.nom_participant || 'N/A'} !`);
             setTimeout(() => { isScanLocked = false; }, 2000);
             return;
         }
@@ -1521,7 +1521,7 @@ async function traiterVerificationBillet(codeScanne) {
         }
 
         derniersBilletsScannes[b.id] = maintenant;
-        setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue, ${b.nom_participant || 'N/A'} !`);
+        setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue Mr/Mme ${b.nom_participant || 'N/A'} !`);
         
         // On laisse le message affiché pendant 3 secondes avant de réactiver le scanner pour la personne suivante
         setTimeout(() => {
@@ -1599,10 +1599,10 @@ function demarrerScanner() {
         (decodedText) => traiterVerificationBillet(decodedText),
         (errorMessage) => {}
     ).then(() => {
-        setResultat(resultatDiv, "warning", "Caméra prête. Placez le QR code dans le cadre.");
+        setResultat(resultatDiv, "warning", "Placez le QR code dans le cadre de scan.");
     }).catch(err => {
         console.log("Camera non dispo :", err);
-        setResultat(resultatDiv, "error", "Impossible d'accéder à la caméra : " + err);
+        setResultat(resultatDiv, "error", "Impossible d'accéder à la caméra : Accès à la caméra refusé ou caméra non disponible" );
     });
 }
 
