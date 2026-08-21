@@ -808,46 +808,36 @@ if (refEl && refEl.parentElement) refEl.parentElement.style.display = 'none';
           } else {
 document.getElementById('billetRef').textContent = billet.numero_billet || billet.id || '—';
 
-// On encode uniquement l'ID du billet, en texte brut (pas de JSON) :
-// léger, fiable, et ça matche directement "item.id.toString() === code"
-// côté scanner sans transformation supplémentaire.
-const qrData = billet.id;
+// On encode uniquement l'ID du billet, en texte brut
+const qrData = String(billet.id);
 
 const qrContainerElement = document.getElementById('qrcode');
-
 qrContainerElement.innerHTML = '';
-qrContainerElement.replaceChildren();
 qrContainerElement.style.width = '150px';
 qrContainerElement.style.height = '150px';
-qrContainerElement.style.margin = '0';
-qrContainerElement.style.display = 'flex';
-qrContainerElement.style.alignItems = 'center';
-qrContainerElement.style.justifyContent = 'center';
+qrContainerElement.style.margin = '0 auto';
 
 new QRCode(qrContainerElement, {
-text: qrData,
-width: 150,
-height: 150,
-colorDark: '#0c0a09',
-colorLight: '#ffffff',
-correctLevel: QRCode.CorrectLevel.H
-            });
+    text: qrData,
+    width: 150,
+    height: 150,
+    colorDark: '#000000',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.M
+});
 
 const qrNodes = qrContainerElement.querySelectorAll('canvas, img');
 if (qrNodes.length > 1) {
-Array.from(qrNodes).slice(1).forEach(node => node.remove());
-            }
-          }
-
+    Array.from(qrNodes).slice(1).forEach(node => node.remove());
+}
+ }
 showTicket();
         } catch(err) {
 console.error('Erreur chargerBillet:', err);
 showError('Une erreur est survenue. Veuillez réessayer.');
         }
-      }
 
 // FONCTION  : telechargerPDF
-// FONCTION : telechargerPDF
 
 function telechargerPDF() {
   const filename = 'billet-goldtix-' + (new URLSearchParams(window.location.search).get('id') || 'ticket') + '.pdf';
