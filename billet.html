@@ -839,133 +839,158 @@ showTicket();
       } // <-- fermeture de async function chargerBillet()
 
       // FONCTION : telechargerPDF
-      function telechargerPDF() {
-        const filename = 'billet-goldtix-' + (new URLSearchParams(window.location.search).get('id') || 'ticket') + '.pdf';
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+     function telechargerPDF() {
+  const filename = 'billet-goldtix-' + (new URLSearchParams(window.location.search).get('id') || 'ticket') + '.pdf';
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-        const btn = document.getElementById('downloadTicket');
-        const original = btn.innerHTML;
-        btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9" stroke-dasharray="56" style="animation:spin 1s linear infinite;"/></svg> Génération du PDF…`;
-        btn.disabled = true;
-        btn.style.opacity = '.7';
+  let pdfWindow = null;
+  if (isMobile) {
+    pdfWindow = window.open('', '_blank');
+    if (pdfWindow) {
+      pdfWindow.document.write(
+        '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Billet GoldTix</title>' +
+        '<style>body{margin:0;display:flex;align-items:center;justify-content:center;' +
+        'height:100vh;background:#0c0a09;color:#a8a29e;font-family:sans-serif;font-size:14px;}</style>' +
+        '</head><body>Génération de votre billet…</body></html>'
+      );
+    }
+  }
 
-        function resetButton() {
-          btn.innerHTML = original;
-          btn.disabled = false;
-          btn.style.opacity = '1';
-        }
+  const btn = document.getElementById('downloadTicket');
+  const original = btn.innerHTML;
+  btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9" stroke-dasharray="56" style="animation:spin 1s linear infinite;"/></svg> Génération du PDF…`;
+  btn.disabled = true;
+  btn.style.opacity = '.7';
 
-        const eventTitle   = document.querySelector('.event-title-h')?.textContent.trim() || 'Événement';
-        const categoryText = document.querySelector('.category-badge')?.textContent.trim() || 'Standard';
-        const metaPills    = Array.from(document.querySelectorAll('.event-meta-pill')).map(p => p.textContent.trim());
-        const cellValues   = Array.from(document.querySelectorAll('.info-cell')).map(c => ({
-          label: c.querySelector('.cell-label')?.textContent.trim() || '',
-          value: c.querySelector('.cell-value')?.textContent.trim() || ''
-        }));
-        const billetRef    = document.getElementById('billetRef')?.textContent.trim() || '';
-        const accentColor  = getComputedStyle(document.getElementById('ticketContent')).getPropertyValue('--tier-a').trim() || '#f59e0b';
+  function resetButton() {
+    btn.innerHTML = original;
+    btn.disabled = false;
+    btn.style.opacity = '1';
+  }
 
-        const qrSourceEl = document.querySelector('#qrcode canvas, #qrcode img');
-        let qrDataUrl = null;
-        if (qrSourceEl) {
-          if (qrSourceEl.tagName === 'CANVAS') {
-            qrDataUrl = qrSourceEl.toDataURL('image/png');
-          } else if (qrSourceEl.tagName === 'IMG') {
-            qrDataUrl = qrSourceEl.src;
-          }
-        }
+  const eventTitle   = document.querySelector('.event-title-h')?.textContent.trim() || 'Événement';
+  const categoryText = document.querySelector('.category-badge')?.textContent.trim() || 'Standard';
+  const metaPills    = Array.from(document.querySelectorAll('.event-meta-pill')).map(p => p.textContent.trim());
+  const cellValues   = Array.from(document.querySelectorAll('.info-cell')).map(c => ({
+    label: c.querySelector('.cell-label')?.textContent.trim() || '',
+    value: c.querySelector('.cell-value')?.textContent.trim() || ''
+  }));
+  const billetRef    = document.getElementById('billetRef')?.textContent.trim() || '';
+  const accentColor  = getComputedStyle(document.getElementById('ticketContent')).getPropertyValue('--tier-a').trim() || '#f59e0b';
 
-        const pdfContainer = document.createElement('div');
-        pdfContainer.style.cssText = `
-          position: fixed; left: -9999px; top: 0;
-          width: 380px; padding: 24px;
-          background: #ffffff; color: #111010;
-          font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-        `;
+  const qrSourceEl = document.querySelector('#qrcode canvas, #qrcode img');
+  let qrDataUrl = null;
+  if (qrSourceEl) {
+    if (qrSourceEl.tagName === 'CANVAS') {
+      qrDataUrl = qrSourceEl.toDataURL('image/png');
+    } else if (qrSourceEl.tagName === 'IMG') {
+      qrDataUrl = qrSourceEl.src;
+    }
+  }
 
-        pdfContainer.innerHTML = `
-          <div style="border:2px solid ${accentColor}; border-radius:16px; padding:20px; text-align:center;">
-            <div style="font-size:11px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:${accentColor}; margin-bottom:6px;">
-              ${categoryText}
-            </div>
-            <div style="font-size:20px; font-weight:800; margin-bottom:10px; line-height:1.25;">
-              ${eventTitle}
-            </div>
-            <div style="font-size:12px; color:#57534e; margin-bottom:16px;">
-              ${metaPills.join(' · ')}
-            </div>
-            <div style="border-top:2px dashed #d6d3d1; margin:14px 0;"></div>
-            <div style="text-align:left; display:flex; flex-direction:column; gap:8px; margin-bottom:16px;">
-              ${cellValues.map(c => `
-                <div style="display:flex; justify-content:space-between; font-size:12px; border-bottom:1px solid #f1f0ef; padding-bottom:6px;">
-                  <span style="color:#78716c; font-weight:600;">${c.label}</span>
-                  <span style="font-weight:700; text-align:right; max-width:60%;">${c.value}</span>
-                </div>
-              `).join('')}
-            </div>
-            ${qrDataUrl ? `
-              <img src="${qrDataUrl}" style="width:160px; height:160px; margin:0 auto; display:block; border:8px solid #fff; box-shadow:0 0 0 1px #e7e5e4;" />
-              <div style="font-size:10px; color:#a8a29e; margin-top:8px; letter-spacing:.05em;">RÉF. ${billetRef}</div>
-            ` : ''}
-            <div style="font-size:9px; color:#a8a29e; margin-top:16px; letter-spacing:.08em; text-transform:uppercase;">
-              GoldTix · Billet unique
-            </div>
+  const pdfContainer = document.createElement('div');
+  pdfContainer.style.cssText = `
+    position: fixed; left: -9999px; top: 0;
+    width: 380px; padding: 24px;
+    background: #ffffff; color: #111010;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  `;
+
+  pdfContainer.innerHTML = `
+    <div style="border:2px solid ${accentColor}; border-radius:16px; padding:20px; text-align:center;">
+      <div style="font-size:11px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:${accentColor}; margin-bottom:6px;">
+        ${categoryText}
+      </div>
+      <div style="font-size:20px; font-weight:800; margin-bottom:10px; line-height:1.25;">
+        ${eventTitle}
+      </div>
+      <div style="font-size:12px; color:#57534e; margin-bottom:16px;">
+        ${metaPills.join(' · ')}
+      </div>
+      <div style="border-top:2px dashed #d6d3d1; margin:14px 0;"></div>
+      <div style="text-align:left; display:flex; flex-direction:column; gap:8px; margin-bottom:16px;">
+        ${cellValues.map(c => `
+          <div style="display:flex; justify-content:space-between; font-size:12px; border-bottom:1px solid #f1f0ef; padding-bottom:6px;">
+            <span style="color:#78716c; font-weight:600;">${c.label}</span>
+            <span style="font-weight:700; text-align:right; max-width:60%;">${c.value}</span>
           </div>
-        `;
+        `).join('')}
+      </div>
+      ${qrDataUrl ? `
+        <img src="${qrDataUrl}" style="width:160px; height:160px; margin:0 auto; display:block; border:8px solid #fff; box-shadow:0 0 0 1px #e7e5e4;" />
+        <div style="font-size:10px; color:#a8a29e; margin-top:8px; letter-spacing:.05em;">RÉF. ${billetRef}</div>
+      ` : ''}
+      <div style="font-size:9px; color:#a8a29e; margin-top:16px; letter-spacing:.08em; text-transform:uppercase;">
+        GoldTix · Billet unique
+      </div>
+    </div>
+  `;
 
-        document.body.appendChild(pdfContainer);
+  document.body.appendChild(pdfContainer);
 
-        html2canvas(pdfContainer, {
-          scale: 2,
-          useCORS: true,
-          backgroundColor: '#ffffff',
-          logging: false
-        })
-          .then((canvas) => {
-            document.body.removeChild(pdfContainer);
+  html2canvas(pdfContainer, {
+    scale: 2,
+    useCORS: true,
+    backgroundColor: '#ffffff',
+    logging: false
+  })
+    .then((canvas) => {
+      document.body.removeChild(pdfContainer);
 
-            const imgData = canvas.toDataURL('image/jpeg', 0.95);
-            const { jsPDF } = window.jspdf;
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+      const { jsPDF } = window.jspdf;
 
-            const marginMm = 6;
-            const maxWidthMm = 100;
-            const pxToMm = maxWidthMm / canvas.width;
-            const imgWidthMm = canvas.width * pxToMm;
-            const imgHeightMm = canvas.height * pxToMm;
-            const pageWidth = imgWidthMm + marginMm * 2;
-            const pageHeight = imgHeightMm + marginMm * 2;
+      const marginMm = 6;
+      const maxWidthMm = 100;
+      const pxToMm = maxWidthMm / canvas.width;
+      const imgWidthMm = canvas.width * pxToMm;
+      const imgHeightMm = canvas.height * pxToMm;
+      const pageWidth = imgWidthMm + marginMm * 2;
+      const pageHeight = imgHeightMm + marginMm * 2;
 
-            const pdf = new jsPDF({
-              unit: 'mm',
-              format: [pageWidth, pageHeight],
-              orientation: 'portrait'
-            });
+      const pdf = new jsPDF({
+        unit: 'mm',
+        format: [pageWidth, pageHeight],
+        orientation: 'portrait'
+      });
 
-            pdf.addImage(imgData, 'JPEG', marginMm, marginMm, imgWidthMm, imgHeightMm, undefined, 'FAST');
-            return pdf.output('blob');
-          })
-          .then((pdfBlob) => {
-            const blobURL = URL.createObjectURL(pdfBlob);
-            if (isMobile) {
-              window.open(blobURL, '_blank');
-            } else {
-              const downloadLink = document.createElement('a');
-              downloadLink.href = blobURL;
-              downloadLink.download = filename;
-              document.body.appendChild(downloadLink);
-              downloadLink.click();
-              document.body.removeChild(downloadLink);
-            }
-            resetButton();
-          })
-          .catch((err) => {
-            if (document.body.contains(pdfContainer)) document.body.removeChild(pdfContainer);
-            console.error("Erreur PDF:", err);
-            alert("Erreur lors de la génération du PDF. Veuillez réessayer.");
-            resetButton();
-          });
+      pdf.addImage(imgData, 'JPEG', marginMm, marginMm, imgWidthMm, imgHeightMm, undefined, 'FAST');
+      return pdf.output('blob');
+    })
+    .then((pdfBlob) => {
+      const blobURL = URL.createObjectURL(pdfBlob);
+
+      if (isMobile) {
+        if (pdfWindow) {
+          // On redirige la fenêtre déjà ouverte vers le PDF prêt.
+          pdfWindow.location.href = blobURL;
+        } else {
+          
+          window.location.href = blobURL;
+        }
+      } else {
+        const downloadLink = document.createElement('a');
+        downloadLink.href = blobURL;
+        downloadLink.download = filename;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
       }
 
+      // Libère la mémoire un peu plus tard (laisse le temps au navigateur
+      // de charger le blob dans le nouvel onglet avant de le révoquer).
+      setTimeout(() => URL.revokeObjectURL(blobURL), 60000);
+
+      resetButton();
+    })
+    .catch((err) => {
+      if (document.body.contains(pdfContainer)) document.body.removeChild(pdfContainer);
+      if (pdfWindow) pdfWindow.close();
+      console.error("Erreur PDF:", err);
+      alert("Erreur lors de la génération du PDF. Veuillez réessayer.");
+      resetButton();
+    });
+}
       function escHTML(str) {
         if (!str) return '';
         return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
