@@ -852,7 +852,6 @@ showError('Une erreur est survenue. Veuillez réessayer.');
 // FONCTION : telechargerPDF
 
 function telechargerPDF() {
-  const element = document.getElementById('ticketContent');
   const filename = 'billet-goldtix-' + (new URLSearchParams(window.location.search).get('id') || 'ticket') + '.pdf';
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
@@ -868,58 +867,83 @@ function telechargerPDF() {
     btn.style.opacity = '1';
   }
 
-  const bgImg = document.getElementById('event-bg-img');
-  const attendreImage = () => new Promise((resolve) => {
-    if (!bgImg || bgImg.style.display === 'none' || bgImg.complete) return resolve();
-    bgImg.onload = resolve;
-    bgImg.onerror = resolve;
-    setTimeout(resolve, 3000);
-  });
+  // Récupère le contenu texte déjà présent sur la page (pas de nouvel appel Supabase)
+  const eventTitle   = document.querySelector('.event-title-h')?.textContent.trim() || 'Événement';
+  const categoryText = document.querySelector('.category-badge')?.textContent.trim() || 'Standard';
+  const metaPills     = Array.from(document.querySelectorAll('.event-meta-pill')).map(p => p.textContent.trim());
+  const cellValues    = Array.from(document.querySelectorAll('.info-cell')).map(c => ({
+    label: c.querySelector('.cell-label')?.textContent.trim() || '',
+    value: c.querySelector('.cell-value')?.textContent.trim() || ''
+  }));
+  const billetRef     = document.getElementById('billetRef')?.textContent.trim() || '';
+  const accentColor   = getComputedStyle(document.getElementById('ticketContent')).getPropertyValue('--tier-a').trim() || '#f59e0b';
 
-  attendreImage()
-    .then(() => html2canvas(element, {
-      scale: isMobile ? 2 : 2.5,
-      useCORS: true,
-      allowTaint: false,
-      backgroundColor: '#0c0a09',
-      logging: false,
-      windowWidth: element.scrollWidth,
-      windowHeight: element.scrollHeight,
-      onclone: (clonedDoc, clonedEl) => {
-        const style = clonedDoc.createElement('style');
-        style.textContent = `
-          #${clonedEl.id}::before, #${clonedEl.id}::after { content: none !important; display: none !important; }
-        `;
-        clonedDoc.head.appendChild(style);
+  // Récupère le QR déjà généré (canvas ou img) pour le réutiliser tel quel
+  const qrSourceEl = document.querySelector('#qrcode canvas, #qrcode img');
+  let qrDataUrl = null;
+  if (qrSourceEl) {
+    if (qrSourceEl.tagName === 'CANVAS') {
+      qrDataUrl = qrSourceEl.toDataURL('image/png');
+    } else if (qrSourceEl.tagName === 'IMG') {
+      qrDataUrl = qrSourceEl.src;
+    }
+  }
 
-        const pattern = clonedEl.querySelector('.tier-pattern');
-        if (pattern) pattern.style.display = 'none';
+  // Construit un ticket PDF minimaliste, hors-écran, sans effets visuels lourds
+  const pdfContainer = document.createElement('div');
+  pdfContainer.style.cssText = `
+    position: fixed; left: -9999px; top: 0;
+    width: 380px; padding: 24px;
+    background: #ffffff; color: #111010;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  `;
 
-        clonedEl.querySelectorAll('*').forEach(node => {
-          const cs = clonedDoc.defaultView.getComputedStyle(node);
-          if (cs.backdropFilter && cs.backdropFilter !== 'none') {
-            node.style.backdropFilter = 'none';
-            node.style.webkitBackdropFilter = 'none';
-            if (!node.style.backgroundColor) node.style.backgroundColor = 'rgba(20,18,17,0.85)';
-          }
-          if (cs.mixBlendMode && cs.mixBlendMode !== 'normal') {
-            node.style.mixBlendMode = 'normal';
-          }
-          if (cs.filter && cs.filter !== 'none') {
-            node.style.filter = 'none';
-          }
-          node.style.animation = 'none';
-          node.style.transition = 'none';
-          node.style.transform = 'none';
-        });
-      }
-    }))
+  pdfContainer.innerHTML = `
+    <div style="border:2px solid ${accentColor}; border-radius:16px; padding:20px; text-align:center;">
+      <div style="font-size:11px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:${accentColor}; margin-bottom:6px;">
+        ${categoryText}
+      </div>
+      <div style="font-size:20px; font-weight:800; margin-bottom:10px; line-height:1.25;">
+        ${eventTitle}
+      </div>
+      <div style="font-size:12px; color:#57534e; margin-bottom:16px;">
+        ${metaPills.join(' · ')}
+      </div>
+      <div style="border-top:2px dashed #d6d3d1; margin:14px 0;"></div>
+      <div style="text-align:left; display:flex; flex-direction:column; gap:8px; margin-bottom:16px;">
+        ${cellValues.map(c => `
+          <div style="display:flex; justify-content:space-between; font-size:12px; border-bottom:1px solid #f1f0ef; padding-bottom:6px;">
+            <span style="color:#78716c; font-weight:600;">${c.label}</span>
+            <span style="font-weight:700; text-align:right; max-width:60%;">${c.value}</span>
+          </div>
+        `).join('')}
+      </div>
+      ${qrDataUrl ? `
+        <img src="${qrDataUrl}" style="width:160px; height:160px; margin:0 auto; display:block; border:8px solid #fff; box-shadow:0 0 0 1px #e7e5e4;" />
+        <div style="font-size:10px; color:#a8a29e; margin-top:8px; letter-spacing:.05em;">RÉF. ${billetRef}</div>
+      ` : ''}
+      <div style="font-size:9px; color:#a8a29e; margin-top:16px; letter-spacing:.08em; text-transform:uppercase;">
+        GoldTix · Billet unique
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(pdfContainer);
+
+  html2canvas(pdfContainer, {
+    scale: 2,
+    useCORS: true,
+    backgroundColor: '#ffffff',
+    logging: false
+  })
     .then((canvas) => {
-      const imgData = canvas.toDataURL('image/jpeg', 0.98);
+      document.body.removeChild(pdfContainer);
+
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
       const { jsPDF } = window.jspdf;
 
-      const marginMm = 4;
-      const maxWidthMm = 148;
+      const marginMm = 6;
+      const maxWidthMm = 100; // format compact, largement suffisant pour un billet
       const pxToMm = maxWidthMm / canvas.width;
       const imgWidthMm = canvas.width * pxToMm;
       const imgHeightMm = canvas.height * pxToMm;
@@ -929,7 +953,7 @@ function telechargerPDF() {
       const pdf = new jsPDF({
         unit: 'mm',
         format: [pageWidth, pageHeight],
-        orientation: pageHeight >= pageWidth ? 'portrait' : 'landscape'
+        orientation: 'portrait'
       });
 
       pdf.addImage(imgData, 'JPEG', marginMm, marginMm, imgWidthMm, imgHeightMm, undefined, 'FAST');
@@ -950,12 +974,12 @@ function telechargerPDF() {
       resetButton();
     })
     .catch((err) => {
+      if (document.body.contains(pdfContainer)) document.body.removeChild(pdfContainer);
       console.error("Erreur PDF:", err);
-      alert("Erreur lors de la génération du PDF. Essayez sur un autre navigateur.");
+      alert("Erreur lors de la génération du PDF. Veuillez réessayer.");
       resetButton();
     });
 }
-
 function escHTML(str) {
   if (!str) return '';
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
