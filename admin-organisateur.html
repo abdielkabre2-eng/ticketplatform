@@ -1103,7 +1103,7 @@
         let listeParticipantsValidesGlobal = [];
         let statutVentesFermees = false;
         let derniersBilletsScannes = {};
-        let scanEnCours = false;
+        
 
         /* =============================================
            INITIALISATION
@@ -1532,55 +1532,33 @@
         /* =============================================
            NAVIGATION ONGLETS
         ============================================= */
-        async function changerOnglet(nomOnglet, buttonElement) {
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
+        function changerOnglet(nomOnglet, buttonElement) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
 
-    if (buttonElement) buttonElement.classList.add('active');
+            if (buttonElement) buttonElement.classList.add('active');
 
-    // On arrête proprement la caméra et on ATTEND que ce soit vraiment fini
-    // avant de faire quoi que ce soit d'autre.
-    if (html5QrCode && html5QrCode.isScanning) {
-        try {
-            await html5QrCode.stop();
-        } catch (err) {
-            console.log("Arret camera :", err);
+            if (nomOnglet === 'paiements') {
+                document.getElementById('section-paiements').classList.add('active');
+                if (html5QrCode && html5QrCode.isScanning) {
+                    html5QrCode.stop().catch(err => console.log("Arret camera :", err));
+                }
+            } else if (nomOnglet === 'validees') {
+                document.getElementById('section-validees').classList.add('active');
+                if (html5QrCode && html5QrCode.isScanning) {
+                    html5QrCode.stop().catch(err => console.log("Arret camera :", err));
+                }
+            } else {
+                document.getElementById('section-scanner').classList.add('active');
+                if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
+                html5QrCode.start(
+                    { facingMode: "environment" },
+                    { fps: 10, qrbox: 250 },
+                    (decodedText) => traiterVerificationBillet(decodedText),
+                    (errorMessage) => {}
+                ).catch(err => console.log("Camera non dispo :", err));
+            }
         }
-    }
-
-    if (nomOnglet === 'paiements') {
-        document.getElementById('section-paiements').classList.add('active');
-    } else if (nomOnglet === 'validees') {
-        document.getElementById('section-validees').classList.add('active');
-    } else {
-        document.getElementById('section-scanner').classList.add('active');
-
-        const resultatDiv = document.getElementById('resultatScan');
-        resultatDiv.style.background = '';
-        resultatDiv.style.borderColor = '';
-        resultatDiv.style.color = '';
-        resultatDiv.textContent = 'En attente de vérification...';
-
-        if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
-
-        try {
-            await html5QrCode.start(
-                { facingMode: "environment" },
-                { fps: 10, qrbox: 250 },
-                (decodedText) => {
-                    if (scanEnCours) return;
-                    scanEnCours = true;
-                    traiterVerificationBillet(decodedText).finally(() => {
-                        setTimeout(() => { scanEnCours = false; }, 2000);
-                    });
-                },
-                (errorMessage) => {}
-            );
-        } catch (err) {
-            console.log("Camera non dispo :", err);
-        }
-    }
-}
 
         /* =============================================
            TOGGLE VENTES
