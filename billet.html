@@ -968,49 +968,15 @@ function telechargerPDF() {
     btn.style.opacity = '1';
   }
 
-  const bgImg = document.getElementById('event-bg-img');
-  const attendreImage = () => new Promise((resolve) => {
-    if (!bgImg || bgImg.style.display === 'none' || bgImg.complete) return resolve();
-    bgImg.onload = resolve;
-    bgImg.onerror = resolve;
-    setTimeout(resolve, 3000);
-  });
-
-  attendreImage()
-    .then(() => html2pdf().set(opt).from(element).outputPdf('blob'))
-    .then((pdfBlob) => {
-      const blobURL = URL.createObjectURL(pdfBlob);
-      
-      if (isMobile) {
-        // Sur mobile, on ouvre le blob dans un nouvel onglet pour garantir l'affichage/téléchargement
-        window.open(blobURL, '_blank');
-      } else {
-        // Sur PC, téléchargement direct
-        const downloadLink = document.createElement('a');
-        downloadLink.href = blobURL;
-        downloadLink.download = filename;
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-      }
-      resetButton();
-    })
-    .catch((err) => {
-      console.error("Erreur PDF:", err);
-      alert("Erreur lors de la génération du PDF. Essayez sur un autre navigateur.");
-      resetButton();
-    });
-}
 function escHTML(str) {
-if (!str) return '';
-return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-      }
+  if (!str) return '';
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
 
 const dlBtn = document.getElementById('downloadTicket');
 if (dlBtn) dlBtn.addEventListener('click', telechargerPDF);
 
 chargerBillet();
-    });
 </script>
 </body>
 </html>
