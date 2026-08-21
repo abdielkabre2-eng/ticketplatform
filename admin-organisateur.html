@@ -1447,12 +1447,9 @@
            VÉRIFICATION BILLET (SCANNER)
         ============================================= */
         // Variable pour empêcher les scans en double trop rapides
-let isProcessingScan = false;
+let isScanLocked = false; // Verrou pour éviter que la caméra ne mitraille le même QR code
 
 async function traiterVerificationBillet(codeScanne) {
-    // Si un scan est déjà en cours de traitement, on ignore les nouvelles frames de la caméra
-    if (isProcessingScan) return;
-    
     let resultatDiv = document.getElementById("resultatScan");
     let code = codeScanne ? codeScanne.trim() : "";
 
@@ -1461,8 +1458,9 @@ async function traiterVerificationBillet(codeScanne) {
         return;
     }
 
-    // On verrouille le traitement
-    isProcessingScan = true;
+    // Si un scan est déjà en cours de traitement, on ignore les images en double de la caméra
+    if (isScanLocked) return;
+    isScanLocked = true;
 
     try {
         let chiffresTrouves = code.match(/\d+/g);
@@ -1475,7 +1473,7 @@ async function traiterVerificationBillet(codeScanne) {
 
         if (error || !billets) {
             setResultat(resultatDiv, "error", "Erreur de connexion avec la base de données.");
-            isProcessingScan = false;
+            isScanLocked = false;
             return;
         }
 
@@ -1488,27 +1486,26 @@ async function traiterVerificationBillet(codeScanne) {
 
         if (!b) {
             setResultat(resultatDiv, "error", `Billet introuvable pour cet ID (${code}).`);
-            // On déverrouille rapidement pour lui permettre de rescanner un autre billet
-            setTimeout(() => { isProcessingScan = false; }, 2000);
+            setTimeout(() => { isScanLocked = false; }, 2000); // Déverrouille après 2s pour un autre scan
             return;
         }
 
         if (b.statut !== "confirme") {
             setResultat(resultatDiv, "warning", `Entrée refusée : Billet non confirmé (statut actuel : ${b.statut}).`);
-            setTimeout(() => { isProcessingScan = false; }, 2000);
+            setTimeout(() => { isScanLocked = false; }, 2000);
             return;
         }
 
         let maintenant = Date.now();
         if (derniersBilletsScannes[b.id] && (maintenant - derniersBilletsScannes[b.id] < 15000)) {
             setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue ${b.nom_participant || 'N/A'}`);
-            setTimeout(() => { isProcessingScan = false; }, 2000);
+            setTimeout(() => { isScanLocked = false; }, 2000);
             return;
         }
 
         if (b.utilise === true || b.utilise === "true") {
             setResultat(resultatDiv, "error", `BILLET DÉJÀ UTILISÉ — ${b.nom_participant || 'N/A'}`);
-            setTimeout(() => { isProcessingScan = false; }, 2000);
+            setTimeout(() => { isScanLocked = false; }, 2000);
             return;
         }
 
@@ -1519,25 +1516,21 @@ async function traiterVerificationBillet(codeScanne) {
 
         if (updateError) {
             setResultat(resultatDiv, "error", "Erreur lors de la validation du billet.");
-            isProcessingScan = false;
+            isScanLocked = false;
             return;
         }
 
         derniersBilletsScannes[b.id] = maintenant;
         setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue, ${b.nom_participant || 'N/A'} !`);
         
-        // Optionnel : Arrêter la caméra temporairement après un succès pour laisser le temps de lire
-        arreterScanner();
-        
-        // Remettre le verrou à zéro après 3 secondes pour pouvoir scanner le client suivant
+        // On laisse le message affiché pendant 3 secondes avant de réactiver le scanner pour la personne suivante
         setTimeout(() => {
-            isProcessingScan = false;
-            demarrerScanner(); // Relance automatique de la caméra pour le prochain billet
+            isScanLocked = false;
         }, 3000);
 
     } catch (err) {
-        console.error("Erreur scan:", err);
-        isProcessingScan = false;
+        console.error("Erreur lors de la vérification :", err);
+        isScanLocked = false;
     }
 }
         function setResultat(el, type, message) {
