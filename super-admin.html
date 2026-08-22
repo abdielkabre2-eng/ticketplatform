@@ -426,18 +426,17 @@
     });
 
     function ouvrirModalDetails(idEvenement) {
-        const ev = listeGlobaleEvenements.find(e => e.id == idEvenement);
-        if (!ev) return;
-
-        document.getElementById("detail-titre").innerText = "Gérer : " + ev.titre;
-        
-        const baseUrl = "https://ticketplatform-kappa.vercel.app";
-        
-        document.getElementById("lien-acheteur").value = `${baseUrl}/index.html?event=${ev.id}`;
-        document.getElementById("lien-vendeur").value = `${baseUrl}/admin-organisateur.html?event=${ev.id}`;
-
-        document.getElementById("modalDetails").style.display = "flex";
-    }
+    const ev = listeGlobaleEvenements.find(e => e.id == idEvenement);
+    if (!ev) return;
+    document.getElementById("detail-titre").innerText = "Gérer : " + ev.titre;
+    
+    const baseUrl = "https://ticketplatform-kappa.vercel.app";
+    // Lien acheteur : la racine du site sert déjà index.html, donc pas besoin de le préciser
+    document.getElementById("lien-acheteur").value = `${baseUrl}/?event=${ev.id}`;
+    // Lien vendeur : on retire simplement le .html
+    document.getElementById("lien-vendeur").value = `${baseUrl}/admin-organisateur?event=${ev.id}`;
+    document.getElementById("modalDetails").style.display = "flex";
+}
     
     function fermerModalDetails() { 
         document.getElementById("modalDetails").style.display = "none"; 

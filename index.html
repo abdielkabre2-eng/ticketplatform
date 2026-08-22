@@ -275,14 +275,25 @@ img, svg, video, canvas {
             line-height: 1.25;
         }
 
-        .meta-row {
+                .meta-row {
             display: flex;
             align-items: center;
+            flex-wrap: wrap;
+            row-gap: 6px;
             gap: 10px;
             font-size: 14.5px;
             color: var(--text-sub);
             margin-bottom: 12px;
             font-weight: 500;
+        }
+        .meta-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .meta-text {
+            white-space: nowrap;
         }
         .meta-row svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--gold-2); }
         .meta-row strong { color: var(--text); }
@@ -824,7 +835,7 @@ img, svg, video, canvas {
                         </div>
 
                         <div class="form-group">
-                            <label for="emailParticipant">Adresse e-mail (reception du billet)</label>
+                            <label for="emailParticipant">Adresse e-mail (optionnelle - reception lien du billet)</label>
                             <input type="email" id="emailParticipant" placeholder="ex : nom@gmail.com">
                         </div>
 
@@ -878,16 +889,22 @@ img, svg, video, canvas {
                     <div class="card card--event">
                         <div class="poster-wrapper">${posterHTML}</div>
                         <h1 class="event-title">${ev.titre}</h1>
-                        <div class="meta-row">
-                            ${ICONS.calendar}
-                            <strong>Date :</strong> ${ev.date}
+                                                <div class="meta-row">
+                            <span class="meta-item">
+                                ${ICONS.calendar}
+                                <span class="meta-text"><strong>Date :</strong> ${ev.date}</span>
+                            </span>
                             <span class="meta-sep">—</span>
-                            ${ICONS.clock}
-                            <strong>Heure :</strong> ${ev.heure}
+                            <span class="meta-item">
+                                ${ICONS.clock}
+                                <span class="meta-text"><strong>Heure :</strong> ${ev.heure}</span>
+                            </span>
                         </div>
                         <div class="meta-row">
-                            ${ICONS.pin}
-                            <strong>Lieu :</strong> ${ev.lieu}
+                            <span class="meta-item">
+                                ${ICONS.pin}
+                                <span class="meta-text"><strong>Lieu :</strong> ${ev.lieu}</span>
+                            </span>
                         </div>
                         <div class="price-badge">${prixHTML}</div>
                     </div>
@@ -933,8 +950,8 @@ img, svg, video, canvas {
                         typeBilletChoisi = String(ev.prix);
                     }
 
-                    if (!nom || !email || !tel || !fichierPreuve) {
-                        alert("Veuillez remplir tous les champs et joindre la capture de paiement.");
+                    if (!nom || !tel || !fichierPreuve) {
+                        alert("Vous devez obligatoirement entrer votre nom, numéro de téléphone et joindre la capture de paiement.");
                         return;
                     }
 
@@ -990,7 +1007,7 @@ img, svg, video, canvas {
                             .insert([{
                                 evenement_id: ev.id,
                                 nom_participant: nom,
-                                email: email,
+                                email:  email || null,
                                 telephone: tel,
                                 preuve_url: preuveUrl,
                                 type_billet: typeBilletChoisi,
