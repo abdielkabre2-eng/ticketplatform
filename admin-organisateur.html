@@ -2136,17 +2136,7 @@ if (error) {
                 }
             }
 
-            const { error: updateError } = await window.supabaseClient
-                .from("billets")
-                .update(updateData)
-                .eq("id", billetId);
-
-            if (updateError) {
-                alert("Erreur lors de la mise a jour : " + updateError.message);
-                return;
-            }
-
-            await chargerToutesLesDemandes();
+           await chargerToutesLesDemandes();
         }
 
         /* =============================================
