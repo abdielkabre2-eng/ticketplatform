@@ -50,27 +50,38 @@
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
-            font-family: 'DM Sans', sans-serif;
-            background-color: var(--bg);
-            background-image:
-                radial-gradient(ellipse at 8% 8%, rgba(245, 158, 11, 0.07) 0px, transparent 55%),
-                radial-gradient(ellipse at 92% 92%, rgba(217, 119, 6, 0.05) 0px, transparent 55%);
-            background-attachment: fixed;
-            color: var(--text);
-            padding: 28px 20px 90px;
-            line-height: 1.6;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+        html {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+}
+
+       body {
+    font-family: 'DM Sans', sans-serif;
+    background-color: var(--bg);
+    background-image:
+        radial-gradient(ellipse at 8% 8%, rgba(245, 158, 11, 0.07) 0px, transparent 55%),
+    radial-gradient(ellipse at 92% 92%, rgba(217, 119, 6, 0.05) 0px, transparent 55%);
+    color: var(--text);
+    width: 100%;
+    max-width: 100%;
+    padding: 28px 20px 90px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+img, svg, video, canvas {
+    max-width: 100%;
+}
 
         /* =============================================
            ANIMATIONS
         ============================================= */
-        @keyframes entranceUp {
-            from { opacity: 0; transform: translateY(36px) scale(0.98); filter: blur(8px); }
-            to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-        }
+       @keyframes entranceUp {
+    from { opacity: 0; transform: translateY(36px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
         @keyframes pulseGlow {
             0%, 100% { box-shadow: 0 0 18px rgba(217,119,6,0.2); }
             50%       { box-shadow: 0 0 34px rgba(217,119,6,0.46); }
@@ -94,22 +105,21 @@
         /* =============================================
            NAVBAR
         ============================================= */
-        .navbar {
-            max-width: 1100px;
-            margin: 0 auto 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 16px;
-            background: rgba(255,255,255,0.82);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: 14px 22px;
-            border-radius: 20px;
-            border: 1px solid var(--border);
-            box-shadow: 0 8px 28px rgba(0,0,0,0.03);
-        }
-
+       .navbar {
+    max-width: 1100px;
+    margin: 0 auto 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 14px 22px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.03);
+}
         .brand {
             display: flex;
             align-items: center;
@@ -178,16 +188,16 @@
         /* =============================================
            CARDS
         ============================================= */
-        .card {
-            background: var(--surface);
-            backdrop-filter: blur(22px);
-            -webkit-backdrop-filter: blur(22px);
-            border-radius: var(--radius-xl);
-            padding: 32px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-card);
-            transition: var(--transition);
-        }
+       .card {
+    background: var(--surface);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: var(--radius-xl);
+    padding: 32px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-card);
+    transition: var(--transition);
+}
         .card--event:hover { box-shadow: var(--shadow-hover); }
 
         /* =============================================
@@ -517,37 +527,29 @@
             box-shadow: var(--shadow-glow);
             margin-top: 8px;
             letter-spacing: 0.3px;
-            animation: pulseGlow 3s infinite;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
+            position: relative;
         }
-        .btn-submit:hover {
-            transform: translateY(-3px) scale(1.01);
-            box-shadow: 0 20px 40px rgba(217,119,6,0.45);
+        .btn-submit::after {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: inherit;
+            background: var(--gold-gradient);
+            filter: blur(14px);
+            opacity: 0.3;
+            z-index: -1;
+            pointer-events: none;
+            animation: pulseGlowOpacity 3s ease-in-out infinite;
         }
-        .btn-submit:active { transform: translateY(1px); }
-        .btn-submit:disabled {
-            background: #d1d9e0;
-            color: #8a94a6;
-            cursor: not-allowed;
-            box-shadow: none;
-            transform: none;
-            animation: none;
+        .btn-submit:disabled::after { opacity: 0; }
+        @keyframes pulseGlowOpacity {
+            0%, 100% { opacity: 0.22; }
+            50%      { opacity: 0.48; }
         }
-        .btn-submit svg { width: 18px; height: 18px; }
-        .btn-submit .spinner {
-            width: 18px;
-            height: 18px;
-            border: 2.5px solid rgba(255,255,255,0.3);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            display: none;
-        }
-        .btn-submit.loading .btn-icon { display: none; }
-        .btn-submit.loading .spinner { display: block; }
 
         /* =============================================
            STATES
