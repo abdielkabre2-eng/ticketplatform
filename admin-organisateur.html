@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Espace Organisateur - GoldTix</title>
 
     <!-- EmailJS -->
@@ -1079,18 +1079,27 @@ img, svg, video, canvas {
             box-shadow: 0 0 0 3px rgba(245,158,11,0.12);
         }
 
-        .eye-toggle {
-            position: absolute;
-            right: 6px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            padding: 8px;
-            line-height: 1;
-            color: var(--ink-400);
-        }
-        .eye-toggle:hover { color: var(--gold-600); }
+       .eye-toggle {
+    position: absolute;
+    right: 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    line-height: 1;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.eye-toggle:hover { 
+    color: #d97706; 
+}
+.eye-toggle svg { 
+    width: 18px; 
+    height: 18px; 
+    display: block; 
+}
 
         .btn-auth-primary {
             width: 100%;
@@ -1257,7 +1266,12 @@ img, svg, video, canvas {
                             <label for="setupPasswordConfirm">Confirmez votre mot de passe</label>
                             <div class="password-field-wrapper">
                                 <input type="password" id="setupPasswordConfirm" placeholder="Retapez le mot de passe">
-                                <button type="button" class="eye-toggle" onclick="toggleVisibilitePassword('setupPasswordConfirm')">👁️</button>
+                                <button type="button" class="eye-toggle" onclick="toggleVisibilitePassword('setupPasswordConfirm')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+        <circle cx="12" cy="12" r="3"/>
+    </svg>
+</button>
                             </div>
                         </div>
 
@@ -1304,7 +1318,12 @@ img, svg, video, canvas {
                             <label for="loginPassword">Mot de passe</label>
                             <div class="password-field-wrapper">
                                 <input type="password" id="loginPassword" placeholder="Votre mot de passe">
-                                <button type="button" class="eye-toggle" onclick="toggleVisibilitePassword('loginPassword')">👁️</button>
+                               <button type="button" class="eye-toggle" onclick="toggleVisibilitePassword('loginPassword')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+        <circle cx="12" cy="12" r="3"/>
+    </svg>
+</button>
                             </div>
                         </div>
 
@@ -1359,7 +1378,12 @@ img, svg, video, canvas {
                             <label for="nouveauMdp">Nouveau mot de passe</label>
                             <div class="password-field-wrapper">
                                 <input type="password" id="nouveauMdp" placeholder="Au moins 6 caractères">
-                                <button type="button" class="eye-toggle" onclick="toggleVisibilitePassword('nouveauMdp')">👁️</button>
+                                <button type="button" class="eye-toggle" onclick="toggleVisibilitePassword('nouveauMdp')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                </button>
                             </div>
                         </div>
 
@@ -1647,15 +1671,20 @@ img, svg, video, canvas {
         }
 
         function toggleVisibilitePassword(inputId) {
-            const input = document.getElementById(inputId);
-            const btn = input.parentElement.querySelector(".eye-toggle");
-            if (input.type === "password") {
-                input.type = "text";
-                btn.textContent = "🙈";
-            } else {
-                input.type = "password";
-                btn.textContent = "👁️";
-            }
+            const ICONE_OEIL_OUVERT = `    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>        <circle cx="12" cy="12" r="3"/>    </svg>`;
+const ICONE_OEIL_BARRE = `    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">        <path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a21.6 21.6 0 015.06-6.06M9.9 4.24A10.4 10.4 0 0112 4c7 0 11 8 11 8a21.6 21.6 0 01-3.22 4.44M14.12 14.12a3 3 0 11-4.24-4.24"/>        <line x1="1" y1="1" x2="23" y2="23"/>    </svg>`;
+
+function toggleVisibilitePassword(inputId) {
+    const input = document.getElementById(inputId);
+    const btn = input.parentElement.querySelector(".eye-toggle");
+    if (input.type === "password") {
+        input.type = "text";
+        btn.innerHTML = ICONE_OEIL_BARRE;
+    } else {
+        input.type = "password";
+        btn.innerHTML = ICONE_OEIL_OUVERT;
+    }
+}
         }
 
         /* ===== NOUVEAU : Écran 1 - Création du mot de passe ===== */
