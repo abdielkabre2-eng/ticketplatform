@@ -1535,6 +1535,7 @@
         // ===== NOUVEAU : état de l'authentification =====
         const AUTH_STORAGE_KEY = "goldtix_session_" + eventId;
         let codeRecuperationValideTemporaire = null; // conservé en mémoire JS uniquement, jamais stocké
+        let sessionToken = null; // NOUVEAU : token en mémoire
 
         /* =============================================
            NOUVEAU : INITIALISATION AUTHENTIFICATION
@@ -1580,6 +1581,7 @@
                         });
 
                     if (!error && sessionValide === true) {
+                        sessionToken = tokenLocal;
                         entrerDansEspaceProtege();
                         return;
                     }
@@ -1716,6 +1718,7 @@
                 if (error) throw error;
 
                 localStorage.setItem(AUTH_STORAGE_KEY, token);
+                sessionToken = token;
                 document.getElementById("loginPassword").value = "";
                 entrerDansEspaceProtege();
 
@@ -1831,6 +1834,7 @@
             }
 
             localStorage.removeItem(AUTH_STORAGE_KEY);
+            sessionToken = null;
             arreterScanner(); // sécurité : coupe la caméra si l'onglet scanner était actif
 
             document.getElementById("espaceProtege").style.display = "none";
@@ -1856,13 +1860,15 @@
             }
 
             try {
-                const { data: ev, error } = await window.supabaseClient
-                    .from("evenements")
-                    .select("*")
-                    .eq("id", eventId)
-                    .single();
+                const { data: evList, error } = await window.supabaseClient
+    .rpc("organisateur_charger_evenement", {
+        p_evenement_id: eventId,
+        p_token: sessionToken
+    });
 
-                if (error || !ev) {
+const ev = (evList && evList.length > 0) ? evList[0] : null;
+
+if (error || !ev) {
                     document.getElementById("infosEvenementOrg").textContent = "Evenement introuvable.";
                     return;
                 }
@@ -1902,12 +1908,12 @@
 
             try {
                 const { data: billets, error } = await window.supabaseClient
-                    .from("billets")
-                    .select("*")
-                    .eq("evenement_id", eventId)
-                    .order("id", { ascending: false });
+    .rpc("organisateur_charger_billets", {
+        p_evenement_id: eventId,
+        p_token: sessionToken
+    });
 
-                if (error || !billets) {
+if (error || !billets) {
                     containerPaiements.innerHTML = renderEmptyState("Erreur lors du chargement des donnees.");
                     return;
                 }
@@ -2091,26 +2097,32 @@
            CHANGER STATUT BILLET
         ============================================= */
         async function changerStatut(billetId, nouveauStatut) {
-            let updateData = {
-                statut: nouveauStatut,
-                updated_at: new Date().toISOString()
-            };
+            const { error } = await window.supabaseClient
+    .rpc("organisateur_changer_statut", {
+        p_evenement_id: eventId,
+        p_token: sessionToken,
+        p_billet_id: billetId,
+        p_nouveau_statut: nouveauStatut
+    });
 
-            if (nouveauStatut === 'confirme') {
-                updateData.qr_code = `${billetId}`;
-                updateData.numero_billet = `${billetId}`;
-            }
+if (error) {
+    alert("Erreur lors de la mise a jour : " + error.message);
+    return;
+}
 
             // Envoi email si confirmation
             if (nouveauStatut === 'confirme') {
-                try {
-                    const { data: bInfo, error: errBillet } = await window.supabaseClient
-                        .from("billets")
-                        .select("email, nom_participant")
-                        .eq("id", billetId)
-                        .single();
+    try {
+        const { data: tousLesBillets, error: errBillet } = await window.supabaseClient
+            .rpc("organisateur_charger_billets", {
+                p_evenement_id: eventId,
+                p_token: sessionToken
+            });
+        const bInfo = (!errBillet && tousLesBillets)
+            ? tousLesBillets.find(b => String(b.id) === String(billetId))
+            : null;
 
-                    if (!errBillet && bInfo && bInfo.email) {
+        if (bInfo && bInfo.email) {
                         let lienBillet = `${window.location.origin}/billet.html?id=${billetId}`;
                         const templateParams = {
                             email: bInfo.email,
@@ -2124,13 +2136,13 @@
                 }
             }
 
-            const { error } = await window.supabaseClient
+            const { error: updateError } = await window.supabaseClient
                 .from("billets")
                 .update(updateData)
                 .eq("id", billetId);
 
-            if (error) {
-                alert("Erreur lors de la mise a jour : " + error.message);
+            if (updateError) {
+                alert("Erreur lors de la mise a jour : " + updateError.message);
                 return;
             }
 
@@ -2144,9 +2156,11 @@
             if (!confirm("Voulez-vous vraiment supprimer definitivement ce participant et son billet ?")) return;
 
             const { error } = await window.supabaseClient
-                .from("billets")
-                .delete()
-                .eq("id", billetId);
+    .rpc("organisateur_retirer_participant", {
+        p_evenement_id: eventId,
+        p_token: sessionToken,
+        p_billet_id: billetId
+    });
 
             if (error) {
                 alert("Erreur lors de la suppression : " + error.message);
@@ -2171,72 +2185,53 @@ async function traiterVerificationBillet(codeScanne) {
         return;
     }
 
-    // Si un scan est déjà en cours de traitement, on ignore les images en double de la caméra
     if (isScanLocked) return;
     isScanLocked = true;
 
     try {
-        let chiffresTrouves = code.match(/\d+/g);
-        let idBilletExtrait = chiffresTrouves ? chiffresTrouves[chiffresTrouves.length - 1] : code;
+        const { data, error } = await window.supabaseClient
+            .rpc("organisateur_verifier_billet", {
+                p_evenement_id: eventId,
+                p_token: sessionToken,
+                p_code_scanne: code
+            });
 
-        const { data: billets, error } = await window.supabaseClient
-            .from("billets")
-            .select("*")
-            .eq("evenement_id", eventId);
-
-        if (error || !billets) {
+        if (error) {
             setResultat(resultatDiv, "error", "Erreur de connexion avec la base de données.");
             isScanLocked = false;
             return;
         }
 
-        let b = billets.find(item =>
-            item.id.toString() === idBilletExtrait ||
-            item.id.toString() === code ||
-            (item.numero_billet && code.includes(item.numero_billet)) ||
-            (item.qr_code && code.includes(item.qr_code))
-        );
+        const res = (data && data.length > 0) ? data[0] : null;
 
-        if (!b) {
+        if (!res || res.resultat === "introuvable") {
             setResultat(resultatDiv, "error", `Billet introuvable pour cet ID (${code}).`);
-            setTimeout(() => { isScanLocked = false; }, 2000); // Déverrouille après 2s pour un autre scan
+            setTimeout(() => { isScanLocked = false; }, 2000);
             return;
         }
 
-        if (b.statut !== "confirme") {
-            setResultat(resultatDiv, "warning", `Entrée refusée : Billet non confirmé (statut actuel : ${b.statut}).`);
+        if (res.resultat === "non_confirme") {
+            setResultat(resultatDiv, "warning", `Entrée refusée : Billet non confirmé.`);
             setTimeout(() => { isScanLocked = false; }, 2000);
             return;
         }
 
         let maintenant = Date.now();
-        if (derniersBilletsScannes[b.id] && (maintenant - derniersBilletsScannes[b.id] < 15000)) {
-            setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue Mr/Mme ${b.nom_participant || 'N/A'} !`);
+
+        if (res.resultat === "deja_valide") {
+            if (derniersBilletsScannes[res.billet_id] && (maintenant - derniersBilletsScannes[res.billet_id] < 15000)) {
+                setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue Mr/Mme ${res.nom_participant || 'N/A'} !`);
+            } else {
+                setResultat(resultatDiv, "error", `BILLET DÉJÀ UTILISÉ — ${res.nom_participant || 'N/A'}`);
+            }
             setTimeout(() => { isScanLocked = false; }, 2000);
             return;
         }
 
-        if (b.utilise === true || b.utilise === "true") {
-            setResultat(resultatDiv, "error", `BILLET DÉJÀ UTILISÉ — ${b.nom_participant || 'N/A'}`);
-            setTimeout(() => { isScanLocked = false; }, 2000);
-            return;
-        }
+        // res.resultat === "succes"
+        derniersBilletsScannes[res.billet_id] = maintenant;
+        setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue Mr/Mme ${res.nom_participant || 'N/A'} !`);
 
-        const { error: updateError } = await window.supabaseClient
-            .from("billets")
-            .update({ utilise: true })
-            .eq("id", b.id);
-
-        if (updateError) {
-            setResultat(resultatDiv, "error", "Erreur lors de la validation du billet.");
-            isScanLocked = false;
-            return;
-        }
-
-        derniersBilletsScannes[b.id] = maintenant;
-        setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue Mr/Mme ${b.nom_participant || 'N/A'} !`);
-        
-        // On laisse le message affiché pendant 3 secondes avant de réactiver le scanner pour la personne suivante
         setTimeout(() => {
             isScanLocked = false;
         }, 3000);
@@ -2326,10 +2321,11 @@ function demarrerScanner() {
             statutVentesFermees = !statutVentesFermees;
 
             const { error } = await window.supabaseClient
-                .from("evenements")
-                .update({ ventes_fermees: statutVentesFermees })
-                .eq("id", eventId);
-
+    .rpc("organisateur_toggle_ventes", {
+        p_evenement_id: eventId,
+        p_token: sessionToken,
+        p_nouveau_statut: statutVentesFermees
+    });
             if (error) {
                 alert("Erreur : " + error.message);
                 statutVentesFermees = !statutVentesFermees;
