@@ -18,7 +18,7 @@
 
     <style>
         /* ============================================
-           DESIGN TOKENS (INCHANGÉ)
+           DESIGN TOKENS
         ============================================ */
         :root {
             --gold-50:  #fffbeb;
@@ -78,7 +78,7 @@
         }
 
         /* ============================================
-           RESET & BASE (INCHANGÉ)
+           RESET & BASE
         ============================================ */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -110,7 +110,7 @@
         body > * { position: relative; z-index: 1; }
 
         /* ============================================
-           KEYFRAMES (INCHANGÉ)
+           KEYFRAMES
         ============================================ */
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(24px); }
@@ -137,7 +137,7 @@
         }
 
         /* ============================================
-           LAYOUT WRAPPERS (INCHANGÉ)
+           LAYOUT WRAPPERS
         ============================================ */
         .page-wrapper {
             max-width: 680px;
@@ -146,7 +146,7 @@
         }
 
         /* ============================================
-           NAVBAR (INCHANGÉ + bouton déconnexion ajouté en HTML plus bas)
+           NAVBAR
         ============================================ */
         .top-navbar {
             display: flex;
@@ -161,8 +161,6 @@
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-gold-sm), 0 1px 0 rgba(255,255,255,0.8) inset;
             animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
-            gap: 10px;
-            flex-wrap: wrap;
         }
 
         .logo-container {
@@ -229,38 +227,8 @@
             animation: pulse-ring 1.8s ease-out infinite;
         }
 
-        /* ===== NOUVEAU : zone droite navbar (badge + logout) ===== */
-        .navbar-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .btn-logout {
-            display: none; /* révélé en JS uniquement une fois authentifié */
-            align-items: center;
-            gap: 6px;
-            background: var(--ink-50);
-            color: var(--ink-500);
-            border: 1px solid var(--ink-200);
-            padding: 8px 14px;
-            border-radius: 50px;
-            font-family: var(--font-display);
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.4px;
-            cursor: pointer;
-            transition: background 0.2s, color 0.2s, border-color 0.2s;
-        }
-        .btn-logout:hover {
-            background: var(--red-100);
-            color: var(--red-700);
-            border-color: rgba(239,68,68,0.3);
-        }
-
         /* ============================================
-           MAIN CARD WRAPPER (INCHANGÉ)
+           MAIN CARD WRAPPER
         ============================================ */
         .main-card {
             background: rgba(255,255,255,0.95);
@@ -273,6 +241,7 @@
             animation: fadeUp 0.6s 0.1s cubic-bezier(0.22,1,0.36,1) both;
         }
 
+        /* Gold top accent line */
         .main-card::before {
             content: '';
             display: block;
@@ -289,7 +258,7 @@
         }
 
         /* ============================================
-           EVENT HEADER / BANNER (INCHANGÉ)
+           EVENT HEADER / BANNER
         ============================================ */
         .header-top {
             position: relative;
@@ -302,6 +271,7 @@
             box-shadow: var(--shadow-gold-md);
         }
 
+        /* Shimmering gold corner accents */
         .header-top::after {
             content: '';
             position: absolute;
@@ -311,6 +281,7 @@
             pointer-events: none;
         }
 
+        /* Gold bottom glow line */
         .header-banner-glow {
             position: absolute;
             bottom: 0; left: 0; right: 0;
@@ -384,7 +355,7 @@
         }
 
         /* ============================================
-           STATUS BOX (INCHANGÉ)
+           STATUS BOX
         ============================================ */
         .status-box {
             display: flex;
@@ -449,7 +420,7 @@
         .btn-toggle-ventes:active { transform: translateY(0); }
 
         /* ============================================
-           TABS (INCHANGÉ)
+           TABS
         ============================================ */
         .tabs {
             display: flex;
@@ -488,6 +459,7 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05);
         }
 
+        /* Gold dot on active tab */
         .tab-btn.active::after {
             content: '';
             position: absolute;
@@ -501,7 +473,7 @@
         }
 
         /* ============================================
-           SECTION CONTENT (INCHANGÉ)
+           SECTION CONTENT
         ============================================ */
         .section-content { display: none; }
         .section-content.active {
@@ -529,7 +501,7 @@
         }
 
         /* ============================================
-           SEARCH INPUT (INCHANGÉ)
+           SEARCH INPUT
         ============================================ */
         .search-container { margin-bottom: 18px; }
 
@@ -568,7 +540,7 @@
         .search-input::placeholder { color: var(--ink-400); }
 
         /* ============================================
-           BILLET CARD (INCHANGÉ)
+           BILLET CARD
         ============================================ */
         .billet-card {
             background: #ffffff;
@@ -662,7 +634,7 @@
         }
 
         /* ============================================
-           BADGES (INCHANGÉ)
+           BADGES
         ============================================ */
         .badge-statut {
             display: inline-flex;
@@ -706,7 +678,7 @@
         .badge-attente .badge-icon { background: var(--amber-500); }
 
         /* ============================================
-           ACTION BUTTONS (INCHANGÉ)
+           ACTION BUTTONS
         ============================================ */
         button { font-family: var(--font-display); cursor: pointer; }
 
@@ -754,7 +726,7 @@
         }
 
         /* ============================================
-           EMPTY STATE (INCHANGÉ)
+           EMPTY STATE
         ============================================ */
         .empty-state {
             text-align: center;
@@ -779,7 +751,7 @@
         }
 
         /* ============================================
-           SCANNER SECTION (INCHANGÉ)
+           SCANNER SECTION
         ============================================ */
         .scanner-frame {
             position: relative;
@@ -852,7 +824,7 @@
         }
 
         /* ============================================
-           SCAN RESULT (INCHANGÉ)
+           SCAN RESULT
         ============================================ */
         #resultatScan {
             margin-top: 16px;
@@ -870,7 +842,7 @@
         }
 
         /* ============================================
-           DIVIDER (INCHANGÉ)
+           DIVIDER
         ============================================ */
         .divider {
             height: 1px;
@@ -879,7 +851,7 @@
         }
 
         /* ============================================
-           FOOTER (INCHANGÉ)
+           FOOTER
         ============================================ */
         .creator-footer {
             margin-top: 32px;
@@ -934,7 +906,7 @@
         .footer-text a:hover { color: var(--gold-800); text-decoration: underline; }
 
         /* ============================================
-           LOADING SPINNER (INCHANGÉ)
+           LOADING SPINNER
         ============================================ */
         .loading-dots {
             display: flex;
@@ -960,219 +932,7 @@
         }
 
         /* ============================================
-           ===== NOUVEAU : ÉCRANS D'AUTHENTIFICATION =====
-           (utilise les mêmes tokens --gold-*, --ink-*, --radius-*
-            déjà définis plus haut, pour rester visuellement cohérent)
-        ============================================ */
-        .auth-wrapper {
-            max-width: 440px;
-            margin: 0 auto;
-        }
-
-        .auth-card {
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border: 1px solid var(--border-gold);
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-gold-lg);
-            overflow: hidden;
-            animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
-        }
-
-        .auth-card::before {
-            content: '';
-            display: block;
-            height: 3px;
-            background: var(--grad-gold);
-        }
-
-        .auth-card-inner {
-            padding: 32px 28px 28px;
-        }
-
-        @media (max-width: 480px) {
-            .auth-card-inner { padding: 24px 18px 20px; }
-        }
-
-        .auth-icon-badge {
-            width: 52px;
-            height: 52px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, rgba(245,158,11,0.14), rgba(217,119,6,0.08));
-            border: 1px solid var(--border-gold-strong);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            margin: 0 auto 16px;
-        }
-
-        .auth-title {
-            font-family: var(--font-display);
-            font-size: 19px;
-            font-weight: 800;
-            text-align: center;
-            color: var(--ink-900);
-            letter-spacing: -0.3px;
-            margin-bottom: 6px;
-        }
-
-        .auth-subtitle {
-            font-size: 13px;
-            color: var(--ink-500);
-            text-align: center;
-            line-height: 1.55;
-            margin-bottom: 22px;
-        }
-
-        .auth-form-group { margin-bottom: 16px; }
-
-        .auth-form-group label {
-            display: block;
-            font-family: var(--font-display);
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--gold-700);
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            margin-bottom: 7px;
-        }
-
-        .password-field-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .password-field-wrapper input,
-        .auth-form-group > input[type="text"] {
-            width: 100%;
-            padding: 13px 44px 13px 16px;
-            background: var(--ink-50);
-            border: 1px solid var(--ink-200);
-            border-radius: var(--radius-sm);
-            font-family: var(--font-body);
-            font-size: 14px;
-            color: var(--ink-900);
-            outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-        }
-
-        .auth-form-group > input[type="text"] { padding: 13px 16px; }
-
-        .password-field-wrapper input:focus,
-        .auth-form-group > input[type="text"]:focus {
-            border-color: var(--gold-500);
-            background: #ffffff;
-            box-shadow: 0 0 0 3px rgba(245,158,11,0.12);
-        }
-
-        .eye-toggle {
-            position: absolute;
-            right: 6px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            padding: 8px;
-            line-height: 1;
-            color: var(--ink-400);
-        }
-        .eye-toggle:hover { color: var(--gold-600); }
-
-        .btn-auth-primary {
-            width: 100%;
-            background: var(--grad-gold);
-            color: #ffffff;
-            border: none;
-            padding: 14px 20px;
-            border-radius: var(--radius-sm);
-            font-family: var(--font-display);
-            font-weight: 800;
-            font-size: 14px;
-            letter-spacing: 0.2px;
-            cursor: pointer;
-            box-shadow: var(--shadow-gold-sm);
-            transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
-            margin-top: 4px;
-        }
-        .btn-auth-primary:hover:not(:disabled) {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-gold-md);
-        }
-        .btn-auth-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .auth-link-row {
-            text-align: center;
-            margin-top: 16px;
-        }
-        .auth-link-row a {
-            font-size: 12.5px;
-            color: var(--gold-600);
-            text-decoration: none;
-            font-weight: 700;
-            cursor: pointer;
-        }
-        .auth-link-row a:hover { color: var(--gold-800); text-decoration: underline; }
-
-        .auth-error-msg {
-            display: none;
-            background: var(--red-100);
-            border: 1px solid rgba(239,68,68,0.25);
-            color: var(--red-700);
-            font-size: 12.5px;
-            font-weight: 600;
-            padding: 10px 14px;
-            border-radius: var(--radius-xs);
-            margin-bottom: 16px;
-            line-height: 1.5;
-        }
-
-        .recovery-code-display {
-            background: linear-gradient(135deg, rgba(245,158,11,0.10), rgba(217,119,6,0.05));
-            border: 1.5px dashed var(--border-gold-strong);
-            border-radius: var(--radius-md);
-            padding: 18px;
-            text-align: center;
-            margin-bottom: 18px;
-        }
-
-        .recovery-code-display .code-label {
-            font-family: var(--font-display);
-            font-size: 10px;
-            font-weight: 700;
-            color: var(--gold-700);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-
-        .recovery-code-display .code-value {
-            font-family: var(--font-display);
-            font-size: 20px;
-            font-weight: 800;
-            color: var(--ink-900);
-            letter-spacing: 1.5px;
-            word-break: break-all;
-        }
-
-        .recovery-code-warning {
-            font-size: 12px;
-            color: var(--ink-500);
-            text-align: center;
-            line-height: 1.6;
-            margin-bottom: 18px;
-        }
-
-        .auth-screen { display: none; }
-        .auth-screen.active { display: block; animation: fadeIn 0.3s ease both; }
-
-        /* ============================================
-           RESPONSIVE (INCHANGÉ + petit ajustement navbar-right)
+           RESPONSIVE
         ============================================ */
         @media (max-width: 480px) {
             body { padding: 16px 12px 70px; }
@@ -1192,7 +952,7 @@
 
     <div class="page-wrapper">
 
-        <!-- ==================== NAVBAR (badge inchangé + bouton déconnexion NOUVEAU) ==================== -->
+        <!-- ==================== NAVBAR ==================== -->
         <nav class="top-navbar">
             <div class="logo-container">
                 <img src="logo.png" alt="GoldTix Logo" class="site-logo">
@@ -1200,300 +960,112 @@
                     <span class="text-dark">Gold</span><span class="text-gold">Tix</span>
                 </span>
             </div>
-            <div class="navbar-right">
-                <span class="badge-espace">
-                    <span class="badge-dot"></span>
-                    Espace Organisateur
-                </span>
-                <!-- NOUVEAU : bouton déconnexion, caché tant que non authentifié -->
-                <button id="btnDeconnexion" class="btn-logout" onclick="deconnexion()">
-                    ↩ Déconnexion
-                </button>
-            </div>
+            <span class="badge-espace">
+                <span class="badge-dot"></span>
+                Espace Organisateur
+            </span>
         </nav>
 
-        <!-- ==================== NOUVEAU : BLOC AUTHENTIFICATION ==================== -->
-        <div id="blocAuthentification" class="auth-wrapper">
+        <!-- ==================== MAIN CARD ==================== -->
+        <div class="main-card">
+            <div class="main-card-inner">
 
-            <!-- Écran : chargement initial (vérification de session) -->
-            <div id="authEcranChargement" class="auth-screen active">
-                <div class="auth-card">
-                    <div class="auth-card-inner">
-                        <div class="loading-dots"><span></span><span></span><span></span></div>
-                    </div>
+                <!-- EVENT HEADER BANNER -->
+                <div class="header-top" id="headerTopContainer">
+                    <span class="header-label">Votre evenement</span>
+                    <h1 id="titreEvenementOrg">Chargement...</h1>
+                    <p id="infosEvenementOrg">Connexion en cours...</p>
+                    <div class="header-banner-glow"></div>
                 </div>
-            </div>
 
-            <!-- Écran 1 : première configuration -->
-            <div id="authEcranSetup" class="auth-screen">
-                <div class="auth-card">
-                    <div class="auth-card-inner">
-                        <div class="auth-icon-badge">🔐</div>
-                        <h2 class="auth-title">Bienvenue dans votre espace organisateur 👋</h2>
-                        <p class="auth-subtitle">Vous êtes sur le point de sécuriser votre espace. Créez votre mot de passe pour continuer.</p>
-
-                        <div id="authSetupError" class="auth-error-msg"></div>
-
-                        <div class="auth-form-group">
-                            <label for="setupPassword">Créez votre mot de passe</label>
-                            <div class="password-field-wrapper">
-                                <input type="password" id="setupPassword" placeholder="Au moins 6 caractères">
-                                <button type="button" class="eye-toggle" onclick="toggleVisibilitePassword('setupPassword')">👁️</button>
-                            </div>
-                        </div>
-
-                        <div class="auth-form-group">
-                            <label for="setupPasswordConfirm">Confirmez votre mot de passe</label>
-                            <div class="password-field-wrapper">
-                                <input type="password" id="setupPasswordConfirm" placeholder="Retapez le mot de passe">
-                                <button type="button" class="eye-toggle" onclick="toggleVisibilitePassword('setupPasswordConfirm')">👁️</button>
-                            </div>
-                        </div>
-
-                        <button type="button" class="btn-auth-primary" id="btnSetup" onclick="soumettreCreationMotDePasse()">
-                            Sécuriser mon espace
-                        </button>
+                <!-- STATUS BOX -->
+                <div class="status-box">
+                    <div class="status-box-left">
+                        <span class="status-indicator" id="statusIndicator"></span>
+                        <span id="labelStatutVentes">Statut : chargement...</span>
                     </div>
+                    <button
+                        id="btnToggleVentes"
+                        class="btn-toggle-ventes"
+                        onclick="toggleVentes()"
+                        style="background: var(--ink-900); color: white;">
+                        Patientez...
+                    </button>
                 </div>
-            </div>
 
-            <!-- Écran 1bis : code de récupération affiché une seule fois -->
-            <div id="authEcranCodeGenere" class="auth-screen">
-                <div class="auth-card">
-                    <div class="auth-card-inner">
-                        <div class="auth-icon-badge">🔑</div>
-                        <h2 class="auth-title">Conservez votre code de récupération</h2>
-                        <p class="auth-subtitle">Ce code vous permettra de réinitialiser votre mot de passe en cas d'oubli. Il ne sera plus jamais affiché après cette page.</p>
+                <!-- TABS -->
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="changerOnglet('paiements', this)">En attente</button>
+                    <button class="tab-btn" id="btnTabValidees" onclick="changerOnglet('validees', this)">Confirmés (0)</button>
+                    <button class="tab-btn" onclick="changerOnglet('scanner', this)">Scanner QR</button>
+                </div>
 
-                        <div class="recovery-code-display">
-                            <div class="code-label">Code de récupération</div>
-                            <div class="code-value" id="codeRecuperationAffiche">GTX-0000-0000</div>
-                        </div>
-
-                        <p class="recovery-code-warning">Notez-le précieusement (capture d'écran, gestionnaire de mots de passe...). GoldTix ne pourra pas vous le redonner.</p>
-
-                        <button type="button" class="btn-auth-primary" onclick="confirmerCodeNote()">
-                            J'ai noté mon code, continuer
-                        </button>
+                <!-- ========== SECTION : PAIEMENTS ========== -->
+                <div id="section-paiements" class="section-content active">
+                    <div class="section-header">
+                        <h2>Gestion des paiements</h2>
+                        <p>Examinez et validez les preuves de paiement. Le participant recevra son billet après confirmation.</p>
                     </div>
-                </div>
-            </div>
-
-            <!-- Écran 2 : connexion -->
-            <div id="authEcranLogin" class="auth-screen">
-                <div class="auth-card">
-                    <div class="auth-card-inner">
-                        <div class="auth-icon-badge">🔐</div>
-                        <h2 class="auth-title">Connexion à votre espace organisateur</h2>
-                        <p class="auth-subtitle">Entrez le mot de passe de cet espace pour accéder à la gestion de l'événement.</p>
-
-                        <div id="authLoginError" class="auth-error-msg"></div>
-
-                        <div class="auth-form-group">
-                            <label for="loginPassword">Mot de passe</label>
-                            <div class="password-field-wrapper">
-                                <input type="password" id="loginPassword" placeholder="Votre mot de passe">
-                                <button type="button" class="eye-toggle" onclick="toggleVisibilitePassword('loginPassword')">👁️</button>
-                            </div>
-                        </div>
-
-                        <button type="button" class="btn-auth-primary" id="btnLogin" onclick="soumettreConnexion()">
-                            Se connecter
-                        </button>
-
-                        <div class="auth-link-row">
-                            <a onclick="afficherEcranAuth('authEcranRecuperation')">Mot de passe oublié ?</a>
+                    <div id="listePaiements">
+                        <div class="loading-dots">
+                            <span></span><span></span><span></span>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Écran 3 : saisie code de récupération -->
-            <div id="authEcranRecuperation" class="auth-screen">
-                <div class="auth-card">
-                    <div class="auth-card-inner">
-                        <div class="auth-icon-badge">🔑</div>
-                        <h2 class="auth-title">Réinitialiser votre mot de passe</h2>
-                        <p class="auth-subtitle">Entrez le code de récupération qui vous a été donné à la création de cet espace.</p>
-
-                        <div id="authRecuperationError" class="auth-error-msg"></div>
-
-                        <div class="auth-form-group">
-                            <label for="recuperationCode">Code de récupération</label>
-                            <input type="text" id="recuperationCode" placeholder="GTX-XXXX-XXXX">
+                <!-- ========== SECTION : VALIDES ========== -->
+                <div id="section-validees" class="section-content">
+                    <div class="section-header">
+                        <h2 id="titreSectionValidees">Participants confirmés (0)</h2>
+                        <p>Liste complète des participants valides. Vous pouvez retirer un participant en cas d'empêchement.</p>
+                    </div>
+                    <div class="search-container">
+                        <div class="search-wrapper">
+                            <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+                            </svg>
+                            <input
+                                type="text"
+                                id="searchValidees"
+                                class="search-input"
+                                placeholder="Rechercher un participant..."
+                                oninput="filtrerParticipants()">
                         </div>
-
-                        <button type="button" class="btn-auth-primary" id="btnRecuperation" onclick="soumettreCodeRecuperation()">
-                            Vérifier
-                        </button>
-
-                        <div class="auth-link-row">
-                            <a onclick="afficherEcranAuth('authEcranLogin')">Retour à la connexion</a>
+                    </div>
+                    <div id="listeValidees">
+                        <div class="loading-dots">
+                            <span></span><span></span><span></span>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Écran 4 : nouveau mot de passe après code validé -->
-            <div id="authEcranNouveauMdp" class="auth-screen">
-                <div class="auth-card">
-                    <div class="auth-card-inner">
-                        <div class="auth-icon-badge">🔐</div>
-                        <h2 class="auth-title">Créez votre nouveau mot de passe</h2>
-                        <p class="auth-subtitle">Votre code a été validé. Choisissez un nouveau mot de passe pour cet espace.</p>
-
-                        <div id="authNouveauMdpError" class="auth-error-msg"></div>
-
-                        <div class="auth-form-group">
-                            <label for="nouveauMdp">Nouveau mot de passe</label>
-                            <div class="password-field-wrapper">
-                                <input type="password" id="nouveauMdp" placeholder="Au moins 6 caractères">
-                                <button type="button" class="eye-toggle" onclick="toggleVisibilitePassword('nouveauMdp')">👁️</button>
-                            </div>
-                        </div>
-
-                        <div class="auth-form-group">
-                            <label for="nouveauMdpConfirm">Confirmez le mot de passe</label>
-                            <div class="password-field-wrapper">
-                                <input type="password" id="nouveauMdpConfirm" placeholder="Retapez le mot de passe">
-                                <button type="button" class="eye-toggle" onclick="toggleVisibilitePassword('nouveauMdpConfirm')">👁️</button>
-                            </div>
-                        </div>
-
-                        <button type="button" class="btn-auth-primary" id="btnNouveauMdp" onclick="soumettreNouveauMotDePasse()">
-                            Réinitialiser mon mot de passe
-                        </button>
+                <!-- ========== SECTION : SCANNER ========== -->
+                <div id="section-scanner" class="section-content">
+                    <div class="section-header">
+                        <h2>Contrôle des billets</h2>
+                        <p>Scannez le QR Code ou entrez l'ID manuellement pour valider l'entrée.</p>
                     </div>
+
+                    <div class="scanner-frame">
+                        <span class="scanner-corner tl"></span>
+                        <span class="scanner-corner tr"></span>
+                        <span class="scanner-corner bl"></span>
+                        <span class="scanner-corner br"></span>
+                        <div id="reader"></div>
+                    </div>
+
+                    <div class="scanner-input-group">
+                        <input type="text" id="codeBilletInput" placeholder="Entrez l'ID du billet puis cliquez sur Vérifier...">
+                        <button class="btn-scan-manual" onclick="verifierBilletManuel()">Vérifier</button>
+                    </div>
+
+                    <div id="resultatScan">En attente de vérification...</div>
                 </div>
-            </div>
 
-            <!-- Écran 4bis : nouveau code de récupération après reset -->
-            <div id="authEcranNouveauCodeGenere" class="auth-screen">
-                <div class="auth-card">
-                    <div class="auth-card-inner">
-                        <div class="auth-icon-badge">🔑</div>
-                        <h2 class="auth-title">Votre nouveau code de récupération</h2>
-                        <p class="auth-subtitle">L'ancien code n'est plus valide. Conservez précieusement ce nouveau code.</p>
+            </div><!-- /.main-card-inner -->
+        </div><!-- /.main-card -->
 
-                        <div class="recovery-code-display">
-                            <div class="code-label">Nouveau code de récupération</div>
-                            <div class="code-value" id="nouveauCodeRecuperationAffiche">GTX-0000-0000</div>
-                        </div>
-
-                        <button type="button" class="btn-auth-primary" onclick="afficherEcranAuth('authEcranLogin')">
-                            J'ai noté mon code, aller à la connexion
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-        </div><!-- /#blocAuthentification -->
-
-        <!-- ==================== ESPACE PROTÉGÉ (contenu original, caché tant que non authentifié) ==================== -->
-        <div id="espaceProtege" style="display:none;">
-
-            <!-- ==================== MAIN CARD (INCHANGÉ) ==================== -->
-            <div class="main-card">
-                <div class="main-card-inner">
-
-                    <!-- EVENT HEADER BANNER -->
-                    <div class="header-top" id="headerTopContainer">
-                        <span class="header-label">Votre evenement</span>
-                        <h1 id="titreEvenementOrg">Chargement...</h1>
-                        <p id="infosEvenementOrg">Connexion en cours...</p>
-                        <div class="header-banner-glow"></div>
-                    </div>
-
-                    <!-- STATUS BOX -->
-                    <div class="status-box">
-                        <div class="status-box-left">
-                            <span class="status-indicator" id="statusIndicator"></span>
-                            <span id="labelStatutVentes">Statut : chargement...</span>
-                        </div>
-                        <button
-                            id="btnToggleVentes"
-                            class="btn-toggle-ventes"
-                            onclick="toggleVentes()"
-                            style="background: var(--ink-900); color: white;">
-                            Patientez...
-                        </button>
-                    </div>
-
-                    <!-- TABS -->
-                    <div class="tabs">
-                        <button class="tab-btn active" onclick="changerOnglet('paiements', this)">En attente</button>
-                        <button class="tab-btn" id="btnTabValidees" onclick="changerOnglet('validees', this)">Confirmés (0)</button>
-                        <button class="tab-btn" onclick="changerOnglet('scanner', this)">Scanner QR</button>
-                    </div>
-
-                    <!-- ========== SECTION : PAIEMENTS ========== -->
-                    <div id="section-paiements" class="section-content active">
-                        <div class="section-header">
-                            <h2>Gestion des paiements</h2>
-                            <p>Examinez et validez les preuves de paiement. Le participant recevra son billet après confirmation.</p>
-                        </div>
-                        <div id="listePaiements">
-                            <div class="loading-dots">
-                                <span></span><span></span><span></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ========== SECTION : VALIDES ========== -->
-                    <div id="section-validees" class="section-content">
-                        <div class="section-header">
-                            <h2 id="titreSectionValidees">Participants confirmés (0)</h2>
-                            <p>Liste complète des participants valides. Vous pouvez retirer un participant en cas d'empêchement.</p>
-                        </div>
-                        <div class="search-container">
-                            <div class="search-wrapper">
-                                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
-                                </svg>
-                                <input
-                                    type="text"
-                                    id="searchValidees"
-                                    class="search-input"
-                                    placeholder="Rechercher un participant..."
-                                    oninput="filtrerParticipants()">
-                            </div>
-                        </div>
-                        <div id="listeValidees">
-                            <div class="loading-dots">
-                                <span></span><span></span><span></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ========== SECTION : SCANNER ========== -->
-                    <div id="section-scanner" class="section-content">
-                        <div class="section-header">
-                            <h2>Contrôle des billets</h2>
-                            <p>Scannez le QR Code ou entrez l'ID manuellement pour valider l'entrée.</p>
-                        </div>
-
-                        <div class="scanner-frame">
-                            <span class="scanner-corner tl"></span>
-                            <span class="scanner-corner tr"></span>
-                            <span class="scanner-corner bl"></span>
-                            <span class="scanner-corner br"></span>
-                            <div id="reader"></div>
-                        </div>
-
-                        <div class="scanner-input-group">
-                            <input type="text" id="codeBilletInput" placeholder="Entrez l'ID du billet puis cliquez sur Vérifier...">
-                            <button class="btn-scan-manual" onclick="verifierBilletManuel()">Vérifier</button>
-                        </div>
-
-                        <div id="resultatScan">En attente de vérification...</div>
-                    </div>
-
-                </div><!-- /.main-card-inner -->
-            </div><!-- /.main-card -->
-
-        </div><!-- /#espaceProtege -->
-
-        <!-- ==================== FOOTER (INCHANGÉ) ==================== -->
+        <!-- ==================== FOOTER ==================== -->
         <footer class="creator-footer">
             <div class="footer-brand">
                 <div class="footer-brand-line"></div>
@@ -1516,14 +1088,14 @@
 
     </div><!-- /.page-wrapper -->
 
-    <!-- ==================== SCRIPTS (INCHANGÉ) ==================== -->
+    <!-- ==================== SCRIPTS ==================== -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
 
     <script>
         /* =============================================
-           ÉTAT GLOBAL (INCHANGÉ + variables NOUVELLES pour l'auth)
+           ÉTAT GLOBAL
         ============================================= */
         const urlParams = new URLSearchParams(window.location.search);
         let eventId = urlParams.get("event");
@@ -1531,20 +1103,18 @@
         let listeParticipantsValidesGlobal = [];
         let statutVentesFermees = false;
         let derniersBilletsScannes = {};
-
-        // ===== NOUVEAU : état de l'authentification =====
-        const AUTH_STORAGE_KEY = "goldtix_session_" + eventId;
-        let codeRecuperationValideTemporaire = null; // conservé en mémoire JS uniquement, jamais stocké
+        
 
         /* =============================================
-           NOUVEAU : INITIALISATION AUTHENTIFICATION
-           (remplace l'appel direct à chargerEspaceOrganisateur()
-            au chargement de la page)
+           INITIALISATION
         ============================================= */
         document.addEventListener("DOMContentLoaded", () => {
-            initialiserAuthentification();
+            chargerEspaceOrganisateur();
 
-            // Délégation de clics (INCHANGÉ - boutons dans les cartes dynamiques)
+            // Rafraîchissement auto toutes les 2 minutes
+            setInterval(() => { chargerToutesLesDemandes(); }, 120000);
+
+            // Délégation de clics (boutons dans les cartes dynamiques)
             document.addEventListener("click", function(event) {
                 let targetBtn = event.target.closest(".btn-changer-statut");
                 if (targetBtn) {
@@ -1561,289 +1131,6 @@
                 }
             });
         });
-
-        async function initialiserAuthentification() {
-            if (!eventId) {
-                document.getElementById("authEcranChargement").innerHTML =
-                    '<div class="auth-card"><div class="auth-card-inner"><p class="auth-subtitle">Aucun événement spécifié. Ajoutez ?event=ID dans l\\'URL.</p></div></div>';
-                return;
-            }
-
-            const tokenLocal = localStorage.getItem(AUTH_STORAGE_KEY);
-
-            if (tokenLocal) {
-                try {
-                    const { data: sessionValide, error } = await window.supabaseClient
-                        .rpc("organisateur_verifier_session", {
-                            p_evenement_id: eventId,
-                            p_token: tokenLocal
-                        });
-
-                    if (!error && sessionValide === true) {
-                        entrerDansEspaceProtege();
-                        return;
-                    }
-                } catch (err) {
-                    console.error("Erreur vérification session :", err);
-                }
-                // Token invalide ou expiré : on nettoie et on retombe sur l'écran adapté
-                localStorage.removeItem(AUTH_STORAGE_KEY);
-            }
-
-            // Pas de session valide -> déterminer premier écran à afficher
-            try {
-                const { data: aMotDePasse, error } = await window.supabaseClient
-                    .rpc("organisateur_a_mot_de_passe", { p_evenement_id: eventId });
-
-                if (error) throw error;
-
-                if (aMotDePasse === true) {
-                    afficherEcranAuth("authEcranLogin");
-                } else {
-                    afficherEcranAuth("authEcranSetup");
-                }
-            } catch (err) {
-                console.error("Erreur vérification configuration :", err);
-                document.getElementById("authEcranChargement").innerHTML =
-                    '<div class="auth-card"><div class="auth-card-inner"><p class="auth-subtitle">Erreur de connexion. Rechargez la page.</p></div></div>';
-            }
-        }
-
-        function afficherEcranAuth(nomEcran) {
-            document.querySelectorAll(".auth-screen").forEach(el => el.classList.remove("active"));
-            document.getElementById(nomEcran).classList.add("active");
-        }
-
-        function entrerDansEspaceProtege() {
-            document.getElementById("blocAuthentification").style.display = "none";
-            document.getElementById("espaceProtege").style.display = "block";
-            document.getElementById("btnDeconnexion").style.display = "inline-flex";
-
-            // Comportement original, INCHANGÉ, désormais déclenché après authentification
-            chargerEspaceOrganisateur();
-            setInterval(() => { chargerToutesLesDemandes(); }, 120000);
-        }
-
-        function afficherErreurAuth(idErreur, message) {
-            const el = document.getElementById(idErreur);
-            el.textContent = message;
-            el.style.display = "block";
-        }
-        function masquerErreurAuth(idErreur) {
-            document.getElementById(idErreur).style.display = "none";
-        }
-
-        function toggleVisibilitePassword(inputId) {
-            const input = document.getElementById(inputId);
-            const btn = input.parentElement.querySelector(".eye-toggle");
-            if (input.type === "password") {
-                input.type = "text";
-                btn.textContent = "🙈";
-            } else {
-                input.type = "password";
-                btn.textContent = "👁️";
-            }
-        }
-
-        /* ===== NOUVEAU : Écran 1 - Création du mot de passe ===== */
-        async function soumettreCreationMotDePasse() {
-            masquerErreurAuth("authSetupError");
-            const pwd = document.getElementById("setupPassword").value;
-            const pwdConfirm = document.getElementById("setupPasswordConfirm").value;
-
-            if (pwd.length < 6) {
-                afficherErreurAuth("authSetupError", "Le mot de passe doit contenir au moins 6 caractères.");
-                return;
-            }
-            if (pwd !== pwdConfirm) {
-                afficherErreurAuth("authSetupError", "Les deux mots de passe ne correspondent pas.");
-                return;
-            }
-
-            const btn = document.getElementById("btnSetup");
-            btn.disabled = true;
-            btn.textContent = "Sécurisation en cours...";
-
-            try {
-                const { data: code, error } = await window.supabaseClient
-                    .rpc("organisateur_creer_mot_de_passe", {
-                        p_evenement_id: eventId,
-                        p_mot_de_passe: pwd
-                    });
-
-                if (error) throw error;
-
-                document.getElementById("codeRecuperationAffiche").textContent = code;
-                afficherEcranAuth("authEcranCodeGenere");
-
-            } catch (err) {
-                afficherErreurAuth("authSetupError", err.message || "Erreur lors de la création du mot de passe.");
-            } finally {
-                btn.disabled = false;
-                btn.textContent = "Sécuriser mon espace";
-            }
-        }
-
-        function confirmerCodeNote() {
-            // Conforme au parcours demandé : pas de connexion automatique,
-            // retour obligatoire par l'écran de connexion.
-            document.getElementById("setupPassword").value = "";
-            document.getElementById("setupPasswordConfirm").value = "";
-            afficherEcranAuth("authEcranLogin");
-        }
-
-        /* ===== NOUVEAU : Écran 2 - Connexion ===== */
-        async function soumettreConnexion() {
-            masquerErreurAuth("authLoginError");
-            const pwd = document.getElementById("loginPassword").value;
-
-            if (!pwd) {
-                afficherErreurAuth("authLoginError", "Veuillez entrer votre mot de passe.");
-                return;
-            }
-
-            const btn = document.getElementById("btnLogin");
-            btn.disabled = true;
-            btn.textContent = "Connexion en cours...";
-
-            try {
-                const { data: token, error } = await window.supabaseClient
-                    .rpc("organisateur_login", {
-                        p_evenement_id: eventId,
-                        p_mot_de_passe: pwd
-                    });
-
-                if (error) throw error;
-
-                localStorage.setItem(AUTH_STORAGE_KEY, token);
-                document.getElementById("loginPassword").value = "";
-                entrerDansEspaceProtege();
-
-            } catch (err) {
-                afficherErreurAuth("authLoginError", "❌ " + (err.message || "Mot de passe incorrect. Veuillez réessayer."));
-            } finally {
-                btn.disabled = false;
-                btn.textContent = "Se connecter";
-            }
-        }
-
-        /* ===== NOUVEAU : Écran 3 - Code de récupération ===== */
-        async function soumettreCodeRecuperation() {
-            masquerErreurAuth("authRecuperationError");
-            const code = document.getElementById("recuperationCode").value.trim();
-
-            if (!code) {
-                afficherErreurAuth("authRecuperationError", "Veuillez entrer votre code de récupération.");
-                return;
-            }
-
-            const btn = document.getElementById("btnRecuperation");
-            btn.disabled = true;
-            btn.textContent = "Vérification...";
-
-            try {
-                const { data: valide, error } = await window.supabaseClient
-                    .rpc("organisateur_verifier_code_recuperation", {
-                        p_evenement_id: eventId,
-                        p_code: code
-                    });
-
-                if (error) throw error;
-
-                if (valide === true) {
-                    codeRecuperationValideTemporaire = code;
-                    document.getElementById("recuperationCode").value = "";
-                    afficherEcranAuth("authEcranNouveauMdp");
-                } else {
-                    afficherErreurAuth("authRecuperationError", "Code de récupération incorrect.");
-                }
-
-            } catch (err) {
-                afficherErreurAuth("authRecuperationError", err.message || "Erreur lors de la vérification.");
-            } finally {
-                btn.disabled = false;
-                btn.textContent = "Vérifier";
-            }
-        }
-
-        /* ===== NOUVEAU : Écran 4 - Nouveau mot de passe ===== */
-        async function soumettreNouveauMotDePasse() {
-            masquerErreurAuth("authNouveauMdpError");
-            const pwd = document.getElementById("nouveauMdp").value;
-            const pwdConfirm = document.getElementById("nouveauMdpConfirm").value;
-
-            if (pwd.length < 6) {
-                afficherErreurAuth("authNouveauMdpError", "Le mot de passe doit contenir au moins 6 caractères.");
-                return;
-            }
-            if (pwd !== pwdConfirm) {
-                afficherErreurAuth("authNouveauMdpError", "Les deux mots de passe ne correspondent pas.");
-                return;
-            }
-            if (!codeRecuperationValideTemporaire) {
-                afficherErreurAuth("authNouveauMdpError", "Session de récupération expirée, recommencez.");
-                afficherEcranAuth("authEcranRecuperation");
-                return;
-            }
-
-            const btn = document.getElementById("btnNouveauMdp");
-            btn.disabled = true;
-            btn.textContent = "Réinitialisation en cours...";
-
-            try {
-                const { data: nouveauCode, error } = await window.supabaseClient
-                    .rpc("organisateur_reinitialiser_mot_de_passe", {
-                        p_evenement_id: eventId,
-                        p_code: codeRecuperationValideTemporaire,
-                        p_nouveau_mot_de_passe: pwd
-                    });
-
-                if (error) throw error;
-
-                codeRecuperationValideTemporaire = null;
-                document.getElementById("nouveauMdp").value = "";
-                document.getElementById("nouveauMdpConfirm").value = "";
-                document.getElementById("nouveauCodeRecuperationAffiche").textContent = nouveauCode;
-                afficherEcranAuth("authEcranNouveauCodeGenere");
-
-            } catch (err) {
-                afficherErreurAuth("authNouveauMdpError", err.message || "Erreur lors de la réinitialisation.");
-            } finally {
-                btn.disabled = false;
-                btn.textContent = "Réinitialiser mon mot de passe";
-            }
-        }
-
-        /* ===== NOUVEAU : Déconnexion ===== */
-        async function deconnexion() {
-            const token = localStorage.getItem(AUTH_STORAGE_KEY);
-
-            if (token) {
-                try {
-                    await window.supabaseClient
-                        .rpc("organisateur_logout", {
-                            p_evenement_id: eventId,
-                            p_token: token
-                        });
-                } catch (err) {
-                    console.error("Erreur déconnexion serveur :", err);
-                }
-            }
-
-            localStorage.removeItem(AUTH_STORAGE_KEY);
-            arreterScanner(); // sécurité : coupe la caméra si l'onglet scanner était actif
-
-            document.getElementById("espaceProtege").style.display = "none";
-            document.getElementById("btnDeconnexion").style.display = "none";
-            document.getElementById("blocAuthentification").style.display = "block";
-            document.getElementById("loginPassword").value = "";
-            afficherEcranAuth("authEcranLogin");
-        }
-
-        /* =============================================
-           TOUT CE QUI SUIT EST INCHANGÉ PAR RAPPORT
-           AU FICHIER ORIGINAL (logique billets / scanner / ventes)
-        ============================================= */
 
         /* =============================================
            CHARGEMENT ÉVÉNEMENT
