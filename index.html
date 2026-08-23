@@ -784,7 +784,7 @@ img, svg, video, canvas {
                         .join("");
                     categorieHTML = `
                         <div class="form-group">
-                            <label for="selectCategorie">Categorie de billet</label>
+                            <label for="selectCategorie">Catégorie de billet</label>
                             <select id="selectCategorie">${options}</select>
                         </div>`;
                 }
@@ -794,7 +794,7 @@ img, svg, video, canvas {
                     <div class="qr-wrapper">
                         <p class="qr-label">
                             ${ICONS.card}
-                            Scanner ou utiliser le RIB ci-dessous
+                            RIB du bénéficiaire ci-dessous
                         </p>
                         <img src="${ev.rib_image_url || ev.qr_code_paiement}" alt="Support de paiement" class="qr-image">
                     </div>` : "";
@@ -810,7 +810,7 @@ img, svg, video, canvas {
                             </p>
                             <div class="info-rows">
                                 <div class="info-row">
-                                    <span class="info-row-label">${ICONS.user} Beneficiaire</span>
+                                    <span class="info-row-label">${ICONS.user} Bénéficiaire des paiements</span>
                                     <span class="info-row-value">${ev.beneficiaire_nom || 'Non renseigne'}</span>
                                 </div>
                                 <div class="info-row">
@@ -830,7 +830,7 @@ img, svg, video, canvas {
                         ${categorieHTML}
 
                         <div class="form-group">
-                            <label for="nomParticipant">Nom et Prenom </label>
+                            <label for="nomParticipant">Nom et Prénom(s) <span style="color: red;">*</span></label>
                             <input type="text" id="nomParticipant" placeholder="ex : KONATE Jean">
                         </div>
 
@@ -840,12 +840,12 @@ img, svg, video, canvas {
                         </div>
 
                         <div class="form-group">
-                            <label for="telParticipant">Numero WhatsApp</label>
+                            <label for="telParticipant">Contact WhatsApp <span style="color: red;">*</span></label>
                             <input type="tel" id="telParticipant" placeholder="ex : +226 ... / +212 ...">
                         </div>
 
                         <div class="form-group">
-                            <label>Preuve de paiement (capture du reçu)</label>
+                            <label>Preuve de paiement (capture du reçu) <span style="color: red;">*</span></label>
                             <div class="file-input-wrapper" id="fileWrapper">
                                 <input type="file" id="preuvePaiement" accept="image/*">
                                 <div class="file-input-display">
