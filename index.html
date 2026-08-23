@@ -772,8 +772,8 @@ img, svg, video, canvas {
                                 </svg>
                             </div>
                             <h3>Ventes Fermées</h3>
-                            <p>Les ventes en ligne de billets pour cet évènement sont désormais fermées par l'organisateur.</p>
-                            <p>Merci pour votre intérêt !</p>
+                            <p>Les ventes en ligne de billets pour cet évènement viennent d'être fermées par l'organisateur.</p>
+                            <p>Merci pour votre intérêt et à bientôt !</p>
                         </div>
                     </div>`;
             } else {
@@ -976,7 +976,7 @@ img, svg, video, canvas {
                             .single();
 
                         if (verifEv && verifEv.ventes_fermees) {
-                            alert("Désolé, la vente des billets pour cet évènement vient d'etre fermée.");
+                            alert("Désolé, la vente des billets pour cet évènement vient d'être fermée.");
                             window.location.reload();
                             return;
                         }
