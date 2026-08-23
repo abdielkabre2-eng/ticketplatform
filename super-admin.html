@@ -402,10 +402,10 @@
                         <p class="event-info">📅 ${ev.date || 'Non précisée'} à ${ev.heure || ''}</p>
                         <p class="event-info">📍 ${ev.lieu || 'Non précisé'}</p>
                         <p class="event-info">💵 Tarifs : ${affichagePrix}</p>
+                        <p class="event-info">👤 Bénéficiaire des paiements : ${ev.beneficiaire_nom || ''}</p>
                         <button type="button" class="btn-supprimer" onclick="supprimerEvenement(event, '${ev.id}')">            
                         Supprimer l'événement        
                         </button>
-                        <p class="event-info">👤 Bénéficiaire des paiements : ${ev.beneficiaire_nom || ''}</p>
                     </div>
                 `;
             }).join("");
