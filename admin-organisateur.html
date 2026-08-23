@@ -1237,7 +1237,7 @@ img, svg, video, canvas {
                 </span>
                 <!-- NOUVEAU : bouton déconnexion, caché tant que non authentifié -->
                 <button id="btnDeconnexion" class="btn-logout" onclick="deconnexion()">
-                    ↩ Déconnexion
+                    ⬅️Déconnexion
                 </button>
             </div>
         </nav>
@@ -1361,8 +1361,10 @@ img, svg, video, canvas {
                     <div class="auth-card-inner">
                         <div class="auth-icon-badge">🔑</div>
                         <h2 class="auth-title">Réinitialiser votre mot de passe</h2>
-                        <p class="auth-subtitle">Entrez le code de récupération qui vous a été donné à la création de cet espace. Si vouz l'avez perdu, contactez GoldTix au numéro qui se trouve tout en bas de la page. </p>
-
+                        <p class="auth-subtitle">
+                            Entrez le code de récupération qui vous a été donné à la création de cet espace. 
+                           <strong>Si vous l'avez perdu, contactez GoldTix au numéro qui se trouve tout en bas de la page.</strong>
+                        </p>
                         <div id="authRecuperationError" class="auth-error-msg"></div>
 
                         <div class="auth-form-group">
@@ -1375,7 +1377,7 @@ img, svg, video, canvas {
                         </button>
 
                         <div class="auth-link-row">
-                            <a onclick="afficherEcranAuth('authEcranLogin')">Retour à la connexion</a>
+                            <a onclick="afficherEcranAuth('authEcranLogin')"> ⬅️ Retourer à la page de connexion</a>
                         </div>
                     </div>
                 </div>
