@@ -18,7 +18,7 @@
 
     <style>
         /* ============================================
-           DESIGN TOKENS (INCHANGÉ)
+           DESIGN TOKENS
         ============================================ */
         :root {
             --gold-50:  #fffbeb;
@@ -63,9 +63,10 @@
             --radius-lg: 24px;
             --radius-xl: 32px;
 
-            --shadow-gold-sm: 0 4px 14px rgba(217,119,6,0.15);
-            --shadow-gold-md: 0 8px 30px rgba(217,119,6,0.20);
-            --shadow-gold-lg: 0 20px 60px rgba(217,119,6,0.15), 0 8px 25px rgba(0,0,0,0.06);
+            /* ===== NOUVEAU : ombres à double couche, plus de profondeur, même coût GPU ===== */
+            --shadow-gold-sm: 0 2px 6px rgba(217,119,6,0.10), 0 4px 14px rgba(217,119,6,0.15);
+            --shadow-gold-md: 0 4px 12px rgba(217,119,6,0.14), 0 8px 30px rgba(217,119,6,0.20);
+            --shadow-gold-lg: 0 6px 18px rgba(217,119,6,0.10), 0 20px 60px rgba(217,119,6,0.16), 0 8px 25px rgba(0,0,0,0.06);
             --shadow-card:    0 2px 8px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
             --shadow-card-hover: 0 8px 30px rgba(217,119,6,0.12), 0 4px 12px rgba(0,0,0,0.06);
 
@@ -78,7 +79,7 @@
         }
 
         /* ============================================
-           RESET & BASE (INCHANGÉ)
+           RESET & BASE
         ============================================ */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -110,10 +111,11 @@ img, svg, video, canvas {
             content: '';
             position: fixed;
             inset: 0;
+            /* ===== NOUVEAU : dégradé légèrement plus riche pour plus de profondeur, coût inchangé ===== */
             background:
-                radial-gradient(ellipse 60% 40% at 5% 10%, rgba(245,158,11,0.10) 0%, transparent 60%),
-                radial-gradient(ellipse 50% 35% at 95% 8%, rgba(245,158,11,0.08) 0%, transparent 55%),
-                radial-gradient(ellipse 70% 50% at 50% 100%, rgba(180,83,9,0.05) 0%, transparent 60%);
+                radial-gradient(ellipse 60% 40% at 5% 10%, rgba(245,158,11,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 35% at 95% 8%, rgba(245,158,11,0.09) 0%, transparent 55%),
+                radial-gradient(ellipse 70% 50% at 50% 100%, rgba(180,83,9,0.06) 0%, transparent 60%);
             pointer-events: none;
             z-index: 0;
         }
@@ -121,7 +123,7 @@ img, svg, video, canvas {
         body > * { position: relative; z-index: 1; }
 
         /* ============================================
-           KEYFRAMES (INCHANGÉ)
+           KEYFRAMES
         ============================================ */
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(24px); }
@@ -147,8 +149,14 @@ img, svg, video, canvas {
             to { transform: rotate(360deg); }
         }
 
+        /* ===== NOUVEAU : balayage lumineux sur le bouton doré principal (GPU-only) ===== */
+        @keyframes shine-sweep {
+            0%   { transform: translateX(-120%) skewX(-15deg); }
+            100% { transform: translateX(220%) skewX(-15deg); }
+        }
+
         /* ============================================
-           LAYOUT WRAPPERS (INCHANGÉ)
+           LAYOUT WRAPPERS
         ============================================ */
         .page-wrapper {
             max-width: 680px;
@@ -157,7 +165,7 @@ img, svg, video, canvas {
         }
 
         /* ============================================
-           NAVBAR (INCHANGÉ + bouton déconnexion ajouté en HTML plus bas)
+           NAVBAR
         ============================================ */
         .top-navbar {
             display: flex;
@@ -170,7 +178,8 @@ img, svg, video, canvas {
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--border-gold);
             border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-gold-sm), 0 1px 0 rgba(255,255,255,0.8) inset;
+            /* ===== NOUVEAU : ombre plus riche + liseré intérieur subtil ===== */
+            box-shadow: var(--shadow-gold-sm), 0 1px 0 rgba(255,255,255,0.9) inset, 0 0 0 1px rgba(255,255,255,0.4) inset;
             animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
             gap: 10px;
             flex-wrap: wrap;
@@ -240,7 +249,6 @@ img, svg, video, canvas {
             animation: pulse-ring 1.8s ease-out infinite;
         }
 
-        /* ===== NOUVEAU : zone droite navbar (badge + logout) ===== */
         .navbar-right {
             display: flex;
             align-items: center;
@@ -249,7 +257,7 @@ img, svg, video, canvas {
         }
 
         .btn-logout {
-            display: none; /* révélé en JS uniquement une fois authentifié */
+            display: none;
             align-items: center;
             gap: 6px;
             background: var(--ink-50);
@@ -262,16 +270,21 @@ img, svg, video, canvas {
             font-weight: 700;
             letter-spacing: 0.4px;
             cursor: pointer;
-            transition: background 0.2s, color 0.2s, border-color 0.2s;
+            transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.15s;
         }
         .btn-logout:hover {
             background: var(--red-100);
             color: var(--red-700);
             border-color: rgba(239,68,68,0.3);
+            transform: translateY(-1px);
+        }
+        .btn-logout:focus-visible {
+            outline: 2px solid var(--gold-500);
+            outline-offset: 2px;
         }
 
         /* ============================================
-           MAIN CARD WRAPPER (INCHANGÉ)
+           MAIN CARD WRAPPER
         ============================================ */
         .main-card {
             background: rgba(255,255,255,0.95);
@@ -300,7 +313,7 @@ img, svg, video, canvas {
         }
 
         /* ============================================
-           EVENT HEADER / BANNER (INCHANGÉ)
+           EVENT HEADER / BANNER
         ============================================ */
         .header-top {
             position: relative;
@@ -343,9 +356,10 @@ img, svg, video, canvas {
             content: '';
             position: absolute;
             inset: 0;
+            /* ===== NOUVEAU : dégradé plus profond pour une lisibilité et un contraste renforcés ===== */
             background: linear-gradient(180deg,
-                rgba(10,6,2,0.60) 0%,
-                rgba(20,12,4,0.72) 100%);
+                rgba(10,6,2,0.65) 0%,
+                rgba(20,12,4,0.78) 100%);
             z-index: 1;
         }
 
@@ -395,7 +409,7 @@ img, svg, video, canvas {
         }
 
         /* ============================================
-           STATUS BOX (INCHANGÉ)
+           STATUS BOX
         ============================================ */
         .status-box {
             display: flex;
@@ -458,9 +472,13 @@ img, svg, video, canvas {
         }
 
         .btn-toggle-ventes:active { transform: translateY(0); }
+        .btn-toggle-ventes:focus-visible {
+            outline: 2px solid var(--gold-500);
+            outline-offset: 2px;
+        }
 
         /* ============================================
-           TABS (INCHANGÉ)
+           TABS
         ============================================ */
         .tabs {
             display: flex;
@@ -511,8 +529,13 @@ img, svg, video, canvas {
             border-radius: 50%;
         }
 
+        .tab-btn:focus-visible {
+            outline: 2px solid var(--gold-500);
+            outline-offset: 2px;
+        }
+
         /* ============================================
-           SECTION CONTENT (INCHANGÉ)
+           SECTION CONTENT
         ============================================ */
         .section-content { display: none; }
         .section-content.active {
@@ -540,7 +563,7 @@ img, svg, video, canvas {
         }
 
         /* ============================================
-           SEARCH INPUT (INCHANGÉ)
+           SEARCH INPUT
         ============================================ */
         .search-container { margin-bottom: 18px; }
 
@@ -579,7 +602,7 @@ img, svg, video, canvas {
         .search-input::placeholder { color: var(--ink-400); }
 
         /* ============================================
-           BILLET CARD (INCHANGÉ)
+           BILLET CARD
         ============================================ */
         .billet-card {
             background: #ffffff;
@@ -673,7 +696,7 @@ img, svg, video, canvas {
         }
 
         /* ============================================
-           BADGES (INCHANGÉ)
+           BADGES
         ============================================ */
         .badge-statut {
             display: inline-flex;
@@ -717,7 +740,7 @@ img, svg, video, canvas {
         .badge-attente .badge-icon { background: var(--amber-500); }
 
         /* ============================================
-           ACTION BUTTONS (INCHANGÉ)
+           ACTION BUTTONS
         ============================================ */
         button { font-family: var(--font-display); cursor: pointer; }
 
@@ -743,6 +766,10 @@ img, svg, video, canvas {
         }
 
         .btn-action:active { transform: translateY(0); box-shadow: none; }
+        .btn-action:focus-visible {
+            outline: 2px solid var(--ink-900);
+            outline-offset: 2px;
+        }
 
         .btn-confirmer {
             background: linear-gradient(135deg, #10b981, #059669);
@@ -765,7 +792,7 @@ img, svg, video, canvas {
         }
 
         /* ============================================
-           EMPTY STATE (INCHANGÉ)
+           EMPTY STATE
         ============================================ */
         .empty-state {
             text-align: center;
@@ -790,7 +817,7 @@ img, svg, video, canvas {
         }
 
         /* ============================================
-           SCANNER SECTION (INCHANGÉ)
+           SCANNER SECTION
         ============================================ */
         .scanner-frame {
             position: relative;
@@ -861,9 +888,13 @@ img, svg, video, canvas {
             transform: translateY(-1px);
             box-shadow: var(--shadow-gold-md);
         }
+        .scanner-input-group .btn-scan-manual:focus-visible {
+            outline: 2px solid var(--ink-900);
+            outline-offset: 2px;
+        }
 
         /* ============================================
-           SCAN RESULT (INCHANGÉ)
+           SCAN RESULT
         ============================================ */
         #resultatScan {
             margin-top: 16px;
@@ -881,7 +912,7 @@ img, svg, video, canvas {
         }
 
         /* ============================================
-           DIVIDER (INCHANGÉ)
+           DIVIDER
         ============================================ */
         .divider {
             height: 1px;
@@ -890,7 +921,7 @@ img, svg, video, canvas {
         }
 
         /* ============================================
-           FOOTER (INCHANGÉ)
+           FOOTER
         ============================================ */
         .creator-footer {
             margin-top: 32px;
@@ -945,7 +976,7 @@ img, svg, video, canvas {
         .footer-text a:hover { color: var(--gold-800); text-decoration: underline; }
 
         /* ============================================
-           LOADING SPINNER (INCHANGÉ)
+           LOADING SPINNER
         ============================================ */
         .loading-dots {
             display: flex;
@@ -971,9 +1002,9 @@ img, svg, video, canvas {
         }
 
         /* ============================================
-           ===== NOUVEAU : ÉCRANS D'AUTHENTIFICATION =====
-           (utilise les mêmes tokens --gold-*, --ink-*, --radius-*
-            déjà définis plus haut, pour rester visuellement cohérent)
+           ÉCRANS D'AUTHENTIFICATION
+           (première impression de l'organisateur — c'est ici que
+            se concentrent les touches "wow" les plus visibles)
         ============================================ */
         .auth-wrapper {
             max-width: 440px;
@@ -1006,6 +1037,7 @@ img, svg, video, canvas {
             .auth-card-inner { padding: 24px 18px 20px; }
         }
 
+        /* ===== NOUVEAU : anneau de pulsation doré autour de l'icône, effet "premium" ===== */
         .auth-icon-badge {
             width: 52px;
             height: 52px;
@@ -1017,6 +1049,15 @@ img, svg, video, canvas {
             justify-content: center;
             font-size: 22px;
             margin: 0 auto 16px;
+            position: relative;
+        }
+        .auth-icon-badge::after {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(245,158,11,0.35);
+            animation: pulse-ring 2.2s ease-out infinite;
         }
 
        .auth-event-name {
@@ -1101,9 +1142,16 @@ img, svg, video, canvas {
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 8px;
+    transition: color 0.2s, background 0.2s;
 }
 .eye-toggle:hover { 
     color: #d97706; 
+    background: rgba(217,119,6,0.08);
+}
+.eye-toggle:focus-visible {
+    outline: 2px solid var(--gold-500);
+    outline-offset: 2px;
 }
 .eye-toggle svg { 
     width: 18px; 
@@ -1111,6 +1159,7 @@ img, svg, video, canvas {
     display: block; 
 }
 
+        /* ===== NOUVEAU : balayage lumineux au survol, effet "premium" GPU-only ===== */
         .btn-auth-primary {
             width: 100%;
             background: var(--grad-gold);
@@ -1126,14 +1175,34 @@ img, svg, video, canvas {
             box-shadow: var(--shadow-gold-sm);
             transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
             margin-top: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-auth-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 40%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+            transform: translateX(-120%) skewX(-15deg);
+            pointer-events: none;
         }
         .btn-auth-primary:hover:not(:disabled) {
             transform: translateY(-1px);
             box-shadow: var(--shadow-gold-md);
         }
+        .btn-auth-primary:hover:not(:disabled)::before {
+            animation: shine-sweep 0.9s ease forwards;
+        }
         .btn-auth-primary:disabled {
             opacity: 0.6;
             cursor: not-allowed;
+        }
+        .btn-auth-primary:focus-visible {
+            outline: 2px solid var(--ink-900);
+            outline-offset: 3px;
         }
 
         .auth-link-row {
@@ -1148,6 +1217,10 @@ img, svg, video, canvas {
             cursor: pointer;
         }
         .auth-link-row a:hover { color: var(--gold-800); text-decoration: underline; }
+        .auth-link-row a:focus-visible {
+            outline: 2px solid var(--gold-500);
+            outline-offset: 2px;
+        }
 
         .auth-error-msg {
             display: none;
@@ -1202,7 +1275,22 @@ img, svg, video, canvas {
         .auth-screen.active { display: block; animation: fadeIn 0.3s ease both; }
 
         /* ============================================
-           RESPONSIVE (INCHANGÉ + petit ajustement navbar-right)
+           ACCESSIBILITÉ / PERFORMANCE
+           Désactive proprement les animations pour les
+           utilisateurs qui le demandent (OS) ou les appareils
+           bas de gamme — standard des plateformes pro
+        ============================================ */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        /* ============================================
+           RESPONSIVE
         ============================================ */
         @media (max-width: 480px) {
             body { padding: 16px 12px 70px; }
@@ -1222,7 +1310,7 @@ img, svg, video, canvas {
 
     <div class="page-wrapper">
 
-        <!-- ==================== NAVBAR (badge inchangé + bouton déconnexion NOUVEAU) ==================== -->
+        <!-- ==================== NAVBAR ==================== -->
         <nav class="top-navbar">
             <div class="logo-container">
                 <img src="logo.png" alt="GoldTix Logo" class="site-logo">
@@ -1235,14 +1323,13 @@ img, svg, video, canvas {
                     <span class="badge-dot"></span>
                     Espace Organisateur
                 </span>
-                <!-- NOUVEAU : bouton déconnexion, caché tant que non authentifié -->
                 <button id="btnDeconnexion" class="btn-logout" onclick="deconnexion()">
                     ⬅️Déconnexion
                 </button>
             </div>
         </nav>
 
-        <!-- ==================== NOUVEAU : BLOC AUTHENTIFICATION ==================== -->
+        <!-- ==================== BLOC AUTHENTIFICATION ==================== -->
         <div id="blocAuthentification" class="auth-wrapper">
 
             <!-- Écran : chargement initial (vérification de session) -->
@@ -1448,10 +1535,10 @@ img, svg, video, canvas {
 
         </div><!-- /#blocAuthentification -->
 
-        <!-- ==================== ESPACE PROTÉGÉ (contenu original, caché tant que non authentifié) ==================== -->
+        <!-- ==================== ESPACE PROTÉGÉ ==================== -->
         <div id="espaceProtege" style="display:none;">
 
-            <!-- ==================== MAIN CARD (INCHANGÉ) ==================== -->
+            <!-- ==================== MAIN CARD ==================== -->
             <div class="main-card">
                 <div class="main-card-inner">
 
@@ -1552,7 +1639,7 @@ img, svg, video, canvas {
 
         </div><!-- /#espaceProtege -->
 
-        <!-- ==================== FOOTER (INCHANGÉ) ==================== -->
+        <!-- ==================== FOOTER ==================== -->
         <footer class="creator-footer">
             <div class="footer-brand">
                 <div class="footer-brand-line"></div>
@@ -1575,14 +1662,14 @@ img, svg, video, canvas {
 
     </div><!-- /.page-wrapper -->
 
-    <!-- ==================== SCRIPTS (INCHANGÉ) ==================== -->
+    <!-- ==================== SCRIPTS (STRICTEMENT INCHANGÉ) ==================== -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
 
     <script>
         /* =============================================
-           ÉTAT GLOBAL (INCHANGÉ + variables NOUVELLES pour l'auth)
+           ÉTAT GLOBAL
         ============================================= */
         const urlParams = new URLSearchParams(window.location.search);
         let eventId = urlParams.get("event");
@@ -1592,26 +1679,16 @@ img, svg, video, canvas {
         let derniersBilletsScannes = {};
         let nomEvenementCourant = "";
 
-        // ===== NOUVEAU : état de l'authentification =====
         const AUTH_STORAGE_KEY = "goldtix_session_" + eventId;
-        let codeRecuperationValideTemporaire = null; // conservé en mémoire JS uniquement, jamais stocké
-        let sessionToken = null; // NOUVEAU : token en mémoire
+        let codeRecuperationValideTemporaire = null;
+        let sessionToken = null;
 
-        // ===== OPTIMISATION : verrou anti-chevauchement pour le rechargement des demandes =====
         let chargementDemandesEnCours = false;
-
-        // ===== OPTIMISATION : debounce pour la recherche de participants =====
         let debounceRecherche = null;
 
-        /* =============================================
-           NOUVEAU : INITIALISATION AUTHENTIFICATION
-           (remplace l'appel direct à chargerEspaceOrganisateur()
-            au chargement de la page)
-        ============================================= */
         document.addEventListener("DOMContentLoaded", () => {
             initialiserAuthentification();
 
-            // Délégation de clics (INCHANGÉ - boutons dans les cartes dynamiques)
             document.addEventListener("click", function(event) {
                 let targetBtn = event.target.closest(".btn-changer-statut");
                 if (targetBtn) {
@@ -1629,7 +1706,6 @@ img, svg, video, canvas {
             });
         });
 
-// Vérifie si l'événement existe encore dans la base
 async function verifierExistenceEvenement(idEvenement) {
     try {
         const { data, error } = await window.supabaseClient
@@ -1660,7 +1736,6 @@ function afficherNomEvenementAuth() {
     if (elLogin) elLogin.textContent = texte;
 }
 
-// Affiche un écran propre "événement introuvable" et bloque tout le reste
 function afficherEcranEvenementIntrouvable() {
     document.querySelectorAll(".auth-screen").forEach(el => el.classList.remove("active"));
     document.getElementById("authEcranChargement").innerHTML = `
@@ -1682,11 +1757,10 @@ function afficherEcranEvenementIntrouvable() {
                     '<div class="auth-card"><div class="auth-card-inner"><p class="auth-subtitle">Aucun événement spécifié. Ajoutez ?event=ID dans l\'URL.</p></div></div>';
                 return;
             }
-             // ===== NOUVEAU : vérification que l'événement existe toujours =====
-              const evenementExiste = await verifierExistenceEvenement(eventId);
+             const evenementExiste = await verifierExistenceEvenement(eventId);
                  if (!evenementExiste) {
                   afficherEcranEvenementIntrouvable();
-                 return; // on arrête tout ici, rien d'autre ne s'exécute
+                 return;
             }
             afficherNomEvenementAuth();
 
@@ -1708,11 +1782,9 @@ function afficherEcranEvenementIntrouvable() {
                 } catch (err) {
                     console.error("Erreur vérification session :", err);
                 }
-                // Token invalide ou expiré : on nettoie et on retombe sur l'écran adapté
                 localStorage.removeItem(AUTH_STORAGE_KEY);
             }
 
-            // Pas de session valide -> déterminer premier écran à afficher
             try {
                 const { data: aMotDePasse, error } = await window.supabaseClient
                     .rpc("organisateur_a_mot_de_passe", { p_evenement_id: eventId });
@@ -1741,7 +1813,6 @@ function afficherEcranEvenementIntrouvable() {
             document.getElementById("espaceProtege").style.display = "block";
             document.getElementById("btnDeconnexion").style.display = "inline-flex";
 
-            // Comportement original, INCHANGÉ, désormais déclenché après authentification
             chargerEspaceOrganisateur();
             setInterval(() => { chargerToutesLesDemandes(); }, 120000);
         }
@@ -1755,7 +1826,6 @@ function afficherEcranEvenementIntrouvable() {
             document.getElementById(idErreur).style.display = "none";
         }
 
-       // Icônes SVG pour l'affichage/masquage du mot de passe
 const ICONE_OEIL_OUVERT = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
 const ICONE_OEIL_BARRE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a21.6 21.6 0 015.06-6.06M9.9 4.24A10.4 10.4 0 0112 4c7 0 11 8 11 8a21.6 21.6 0 01-3.22 4.44M14.12 14.12a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
 
@@ -1773,7 +1843,6 @@ function toggleVisibilitePassword(inputId) {
     }
 }
 
-        /* ===== NOUVEAU : Écran 1 - Création du mot de passe ===== */
         async function soumettreCreationMotDePasse() {
             masquerErreurAuth("authSetupError");
             const pwd = document.getElementById("setupPassword").value;
@@ -1813,14 +1882,11 @@ function toggleVisibilitePassword(inputId) {
         }
 
         function confirmerCodeNote() {
-            // Conforme au parcours demandé : pas de connexion automatique,
-            // retour obligatoire par l'écran de connexion.
             document.getElementById("setupPassword").value = "";
             document.getElementById("setupPasswordConfirm").value = "";
             afficherEcranAuth("authEcranLogin");
         }
 
-        /* ===== NOUVEAU : Écran 2 - Connexion ===== */
         async function soumettreConnexion() {
             masquerErreurAuth("authLoginError");
             const pwd = document.getElementById("loginPassword").value;
@@ -1856,7 +1922,6 @@ function toggleVisibilitePassword(inputId) {
             }
         }
 
-        /* ===== NOUVEAU : Écran 3 - Code de récupération ===== */
         async function soumettreCodeRecuperation() {
             masquerErreurAuth("authRecuperationError");
             const code = document.getElementById("recuperationCode").value.trim();
@@ -1895,7 +1960,6 @@ function toggleVisibilitePassword(inputId) {
             }
         }
 
-        /* ===== NOUVEAU : Écran 4 - Nouveau mot de passe ===== */
         async function soumettreNouveauMotDePasse() {
             masquerErreurAuth("authNouveauMdpError");
             const pwd = document.getElementById("nouveauMdp").value;
@@ -1943,7 +2007,6 @@ function toggleVisibilitePassword(inputId) {
             }
         }
 
-        /* ===== NOUVEAU : Déconnexion ===== */
         async function deconnexion() {
             const token = localStorage.getItem(AUTH_STORAGE_KEY);
 
@@ -1961,7 +2024,7 @@ function toggleVisibilitePassword(inputId) {
 
             localStorage.removeItem(AUTH_STORAGE_KEY);
             sessionToken = null;
-            arreterScanner(); // sécurité : coupe la caméra si l'onglet scanner était actif
+            arreterScanner();
 
             document.getElementById("espaceProtege").style.display = "none";
             document.getElementById("btnDeconnexion").style.display = "none";
@@ -1970,15 +2033,6 @@ function toggleVisibilitePassword(inputId) {
             afficherEcranAuth("authEcranLogin");
         }
 
-        /* =============================================
-           TOUT CE QUI SUIT EST INCHANGÉ PAR RAPPORT
-           AU FICHIER ORIGINAL (logique billets / scanner / ventes)
-           SAUF LES 4 OPTIMISATIONS DE PERFORMANCE ANNOTÉES
-        ============================================= */
-
-        /* =============================================
-           CHARGEMENT ÉVÉNEMENT
-        ============================================= */
         async function chargerEspaceOrganisateur() {
             if (!eventId) {
                 document.getElementById("titreEvenementOrg").textContent = "Erreur : aucun evenement specifie.";
@@ -2004,7 +2058,6 @@ if (error || !ev) {
                 document.getElementById("infosEvenementOrg").innerHTML =
                     `Date : ${ev.date} &nbsp;&middot;&nbsp; Heure : ${ev.heure} &nbsp;&middot;&nbsp; Lieu : ${ev.lieu}`;
 
-                // Image de fond de la bannière
                 let headerContainer = document.getElementById("headerTopContainer");
                 let eventImage = ev.affiche_url || ev.image_url || ev.affiche || ev.photo;
 
@@ -2027,17 +2080,8 @@ if (error || !ev) {
             }
         }
 
-        /* =============================================
-           CHARGEMENT DEMANDES / BILLETS
-           ===== OPTIMISATION 1 : accumulation en tableau au lieu de
-                 innerHTML += en boucle (évite le re-parsing quadratique
-                 du DOM quand il y a beaucoup de billets)
-           ===== OPTIMISATION 3 : verrou anti-chevauchement pour éviter
-                 que deux appels (ex: auto-refresh + action manuelle)
-                 ne s'exécutent en parallèle et ne se marchent dessus
-        ============================================= */
         async function chargerToutesLesDemandes() {
-            if (chargementDemandesEnCours) return; // OPTIMISATION 3
+            if (chargementDemandesEnCours) return;
             chargementDemandesEnCours = true;
 
             let containerPaiements = document.getElementById("listePaiements");
@@ -2055,7 +2099,7 @@ if (error || !billets) {
                 }
 
                 listeParticipantsValidesGlobal = [];
-                let morceauxHTML = []; // OPTIMISATION 1 : accumulation en tableau
+                let morceauxHTML = [];
                 let maintenant = new Date().getTime();
 
                 billets.forEach(function(b) {
@@ -2086,7 +2130,6 @@ if (error || !billets) {
                     }
                 });
 
-                // OPTIMISATION 1 : une seule écriture DOM, quel que soit le nombre de billets
                 containerPaiements.innerHTML = morceauxHTML.length > 0
                     ? morceauxHTML.join("")
                     : renderEmptyState("Aucune demande en attente de validation.");
@@ -2097,13 +2140,10 @@ if (error || !billets) {
             } catch (err) {
                 console.error("Erreur chargement demandes :", err);
             } finally {
-                chargementDemandesEnCours = false; // OPTIMISATION 3
+                chargementDemandesEnCours = false;
             }
         }
 
-        /* =============================================
-           RENDERERS HTML
-        ============================================= */
         function renderBadge(type, texte) {
             return `<span class="badge-statut badge-${type}">
                         <span class="badge-icon"></span>
@@ -2211,11 +2251,6 @@ if (error || !billets) {
             containerValidees.innerHTML = html;
         }
 
-        /* =============================================
-           FILTRAGE PARTICIPANTS
-           ===== OPTIMISATION 4 : debounce (150ms) pour éviter de
-                 refiltrer/redessiner toute la liste à chaque frappe
-        ============================================= */
         function filtrerParticipants() {
             clearTimeout(debounceRecherche);
             debounceRecherche = setTimeout(() => {
@@ -2228,9 +2263,6 @@ if (error || !billets) {
             }, 150);
         }
 
-        /* =============================================
-           COMPTEURS
-        ============================================= */
         function mettreAJourCompteurs(nombre) {
             let btnTabValidees = document.getElementById("btnTabValidees");
             let titreValidees = document.getElementById("titreSectionValidees");
@@ -2238,12 +2270,6 @@ if (error || !billets) {
             if (titreValidees) titreValidees.textContent = `Participants confirmes (${nombre})`;
         }
 
-        /* =============================================
-           CHANGER STATUT BILLET
-           ===== OPTIMISATION 2 : on récupère UN SEUL billet (celui
-                 concerné) au lieu de recharger toute la liste des
-                 billets juste pour retrouver son email
-        ============================================= */
         async function changerStatut(billetId, nouveauStatut) {
             const { error } = await window.supabaseClient
     .rpc("organisateur_changer_statut", {
@@ -2258,10 +2284,8 @@ if (error) {
     return;
 }
 
-            // Envoi email si confirmation
             if (nouveauStatut === 'confirme') {
     try {
-        // OPTIMISATION 2 : un seul billet ciblé au lieu de tous les billets
         const { data: unBillet, error: errBillet } = await window.supabaseClient
             .from("billets")
             .select("email, nom_participant")
@@ -2285,9 +2309,6 @@ if (error) {
            await chargerToutesLesDemandes();
         }
 
-        /* =============================================
-           RETIRER PARTICIPANT
-        ============================================= */
         async function retirerParticipant(billetId) {
             if (!confirm("Voulez-vous vraiment supprimer definitivement ce participant et son billet ?")) return;
 
@@ -2306,11 +2327,7 @@ if (error) {
             await chargerToutesLesDemandes();
         }
 
-        /* =============================================
-           VÉRIFICATION BILLET (SCANNER)
-        ============================================= */
-        // Variable pour empêcher les scans en double trop rapides
-let isScanLocked = false; // Verrou pour éviter que la caméra ne mitraille le même QR code
+let isScanLocked = false;
 
 async function traiterVerificationBillet(codeScanne) {
     let resultatDiv = document.getElementById("resultatScan");
@@ -2364,7 +2381,6 @@ async function traiterVerificationBillet(codeScanne) {
             return;
         }
 
-        // res.resultat === "succes"
         derniersBilletsScannes[res.billet_id] = maintenant;
         setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue Mr/Mme ${res.nom_participant || 'N/A'} !`);
 
@@ -2396,9 +2412,6 @@ async function traiterVerificationBillet(codeScanne) {
             document.getElementById("codeBilletInput").value = "";
         }
 
-        /* =============================================
-           NAVIGATION ONGLETS
-        ============================================= */
         function changerOnglet(nomOnglet, buttonElement) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
@@ -2425,12 +2438,11 @@ function arreterScanner() {
 
 function demarrerScanner() {
     if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
-    if (html5QrCode.isScanning) return; // déjà actif, ne pas relancer
+    if (html5QrCode.isScanning) return;
 
     let resultatDiv = document.getElementById("resultatScan");
     setResultat(resultatDiv, "warning", "Initialisation de la caméra...");
 
-    // Zone de scan adaptée à la largeur réelle du conteneur (évite l'erreur sur petit écran)
     function qrboxFunction(viewfinderWidth, viewfinderHeight) {
         let minEdge = Math.min(viewfinderWidth, viewfinderHeight);
         let size = Math.floor(minEdge * 0.7);
@@ -2450,9 +2462,6 @@ function demarrerScanner() {
     });
 }
 
-        /* =============================================
-           TOGGLE VENTES
-        ============================================= */
         async function toggleVentes() {
             statutVentesFermees = !statutVentesFermees;
 
