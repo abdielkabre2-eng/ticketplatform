@@ -2061,9 +2061,9 @@ if (error || !billets) {
                 billets.forEach(function(b) {
                     let statutHtml = "";
                     if (b.statut === "confirme") {
-                        statutHtml = renderBadge("confirme", "Confirme / Paye");
+                        statutHtml = renderBadge("confirme", "Confirmé / Payé");
                     } else if (b.statut === "refuse") {
-                        statutHtml = renderBadge("refuse", "Refuse / Annule");
+                        statutHtml = renderBadge("refuse", "Refusé / Non reçu");
                     } else {
                         statutHtml = renderBadge("attente", "En attente");
                     }
@@ -2077,7 +2077,7 @@ if (error || !billets) {
 
                             if (tempsEcoule < 60000) {
                                 let secondesRestantes = Math.ceil((60000 - tempsEcoule) / 1000);
-                                let statutTemporaire = renderBadge("confirme", `Valide dans ${secondesRestantes}s`);
+                                let statutTemporaire = renderBadge("confirme", `Disparait dans ${secondesRestantes}s`);
                                 morceauxHTML.push(HTMLCartePaiement(b, statutTemporaire));
                             }
                         }

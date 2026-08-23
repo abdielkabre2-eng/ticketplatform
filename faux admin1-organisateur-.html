@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Espace Organisateur - GoldTix</title>
 
     <!-- EmailJS -->
@@ -82,18 +82,29 @@
         ============================================ */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        html { scroll-behavior: smooth; }
+        html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+}
 
-        body {
-            font-family: var(--font-body);
-            background: var(--grad-page);
-            background-attachment: fixed;
-            color: var(--ink-900);
-            min-height: 100vh;
-            padding: 24px 16px 80px;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-        }
+       body {
+    font-family: var(--font-body);
+    background: var(--grad-page);
+    background-attachment: fixed;
+    color: var(--ink-900);
+    min-height: 100vh;
+    width: 100%;
+    max-width: 100%;
+    padding: 24px 16px 80px;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+img, svg, video, canvas {
+    max-width: 100%;
+}
 
         body::before {
             content: '';
@@ -1008,6 +1019,16 @@
             margin: 0 auto 16px;
         }
 
+       .auth-event-name {
+           font-family: var(--font-display);
+           font-size: 15px;
+           font-weight: 800;
+           text-align: center;
+           color: var(--gold-700);
+           letter-spacing: -0.2px;
+           margin-bottom: 4px;
+           line-height: 1.3;
+        }
         .auth-title {
             font-family: var(--font-display);
             font-size: 19px;
@@ -1068,18 +1089,27 @@
             box-shadow: 0 0 0 3px rgba(245,158,11,0.12);
         }
 
-        .eye-toggle {
-            position: absolute;
-            right: 6px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            padding: 8px;
-            line-height: 1;
-            color: var(--ink-400);
-        }
-        .eye-toggle:hover { color: var(--gold-600); }
+       .eye-toggle {
+    position: absolute;
+    right: 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    line-height: 1;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.eye-toggle:hover { 
+    color: #d97706; 
+}
+.eye-toggle svg { 
+    width: 18px; 
+    height: 18px; 
+    display: block; 
+}
 
         .btn-auth-primary {
             width: 100%;
@@ -1229,7 +1259,8 @@
                 <div class="auth-card">
                     <div class="auth-card-inner">
                         <div class="auth-icon-badge">🔐</div>
-                        <h2 class="auth-title">Bienvenue dans votre espace organisateur 👋</h2>
+                        <p class="auth-event-name" id="nomEvenementSetup">Chargement...</p>
+                        <h2 class="auth-title">Bienvenue dans votre espace organisateur </h2>
                         <p class="auth-subtitle">Vous êtes sur le point de sécuriser votre espace. Créez votre mot de passe pour continuer.</p>
 
                         <div id="authSetupError" class="auth-error-msg"></div>
@@ -1238,15 +1269,25 @@
                             <label for="setupPassword">Créez votre mot de passe</label>
                             <div class="password-field-wrapper">
                                 <input type="password" id="setupPassword" placeholder="Au moins 6 caractères">
-                                <button type="button" class="eye-toggle" onclick="toggleVisibilitePassword('setupPassword')">👁️</button>
+                                <button type="button" class="eye-toggle" onclick="toggleVisibilitePassword('setupPassword')" aria-label="Afficher le mot de passe">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a21.6 21.6 0 015.06-6.06M9.9 4.24A10.4 10.4 0 0112 4c7 0 11 8 11 8a21.6 21.6 0 01-3.22 4.44M14.12 14.12a3 3 0 11-4.24-4.24"/>
+        <line x1="1" y1="1" x2="23" y2="23"/>
+    </svg>
+</button>
                             </div>
                         </div>
 
                         <div class="auth-form-group">
                             <label for="setupPasswordConfirm">Confirmez votre mot de passe</label>
                             <div class="password-field-wrapper">
-                                <input type="password" id="setupPasswordConfirm" placeholder="Retapez le mot de passe">
-                                <button type="button" class="eye-toggle" onclick="toggleVisibilitePassword('setupPasswordConfirm')">👁️</button>
+                                <input type="password" id="setupPasswordConfirm" placeholder="Saisir à nouveau le mot de passe">
+                               <button type="button" class="eye-toggle" onclick="toggleVisibilitePassword('setupPasswordConfirm')" aria-label="Afficher le mot de passe">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a21.6 21.6 0 015.06-6.06M9.9 4.24A10.4 10.4 0 0112 4c7 0 11 8 11 8a21.6 21.6 0 01-3.22 4.44M14.12 14.12a3 3 0 11-4.24-4.24"/>
+        <line x1="1" y1="1" x2="23" y2="23"/>
+    </svg>
+</button>
                             </div>
                         </div>
 
@@ -1270,7 +1311,7 @@
                             <div class="code-value" id="codeRecuperationAffiche">GTX-0000-0000</div>
                         </div>
 
-                        <p class="recovery-code-warning">Notez-le précieusement (capture d'écran, gestionnaire de mots de passe...). GoldTix ne pourra pas vous le redonner.</p>
+                        <p class="recovery-code-warning">Notez-le précieusement (capture d'écran, bloc-notes...). GoldTix ne pourra pas vous le redonner.</p>
 
                         <button type="button" class="btn-auth-primary" onclick="confirmerCodeNote()">
                             J'ai noté mon code, continuer
@@ -1284,6 +1325,7 @@
                 <div class="auth-card">
                     <div class="auth-card-inner">
                         <div class="auth-icon-badge">🔐</div>
+                        <p class="auth-event-name" id="nomEvenementLogin">Chargement...</p>
                         <h2 class="auth-title">Connexion à votre espace organisateur</h2>
                         <p class="auth-subtitle">Entrez le mot de passe de cet espace pour accéder à la gestion de l'événement.</p>
 
@@ -1293,7 +1335,12 @@
                             <label for="loginPassword">Mot de passe</label>
                             <div class="password-field-wrapper">
                                 <input type="password" id="loginPassword" placeholder="Votre mot de passe">
-                                <button type="button" class="eye-toggle" onclick="toggleVisibilitePassword('loginPassword')">👁️</button>
+                              <button type="button" class="eye-toggle" onclick="toggleVisibilitePassword('loginPassword')" aria-label="Afficher le mot de passe">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a21.6 21.6 0 015.06-6.06M9.9 4.24A10.4 10.4 0 0112 4c7 0 11 8 11 8a21.6 21.6 0 01-3.22 4.44M14.12 14.12a3 3 0 11-4.24-4.24"/>
+        <line x1="1" y1="1" x2="23" y2="23"/>
+    </svg>
+</button>
                             </div>
                         </div>
 
@@ -1314,7 +1361,7 @@
                     <div class="auth-card-inner">
                         <div class="auth-icon-badge">🔑</div>
                         <h2 class="auth-title">Réinitialiser votre mot de passe</h2>
-                        <p class="auth-subtitle">Entrez le code de récupération qui vous a été donné à la création de cet espace.</p>
+                        <p class="auth-subtitle">Entrez le code de récupération qui vous a été donné à la création de cet espace. Si vouz l'avez perdu, contactez GoldTix au numéro qui se trouve tout en bas de la page. </p>
 
                         <div id="authRecuperationError" class="auth-error-msg"></div>
 
@@ -1348,7 +1395,12 @@
                             <label for="nouveauMdp">Nouveau mot de passe</label>
                             <div class="password-field-wrapper">
                                 <input type="password" id="nouveauMdp" placeholder="Au moins 6 caractères">
-                                <button type="button" class="eye-toggle" onclick="toggleVisibilitePassword('nouveauMdp')">👁️</button>
+                              <button type="button" class="eye-toggle" onclick="toggleVisibilitePassword('nouveauMdp')" aria-label="Afficher le mot de passe">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a21.6 21.6 0 015.06-6.06M9.9 4.24A10.4 10.4 0 0112 4c7 0 11 8 11 8a21.6 21.6 0 01-3.22 4.44M14.12 14.12a3 3 0 11-4.24-4.24"/>
+        <line x1="1" y1="1" x2="23" y2="23"/>
+    </svg>
+</button>
                             </div>
                         </div>
 
@@ -1356,7 +1408,12 @@
                             <label for="nouveauMdpConfirm">Confirmez le mot de passe</label>
                             <div class="password-field-wrapper">
                                 <input type="password" id="nouveauMdpConfirm" placeholder="Retapez le mot de passe">
-                                <button type="button" class="eye-toggle" onclick="toggleVisibilitePassword('nouveauMdpConfirm')">👁️</button>
+                               <button type="button" class="eye-toggle" onclick="toggleVisibilitePassword('nouveauMdpConfirm')" aria-label="Afficher le mot de passe">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a21.6 21.6 0 015.06-6.06M9.9 4.24A10.4 10.4 0 0112 4c7 0 11 8 11 8a21.6 21.6 0 01-3.22 4.44M14.12 14.12a3 3 0 11-4.24-4.24"/>
+        <line x1="1" y1="1" x2="23" y2="23"/>
+    </svg>
+</button>
                             </div>
                         </div>
 
@@ -1531,10 +1588,12 @@
         let listeParticipantsValidesGlobal = [];
         let statutVentesFermees = false;
         let derniersBilletsScannes = {};
+        let nomEvenementCourant = "";
 
         // ===== NOUVEAU : état de l'authentification =====
         const AUTH_STORAGE_KEY = "goldtix_session_" + eventId;
         let codeRecuperationValideTemporaire = null; // conservé en mémoire JS uniquement, jamais stocké
+        let sessionToken = null; // NOUVEAU : token en mémoire
 
         /* =============================================
            NOUVEAU : INITIALISATION AUTHENTIFICATION
@@ -1562,12 +1621,66 @@
             });
         });
 
+// Vérifie si l'événement existe encore dans la base
+async function verifierExistenceEvenement(idEvenement) {
+    try {
+        const { data, error } = await window.supabaseClient
+            .from("evenements")
+            .select("id, titre")
+            .eq("id", idEvenement)
+            .maybeSingle();
+
+        if (error) {
+            console.error("Erreur vérification événement :", error);
+            return false;
+        }
+        if (data) {
+            nomEvenementCourant = data.titre || "";
+        }
+
+        return data !== null;
+    } catch (err) {
+        console.error("Erreur réseau vérification événement :", err);
+        return false;
+    }
+}
+function afficherNomEvenementAuth() {
+    const elSetup = document.getElementById("nomEvenementSetup");
+    const elLogin = document.getElementById("nomEvenementLogin");
+    const texte = nomEvenementCourant || "Événement";
+    if (elSetup) elSetup.textContent = texte;
+    if (elLogin) elLogin.textContent = texte;
+}
+
+// Affiche un écran propre "événement introuvable" et bloque tout le reste
+function afficherEcranEvenementIntrouvable() {
+    document.querySelectorAll(".auth-screen").forEach(el => el.classList.remove("active"));
+    document.getElementById("authEcranChargement").innerHTML = `
+        <div class="auth-card">
+            <div class="auth-card-inner">
+                <div class="auth-icon-badge">⚠️</div>
+                <h2 class="auth-title">Événement introuvable</h2>
+                <p class="auth-subtitle">
+                    Cet événement a été supprimé ou n'existe plus.<br>
+                    Le lien que vous avez utilisé n'est plus valide.
+                </p>
+            </div>
+        </div>`;
+    document.getElementById("authEcranChargement").classList.add("active");
+}
         async function initialiserAuthentification() {
             if (!eventId) {
                 document.getElementById("authEcranChargement").innerHTML =
-                    "<div class=\"auth-card\"><div class=\"auth-card-inner\"><p class=\"auth-subtitle\">Aucun événement spécifié. Ajoutez ?event=ID dans l'URL.</p></div></div>";
+                    '<div class="auth-card"><div class="auth-card-inner"><p class="auth-subtitle">Aucun événement spécifié. Ajoutez ?event=ID dans l\'URL.</p></div></div>';
                 return;
             }
+             // ===== NOUVEAU : vérification que l'événement existe toujours =====
+              const evenementExiste = await verifierExistenceEvenement(eventId);
+                 if (!evenementExiste) {
+                  afficherEcranEvenementIntrouvable();
+                 return; // on arrête tout ici, rien d'autre ne s'exécute
+            }
+            afficherNomEvenementAuth();
 
             const tokenLocal = localStorage.getItem(AUTH_STORAGE_KEY);
 
@@ -1580,6 +1693,7 @@
                         });
 
                     if (!error && sessionValide === true) {
+                        sessionToken = tokenLocal;
                         entrerDansEspaceProtege();
                         return;
                     }
@@ -1633,17 +1747,23 @@
             document.getElementById(idErreur).style.display = "none";
         }
 
-        function toggleVisibilitePassword(inputId) {
-            const input = document.getElementById(inputId);
-            const btn = input.parentElement.querySelector(".eye-toggle");
-            if (input.type === "password") {
-                input.type = "text";
-                btn.textContent = "🙈";
-            } else {
-                input.type = "password";
-                btn.textContent = "👁️";
-            }
-        }
+       // Icônes SVG pour l'affichage/masquage du mot de passe
+const ICONE_OEIL_OUVERT = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+const ICONE_OEIL_BARRE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a21.6 21.6 0 015.06-6.06M9.9 4.24A10.4 10.4 0 0112 4c7 0 11 8 11 8a21.6 21.6 0 01-3.22 4.44M14.12 14.12a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+
+function toggleVisibilitePassword(inputId) {
+    const input = document.getElementById(inputId);
+    const btn = input.parentElement.querySelector(".eye-toggle");
+    if (input.type === "password") {
+        input.type = "text";
+        btn.innerHTML = ICONE_OEIL_OUVERT;
+        btn.setAttribute("aria-label", "Masquer le mot de passe");
+    } else {
+        input.type = "password";
+        btn.innerHTML = ICONE_OEIL_BARRE;
+        btn.setAttribute("aria-label", "Afficher le mot de passe");
+    }
+}
 
         /* ===== NOUVEAU : Écran 1 - Création du mot de passe ===== */
         async function soumettreCreationMotDePasse() {
@@ -1716,11 +1836,12 @@
                 if (error) throw error;
 
                 localStorage.setItem(AUTH_STORAGE_KEY, token);
+                sessionToken = token;
                 document.getElementById("loginPassword").value = "";
                 entrerDansEspaceProtege();
 
             } catch (err) {
-                afficherErreurAuth("authLoginError", "❌ " + (err.message || "Mot de passe incorrect. Veuillez réessayer."));
+                afficherErreurAuth("authLoginError", "❌ Mot de passe incorrect. Veuillez réessayer.");
             } finally {
                 btn.disabled = false;
                 btn.textContent = "Se connecter";
@@ -1755,7 +1876,7 @@
                     document.getElementById("recuperationCode").value = "";
                     afficherEcranAuth("authEcranNouveauMdp");
                 } else {
-                    afficherErreurAuth("authRecuperationError", "Code de récupération incorrect.");
+                    afficherErreurAuth("authRecuperationError", "Code de récupération incorrect. Contactez GoldTix si le problème persiste.");
                 }
 
             } catch (err) {
@@ -1831,6 +1952,7 @@
             }
 
             localStorage.removeItem(AUTH_STORAGE_KEY);
+            sessionToken = null;
             arreterScanner(); // sécurité : coupe la caméra si l'onglet scanner était actif
 
             document.getElementById("espaceProtege").style.display = "none";
@@ -1856,13 +1978,15 @@
             }
 
             try {
-                const { data: ev, error } = await window.supabaseClient
-                    .from("evenements")
-                    .select("*")
-                    .eq("id", eventId)
-                    .single();
+                const { data: evList, error } = await window.supabaseClient
+    .rpc("organisateur_charger_evenement", {
+        p_evenement_id: eventId,
+        p_token: sessionToken
+    });
 
-                if (error || !ev) {
+const ev = (evList && evList.length > 0) ? evList[0] : null;
+
+if (error || !ev) {
                     document.getElementById("infosEvenementOrg").textContent = "Evenement introuvable.";
                     return;
                 }
@@ -1902,12 +2026,12 @@
 
             try {
                 const { data: billets, error } = await window.supabaseClient
-                    .from("billets")
-                    .select("*")
-                    .eq("evenement_id", eventId)
-                    .order("id", { ascending: false });
+    .rpc("organisateur_charger_billets", {
+        p_evenement_id: eventId,
+        p_token: sessionToken
+    });
 
-                if (error || !billets) {
+if (error || !billets) {
                     containerPaiements.innerHTML = renderEmptyState("Erreur lors du chargement des donnees.");
                     return;
                 }
@@ -2049,6 +2173,10 @@
                                 <span class="billet-info-value">${b.telephone || 'N/A'}</span>
                             </div>
                             <div class="billet-info-row">
+                               <span class="billet-info-label">Catégorie</span>
+                               <span class="billet-info-value">${b.type_billet || 'Non spécifiée'}</span>
+                             </div>
+                            <div class="billet-info-row">
                                 <span class="billet-info-label">ID-Billet</span>
                                 <span class="billet-info-value">#${b.id}</span>
                             </div>
@@ -2091,26 +2219,32 @@
            CHANGER STATUT BILLET
         ============================================= */
         async function changerStatut(billetId, nouveauStatut) {
-            let updateData = {
-                statut: nouveauStatut,
-                updated_at: new Date().toISOString()
-            };
+            const { error } = await window.supabaseClient
+    .rpc("organisateur_changer_statut", {
+        p_evenement_id: eventId,
+        p_token: sessionToken,
+        p_billet_id: billetId,
+        p_nouveau_statut: nouveauStatut
+    });
 
-            if (nouveauStatut === 'confirme') {
-                updateData.qr_code = `${billetId}`;
-                updateData.numero_billet = `${billetId}`;
-            }
+if (error) {
+    alert("Erreur lors de la mise a jour : " + error.message);
+    return;
+}
 
             // Envoi email si confirmation
             if (nouveauStatut === 'confirme') {
-                try {
-                    const { data: bInfo, error: errBillet } = await window.supabaseClient
-                        .from("billets")
-                        .select("email, nom_participant")
-                        .eq("id", billetId)
-                        .single();
+    try {
+        const { data: tousLesBillets, error: errBillet } = await window.supabaseClient
+            .rpc("organisateur_charger_billets", {
+                p_evenement_id: eventId,
+                p_token: sessionToken
+            });
+        const bInfo = (!errBillet && tousLesBillets)
+            ? tousLesBillets.find(b => String(b.id) === String(billetId))
+            : null;
 
-                    if (!errBillet && bInfo && bInfo.email) {
+        if (bInfo && bInfo.email) {
                         let lienBillet = `${window.location.origin}/billet.html?id=${billetId}`;
                         const templateParams = {
                             email: bInfo.email,
@@ -2124,17 +2258,7 @@
                 }
             }
 
-            const { error } = await window.supabaseClient
-                .from("billets")
-                .update(updateData)
-                .eq("id", billetId);
-
-            if (error) {
-                alert("Erreur lors de la mise a jour : " + error.message);
-                return;
-            }
-
-            await chargerToutesLesDemandes();
+           await chargerToutesLesDemandes();
         }
 
         /* =============================================
@@ -2144,9 +2268,11 @@
             if (!confirm("Voulez-vous vraiment supprimer definitivement ce participant et son billet ?")) return;
 
             const { error } = await window.supabaseClient
-                .from("billets")
-                .delete()
-                .eq("id", billetId);
+    .rpc("organisateur_retirer_participant", {
+        p_evenement_id: eventId,
+        p_token: sessionToken,
+        p_billet_id: billetId
+    });
 
             if (error) {
                 alert("Erreur lors de la suppression : " + error.message);
@@ -2171,72 +2297,53 @@ async function traiterVerificationBillet(codeScanne) {
         return;
     }
 
-    // Si un scan est déjà en cours de traitement, on ignore les images en double de la caméra
     if (isScanLocked) return;
     isScanLocked = true;
 
     try {
-        let chiffresTrouves = code.match(/\d+/g);
-        let idBilletExtrait = chiffresTrouves ? chiffresTrouves[chiffresTrouves.length - 1] : code;
+        const { data, error } = await window.supabaseClient
+            .rpc("organisateur_verifier_billet", {
+                p_evenement_id: eventId,
+                p_token: sessionToken,
+                p_code_scanne: code
+            });
 
-        const { data: billets, error } = await window.supabaseClient
-            .from("billets")
-            .select("*")
-            .eq("evenement_id", eventId);
-
-        if (error || !billets) {
+        if (error) {
             setResultat(resultatDiv, "error", "Erreur de connexion avec la base de données.");
             isScanLocked = false;
             return;
         }
 
-        let b = billets.find(item =>
-            item.id.toString() === idBilletExtrait ||
-            item.id.toString() === code ||
-            (item.numero_billet && code.includes(item.numero_billet)) ||
-            (item.qr_code && code.includes(item.qr_code))
-        );
+        const res = (data && data.length > 0) ? data[0] : null;
 
-        if (!b) {
+        if (!res || res.resultat === "introuvable") {
             setResultat(resultatDiv, "error", `Billet introuvable pour cet ID (${code}).`);
-            setTimeout(() => { isScanLocked = false; }, 2000); // Déverrouille après 2s pour un autre scan
+            setTimeout(() => { isScanLocked = false; }, 2000);
             return;
         }
 
-        if (b.statut !== "confirme") {
-            setResultat(resultatDiv, "warning", `Entrée refusée : Billet non confirmé (statut actuel : ${b.statut}).`);
+        if (res.resultat === "non_confirme") {
+            setResultat(resultatDiv, "warning", `Entrée refusée : Billet non confirmé.`);
             setTimeout(() => { isScanLocked = false; }, 2000);
             return;
         }
 
         let maintenant = Date.now();
-        if (derniersBilletsScannes[b.id] && (maintenant - derniersBilletsScannes[b.id] < 15000)) {
-            setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue Mr/Mme ${b.nom_participant || 'N/A'} !`);
+
+        if (res.resultat === "deja_valide") {
+            if (derniersBilletsScannes[res.billet_id] && (maintenant - derniersBilletsScannes[res.billet_id] < 15000)) {
+                setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue Mr/Mme ${res.nom_participant || 'N/A'} !`);
+            } else {
+                setResultat(resultatDiv, "error", `BILLET DÉJÀ UTILISÉ — ${res.nom_participant || 'N/A'}`);
+            }
             setTimeout(() => { isScanLocked = false; }, 2000);
             return;
         }
 
-        if (b.utilise === true || b.utilise === "true") {
-            setResultat(resultatDiv, "error", `BILLET DÉJÀ UTILISÉ — ${b.nom_participant || 'N/A'}`);
-            setTimeout(() => { isScanLocked = false; }, 2000);
-            return;
-        }
+        // res.resultat === "succes"
+        derniersBilletsScannes[res.billet_id] = maintenant;
+        setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue Mr/Mme ${res.nom_participant || 'N/A'} !`);
 
-        const { error: updateError } = await window.supabaseClient
-            .from("billets")
-            .update({ utilise: true })
-            .eq("id", b.id);
-
-        if (updateError) {
-            setResultat(resultatDiv, "error", "Erreur lors de la validation du billet.");
-            isScanLocked = false;
-            return;
-        }
-
-        derniersBilletsScannes[b.id] = maintenant;
-        setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue Mr/Mme ${b.nom_participant || 'N/A'} !`);
-        
-        // On laisse le message affiché pendant 3 secondes avant de réactiver le scanner pour la personne suivante
         setTimeout(() => {
             isScanLocked = false;
         }, 3000);
@@ -2326,10 +2433,11 @@ function demarrerScanner() {
             statutVentesFermees = !statutVentesFermees;
 
             const { error } = await window.supabaseClient
-                .from("evenements")
-                .update({ ventes_fermees: statutVentesFermees })
-                .eq("id", eventId);
-
+    .rpc("organisateur_toggle_ventes", {
+        p_evenement_id: eventId,
+        p_token: sessionToken,
+        p_nouveau_statut: statutVentesFermees
+    });
             if (error) {
                 alert("Erreur : " + error.message);
                 statutVentesFermees = !statutVentesFermees;
