@@ -561,12 +561,10 @@
 
     document.addEventListener("DOMContentLoaded", chargerMesEvenements);
 
-    
+    // Fonction principale de suppression de l'événement mise à jour
 async function supprimerEvenement(event, idEvenement) {
-    // Empêche le clic d'ouvrir aussi la modale de détails de la carte
     event.stopPropagation();
     
-    // Retrouve l'événement pour afficher son nom dans la confirmation
     const ev = listeGlobaleEvenements ? listeGlobaleEvenements.find(e => e.id == idEvenement) : null;
     const nomEvenement = ev ? ev.titre : "cet événement";
     
@@ -579,7 +577,7 @@ async function supprimerEvenement(event, idEvenement) {
     if (!confirmation) return;
 
     try {
-        // 1. Supprimer les billets liés à cet événement (table "billets" avec la colonne "evenement_id")
+        // 1. Supprimer les billets liés
         const { error: errBillets } = await window.supabaseClient
             .from("billets")
             .delete()
@@ -587,7 +585,7 @@ async function supprimerEvenement(event, idEvenement) {
             
         if (errBillets) console.warn("Avertissement (billets) :", errBillets.message);
 
-        // 2. Supprimer les fichiers stockés (affiche + RIB/QR code) si présents
+        // 2. Supprimer les fichiers stockés (affiche + RIB/QR code)
         const cheminsASupprimer = [];
         if (ev) {
             const cheminAffiche = extraireCheminStockage(ev.affiche_url);
@@ -604,15 +602,23 @@ async function supprimerEvenement(event, idEvenement) {
             if (errStorage) console.warn("Avertissement (fichiers) :", errStorage.message);
         }
 
-        // 3. Supprimer l'événement lui-même de la table "evenements"
-        const { error: errEvenement } = await window.supabaseClient
+        // 3. Supprimer l'événement avec vérification stricte (.select())
+        const { data: dataEvenement, error: errEvenement } = await window.supabaseClient
             .from("evenements")
             .delete()
-            .eq("id", idEvenement);
+            .eq("id", idEvenement)
+            .select();
             
         if (errEvenement) throw errEvenement;
+        
+        if (!dataEvenement || dataEvenement.length === 0) {
+            throw new Error(
+                "Aucun événement n'a été supprimé côté serveur. " +
+                "Vérifiez qu'une policy RLS 'DELETE' existe sur la table 'evenements' dans Supabase."
+            );
+        }
 
-        // 4. Rafraîchir la liste affichée sur la page
+        // 4. Rafraîchir la liste et notifier
         await chargerMesEvenements();
         alert("Événement supprimé définitivement.");
 
@@ -622,7 +628,7 @@ async function supprimerEvenement(event, idEvenement) {
     }
 }
 
-// Fonction utilitaire pour extraire le chemin interne du fichier à partir de son URL publique Supabase
+// Fonction utilitaire pour extraire le chemin interne du fichier
 function extraireCheminStockage(urlPublique) {
     if (!urlPublique) return null;
     const marqueur = "/preuves/";
@@ -630,6 +636,7 @@ function extraireCheminStockage(urlPublique) {
     if (index === -1) return null;
     return urlPublique.substring(index + marqueur.length);
 }
+
     </script>
 </body>
 </html>
