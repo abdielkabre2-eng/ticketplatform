@@ -1774,7 +1774,7 @@ function toggleVisibilitePassword(inputId) {
                 entrerDansEspaceProtege();
 
             } catch (err) {
-                afficherErreurAuth("authLoginError", "❌ " + (err.message || "Mot de passe incorrect. Veuillez réessayer."));
+                afficherErreurAuth("authLoginError", "❌ Mot de passe incorrect. Veuillez réessayer.");
             } finally {
                 btn.disabled = false;
                 btn.textContent = "Se connecter";
@@ -2105,6 +2105,10 @@ if (error || !billets) {
                                 <span class="billet-info-label">WhatsApp</span>
                                 <span class="billet-info-value">${b.telephone || 'N/A'}</span>
                             </div>
+                            <div class="billet-info-row">
+                               <span class="billet-info-label">Catégorie</span>
+                               <span class="billet-info-value">${b.type_billet || 'Non spécifiée'}</span>
+                             </div>
                             <div class="billet-info-row">
                                 <span class="billet-info-label">ID-Billet</span>
                                 <span class="billet-info-value">#${b.id}</span>
