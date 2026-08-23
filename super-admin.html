@@ -71,7 +71,7 @@
         .brand-title .text-gold { color: #0f172a; }
         
         .brand-title .text-tix { background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;background-clip: text;
--webkit-background-clip: text; }
+       -webkit-background-clip: text; }
 
         .user-badge {
             background: rgba(217, 119, 6, 0.08);
@@ -203,6 +203,25 @@
         .creator-footer p { margin: 4px 0; }
         .creator-footer a { color: #d97706; text-decoration: none; font-weight: 600; }
         .creator-footer a:hover { color: #b45309; text-decoration: underline; }
+
+       .btn-supprimer {
+    width: 100%;
+    margin-top: 14px;
+    background: transparent;
+    color: var(--danger, #ef4444);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    padding: 9px 14px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+          }
+      .btn-supprimer:hover {
+    background: var(--danger, #ef4444);
+    color: white;
+      }
     </style>
 </head>
 <body class="animate-slide-down">
@@ -383,6 +402,9 @@
                         <p class="event-info">📅 ${ev.date || 'Non précisée'} à ${ev.heure || ''}</p>
                         <p class="event-info">📍 ${ev.lieu || 'Non précisé'}</p>
                         <p class="event-info">💵 Tarifs : ${affichagePrix}</p>
+                        <button type="button" class="btn-supprimer" onclick="supprimerEvenement(event, '${ev.id}')">            
+                        Supprimer l'événement        
+                        </button>
                         <p class="event-info">👤 Bénéficiaire des paiements : ${ev.beneficiaire_nom || ''}</p>
                     </div>
                 `;
@@ -538,6 +560,76 @@
     });
 
     document.addEventListener("DOMContentLoaded", chargerMesEvenements);
+
+    
+async function supprimerEvenement(event, idEvenement) {
+    // Empêche le clic d'ouvrir aussi la modale de détails de la carte
+    event.stopPropagation();
+    
+    // Retrouve l'événement pour afficher son nom dans la confirmation
+    const ev = listeGlobaleEvenements ? listeGlobaleEvenements.find(e => e.id == idEvenement) : null;
+    const nomEvenement = ev ? ev.titre : "cet événement";
+    
+    const confirmation = confirm(
+        `Voulez-vous vraiment supprimer définitivement "${nomEvenement}" ?\n\n` +
+        `Cette action est IRRÉVERSIBLE : le lien de billetterie, l'espace organisateur, ` +
+        `les paiements et tous les participants associés seront supprimés pour toujours.`
+    );
+    
+    if (!confirmation) return;
+
+    try {
+        // 1. Supprimer les billets liés à cet événement (table "billets" avec la colonne "evenement_id")
+        const { error: errBillets } = await window.supabaseClient
+            .from("billets")
+            .delete()
+            .eq("evenement_id", idEvenement);
+            
+        if (errBillets) console.warn("Avertissement (billets) :", errBillets.message);
+
+        // 2. Supprimer les fichiers stockés (affiche + RIB/QR code) si présents
+        const cheminsASupprimer = [];
+        if (ev) {
+            const cheminAffiche = extraireCheminStockage(ev.affiche_url);
+            const cheminRib = extraireCheminStockage(ev.rib_image_url);
+            if (cheminAffiche) cheminsASupprimer.push(cheminAffiche);
+            if (cheminRib) cheminsASupprimer.push(cheminRib);
+        }
+        
+        if (cheminsASupprimer.length > 0) {
+            const { error: errStorage } = await window.supabaseClient.storage
+                .from('preuves')
+                .remove(cheminsASupprimer);
+                
+            if (errStorage) console.warn("Avertissement (fichiers) :", errStorage.message);
+        }
+
+        // 3. Supprimer l'événement lui-même de la table "evenements"
+        const { error: errEvenement } = await window.supabaseClient
+            .from("evenements")
+            .delete()
+            .eq("id", idEvenement);
+            
+        if (errEvenement) throw errEvenement;
+
+        // 4. Rafraîchir la liste affichée sur la page
+        await chargerMesEvenements();
+        alert("Événement supprimé définitivement.");
+
+    } catch (err) {
+        console.error("Erreur suppression :", err);
+        alert("Erreur lors de la suppression : " + err.message);
+    }
+}
+
+// Fonction utilitaire pour extraire le chemin interne du fichier à partir de son URL publique Supabase
+function extraireCheminStockage(urlPublique) {
+    if (!urlPublique) return null;
+    const marqueur = "/preuves/";
+    const index = urlPublique.indexOf(marqueur);
+    if (index === -1) return null;
+    return urlPublique.substring(index + marqueur.length);
+}
     </script>
 </body>
 </html>
