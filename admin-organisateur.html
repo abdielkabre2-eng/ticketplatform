@@ -1660,10 +1660,10 @@ img, svg, video, canvas {
             <div class="intro-stage" data-stage="3">
                 <p class="intro-init-title">Initialisation de votre espace<span class="intro-dots-inline"><span>.</span><span>.</span><span>.</span></span></p>
                 <div class="intro-checklist" id="introChecklist">
-                    <div class="intro-check-item"><span class="intro-check-mark">✓</span><span>Billetterie</span></div>
-                    <div class="intro-check-item"><span class="intro-check-mark">✓</span><span>Paiements</span></div>
-                    <div class="intro-check-item"><span class="intro-check-mark">✓</span><span>Billets</span></div>
-                    <div class="intro-check-item"><span class="intro-check-mark">✓</span><span>Scanner</span></div>
+                    <div class="intro-check-item"><span class="intro-check-mark">✓</span><span>Gérez votre événement</span></div>
+                    <div class="intro-check-item"><span class="intro-check-mark">✓</span><span>Suivez les achats</span></div>
+                    <div class="intro-check-item"><span class="intro-check-mark">✓</span><span>Validez les paiements</span></div>
+                    <div class="intro-check-item"><span class="intro-check-mark">✓</span><span>Scanner les billets</span></div>
                 </div>
             </div>
 
@@ -2938,17 +2938,17 @@ function demarrerScanner() {
             // Stage 2 : fonctionnalités (icônes billets / paiements / scans / suivi)
             planifier(() => allerAuStage(2), 1400);
 
-            // Stage 3 : initialisation + checklist qui se coche
-            planifier(() => allerAuStage(3), 3000);
+            // Stage 3 : initialisation + checklist qui se coche (rythme plus lent, plus lisible)
+            planifier(() => allerAuStage(3), 3200);
             checkItems.forEach((item, index) => {
-                planifier(() => item.classList.add("intro-checked"), 3250 + index * 320);
+                planifier(() => item.classList.add("intro-checked"), 3600 + index * 500);
             });
 
-            // Stage 4 : message de bienvenue
-            planifier(() => allerAuStage(4), 4700);
+            // Stage 4 : message de bienvenue (laisse le temps de lire la checklist complète)
+            planifier(() => allerAuStage(4), 6100);
 
             // Fin de l'intro, transition vers l'espace organisateur
-            planifier(fermerIntro, 6200);
+            planifier(fermerIntro, 8200);
         })();
     </script>
 
