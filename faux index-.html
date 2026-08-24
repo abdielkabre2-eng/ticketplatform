@@ -1237,7 +1237,7 @@ img, svg, video, canvas {
                 </span>
                 <!-- NOUVEAU : bouton déconnexion, caché tant que non authentifié -->
                 <button id="btnDeconnexion" class="btn-logout" onclick="deconnexion()">
-                    ↩ Déconnexion
+                    ⬅️Déconnexion
                 </button>
             </div>
         </nav>
@@ -1361,8 +1361,10 @@ img, svg, video, canvas {
                     <div class="auth-card-inner">
                         <div class="auth-icon-badge">🔑</div>
                         <h2 class="auth-title">Réinitialiser votre mot de passe</h2>
-                        <p class="auth-subtitle">Entrez le code de récupération qui vous a été donné à la création de cet espace. Si vouz l'avez perdu, contactez GoldTix au numéro qui se trouve tout en bas de la page. </p>
-
+                        <p class="auth-subtitle">
+                            Entrez le code de récupération qui vous a été donné à la création de cet espace. 
+                           <strong style="color: #e74c3c;">Si vous l'avez perdu, contactez GoldTix au numéro qui se trouve tout en bas de la page.</strong>
+                        </p>
                         <div id="authRecuperationError" class="auth-error-msg"></div>
 
                         <div class="auth-form-group">
@@ -1375,7 +1377,7 @@ img, svg, video, canvas {
                         </button>
 
                         <div class="auth-link-row">
-                            <a onclick="afficherEcranAuth('authEcranLogin')">Retour à la connexion</a>
+                            <a onclick="afficherEcranAuth('authEcranLogin')"> ⬅️ Retourer à la page de connexion</a>
                         </div>
                     </div>
                 </div>
@@ -1594,6 +1596,12 @@ img, svg, video, canvas {
         const AUTH_STORAGE_KEY = "goldtix_session_" + eventId;
         let codeRecuperationValideTemporaire = null; // conservé en mémoire JS uniquement, jamais stocké
         let sessionToken = null; // NOUVEAU : token en mémoire
+
+        // ===== OPTIMISATION : verrou anti-chevauchement pour le rechargement des demandes =====
+        let chargementDemandesEnCours = false;
+
+        // ===== OPTIMISATION : debounce pour la recherche de participants =====
+        let debounceRecherche = null;
 
         /* =============================================
            NOUVEAU : INITIALISATION AUTHENTIFICATION
@@ -1965,6 +1973,7 @@ function toggleVisibilitePassword(inputId) {
         /* =============================================
            TOUT CE QUI SUIT EST INCHANGÉ PAR RAPPORT
            AU FICHIER ORIGINAL (logique billets / scanner / ventes)
+           SAUF LES 4 OPTIMISATIONS DE PERFORMANCE ANNOTÉES
         ============================================= */
 
         /* =============================================
@@ -2020,8 +2029,17 @@ if (error || !ev) {
 
         /* =============================================
            CHARGEMENT DEMANDES / BILLETS
+           ===== OPTIMISATION 1 : accumulation en tableau au lieu de
+                 innerHTML += en boucle (évite le re-parsing quadratique
+                 du DOM quand il y a beaucoup de billets)
+           ===== OPTIMISATION 3 : verrou anti-chevauchement pour éviter
+                 que deux appels (ex: auto-refresh + action manuelle)
+                 ne s'exécutent en parallèle et ne se marchent dessus
         ============================================= */
         async function chargerToutesLesDemandes() {
+            if (chargementDemandesEnCours) return; // OPTIMISATION 3
+            chargementDemandesEnCours = true;
+
             let containerPaiements = document.getElementById("listePaiements");
 
             try {
@@ -2036,17 +2054,16 @@ if (error || !billets) {
                     return;
                 }
 
-                containerPaiements.innerHTML = "";
                 listeParticipantsValidesGlobal = [];
-                let countPaiements = 0;
+                let morceauxHTML = []; // OPTIMISATION 1 : accumulation en tableau
                 let maintenant = new Date().getTime();
 
                 billets.forEach(function(b) {
                     let statutHtml = "";
                     if (b.statut === "confirme") {
-                        statutHtml = renderBadge("confirme", "Confirme / Paye");
+                        statutHtml = renderBadge("confirme", "Confirmé / Payé");
                     } else if (b.statut === "refuse") {
-                        statutHtml = renderBadge("refuse", "Refuse / Annule");
+                        statutHtml = renderBadge("refuse", "Refusé / Non reçu");
                     } else {
                         statutHtml = renderBadge("attente", "En attente");
                     }
@@ -2059,27 +2076,28 @@ if (error || !billets) {
                             let tempsEcoule = maintenant - tempsMaj;
 
                             if (tempsEcoule < 60000) {
-                                countPaiements++;
                                 let secondesRestantes = Math.ceil((60000 - tempsEcoule) / 1000);
-                                let statutTemporaire = renderBadge("confirme", `Valide dans ${secondesRestantes}s`);
-                                containerPaiements.innerHTML += HTMLCartePaiement(b, statutTemporaire);
+                                let statutTemporaire = renderBadge("confirme", `Disparait dans ${secondesRestantes}s`);
+                                morceauxHTML.push(HTMLCartePaiement(b, statutTemporaire));
                             }
                         }
                     } else {
-                        countPaiements++;
-                        containerPaiements.innerHTML += HTMLCartePaiement(b, statutHtml);
+                        morceauxHTML.push(HTMLCartePaiement(b, statutHtml));
                     }
                 });
 
-                if (countPaiements === 0) {
-                    containerPaiements.innerHTML = renderEmptyState("Aucune demande en attente de validation.");
-                }
+                // OPTIMISATION 1 : une seule écriture DOM, quel que soit le nombre de billets
+                containerPaiements.innerHTML = morceauxHTML.length > 0
+                    ? morceauxHTML.join("")
+                    : renderEmptyState("Aucune demande en attente de validation.");
 
                 afficherParticipantsValides(listeParticipantsValidesGlobal);
                 mettreAJourCompteurs(listeParticipantsValidesGlobal.length);
 
             } catch (err) {
                 console.error("Erreur chargement demandes :", err);
+            } finally {
+                chargementDemandesEnCours = false; // OPTIMISATION 3
             }
         }
 
@@ -2195,14 +2213,19 @@ if (error || !billets) {
 
         /* =============================================
            FILTRAGE PARTICIPANTS
+           ===== OPTIMISATION 4 : debounce (150ms) pour éviter de
+                 refiltrer/redessiner toute la liste à chaque frappe
         ============================================= */
         function filtrerParticipants() {
-            let recherche = document.getElementById("searchValidees").value.toLowerCase().trim();
-            let resultats = listeParticipantsValidesGlobal.filter(b => {
-                let nom = b.nom_participant ? b.nom_participant.toLowerCase() : "";
-                return nom.includes(recherche);
-            });
-            afficherParticipantsValides(resultats);
+            clearTimeout(debounceRecherche);
+            debounceRecherche = setTimeout(() => {
+                let recherche = document.getElementById("searchValidees").value.toLowerCase().trim();
+                let resultats = listeParticipantsValidesGlobal.filter(b => {
+                    let nom = b.nom_participant ? b.nom_participant.toLowerCase() : "";
+                    return nom.includes(recherche);
+                });
+                afficherParticipantsValides(resultats);
+            }, 150);
         }
 
         /* =============================================
@@ -2217,6 +2240,9 @@ if (error || !billets) {
 
         /* =============================================
            CHANGER STATUT BILLET
+           ===== OPTIMISATION 2 : on récupère UN SEUL billet (celui
+                 concerné) au lieu de recharger toute la liste des
+                 billets juste pour retrouver son email
         ============================================= */
         async function changerStatut(billetId, nouveauStatut) {
             const { error } = await window.supabaseClient
@@ -2235,20 +2261,18 @@ if (error) {
             // Envoi email si confirmation
             if (nouveauStatut === 'confirme') {
     try {
-        const { data: tousLesBillets, error: errBillet } = await window.supabaseClient
-            .rpc("organisateur_charger_billets", {
-                p_evenement_id: eventId,
-                p_token: sessionToken
-            });
-        const bInfo = (!errBillet && tousLesBillets)
-            ? tousLesBillets.find(b => String(b.id) === String(billetId))
-            : null;
+        // OPTIMISATION 2 : un seul billet ciblé au lieu de tous les billets
+        const { data: unBillet, error: errBillet } = await window.supabaseClient
+            .from("billets")
+            .select("email, nom_participant")
+            .eq("id", billetId)
+            .maybeSingle();
 
-        if (bInfo && bInfo.email) {
+        if (!errBillet && unBillet && unBillet.email) {
                         let lienBillet = `${window.location.origin}/billet.html?id=${billetId}`;
                         const templateParams = {
-                            email: bInfo.email,
-                            nom_participant: bInfo.nom_participant,
+                            email: unBillet.email,
+                            nom_participant: unBillet.nom_participant,
                             lien_billet: lienBillet
                         };
                         await emailjs.send('service_p8rnipf', 'template_ilhe1ca', templateParams);

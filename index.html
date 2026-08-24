@@ -663,9 +663,280 @@ img, svg, video, canvas {
             .card { padding: 22px 18px; }
             .event-title { font-size: 22px; }
         }
+
+        /* =============================================================
+           ===== NOUVEAU : INTRODUCTION ANIMÉE GOLDTIX (ajout uniquement)
+           Ne modifie aucune règle existante ci-dessus. Overlay plein
+           écran, se retire automatiquement après ~5s ou au clic sur
+           "Passer". Purement transform/opacity : coût GPU minimal.
+        ============================================================= */
+        #introOverlayGoldTix {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background:
+                radial-gradient(ellipse 80% 60% at 50% 20%, rgba(245,158,11,0.10) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 50% at 80% 80%, rgba(217,119,6,0.08) 0%, transparent 60%),
+                #0a0908;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            animation: introOverlayExit 0.7s ease 4.3s forwards;
+        }
+        #introOverlayGoldTix.intro-skip { animation: introOverlayExit 0.5s ease forwards !important; }
+        #introOverlayGoldTix.intro-hidden { display: none !important; }
+
+        @keyframes introOverlayExit {
+            0%   { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(1.04); }
+        }
+
+        .intro-particles { position: absolute; inset: 0; pointer-events: none; }
+        .intro-particles span {
+            position: absolute;
+            width: 3px; height: 3px;
+            background: rgba(245,158,11,0.55);
+            border-radius: 50%;
+            box-shadow: 0 0 6px rgba(245,158,11,0.6);
+            opacity: 0;
+            animation: introParticleFloat 3.6s ease-in-out infinite;
+        }
+        .intro-particles span:nth-child(1){ top:15%; left:12%; animation-delay:.1s; }
+        .intro-particles span:nth-child(2){ top:70%; left:20%; animation-delay:.6s; }
+        .intro-particles span:nth-child(3){ top:25%; left:80%; animation-delay:.3s; }
+        .intro-particles span:nth-child(4){ top:60%; left:88%; animation-delay:.9s; }
+        .intro-particles span:nth-child(5){ top:85%; left:50%; animation-delay:.5s; }
+        .intro-particles span:nth-child(6){ top:10%; left:55%; animation-delay:1.1s; }
+        .intro-particles span:nth-child(7){ top:45%; left:6%; animation-delay:.8s; }
+        .intro-particles span:nth-child(8){ top:40%; left:94%; animation-delay:1.3s; }
+
+        @keyframes introParticleFloat {
+            0%, 100% { opacity: 0; transform: translateY(0); }
+            50%      { opacity: 1; transform: translateY(-14px); }
+        }
+
+        #introSkipBtn {
+            position: absolute;
+            top: 20px; right: 20px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(245,158,11,0.25);
+            color: rgba(255,255,255,0.75);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.4px;
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            backdrop-filter: blur(6px);
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+            z-index: 2;
+        }
+        #introSkipBtn:hover { background: rgba(245,158,11,0.15); color: #fff; border-color: rgba(245,158,11,0.5); }
+
+        .intro-center { position: relative; text-align: center; padding: 24px; z-index: 1; max-width: 480px; width: 100%; }
+
+        .intro-logo-wrap { opacity: 0; animation: introFadeUp 0.8s ease 0.4s forwards; }
+        .intro-logo {
+            font-family: 'Syne', sans-serif;
+            font-size: 44px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            color: #f5f5f4;
+            margin: 0;
+            text-shadow: 0 0 24px rgba(245,158,11,0.35), 0 0 60px rgba(245,158,11,0.15);
+            animation: introLogoGlow 2.4s ease-in-out infinite 1.2s;
+        }
+        .intro-logo em {
+            font-style: normal;
+            background: linear-gradient(135deg, #f59e0b, #b45309);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .intro-tagline {
+            margin-top: 10px;
+            font-size: 13px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: rgba(245,197,109,0.75);
+            font-weight: 600;
+            opacity: 0;
+            animation: introFadeUp 0.8s ease 0.9s forwards;
+        }
+
+        @keyframes introFadeUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes introLogoGlow {
+            0%, 100% { text-shadow: 0 0 24px rgba(245,158,11,0.35), 0 0 60px rgba(245,158,11,0.15); }
+            50%      { text-shadow: 0 0 34px rgba(245,158,11,0.55), 0 0 80px rgba(245,158,11,0.25); }
+        }
+
+        .intro-flow {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 46px;
+            opacity: 0;
+            animation: introFadeUp 0.6s ease 1.8s forwards;
+        }
+        .intro-flow-line {
+            position: absolute;
+            top: 19px; left: 8%; right: 8%;
+            height: 2px;
+            background: rgba(255,255,255,0.08);
+            overflow: hidden;
+            border-radius: 2px;
+        }
+        .intro-flow-progress {
+            display: block;
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #f59e0b, #d97706);
+            animation: introLineFill 1.6s ease 2.0s forwards;
+        }
+        @keyframes introLineFill { to { width: 100%; } }
+
+        .intro-flow-step {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            color: rgba(255,255,255,0.35);
+        }
+        .intro-flow-step svg {
+            width: 22px; height: 22px;
+            padding: 9px;
+            border-radius: 50%;
+            background: #14110d;
+            border: 1.5px solid rgba(255,255,255,0.12);
+            box-sizing: content-box;
+            transform: scale(0.85);
+            opacity: 0.5;
+        }
+        .intro-flow-step span {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+        }
+        .intro-flow-step[data-step="1"] svg { animation: introStepLight 0.4s ease 2.05s forwards; }
+        .intro-flow-step[data-step="2"] svg { animation: introStepLight 0.4s ease 2.55s forwards; }
+        .intro-flow-step[data-step="3"] svg { animation: introStepLight 0.4s ease 3.05s forwards; }
+        .intro-flow-step[data-step="4"] svg { animation: introStepLight 0.4s ease 3.55s forwards; }
+        @keyframes introStepLight {
+            0%   { transform: scale(0.85); opacity: 0.5; border-color: rgba(255,255,255,0.12); color: rgba(255,255,255,0.35); }
+            50%  { transform: scale(1.15); }
+            100% { transform: scale(1); opacity: 1; border-color: rgba(245,158,11,0.6); color: #f59e0b; box-shadow: 0 0 16px rgba(245,158,11,0.35); }
+        }
+
+        .intro-ready {
+            margin-top: 34px;
+            font-size: 14px;
+            color: rgba(255,255,255,0.55);
+            font-weight: 500;
+            opacity: 0;
+            animation: introFadeUp 0.6s ease 3.9s forwards;
+        }
+
+        @media (max-width: 480px) {
+            .intro-logo { font-size: 32px; }
+            .intro-flow-step span { display: none; }
+            .intro-flow { margin-top: 34px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            #introOverlayGoldTix, #introOverlayGoldTix * {
+                animation-duration: 0.01ms !important;
+                animation-delay: 0s !important;
+            }
+        }
     </style>
 </head>
 <body>
+
+    <!-- =============================================================
+         ===== NOUVEAU : OVERLAY D'INTRODUCTION (ajout uniquement)
+         Placé avant tout le reste du body. Ne modifie rien de la
+         page d'achat qui suit ; se retire tout seul puis disparaît.
+    ============================================================= -->
+    <div id="introOverlayGoldTix" aria-hidden="true">
+        <div class="intro-particles">
+            <span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span>
+        </div>
+        <button type="button" id="introSkipBtn" aria-label="Passer l'introduction">Passer</button>
+        <div class="intro-center">
+            <div class="intro-logo-wrap">
+                <h1 class="intro-logo">Gold<em>Tix</em></h1>
+                <p class="intro-tagline">Votre événement. Votre billetterie.</p>
+            </div>
+            <div class="intro-flow">
+                <div class="intro-flow-line"><span class="intro-flow-progress"></span></div>
+                <div class="intro-flow-step" data-step="1">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg>
+                    <span>Billet</span>
+                </div>
+                <div class="intro-flow-step" data-step="2">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><line x1="14" y1="14" x2="21" y2="14"/><line x1="14" y1="21" x2="21" y2="21"/><line x1="17.5" y1="14" x2="17.5" y2="21"/></svg>
+                    <span>QR Code</span>
+                </div>
+                <div class="intro-flow-step" data-step="3">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Validation</span>
+                </div>
+                <div class="intro-flow-step" data-step="4">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                    <span>Entrée</span>
+                </div>
+            </div>
+            <p class="intro-ready">Préparez-vous…</p>
+        </div>
+    </div>
+    <script>
+    (function() {
+        var overlay = document.getElementById('introOverlayGoldTix');
+        if (!overlay) return;
+
+        // Empêche le scroll pendant l'intro (restauré à la fin)
+        document.documentElement.style.overflowY = 'hidden';
+
+        var prefersReducedMotion = window.matchMedia &&
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        function finirIntro() {
+            document.documentElement.style.overflowY = '';
+            overlay.classList.add('intro-hidden');
+        }
+
+        // Retire l'overlay dès que son animation de sortie se termine
+        overlay.addEventListener('animationend', function(e) {
+            if (e.target === overlay) finirIntro();
+        });
+
+        // Filet de sécurité si l'événement ne se déclenche pas
+        var timeoutSecurite = setTimeout(finirIntro, prefersReducedMotion ? 100 : 5200);
+
+        var skipBtn = document.getElementById('introSkipBtn');
+        if (skipBtn) {
+            skipBtn.addEventListener('click', function() {
+                clearTimeout(timeoutSecurite);
+                overlay.classList.add('intro-skip');
+                setTimeout(finirIntro, 520);
+            });
+        }
+
+        if (prefersReducedMotion) {
+            finirIntro();
+        }
+    })();
+    </script>
+    <!-- ===== FIN DE L'AJOUT — tout ce qui suit est votre page d'achat, strictement inchangée ===== -->
 
     <!-- NAVBAR -->
     <nav class="navbar anim-1" style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 8px 12px; box-sizing: border-box;">
