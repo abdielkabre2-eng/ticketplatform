@@ -1034,93 +1034,8 @@ img, svg, video, canvas {
             mail:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`,
         };
 
-        // ─── ROBUSTESSE RÉSEAU (timeout + tentatives automatiques) ─────────────────
-        // Sur un réseau mobile lent ou instable, un appel Supabase peut ne jamais
-        // répondre (ni succès, ni erreur) : sans garde-fou, la promesse reste en
-        // attente indéfiniment et l'utilisateur voit le spinner tourner à l'infini,
-        // sans aucun message. On force donc un délai maximum par tentative, on
-        // relance automatiquement 2 fois en cas de raté réseau (micro-coupure
-        // fréquente en data mobile), et seulement si ça échoue toujours on affiche
-        // un message explicite avec un bouton "Réessayer" manuel.
-        const SUPABASE_TIMEOUT_MS = 9000;   // délai max par tentative
-        const TENTATIVES_MAX = 3;           // 1 essai initial + 2 relances automatiques
-
-        // Colonnes réellement utilisées par la page — évite de faire transiter des
-        // colonnes inutiles sur le réseau (payload plus léger = plus rapide sur mobile).
-        const COLONNES_EVENEMENT = "id, titre, date, heure, lieu, affiche_url, prix, categories_data, ventes_fermees, beneficiaire_nom, beneficiaire_infos, rib_image_url, qr_code_paiement";
-
-        function avecTimeout(promesse, ms) {
-            let idTimeout;
-            const timeout = new Promise((_, reject) => {
-                idTimeout = setTimeout(() => reject(new Error("delai_depasse")), ms);
-            });
-            return Promise.race([promesse, timeout]).finally(() => clearTimeout(idTimeout));
-        }
-
-        // ─── CACHE COURT (session) ──────────────────────────────────────────────
-        // Un même lien est souvent rouvert plusieurs fois par la même personne
-        // (elle revient vérifier après paiement, recharge la page, etc). Pour ces
-        // cas, on garde une copie récente en mémoire de session : l'affichage est
-        // alors instantané, pendant qu'on revérifie discrètement en arrière-plan
-        // que rien n'a changé (ventes fermées, etc). Le premier chargement d'un
-        // lien reste, lui, tributaire du réseau — rien ne peut l'éviter.
-        const CACHE_TTL_MS = 3 * 60 * 1000; // 3 minutes
-
-        function lireCacheEvenement(eventId) {
-            try {
-                const brut = sessionStorage.getItem("goldtix_event_" + eventId);
-                if (!brut) return null;
-                const { donnees, horodatage } = JSON.parse(brut);
-                if (Date.now() - horodatage > CACHE_TTL_MS) return null;
-                return donnees;
-            } catch (e) {
-                return null;
-            }
-        }
-
-        function ecrireCacheEvenement(eventId, donnees) {
-            try {
-                sessionStorage.setItem("goldtix_event_" + eventId, JSON.stringify({ donnees, horodatage: Date.now() }));
-            } catch (e) {
-                // stockage plein/indisponible (navigation privée...) : on ignore simplement
-            }
-        }
-
-        function afficherTentativeEnCours(container, numero) {
-            container.innerHTML = `
-                <div class="card loading-card">
-                    <p class="loading-text">
-                        <span class="spinner"></span>
-                        Connexion instable, nouvelle tentative (${numero}/${TENTATIVES_MAX})...
-                    </p>
-                </div>`;
-        }
-
-        function afficherErreurChargement(container, titre, message) {
-            container.innerHTML = `
-                <div class="card error-card">
-                    <h2>${titre}</h2>
-                    <p>${message}</p>
-                    <button type="button" class="btn-submit" id="btnReessayerChargement" style="margin-top:22px;max-width:280px;margin-left:auto;margin-right:auto;">
-                        Réessayer
-                    </button>
-                </div>`;
-            const btn = document.getElementById("btnReessayerChargement");
-            if (btn) {
-                btn.addEventListener("click", function() {
-                    container.innerHTML = `
-                        <div class="card loading-card">
-                            <p class="loading-text"><span class="spinner"></span>Nouvelle tentative...</p>
-                        </div>`;
-                    chargerPageAchatUnique(1);
-                });
-            }
-            window.dispatchEvent(new Event('goldtix:donneesPretes'));
-        }
-
         // ─── MAIN LOADER ─────────────────────────────────────────────────────────
-        async function chargerPageAchatUnique(tentative) {
-            tentative = tentative || 1;
+        async function chargerPageAchatUnique() {
             const urlParams = new URLSearchParams(window.location.search);
             const eventId = urlParams.get("event");
             const container = document.getElementById("detailsEvenement");
@@ -1135,85 +1050,21 @@ img, svg, video, canvas {
                 return;
             }
 
-            if (!window.supabaseClient) {
-                if (tentative < TENTATIVES_MAX) {
-                    afficherTentativeEnCours(container, tentative + 1);
-                    setTimeout(() => chargerPageAchatUnique(tentative + 1), 1200 * tentative);
-                    return;
-                }
-                afficherErreurChargement(
-                    container,
-                    "Connexion impossible",
-                    "Le script de connexion n'a pas pu se charger. Vérifiez votre connexion internet (Wi‑Fi ou données mobiles) puis réessayez."
-                );
-                return;
-            }
-
-            let ev, error;
-
-            const eventEnCache = (tentative === 1) ? lireCacheEvenement(eventId) : null;
-
-            if (eventEnCache) {
-                // Affichage immédiat depuis le cache de session.
-                ev = eventEnCache;
-                error = null;
-
-                // Rafraîchissement silencieux en arrière-plan : met à jour le cache
-                // pour la prochaine ouverture, sans bloquer ni modifier l'affichage
-                // déjà rendu (la vérification "ventes fermées" en temps réel juste
-                // avant la soumission du formulaire couvre déjà la sécurité du prix).
-                avecTimeout(
-                    window.supabaseClient
-                        .from("evenements")
-                        .select(COLONNES_EVENEMENT)
-                        .eq("id", eventId)
-                        .single(),
-                    SUPABASE_TIMEOUT_MS
-                ).then(({ data, error: erreurArrierePlan }) => {
-                    if (!erreurArrierePlan && data) ecrireCacheEvenement(eventId, data);
-                }).catch(() => {});
-
-            } else {
-                try {
-                    const resultat = await avecTimeout(
-                        window.supabaseClient
-                            .from("evenements")
-                            .select(COLONNES_EVENEMENT)
-                            .eq("id", eventId)
-                            .single(),
-                        SUPABASE_TIMEOUT_MS
-                    );
-                    ev = resultat.data;
-                    error = resultat.error;
-                    if (!error && ev) ecrireCacheEvenement(eventId, ev);
-                } catch (err) {
-                    if (tentative < TENTATIVES_MAX) {
-                        afficherTentativeEnCours(container, tentative + 1);
-                        setTimeout(() => chargerPageAchatUnique(tentative + 1), 1200 * tentative);
-                        return;
-                    }
-                    afficherErreurChargement(
-                        container,
-                        "Connexion trop lente",
-                        "La récupération des informations de l'événement met trop de temps à répondre, même après plusieurs tentatives. Vérifiez votre réseau (Wi‑Fi ou données mobiles) puis réessayez."
-                    );
-                    return;
-                }
-            }
+            const { data: ev, error } = await window.supabaseClient
+                .from("evenements")
+                .select("*")
+                .eq("id", eventId)
+                .single();
 
             if (error || !ev) {
                 container.innerHTML = `
                     <div class="card error-card">
                         <h2>Événement introuvable</h2>
                         <p>Cet événement a été supprimé ou n'existe plus.</p>
-
-
                     </div>`;
                 window.dispatchEvent(new Event('goldtix:donneesPretes'));
                 return;
             }
-
-            try {
 
             // ── Colonne droite ──────────────────────────────────────────────────
             let rightColumn = "";
@@ -1424,15 +1275,12 @@ img, svg, video, canvas {
                     btn.appendChild(label);
 
                     try {
-                        // Verification fermeture ventes en temps reel (avec timeout réseau)
-                        const { data: verifEv } = await avecTimeout(
-                            window.supabaseClient
-                                .from("evenements")
-                                .select("ventes_fermees")
-                                .eq("id", ev.id)
-                                .single(),
-                            SUPABASE_TIMEOUT_MS
-                        );
+                        // Verification fermeture ventes en temps reel
+                        const { data: verifEv } = await window.supabaseClient
+                            .from("evenements")
+                            .select("ventes_fermees")
+                            .eq("id", ev.id)
+                            .single();
 
                         if (verifEv && verifEv.ventes_fermees) {
                             alert("Désolé, la vente des billets pour cet évènement vient d'être fermée.");
@@ -1440,17 +1288,14 @@ img, svg, video, canvas {
                             return;
                         }
 
-                        // Upload preuve (timeout plus large : un envoi de photo peut prendre du temps sur mobile)
+                        // Upload preuve
                         const fileExt = fichierPreuve.name.split('.').pop().toLowerCase();
                         const fileName = `preuve-${Date.now()}-${Math.floor(Math.random() * 1000)}.${fileExt}`;
 
-                        const { error: uploadError } = await avecTimeout(
-                            window.supabaseClient
-                                .storage
-                                .from("preuves")
-                                .upload(fileName, fichierPreuve, { cacheControl: '3600', upsert: false }),
-                            30000
-                        );
+                        const { error: uploadError } = await window.supabaseClient
+                            .storage
+                            .from("preuves")
+                            .upload(fileName, fichierPreuve, { cacheControl: '3600', upsert: false });
 
                         if (uploadError) {
                             alert("Erreur lors de l'envoi de la preuve : " + uploadError.message);
@@ -1466,23 +1311,20 @@ img, svg, video, canvas {
 
                         const preuveUrl = urlData.publicUrl;
 
-                        // Insertion billet (avec timeout réseau)
-                        const { data: insertedBillet, error: insertError } = await avecTimeout(
-                            window.supabaseClient
-                                .from("billets")
-                                .insert([{
-                                    evenement_id: ev.id,
-                                    nom_participant: nom,
-                                    email:  email || null,
-                                    telephone: tel,
-                                    preuve_url: preuveUrl,
-                                    type_billet: typeBilletChoisi,
-                                    statut: "attente",
-                                    utilise: false
-                                }])
-                                .select(),
-                            SUPABASE_TIMEOUT_MS
-                        );
+                        // Insertion billet
+                        const { data: insertedBillet, error: insertError } = await window.supabaseClient
+                            .from("billets")
+                            .insert([{
+                                evenement_id: ev.id,
+                                nom_participant: nom,
+                                email:  email || null,
+                                telephone: tel,
+                                preuve_url: preuveUrl,
+                                type_billet: typeBilletChoisi,
+                                statut: "attente",
+                                utilise: false
+                            }])
+                            .select();
 
                         if (insertError) {
                             alert("Erreur lors de l'enregistrement du billet : " + insertError.message);
@@ -1497,10 +1339,7 @@ img, svg, video, canvas {
 
                     } catch (err) {
                         console.error("Erreur inattendue :", err);
-                        const messageErreur = (err && err.message === "delai_depasse")
-                            ? "La connexion met trop de temps à répondre. Vérifiez votre réseau puis réessayez."
-                            : "Une erreur inattendue est survenue lors du traitement.";
-                        alert(messageErreur);
+                        alert("Une erreur inattendue est survenue lors du traitement.");
                         btn.disabled = false;
                         btn.classList.remove("loading");
                     }
@@ -1508,15 +1347,6 @@ img, svg, video, canvas {
             }
 
             window.dispatchEvent(new Event('goldtix:donneesPretes'));
-
-            } catch (errRendu) {
-                console.error("Erreur d'affichage de la page d'achat :", errRendu);
-                afficherErreurChargement(
-                    container,
-                    "Une erreur est survenue",
-                    "L'affichage de la page a rencontré un problème inattendu. Réessayez, ou revenez plus tard si le problème persiste."
-                );
-            }
         }
 
         document.addEventListener('DOMContentLoaded', chargerPageAchatUnique);
