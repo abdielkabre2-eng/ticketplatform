@@ -1304,9 +1304,380 @@ img, svg, video, canvas {
             .scanner-input-group { flex-direction: column; }
             .scanner-input-group .btn-scan-manual { padding: 14px; }
         }
+
+        /* ============================================
+           INTRO — ÉCRAN D'OUVERTURE "CENTRE DE CONTRÔLE"
+           Overlay plein écran purement visuel, indépendant
+           de l'authentification qui charge en parallèle
+           en dessous. Ne touche à rien d'existant.
+        ============================================ */
+        #introGoldTix {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: radial-gradient(ellipse 90% 70% at 50% 20%, #241407 0%, #140b03 55%, #0a0602 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1);
+        }
+        #introGoldTix.intro-hidden {
+            opacity: 0;
+            transform: scale(1.04);
+            pointer-events: none;
+        }
+        #introGoldTix.intro-removed { display: none; }
+
+        .intro-lines {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+        .intro-lines::before,
+        .intro-lines::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(245,158,11,0.14);
+        }
+        .intro-lines::before {
+            width: 620px; height: 620px;
+            top: 50%; left: 50%;
+            transform: translate(-50%,-50%);
+        }
+        .intro-lines::after {
+            width: 900px; height: 900px;
+            top: 50%; left: 50%;
+            transform: translate(-50%,-50%);
+            border-color: rgba(245,158,11,0.08);
+        }
+
+        .intro-particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            background: var(--gold-400);
+            opacity: 0;
+            animation: intro-float 4.5s ease-in-out infinite;
+        }
+        @keyframes intro-float {
+            0%   { opacity: 0; transform: translateY(0); }
+            15%  { opacity: 0.7; }
+            85%  { opacity: 0.4; }
+            100% { opacity: 0; transform: translateY(-70px); }
+        }
+
+        .intro-content {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 440px;
+            padding: 0 28px;
+            text-align: center;
+        }
+
+        .intro-stage {
+            display: none;
+        }
+        .intro-stage.intro-stage-active {
+            display: block;
+            animation: fadeIn 0.5s ease both;
+        }
+
+        /* ---- Stage 1 : logo ---- */
+        .intro-logo-badge {
+            width: 76px;
+            height: 76px;
+            margin: 0 auto 22px;
+            border-radius: 22px;
+            background: linear-gradient(135deg, rgba(245,158,11,0.16), rgba(217,119,6,0.06));
+            border: 1px solid rgba(245,158,11,0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            position: relative;
+            opacity: 0;
+            transform: scale(0.7);
+            animation: intro-logo-in 0.8s cubic-bezier(0.22,1,0.36,1) 0.15s forwards;
+            box-shadow: 0 0 40px rgba(245,158,11,0.18);
+        }
+        .intro-logo-badge::after {
+            content: '';
+            position: absolute;
+            inset: -10px;
+            border-radius: 28px;
+            border: 1px solid rgba(245,158,11,0.25);
+            animation: pulse-ring 2.4s ease-out infinite;
+        }
+        @keyframes intro-logo-in {
+            0%   { opacity: 0; transform: scale(0.7); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .intro-brand {
+            font-family: var(--font-display);
+            font-size: 40px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            opacity: 0;
+            animation: fadeUp 0.7s cubic-bezier(0.22,1,0.36,1) 0.35s forwards;
+        }
+        .intro-brand .ig-dark { color: #f5f0e8; }
+        .intro-brand .ig-gold {
+            background: var(--grad-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .intro-tagline {
+            margin-top: 12px;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.55);
+            letter-spacing: 0.3px;
+            opacity: 0;
+            animation: fadeUp 0.7s cubic-bezier(0.22,1,0.36,1) 0.55s forwards;
+        }
+
+        /* ---- Stage 2 : fonctionnalités ---- */
+        .intro-stage-title {
+            font-family: var(--font-display);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(245,158,11,0.65);
+            margin-bottom: 28px;
+        }
+
+        .intro-features {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .intro-feature-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 13px 18px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(245,158,11,0.16);
+            border-radius: var(--radius-md);
+            opacity: 0;
+            transform: translateX(-16px);
+            animation: intro-feature-in 0.55s cubic-bezier(0.22,1,0.36,1) forwards;
+        }
+        .intro-feature-row:nth-child(1) { animation-delay: 0.05s; }
+        .intro-feature-row:nth-child(2) { animation-delay: 0.30s; }
+        .intro-feature-row:nth-child(3) { animation-delay: 0.55s; }
+        .intro-feature-row:nth-child(4) { animation-delay: 0.80s; }
+        @keyframes intro-feature-in {
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .intro-feature-icon { font-size: 19px; line-height: 1; }
+        .intro-feature-label {
+            font-family: var(--font-display);
+            font-size: 13.5px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.88);
+            letter-spacing: 0.2px;
+        }
+
+        /* ---- Stage 3 : initialisation ---- */
+        .intro-init-title {
+            font-family: var(--font-display);
+            font-size: 15px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 24px;
+        }
+        .intro-init-title .intro-dots-inline span {
+            animation: intro-dot-blink 1.2s infinite;
+        }
+        .intro-init-title .intro-dots-inline span:nth-child(2) { animation-delay: 0.2s; }
+        .intro-init-title .intro-dots-inline span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes intro-dot-blink {
+            0%, 80%, 100% { opacity: 0.2; }
+            40% { opacity: 1; }
+        }
+
+        .intro-checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            text-align: left;
+            max-width: 220px;
+            margin: 0 auto;
+        }
+        .intro-check-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-display);
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.35);
+            opacity: 0;
+            transform: translateY(6px);
+            animation: intro-feature-in 0.4s ease forwards;
+        }
+        .intro-check-item:nth-child(1) { animation-delay: 0.05s; }
+        .intro-check-item:nth-child(2) { animation-delay: 0.35s; }
+        .intro-check-item:nth-child(3) { animation-delay: 0.65s; }
+        .intro-check-item:nth-child(4) { animation-delay: 0.95s; }
+        .intro-check-mark {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(245,158,11,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: transparent;
+            flex-shrink: 0;
+            transition: color 0.2s, background 0.2s, border-color 0.2s;
+        }
+        .intro-check-item.intro-checked {
+            color: rgba(255,255,255,0.92);
+        }
+        .intro-check-item.intro-checked .intro-check-mark {
+            color: #ffffff;
+            background: var(--grad-gold);
+            border-color: transparent;
+        }
+
+        /* ---- Stage 4 : bienvenue ---- */
+        .intro-welcome-icon {
+            font-size: 30px;
+            margin-bottom: 14px;
+            opacity: 0;
+            animation: intro-logo-in 0.6s cubic-bezier(0.22,1,0.36,1) 0.1s forwards;
+        }
+        .intro-welcome-title {
+            font-family: var(--font-display);
+            font-size: 19px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.2px;
+            opacity: 0;
+            animation: fadeUp 0.6s cubic-bezier(0.22,1,0.36,1) 0.2s forwards;
+        }
+        .intro-welcome-sub {
+            margin-top: 8px;
+            font-size: 13px;
+            color: rgba(255,255,255,0.5);
+            opacity: 0;
+            animation: fadeUp 0.6s cubic-bezier(0.22,1,0.36,1) 0.35s forwards;
+        }
+
+        /* ---- Bouton passer ---- */
+        .intro-skip-btn {
+            position: absolute;
+            bottom: 26px;
+            right: 26px;
+            z-index: 3;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.16);
+            color: rgba(255,255,255,0.65);
+            font-family: var(--font-display);
+            font-size: 11.5px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            padding: 9px 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+        }
+        .intro-skip-btn:hover {
+            background: rgba(245,158,11,0.14);
+            border-color: rgba(245,158,11,0.4);
+            color: #fff;
+        }
+        .intro-skip-btn:focus-visible {
+            outline: 2px solid var(--gold-500);
+            outline-offset: 2px;
+        }
+
+        @media (max-width: 480px) {
+            .intro-brand { font-size: 32px; }
+            .intro-logo-badge { width: 64px; height: 64px; font-size: 27px; }
+            .intro-skip-btn { bottom: 18px; right: 18px; padding: 8px 14px; font-size: 11px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            #introGoldTix { display: none !important; }
+        }
     </style>
 </head>
 <body>
+
+    <!-- ==================== INTRO GOLDTIX (plein écran, purement visuel) ==================== -->
+    <div id="introGoldTix" aria-hidden="true">
+        <div class="intro-lines"></div>
+        <div id="introParticles"></div>
+
+        <div class="intro-content">
+
+            <!-- Stage 1 : logo -->
+            <div class="intro-stage intro-stage-active" data-stage="1">
+                <div class="intro-logo-badge">🎫</div>
+                <div class="intro-brand"><span class="ig-dark">Gold</span><span class="ig-gold">Tix</span></div>
+                <p class="intro-tagline">Votre événement. Votre espace de gestion.</p>
+            </div>
+
+            <!-- Stage 2 : fonctionnalités -->
+            <div class="intro-stage" data-stage="2">
+                <p class="intro-stage-title">Tout centralisé au même endroit</p>
+                <div class="intro-features">
+                    <div class="intro-feature-row">
+                        <span class="intro-feature-icon">🎟️</span>
+                        <span class="intro-feature-label">Billets</span>
+                    </div>
+                    <div class="intro-feature-row">
+                        <span class="intro-feature-icon">💰</span>
+                        <span class="intro-feature-label">Paiements</span>
+                    </div>
+                    <div class="intro-feature-row">
+                        <span class="intro-feature-icon">📱</span>
+                        <span class="intro-feature-label">Scans</span>
+                    </div>
+                    <div class="intro-feature-row">
+                        <span class="intro-feature-icon">📊</span>
+                        <span class="intro-feature-label">Suivi en temps réel</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage 3 : initialisation -->
+            <div class="intro-stage" data-stage="3">
+                <p class="intro-init-title">Initialisation de votre espace<span class="intro-dots-inline"><span>.</span><span>.</span><span>.</span></span></p>
+                <div class="intro-checklist" id="introChecklist">
+                    <div class="intro-check-item"><span class="intro-check-mark">✓</span><span>Billetterie</span></div>
+                    <div class="intro-check-item"><span class="intro-check-mark">✓</span><span>Paiements</span></div>
+                    <div class="intro-check-item"><span class="intro-check-mark">✓</span><span>Billets</span></div>
+                    <div class="intro-check-item"><span class="intro-check-mark">✓</span><span>Scanner</span></div>
+                </div>
+            </div>
+
+            <!-- Stage 4 : bienvenue -->
+            <div class="intro-stage" data-stage="4">
+                <div class="intro-welcome-icon">✨</div>
+                <p class="intro-welcome-title">Bienvenue dans votre espace organisateur.</p>
+                <p class="intro-welcome-sub">Chargement de votre événement...</p>
+            </div>
+
+        </div>
+
+        <button type="button" class="intro-skip-btn" id="introSkipBtn" onclick="passerIntroGoldTix()">Passer ⏭</button>
+    </div>
 
     <div class="page-wrapper">
 
@@ -2500,6 +2871,85 @@ function demarrerScanner() {
                 if (indicator) { indicator.className = "status-indicator open"; }
             }
         }
+
+        /* =============================================
+           INTRO GOLDTIX — écran d'ouverture
+           100% indépendant du reste : ne lit ni ne modifie
+           aucune donnée de l'espace organisateur. Se contente
+           de masquer l'overlay après quelques secondes (ou au
+           clic sur "Passer"), pendant que l'authentification
+           existante se charge normalement en arrière-plan.
+        ============================================= */
+        (function () {
+            const introEl = document.getElementById("introGoldTix");
+            if (!introEl) return;
+
+            const reduitMouvement = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            const stages = introEl.querySelectorAll(".intro-stage");
+            const checkItems = introEl.querySelectorAll(".intro-check-item");
+            let minuteries = [];
+            let dejaFerme = false;
+
+            function planifier(fn, delai) {
+                minuteries.push(setTimeout(fn, delai));
+            }
+
+            function allerAuStage(numero) {
+                stages.forEach(s => s.classList.remove("intro-stage-active"));
+                const cible = introEl.querySelector('.intro-stage[data-stage="' + numero + '"]');
+                if (cible) cible.classList.add("intro-stage-active");
+            }
+
+            function genererParticules() {
+                const conteneur = document.getElementById("introParticles");
+                if (!conteneur) return;
+                const total = window.innerWidth < 480 ? 10 : 18;
+                let html = "";
+                for (let i = 0; i < total; i++) {
+                    const gauche = Math.round(Math.random() * 100);
+                    const bas = Math.round(Math.random() * 30);
+                    const delai = (Math.random() * 4).toFixed(2);
+                    const duree = (3.5 + Math.random() * 2.5).toFixed(2);
+                    html += '<span class="intro-particle" style="left:' + gauche + '%; bottom:' + bas + '%; animation-delay:' + delai + 's; animation-duration:' + duree + 's;"></span>';
+                }
+                conteneur.innerHTML = html;
+            }
+
+            function fermerIntro() {
+                if (dejaFerme) return;
+                dejaFerme = true;
+                minuteries.forEach(id => clearTimeout(id));
+                minuteries = [];
+                introEl.classList.add("intro-hidden");
+                setTimeout(() => {
+                    introEl.classList.add("intro-removed");
+                }, 750);
+            }
+
+            window.passerIntroGoldTix = fermerIntro;
+
+            if (reduitMouvement) {
+                fermerIntro();
+                return;
+            }
+
+            genererParticules();
+
+            // Stage 2 : fonctionnalités (icônes billets / paiements / scans / suivi)
+            planifier(() => allerAuStage(2), 1400);
+
+            // Stage 3 : initialisation + checklist qui se coche
+            planifier(() => allerAuStage(3), 3000);
+            checkItems.forEach((item, index) => {
+                planifier(() => item.classList.add("intro-checked"), 3250 + index * 320);
+            });
+
+            // Stage 4 : message de bienvenue
+            planifier(() => allerAuStage(4), 4700);
+
+            // Fin de l'intro, transition vers l'espace organisateur
+            planifier(fermerIntro, 6200);
+        })();
     </script>
 
 </body>

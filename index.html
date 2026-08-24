@@ -3,1315 +3,2504 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Achat de Billet | GoldTix</title>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Espace Organisateur - GoldTix</title>
+
+    <!-- EmailJS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function(){ emailjs.init({ publicKey: "YPl814w1CnLbyKiQC" }); })();
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
     <style>
-        /* =============================================
-           VARIABLES & RESET
-        ============================================= */
+        /* ============================================
+           DESIGN TOKENS
+        ============================================ */
         :root {
-            --gold-1: #f59e0b;
-            --gold-2: #d97706;
-            --gold-3: #b45309;
-            --gold-gradient: linear-gradient(135deg, var(--gold-1) 0%, var(--gold-3) 100%);
-            --gold-glow: rgba(217, 119, 6, 0.28);
-            --gold-glow-soft: rgba(245, 158, 11, 0.08);
+            --gold-50:  #fffbeb;
+            --gold-100: #fef3c7;
+            --gold-200: #fde68a;
+            --gold-400: #fbbf24;
+            --gold-500: #f59e0b;
+            --gold-600: #d97706;
+            --gold-700: #b45309;
+            --gold-800: #92400e;
+            --gold-900: #78350f;
 
-            --bg: #f7f8fa;
-            --surface: rgba(255, 255, 255, 0.92);
-            --surface-raised: #ffffff;
-            --border: rgba(217, 119, 6, 0.13);
-            --border-neutral: #e8ecf0;
+            --ink-50:  #f8fafc;
+            --ink-100: #f1f5f9;
+            --ink-200: #e2e8f0;
+            --ink-300: #cbd5e1;
+            --ink-400: #94a3b8;
+            --ink-500: #64748b;
+            --ink-700: #334155;
+            --ink-900: #0f172a;
 
-            --text: #0d1117;
-            --text-sub: #5a6478;
-            --text-muted: #8a94a6;
+            --green-100: #d1fae5;
+            --green-700: #065f46;
+            --green-500: #10b981;
+            --green-600: #059669;
 
-            --green: #059669;
-            --green-bg: rgba(16, 185, 129, 0.09);
-            --green-border: rgba(16, 185, 129, 0.22);
+            --red-100: #fee2e2;
+            --red-700: #991b1b;
+            --red-500: #ef4444;
 
-            --red: #dc2626;
-            --red-bg: #fef2f2;
-            --red-border: #fecaca;
+            --amber-100: #fef3c7;
+            --amber-800: #92400e;
+            --amber-500: #f59e0b;
 
-            --radius-xl: 28px;
-            --radius-lg: 18px;
-            --radius-md: 12px;
-            --radius-sm: 8px;
+            --grad-gold: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+            --grad-dark: linear-gradient(135deg, #1e1208 0%, #3b1f07 100%);
+            --grad-page: linear-gradient(160deg, #fffdf7 0%, #fef9ee 50%, #fffbf0 100%);
 
-            --shadow-card: 0 24px 48px -16px rgba(217, 119, 6, 0.09), 0 8px 24px -8px rgba(0,0,0,0.04);
-            --shadow-hover: 0 32px 64px -20px rgba(217, 119, 6, 0.17), 0 12px 32px -12px rgba(0,0,0,0.06);
-            --shadow-glow: 0 12px 30px var(--gold-glow);
+            --radius-xs: 8px;
+            --radius-sm: 12px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-xl: 32px;
 
-            --ease: cubic-bezier(0.16, 1, 0.3, 1);
-            --transition: all 0.4s var(--ease);
+            /* ===== NOUVEAU : ombres à double couche, plus de profondeur, même coût GPU ===== */
+            --shadow-gold-sm: 0 2px 6px rgba(217,119,6,0.10), 0 4px 14px rgba(217,119,6,0.15);
+            --shadow-gold-md: 0 4px 12px rgba(217,119,6,0.14), 0 8px 30px rgba(217,119,6,0.20);
+            --shadow-gold-lg: 0 6px 18px rgba(217,119,6,0.10), 0 20px 60px rgba(217,119,6,0.16), 0 8px 25px rgba(0,0,0,0.06);
+            --shadow-card:    0 2px 8px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+            --shadow-card-hover: 0 8px 30px rgba(217,119,6,0.12), 0 4px 12px rgba(0,0,0,0.06);
+
+            --border-gold: rgba(217,119,6,0.20);
+            --border-gold-strong: rgba(217,119,6,0.40);
+            --border-light: rgba(0,0,0,0.06);
+
+            --font-display: 'Sora', sans-serif;
+            --font-body: 'DM Sans', sans-serif;
         }
 
+        /* ============================================
+           RESET & BASE
+        ============================================ */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         html {
+    scroll-behavior: smooth;
     overflow-x: hidden;
     width: 100%;
     max-width: 100%;
 }
 
        body {
-    font-family: 'DM Sans', sans-serif;
-    background-color: var(--bg);
-    background-image:
-        radial-gradient(ellipse at 8% 8%, rgba(245, 158, 11, 0.07) 0px, transparent 55%),
-    radial-gradient(ellipse at 92% 92%, rgba(217, 119, 6, 0.05) 0px, transparent 55%);
-    color: var(--text);
+    font-family: var(--font-body);
+    background: var(--grad-page);
+    background-attachment: fixed;
+    color: var(--ink-900);
+    min-height: 100vh;
     width: 100%;
     max-width: 100%;
-    padding: 28px 20px 90px;
-    line-height: 1.6;
-    min-height: 100vh;
+    padding: 24px 16px 80px;
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
 }
 
 img, svg, video, canvas {
     max-width: 100%;
 }
 
-        /* =============================================
-           ANIMATIONS
-        ============================================= */
-       @keyframes entranceUp {
-    from { opacity: 0; transform: translateY(36px) scale(0.98); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-        @keyframes pulseGlow {
-            0%, 100% { box-shadow: 0 0 18px rgba(217,119,6,0.2); }
-            50%       { box-shadow: 0 0 34px rgba(217,119,6,0.46); }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            /* ===== NOUVEAU : dégradé légèrement plus riche pour plus de profondeur, coût inchangé ===== */
+            background:
+                radial-gradient(ellipse 60% 40% at 5% 10%, rgba(245,158,11,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 35% at 95% 8%, rgba(245,158,11,0.09) 0%, transparent 55%),
+                radial-gradient(ellipse 70% 50% at 50% 100%, rgba(180,83,9,0.06) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
         }
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50%       { transform: translateY(-5px); }
+
+        body > * { position: relative; z-index: 1; }
+
+        /* ============================================
+           KEYFRAMES
+        ============================================ */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
-        @keyframes spin {
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        @keyframes shimmer {
+            0%   { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+
+        @keyframes pulse-ring {
+            0%   { transform: scale(1); opacity: 0.6; }
+            100% { transform: scale(1.4); opacity: 0; }
+        }
+
+        @keyframes spin-slow {
             to { transform: rotate(360deg); }
         }
-        @keyframes shimmer {
-            0%   { background-position: -400px 0; }
-            100% { background-position: 400px 0; }
+
+        /* ===== NOUVEAU : balayage lumineux sur le bouton doré principal (GPU-only) ===== */
+        @keyframes shine-sweep {
+            0%   { transform: translateX(-120%) skewX(-15deg); }
+            100% { transform: translateX(220%) skewX(-15deg); }
         }
 
-        .anim-1 { animation: entranceUp 0.9s var(--ease) both; }
-        .anim-2 { animation: entranceUp 0.9s var(--ease) 0.18s both; opacity: 0; }
-        .anim-3 { animation: entranceUp 0.9s var(--ease) 0.36s both; opacity: 0; }
+        /* ============================================
+           LAYOUT WRAPPERS
+        ============================================ */
+        .page-wrapper {
+            max-width: 680px;
+            margin: 0 auto;
+            animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
 
-        /* =============================================
+        /* ============================================
            NAVBAR
-        ============================================= */
-       .navbar {
-    max-width: 1100px;
-    margin: 0 auto 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    background: rgba(255,255,255,0.92);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    padding: 14px 22px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    box-shadow: 0 8px 28px rgba(0,0,0,0.03);
-}
-        .brand {
+        ============================================ */
+        .top-navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding: 14px 20px;
+            background: rgba(255,255,255,0.88);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-gold);
+            border-radius: var(--radius-lg);
+            /* ===== NOUVEAU : ombre plus riche + liseré intérieur subtil ===== */
+            box-shadow: var(--shadow-gold-sm), 0 1px 0 rgba(255,255,255,0.9) inset, 0 0 0 1px rgba(255,255,255,0.4) inset;
+            animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .logo-container {
             display: flex;
             align-items: center;
-            gap: 10px;
-            min-width: 0;
-            text-decoration: none;
+            gap: 12px;
         }
 
-        .brand-logo {
-            height: 34px;
-            width: auto;
-            flex-shrink: 0;
-            transition: var(--transition);
+        .site-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-xs);
+            object-fit: cover;
+            border: 1.5px solid var(--border-gold-strong);
+            box-shadow: 0 2px 8px rgba(217,119,6,0.2);
         }
-        .brand-logo:hover { transform: scale(1.06) rotate(-3deg); }
 
-        .brand-name {
-            font-family: 'Syne', sans-serif;
+        .brand-title {
+            font-family: var(--font-display);
             font-size: 22px;
             font-weight: 800;
-            letter-spacing: -0.4px;
-            color: var(--text);
-            white-space: nowrap;
-        }
-        .brand-name em {
-            font-style: normal;
-            background: var(--gold-gradient);
-            background-clip: text;
--webkit-background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.8px;
+            line-height: 1;
         }
 
-        .secure-badge {
+        .brand-title .text-dark { color: var(--ink-900); }
+        .brand-title .text-gold {
+            background: var(--grad-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .badge-espace {
             display: inline-flex;
             align-items: center;
             gap: 7px;
-            background: var(--green-bg);
-            color: var(--green);
-            border: 1px solid var(--green-border);
-            padding: 7px 13px;
-            border-radius: 30px;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.3px;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-        .secure-badge svg { width: 12px; height: 12px; }
-
-        /* =============================================
-           LAYOUT
-        ============================================= */
-        .main-wrapper { max-width: 1100px; margin: 0 auto; }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1.15fr;
-            gap: 32px;
-            align-items: start;
-        }
-        @media (max-width: 900px) {
-            .grid { grid-template-columns: 1fr; }
-        }
-
-        /* =============================================
-           CARDS
-        ============================================= */
-       .card {
-    background: var(--surface);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-radius: var(--radius-xl);
-    padding: 32px;
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow-card);
-    transition: var(--transition);
-}
-        .card--event:hover { box-shadow: var(--shadow-hover); }
-
-        /* =============================================
-           POSTER
-        ============================================= */
-        .poster-wrapper {
-            width: 100%;
-            min-height: 320px;
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            background: linear-gradient(180deg, #fffdf9 0%, #f8f5f0 100%);
-            margin-bottom: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            border: 1px solid rgba(217,119,6,0.1);
-            box-shadow: 0 10px 28px rgba(0,0,0,0.04);
-            padding: 12px;
-            transition: var(--transition);
-            position: relative;
-        }
-        .poster-wrapper:hover { transform: scale(1.012); }
-        .poster-wrapper img {
-            display: block;
-            width: auto;
-            max-width: 100%;
-            height: auto;
-            max-height: 500px;
-            object-fit: contain;
-            object-position: center center;
-            border-radius: var(--radius-md);
-            margin: 0 auto;
-        }
-        .poster-fallback {
-            width: 100%;
-            min-height: 280px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 14px;
-            font-weight: 600;
-            background: linear-gradient(135deg, rgba(245,158,11,0.04), rgba(217,119,6,0.02));
-            border-radius: var(--radius-md);
-            border: 1px dashed rgba(217,119,6,0.15);
-            padding: 24px 18px;
-        }
-        .poster-fallback svg {
-            width: 40px;
-            height: 40px;
-            margin-bottom: 10px;
-            opacity: 0.35;
-            display: block;
-        }
-        .poster-fallback p {
-            margin: 0;
-            line-height: 1.4;
-            display: block;
-            text-align: center;
-        }
-
-        /* =============================================
-           EVENT INFO
-        ============================================= */
-        .event-title {
-            font-family: 'Syne', sans-serif;
-            font-size: 26px;
-            font-weight: 800;
-            color: var(--text);
-            margin: 0 0 18px;
-            letter-spacing: -0.6px;
-            line-height: 1.25;
-        }
-
-                .meta-row {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            row-gap: 6px;
-            gap: 10px;
-            font-size: 14.5px;
-            color: var(--text-sub);
-            margin-bottom: 12px;
-            font-weight: 500;
-        }
-        .meta-item {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            flex-shrink: 0;
-        }
-        .meta-text {
-            white-space: nowrap;
-        }
-        .meta-row svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--gold-2); }
-        .meta-row strong { color: var(--text); }
-        .meta-sep { color: var(--border-neutral); margin: 0 4px; }
-
-        .price-badge {
-            display: inline-flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 5px;
-            margin-top: 18px;
-            padding: 14px 22px;
-            background: var(--gold-gradient);
-            color: #fff;
-            border-radius: var(--radius-lg);
-            font-weight: 700;
-            font-size: 14.5px;
-            box-shadow: var(--shadow-glow);
-            animation: float 4s ease-in-out infinite;
-            width: 100%;
-        }
-        .price-badge-item { display: flex; align-items: center; gap: 8px; }
-        .price-badge-item svg { width: 15px; height: 15px; opacity: 0.85; }
-
-        /* =============================================
-           PAYMENT BOX
-        ============================================= */
-        .payment-box {
-            background: linear-gradient(135deg, #fefce8, #fef9c3);
-            border: 1px solid rgba(245,158,11,0.28);
-            border-radius: var(--radius-lg);
-            padding: 22px;
-            margin-bottom: 28px;
-            position: relative;
-            overflow: hidden;
-        }
-        .payment-box::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0;
-            width: 4px; height: 100%;
-            background: var(--gold-gradient);
-        }
-
-        .payment-box-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 12px;
-            font-weight: 800;
-            color: var(--text);
-            letter-spacing: 0.7px;
-            text-transform: uppercase;
-            margin-bottom: 16px;
-        }
-        .payment-box-title svg { width: 14px; height: 14px; color: var(--gold-2); }
-
-        .info-rows { display: flex; flex-direction: column; gap: 10px; }
-
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            background: rgba(255,255,255,0.72);
-            padding: 11px 15px;
-            border-radius: var(--radius-md);
-            border: 1px solid rgba(245,158,11,0.13);
-            flex-wrap: wrap; 
-        }
-        .info-row-label {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 11.5px;
-            color: var(--text-muted);
-            font-weight: 700;
-            white-space: normal;
-            letter-spacing: 0.2px;
-            min-width: 0; 
-        }
-        .info-row-label svg { width: 13px; height: 13px; }
-        .info-row-value {
-            font-size: 14px;
-            font-weight: 800;
-            color: var(--text);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            text-align: right;
-            min-width: 0;  
-        }
-
-        .qr-wrapper {
-            margin-top: 14px;
-            background: rgba(255,255,255,0.8);
-            padding: 16px;
-            border-radius: var(--radius-md);
-            border: 1px solid rgba(245,158,11,0.13);
-            text-align: center;
-        }
-        .qr-label {
-            font-size: 11.5px;
-            color: var(--text-muted);
-            font-weight: 700;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-        .qr-label svg { width: 13px; height: 13px; }
-        .qr-image {
-            max-width: 190px;
-            width: 100%;
-            height: auto;
-            border-radius: 10px;
-            display: inline-block;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.07);
-            border: 1px solid var(--border-neutral);
-            background: #fff;
-            padding: 6px;
-            object-fit: contain;
-        }
-
-        /* =============================================
-           FORM
-        ============================================= */
-        .section-title {
-            font-family: 'Syne', sans-serif;
-            font-size: 17px;
-            font-weight: 800;
-            margin: 0 0 20px;
-            color: var(--text);
-            letter-spacing: -0.3px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .section-title svg { width: 18px; height: 18px; color: var(--gold-2); }
-
-        .form-group { margin-bottom: 20px; }
-
-        .form-group label {
-            display: block;
-            font-size: 11px;
-            font-weight: 800;
-            color: var(--gold-3);
-            margin-bottom: 8px;
-            text-transform: none;
-            letter-spacing: 0.9px;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="tel"],
-        select {
-            width: 100%;
-            padding: 15px 17px;
-            font-size: 14.5px;
-            font-family: 'DM Sans', sans-serif;
-            border: 2px solid var(--border-neutral);
-            border-radius: var(--radius-lg);
-            outline: none;
-            background: var(--surface-raised);
-            color: var(--text);
-            transition: var(--transition);
-            -webkit-appearance: none;
-            appearance: none;
-        }
-        input[type="text"]:focus,
-        input[type="email"]:focus,
-        input[type="tel"]:focus,
-        select:focus {
-            border-color: var(--gold-2);
-            box-shadow: 0 0 0 5px var(--gold-glow);
-            background: #fff;
-            transform: translateY(-2px);
-        }
-        input::placeholder { color: var(--text-muted); }
-
-        /* File Input Custom */
-        .file-input-wrapper {
-            position: relative;
-            border: 2px dashed var(--border-neutral);
-            border-radius: var(--radius-lg);
-            background: #fbfcfd;
-            transition: var(--transition);
-            overflow: hidden;
-        }
-        .file-input-wrapper:hover {
-            border-color: var(--gold-2);
-            background: #fffdf5;
-        }
-        .file-input-wrapper input[type="file"] {
-            position: absolute;
-            inset: 0;
-            opacity: 0;
-            cursor: pointer;
-            width: 100%;
-            height: 100%;
-            z-index: 2;
-        }
-        .file-input-display {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 24px;
-            gap: 8px;
-            pointer-events: none;
-        }
-        .file-input-display svg { width: 28px; height: 28px; color: var(--gold-2); opacity: 0.7; }
-        .file-input-display span {
-            font-size: 13.5px;
-            font-weight: 600;
-            color: var(--text-sub);
-        }
-        .file-input-display em {
-            font-style: normal;
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-        .file-name-preview {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--gold-3);
-            margin-top: 4px;
-            display: none;
-        }
-
-        /* Submit Button */
-        .btn-submit {
-            background: var(--gold-gradient);
-            color: #fff;
-            border: none;
-            padding: 17px 24px;
-            width: 100%;
-            border-radius: var(--radius-lg);
-            font-size: 15.5px;
-            font-weight: 700;
-            font-family: 'DM Sans', sans-serif;
-            cursor: pointer;
-            transition: var(--transition);
-            box-shadow: var(--shadow-glow);
-            margin-top: 8px;
-            letter-spacing: 0.3px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            position: relative;
-        }
-        .btn-submit::after {
-            content: '';
-            position: absolute;
-            inset: -6px;
-            border-radius: inherit;
-            background: var(--gold-gradient);
-            filter: blur(14px);
-            opacity: 0.3;
-            z-index: -1;
-            pointer-events: none;
-            animation: pulseGlowOpacity 3s ease-in-out infinite;
-        }
-        .btn-submit:disabled::after { opacity: 0; }
-        @keyframes pulseGlowOpacity {
-            0%, 100% { opacity: 0.22; }
-            50%      { opacity: 0.48; }
-        }
-
-        /* =============================================
-           STATES
-        ============================================= */
-        .loading-card {
-            text-align: center;
-            padding: 70px 24px;
-        }
-        .loading-shimmer {
-            height: 18px;
-            border-radius: 6px;
-            background: linear-gradient(90deg, #f0f2f5 25%, #e8ecf0 50%, #f0f2f5 75%);
-            background-size: 400px 100%;
-            animation: shimmer 1.4s infinite linear;
-            margin: 0 auto;
-        }
-        .loading-text {
-            color: var(--text-muted);
-            font-size: 15px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .loading-text .spinner {
-            width: 18px; height: 18px;
-            border: 2.5px solid var(--border-neutral);
-            border-top-color: var(--gold-2);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        .closed-box {
-            background: var(--red-bg);
-            border: 1px solid var(--red-border);
-            border-radius: var(--radius-lg);
-            padding: 40px 28px;
-            text-align: center;
-        }
-        .closed-box-icon {
-            width: 52px; height: 52px;
-            background: rgba(220,38,38,0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 18px;
-        }
-        .closed-box-icon svg { width: 24px; height: 24px; color: var(--red); }
-        .closed-box h3 { color: var(--red); font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 10px; }
-        .closed-box p { color: #991b1b; font-size: 14.5px; line-height: 1.65; }
-        .closed-box p + p { margin-top: 10px; color: var(--text-muted); font-size: 13px; font-weight: 600; }
-
-        .error-card {
-            text-align: center;
-            padding: 60px 24px;
-        }
-        .error-card h2 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 10px; }
-        .error-card p { color: var(--text-sub); font-size: 14.5px; }
-
-        /* =============================================
-           FOOTER
-        ============================================= */
-        .footer {
-            max-width: 1100px;
-            margin: 64px auto 0;
-            padding-top: 28px;
-            border-top: 1px solid var(--border-neutral);
-            text-align: center;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-        .footer-brand {
-            font-family: 'Syne', sans-serif;
-            font-size: 12px;
-            font-weight: 800;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: var(--gold-2);
-            margin-bottom: 8px;
-        }
-        .footer a {
-            color: var(--gold-2);
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.2s;
-        }
-        .footer a:hover { color: var(--gold-3); text-decoration: underline; }
-        .footer-dot { margin: 0 6px; color: var(--border-neutral); }
-
-        /* =============================================
-           RESPONSIVE TWEAKS
-        ============================================= */
-        @media (max-width: 600px) {
-            body { padding: 18px 14px 70px; }
-            .card { padding: 22px 18px; }
-            .event-title { font-size: 22px; }
-        }
-
-        /* =============================================================
-           ===== NOUVEAU : INTRODUCTION ANIMÉE GOLDTIX (ajout uniquement)
-           Ne modifie aucune règle existante ci-dessus. Overlay plein
-           écran, se retire automatiquement après ~5s ou au clic sur
-           "Passer". Purement transform/opacity : coût GPU minimal.
-        ============================================================= */
-        #introOverlayGoldTix {
-            position: fixed;
-            inset: 0;
-            z-index: 99999;
-            background:
-                radial-gradient(ellipse 80% 60% at 50% 20%, rgba(245,158,11,0.10) 0%, transparent 60%),
-                radial-gradient(ellipse 60% 50% at 80% 80%, rgba(217,119,6,0.08) 0%, transparent 60%),
-                #0a0908;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            animation: introOverlayExit 0.7s ease 4.3s forwards;
-        }
-        #introOverlayGoldTix.intro-skip { animation: introOverlayExit 0.5s ease forwards !important; }
-        #introOverlayGoldTix.intro-hidden { display: none !important; }
-
-        @keyframes introOverlayExit {
-            0%   { opacity: 1; transform: scale(1); }
-            100% { opacity: 0; transform: scale(1.04); }
-        }
-
-        .intro-particles { position: absolute; inset: 0; pointer-events: none; }
-        .intro-particles span {
-            position: absolute;
-            width: 3px; height: 3px;
-            background: rgba(245,158,11,0.55);
-            border-radius: 50%;
-            box-shadow: 0 0 6px rgba(245,158,11,0.6);
-            opacity: 0;
-            animation: introParticleFloat 3.6s ease-in-out infinite;
-        }
-        .intro-particles span:nth-child(1){ top:15%; left:12%; animation-delay:.1s; }
-        .intro-particles span:nth-child(2){ top:70%; left:20%; animation-delay:.6s; }
-        .intro-particles span:nth-child(3){ top:25%; left:80%; animation-delay:.3s; }
-        .intro-particles span:nth-child(4){ top:60%; left:88%; animation-delay:.9s; }
-        .intro-particles span:nth-child(5){ top:85%; left:50%; animation-delay:.5s; }
-        .intro-particles span:nth-child(6){ top:10%; left:55%; animation-delay:1.1s; }
-        .intro-particles span:nth-child(7){ top:45%; left:6%; animation-delay:.8s; }
-        .intro-particles span:nth-child(8){ top:40%; left:94%; animation-delay:1.3s; }
-
-        @keyframes introParticleFloat {
-            0%, 100% { opacity: 0; transform: translateY(0); }
-            50%      { opacity: 1; transform: translateY(-14px); }
-        }
-
-        #introSkipBtn {
-            position: absolute;
-            top: 20px; right: 20px;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(245,158,11,0.25);
-            color: rgba(255,255,255,0.75);
-            font-family: 'DM Sans', sans-serif;
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 0.4px;
+            background: linear-gradient(135deg, rgba(217,119,6,0.10) 0%, rgba(245,158,11,0.07) 100%);
+            color: var(--gold-700);
+            border: 1px solid var(--border-gold-strong);
             padding: 8px 16px;
-            border-radius: 30px;
-            cursor: pointer;
-            backdrop-filter: blur(6px);
-            transition: background 0.2s, color 0.2s, border-color 0.2s;
-            z-index: 2;
-        }
-        #introSkipBtn:hover { background: rgba(245,158,11,0.15); color: #fff; border-color: rgba(245,158,11,0.5); }
-
-        .intro-center { position: relative; text-align: center; padding: 24px; z-index: 1; max-width: 480px; width: 100%; }
-
-        .intro-logo-wrap { opacity: 0; animation: introFadeUp 0.8s ease 0.4s forwards; }
-        .intro-logo {
-            font-family: 'Syne', sans-serif;
-            font-size: 44px;
-            font-weight: 800;
-            letter-spacing: -1px;
-            color: #f5f5f4;
-            margin: 0;
-            text-shadow: 0 0 24px rgba(245,158,11,0.35), 0 0 60px rgba(245,158,11,0.15);
-            animation: introLogoGlow 2.4s ease-in-out infinite 1.2s;
-        }
-        .intro-logo em {
-            font-style: normal;
-            background: linear-gradient(135deg, #f59e0b, #b45309);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .intro-tagline {
-            margin-top: 10px;
-            font-size: 13px;
-            letter-spacing: 1.5px;
+            border-radius: 50px;
+            font-family: var(--font-display);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
             text-transform: uppercase;
-            color: rgba(245,197,109,0.75);
-            font-weight: 600;
-            opacity: 0;
-            animation: introFadeUp 0.8s ease 0.9s forwards;
         }
 
-        @keyframes introFadeUp {
-            from { opacity: 0; transform: translateY(14px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes introLogoGlow {
-            0%, 100% { text-shadow: 0 0 24px rgba(245,158,11,0.35), 0 0 60px rgba(245,158,11,0.15); }
-            50%      { text-shadow: 0 0 34px rgba(245,158,11,0.55), 0 0 80px rgba(245,158,11,0.25); }
-        }
-
-        .intro-flow {
-            position: relative;
-            display: flex;
-            justify-content: space-between;
-            margin-top: 46px;
-            opacity: 0;
-            animation: introFadeUp 0.6s ease 1.8s forwards;
-        }
-        .intro-flow-line {
-            position: absolute;
-            top: 19px; left: 8%; right: 8%;
-            height: 2px;
-            background: rgba(255,255,255,0.08);
-            overflow: hidden;
-            border-radius: 2px;
-        }
-        .intro-flow-progress {
-            display: block;
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #f59e0b, #d97706);
-            animation: introLineFill 1.6s ease 2.0s forwards;
-        }
-        @keyframes introLineFill { to { width: 100%; } }
-
-        .intro-flow-step {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            flex: 1;
-            color: rgba(255,255,255,0.35);
-        }
-        .intro-flow-step svg {
-            width: 22px; height: 22px;
-            padding: 9px;
+        .badge-espace .badge-dot {
+            width: 7px;
+            height: 7px;
+            background: var(--gold-500);
             border-radius: 50%;
-            background: #14110d;
-            border: 1.5px solid rgba(255,255,255,0.12);
-            box-sizing: content-box;
-            transform: scale(0.85);
-            opacity: 0.5;
+            position: relative;
         }
-        .intro-flow-step span {
+
+        .badge-espace .badge-dot::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            background: rgba(245,158,11,0.35);
+            animation: pulse-ring 1.8s ease-out infinite;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-logout {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            background: var(--ink-50);
+            color: var(--ink-500);
+            border: 1px solid var(--ink-200);
+            padding: 8px 14px;
+            border-radius: 50px;
+            font-family: var(--font-display);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.15s;
+        }
+        .btn-logout:hover {
+            background: var(--red-100);
+            color: var(--red-700);
+            border-color: rgba(239,68,68,0.3);
+            transform: translateY(-1px);
+        }
+        .btn-logout:focus-visible {
+            outline: 2px solid var(--gold-500);
+            outline-offset: 2px;
+        }
+
+        /* ============================================
+           MAIN CARD WRAPPER
+        ============================================ */
+        .main-card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--border-gold);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-gold-lg);
+            overflow: hidden;
+            animation: fadeUp 0.6s 0.1s cubic-bezier(0.22,1,0.36,1) both;
+        }
+
+        .main-card::before {
+            content: '';
+            display: block;
+            height: 3px;
+            background: var(--grad-gold);
+        }
+
+        .main-card-inner {
+            padding: 28px 28px 32px;
+        }
+
+        @media (max-width: 520px) {
+            .main-card-inner { padding: 20px 16px 24px; }
+        }
+
+        /* ============================================
+           EVENT HEADER / BANNER
+        ============================================ */
+        .header-top {
+            position: relative;
+            text-align: center;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            padding: 48px 24px 36px;
+            background: var(--grad-dark);
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-gold-md);
+        }
+
+        .header-top::after {
+            content: '';
+            position: absolute;
+            top: -60px; right: -60px;
+            width: 180px; height: 180px;
+            background: radial-gradient(circle, rgba(245,158,11,0.25) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .header-banner-glow {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 2px;
+            background: var(--grad-gold);
+            opacity: 0.7;
+        }
+
+        .event-bg-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        .header-top::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            /* ===== NOUVEAU : dégradé plus profond pour une lisibilité et un contraste renforcés ===== */
+            background: linear-gradient(180deg,
+                rgba(10,6,2,0.65) 0%,
+                rgba(20,12,4,0.78) 100%);
+            z-index: 1;
+        }
+
+        .header-top > * { position: relative; z-index: 2; }
+
+        .header-label {
+            display: inline-block;
+            background: rgba(245,158,11,0.18);
+            border: 1px solid rgba(245,158,11,0.35);
+            color: var(--gold-400);
+            font-family: var(--font-display);
             font-size: 10px;
             font-weight: 700;
-            letter-spacing: 0.4px;
+            letter-spacing: 2px;
             text-transform: uppercase;
-        }
-        .intro-flow-step[data-step="1"] svg { animation: introStepLight 0.4s ease 2.05s forwards; }
-        .intro-flow-step[data-step="2"] svg { animation: introStepLight 0.4s ease 2.55s forwards; }
-        .intro-flow-step[data-step="3"] svg { animation: introStepLight 0.4s ease 3.05s forwards; }
-        .intro-flow-step[data-step="4"] svg { animation: introStepLight 0.4s ease 3.55s forwards; }
-        @keyframes introStepLight {
-            0%   { transform: scale(0.85); opacity: 0.5; border-color: rgba(255,255,255,0.12); color: rgba(255,255,255,0.35); }
-            50%  { transform: scale(1.15); }
-            100% { transform: scale(1); opacity: 1; border-color: rgba(245,158,11,0.6); color: #f59e0b; box-shadow: 0 0 16px rgba(245,158,11,0.35); }
+            padding: 5px 14px;
+            border-radius: 50px;
+            margin-bottom: 14px;
         }
 
-        .intro-ready {
-            margin-top: 34px;
+        #titreEvenementOrg {
+            font-family: var(--font-display);
+            font-size: 26px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+            margin-bottom: 16px;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+        }
+
+        #infosEvenementOrg {
+            display: inline-flex;
+            align-items: center;
+            gap: 0;
+            background: rgba(15,10,3,0.80);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(245,158,11,0.35);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-family: var(--font-body);
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.92);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.30), 0 0 0 1px rgba(245,158,11,0.10) inset;
+            letter-spacing: 0.2px;
+        }
+
+        /* ============================================
+           STATUS BOX
+        ============================================ */
+        .status-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--ink-50);
+            border: 1px solid var(--ink-200);
+            border-radius: var(--radius-md);
+            padding: 14px 18px;
+            margin-bottom: 24px;
+            gap: 12px;
+        }
+
+        .status-box-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .status-indicator.open {
+            background: var(--green-500);
+            box-shadow: 0 0 0 3px rgba(16,185,129,0.2);
+        }
+
+        .status-indicator.closed {
+            background: var(--red-500);
+            box-shadow: 0 0 0 3px rgba(239,68,68,0.2);
+        }
+
+        #labelStatutVentes {
+            font-family: var(--font-display);
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--ink-700);
+        }
+
+        .btn-toggle-ventes {
+            font-family: var(--font-display);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 9px 18px;
+            border-radius: var(--radius-xs);
+            border: none;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+            white-space: nowrap;
+        }
+
+        .btn-toggle-ventes:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-toggle-ventes:active { transform: translateY(0); }
+        .btn-toggle-ventes:focus-visible {
+            outline: 2px solid var(--gold-500);
+            outline-offset: 2px;
+        }
+
+        /* ============================================
+           TABS
+        ============================================ */
+        .tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 28px;
+            background: var(--ink-100);
+            padding: 5px;
+            border-radius: var(--radius-md);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 11px 8px;
+            border: none;
+            background: transparent;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 12px;
+            color: var(--ink-500);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.22s cubic-bezier(0.22,1,0.36,1);
+            letter-spacing: 0.2px;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: var(--gold-700);
+            background: rgba(217,119,6,0.06);
+        }
+
+        .tab-btn.active {
+            background: #ffffff;
+            color: var(--gold-700);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            background: var(--gold-500);
+            border-radius: 50%;
+        }
+
+        .tab-btn:focus-visible {
+            outline: 2px solid var(--gold-500);
+            outline-offset: 2px;
+        }
+
+        /* ============================================
+           SECTION CONTENT
+        ============================================ */
+        .section-content { display: none; }
+        .section-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease both;
+        }
+
+        .section-header {
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            font-family: var(--font-display);
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--ink-900);
+            letter-spacing: -0.3px;
+            margin-bottom: 4px;
+        }
+
+        .section-header p {
+            font-size: 13px;
+            color: var(--ink-500);
+            line-height: 1.55;
+        }
+
+        /* ============================================
+           SEARCH INPUT
+        ============================================ */
+        .search-container { margin-bottom: 18px; }
+
+        .search-wrapper {
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--ink-400);
+            pointer-events: none;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 13px 16px 13px 42px;
+            background: var(--ink-50);
+            border: 1px solid var(--ink-200);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
             font-size: 14px;
-            color: rgba(255,255,255,0.55);
+            color: var(--ink-900);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--gold-500);
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(245,158,11,0.12);
+        }
+
+        .search-input::placeholder { color: var(--ink-400); }
+
+        /* ============================================
+           BILLET CARD
+        ============================================ */
+        .billet-card {
+            background: #ffffff;
+            border: 1px solid var(--ink-200);
+            border-radius: var(--radius-md);
+            padding: 0;
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+            transition: box-shadow 0.25s, border-color 0.25s, transform 0.25s;
+        }
+
+        .billet-card:hover {
+            box-shadow: var(--shadow-card-hover);
+            border-color: var(--border-gold-strong);
+            transform: translateY(-2px);
+        }
+
+        .billet-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px 0;
+        }
+
+        .billet-card-body {
+            padding: 10px 18px 18px;
+        }
+
+        .billet-info-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 0;
+            border-bottom: 1px solid var(--ink-100);
+        }
+
+        .billet-info-row:last-of-type { border-bottom: none; }
+
+        .billet-info-label {
+            font-family: var(--font-display);
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--ink-400);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            width: 80px;
+            flex-shrink: 0;
+        }
+
+        .billet-info-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--ink-900);
+        }
+
+        .billet-card .preuve-label {
+            font-family: var(--font-display);
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--ink-400);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+.billet-card a img,
+.billet-card img.preuve-img {
+    width: 100%;
+    max-height: 170px;
+    height: auto;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+    background: #f8fafc;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--ink-200);
+    transition: opacity 0.2s;
+}
+
+        .billet-card a:hover img { opacity: 0.9; }
+
+        .billet-card-actions {
+            display: flex;
+            gap: 8px;
+            padding: 14px 18px;
+            background: var(--ink-50);
+            border-top: 1px solid var(--ink-100);
+            flex-wrap: wrap;
+        }
+
+        /* ============================================
+           BADGES
+        ============================================ */
+        .badge-statut {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-family: var(--font-display);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+        }
+
+        .badge-statut .badge-icon {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .badge-confirme {
+            background: var(--green-100);
+            color: var(--green-700);
+            border: 1px solid rgba(16,185,129,0.25);
+        }
+        .badge-confirme .badge-icon { background: var(--green-500); }
+
+        .badge-refuse {
+            background: var(--red-100);
+            color: var(--red-700);
+            border: 1px solid rgba(239,68,68,0.25);
+        }
+        .badge-refuse .badge-icon { background: var(--red-500); }
+
+        .badge-attente {
+            background: var(--amber-100);
+            color: var(--amber-800);
+            border: 1px solid rgba(245,158,11,0.30);
+        }
+        .badge-attente .badge-icon { background: var(--amber-500); }
+
+        /* ============================================
+           ACTION BUTTONS
+        ============================================ */
+        button { font-family: var(--font-display); cursor: pointer; }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 16px;
+            border-radius: var(--radius-xs);
+            border: none;
+            font-family: var(--font-display);
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+            letter-spacing: 0.2px;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-action:active { transform: translateY(0); box-shadow: none; }
+        .btn-action:focus-visible {
+            outline: 2px solid var(--ink-900);
+            outline-offset: 2px;
+        }
+
+        .btn-confirmer {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #ffffff;
+        }
+
+        .btn-refuser {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #ffffff;
+        }
+
+        .btn-attente {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #ffffff;
+        }
+
+        .btn-retirer {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #ffffff;
+        }
+
+        /* ============================================
+           EMPTY STATE
+        ============================================ */
+        .empty-state {
+            text-align: center;
+            padding: 48px 20px;
+        }
+
+        .empty-state-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--ink-100);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            color: var(--ink-400);
             font-weight: 500;
-            opacity: 0;
-            animation: introFadeUp 0.6s ease 3.9s forwards;
+        }
+
+        /* ============================================
+           SCANNER SECTION
+        ============================================ */
+        .scanner-frame {
+            position: relative;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 2px solid var(--border-gold-strong);
+            box-shadow: var(--shadow-gold-md), 0 0 0 4px rgba(245,158,11,0.08);
+            background: #000;
+        }
+
+        .scanner-corner {
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            z-index: 10;
+            pointer-events: none;
+        }
+        .scanner-corner.tl { top: 10px; left: 10px; border-top: 3px solid var(--gold-400); border-left: 3px solid var(--gold-400); }
+        .scanner-corner.tr { top: 10px; right: 10px; border-top: 3px solid var(--gold-400); border-right: 3px solid var(--gold-400); }
+        .scanner-corner.bl { bottom: 10px; left: 10px; border-bottom: 3px solid var(--gold-400); border-left: 3px solid var(--gold-400); }
+        .scanner-corner.br { bottom: 10px; right: 10px; border-bottom: 3px solid var(--gold-400); border-right: 3px solid var(--gold-400); }
+
+        #reader { width: 100%; }
+
+        .scanner-input-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .scanner-input-group input {
+            flex: 1;
+            padding: 13px 16px;
+            background: var(--ink-50);
+            border: 1px solid var(--ink-200);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 14px;
+            color: var(--ink-900);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+
+        .scanner-input-group input:focus {
+            border-color: var(--gold-500);
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(245,158,11,0.12);
+        }
+
+        .scanner-input-group input::placeholder { color: var(--ink-400); }
+
+        .scanner-input-group .btn-scan-manual {
+            background: var(--grad-gold);
+            color: #ffffff;
+            border: none;
+            padding: 0 22px;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 13px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: transform 0.15s, box-shadow 0.15s;
+            box-shadow: var(--shadow-gold-sm);
+        }
+
+        .scanner-input-group .btn-scan-manual:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-gold-md);
+        }
+        .scanner-input-group .btn-scan-manual:focus-visible {
+            outline: 2px solid var(--ink-900);
+            outline-offset: 2px;
+        }
+
+        /* ============================================
+           SCAN RESULT
+        ============================================ */
+        #resultatScan {
+            margin-top: 16px;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 15px;
+            text-align: center;
+            background: var(--ink-50);
+            border: 1px solid var(--ink-200);
+            color: var(--ink-500);
+            line-height: 1.5;
+            transition: all 0.3s ease;
+        }
+
+        /* ============================================
+           DIVIDER
+        ============================================ */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--ink-200), transparent);
+            margin: 24px 0;
+        }
+
+        /* ============================================
+           FOOTER
+        ============================================ */
+        .creator-footer {
+            margin-top: 32px;
+            text-align: center;
+            animation: fadeUp 0.6s 0.3s cubic-bezier(0.22,1,0.36,1) both;
+        }
+
+        .footer-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .footer-brand-line {
+            height: 1px;
+            width: 40px;
+            background: linear-gradient(90deg, transparent, var(--gold-500));
+        }
+
+        .footer-brand-line.right {
+            background: linear-gradient(90deg, var(--gold-500), transparent);
+        }
+
+        .footer-slogan {
+            font-family: var(--font-display);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            background: var(--grad-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-text {
+            font-size: 12px;
+            color: var(--ink-400);
+            line-height: 1.8;
+        }
+
+        .footer-text strong { color: var(--ink-700); font-weight: 700; }
+
+        .footer-text a {
+            color: var(--gold-600);
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.2s;
+        }
+
+        .footer-text a:hover { color: var(--gold-800); text-decoration: underline; }
+
+        /* ============================================
+           LOADING SPINNER
+        ============================================ */
+        .loading-dots {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            padding: 40px;
+        }
+
+        .loading-dots span {
+            width: 8px;
+            height: 8px;
+            background: var(--gold-400);
+            border-radius: 50%;
+            animation: bounce-dot 1.2s infinite ease-in-out;
+        }
+
+        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce-dot {
+            0%, 80%, 100% { transform: scale(0.7); opacity: 0.4; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        /* ============================================
+           ÉCRANS D'AUTHENTIFICATION
+           (première impression de l'organisateur — c'est ici que
+            se concentrent les touches "wow" les plus visibles)
+        ============================================ */
+        .auth-wrapper {
+            max-width: 440px;
+            margin: 0 auto;
+        }
+
+        .auth-card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--border-gold);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-gold-lg);
+            overflow: hidden;
+            animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
+        }
+
+        .auth-card::before {
+            content: '';
+            display: block;
+            height: 3px;
+            background: var(--grad-gold);
+        }
+
+        .auth-card-inner {
+            padding: 32px 28px 28px;
         }
 
         @media (max-width: 480px) {
-            .intro-logo { font-size: 32px; }
-            .intro-flow-step span { display: none; }
-            .intro-flow { margin-top: 34px; }
+            .auth-card-inner { padding: 24px 18px 20px; }
         }
 
+        /* ===== NOUVEAU : anneau de pulsation doré autour de l'icône, effet "premium" ===== */
+        .auth-icon-badge {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(245,158,11,0.14), rgba(217,119,6,0.08));
+            border: 1px solid var(--border-gold-strong);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin: 0 auto 16px;
+            position: relative;
+        }
+        .auth-icon-badge::after {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(245,158,11,0.35);
+            animation: pulse-ring 2.2s ease-out infinite;
+        }
+
+       .auth-event-name {
+           font-family: var(--font-display);
+           font-size: 15px;
+           font-weight: 800;
+           text-align: center;
+           color: var(--gold-700);
+           letter-spacing: -0.2px;
+           margin-bottom: 4px;
+           line-height: 1.3;
+        }
+        .auth-title {
+            font-family: var(--font-display);
+            font-size: 19px;
+            font-weight: 800;
+            text-align: center;
+            color: var(--ink-900);
+            letter-spacing: -0.3px;
+            margin-bottom: 6px;
+        }
+
+        .auth-subtitle {
+            font-size: 13px;
+            color: var(--ink-500);
+            text-align: center;
+            line-height: 1.55;
+            margin-bottom: 22px;
+        }
+
+        .auth-form-group { margin-bottom: 16px; }
+
+        .auth-form-group label {
+            display: block;
+            font-family: var(--font-display);
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--gold-700);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 7px;
+        }
+
+        .password-field-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-field-wrapper input,
+        .auth-form-group > input[type="text"] {
+            width: 100%;
+            padding: 13px 44px 13px 16px;
+            background: var(--ink-50);
+            border: 1px solid var(--ink-200);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 14px;
+            color: var(--ink-900);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+
+        .auth-form-group > input[type="text"] { padding: 13px 16px; }
+
+        .password-field-wrapper input:focus,
+        .auth-form-group > input[type="text"]:focus {
+            border-color: var(--gold-500);
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(245,158,11,0.12);
+        }
+
+       .eye-toggle {
+    position: absolute;
+    right: 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    line-height: 1;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: color 0.2s, background 0.2s;
+}
+.eye-toggle:hover { 
+    color: #d97706; 
+    background: rgba(217,119,6,0.08);
+}
+.eye-toggle:focus-visible {
+    outline: 2px solid var(--gold-500);
+    outline-offset: 2px;
+}
+.eye-toggle svg { 
+    width: 18px; 
+    height: 18px; 
+    display: block; 
+}
+
+        /* ===== NOUVEAU : balayage lumineux au survol, effet "premium" GPU-only ===== */
+        .btn-auth-primary {
+            width: 100%;
+            background: var(--grad-gold);
+            color: #ffffff;
+            border: none;
+            padding: 14px 20px;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 14px;
+            letter-spacing: 0.2px;
+            cursor: pointer;
+            box-shadow: var(--shadow-gold-sm);
+            transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+            margin-top: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-auth-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 40%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+            transform: translateX(-120%) skewX(-15deg);
+            pointer-events: none;
+        }
+        .btn-auth-primary:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-gold-md);
+        }
+        .btn-auth-primary:hover:not(:disabled)::before {
+            animation: shine-sweep 0.9s ease forwards;
+        }
+        .btn-auth-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .btn-auth-primary:focus-visible {
+            outline: 2px solid var(--ink-900);
+            outline-offset: 3px;
+        }
+
+        .auth-link-row {
+            text-align: center;
+            margin-top: 16px;
+        }
+        .auth-link-row a {
+            font-size: 12.5px;
+            color: var(--gold-600);
+            text-decoration: none;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .auth-link-row a:hover { color: var(--gold-800); text-decoration: underline; }
+        .auth-link-row a:focus-visible {
+            outline: 2px solid var(--gold-500);
+            outline-offset: 2px;
+        }
+
+        .auth-error-msg {
+            display: none;
+            background: var(--red-100);
+            border: 1px solid rgba(239,68,68,0.25);
+            color: var(--red-700);
+            font-size: 12.5px;
+            font-weight: 600;
+            padding: 10px 14px;
+            border-radius: var(--radius-xs);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .recovery-code-display {
+            background: linear-gradient(135deg, rgba(245,158,11,0.10), rgba(217,119,6,0.05));
+            border: 1.5px dashed var(--border-gold-strong);
+            border-radius: var(--radius-md);
+            padding: 18px;
+            text-align: center;
+            margin-bottom: 18px;
+        }
+
+        .recovery-code-display .code-label {
+            font-family: var(--font-display);
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--gold-700);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .recovery-code-display .code-value {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--ink-900);
+            letter-spacing: 1.5px;
+            word-break: break-all;
+        }
+
+        .recovery-code-warning {
+            font-size: 12px;
+            color: var(--ink-500);
+            text-align: center;
+            line-height: 1.6;
+            margin-bottom: 18px;
+        }
+
+        .auth-screen { display: none; }
+        .auth-screen.active { display: block; animation: fadeIn 0.3s ease both; }
+
+        /* ============================================
+           ACCESSIBILITÉ / PERFORMANCE
+           Désactive proprement les animations pour les
+           utilisateurs qui le demandent (OS) ou les appareils
+           bas de gamme — standard des plateformes pro
+        ============================================ */
         @media (prefers-reduced-motion: reduce) {
-            #introOverlayGoldTix, #introOverlayGoldTix * {
+            *, *::before, *::after {
                 animation-duration: 0.01ms !important;
-                animation-delay: 0s !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
             }
+        }
+
+        /* ============================================
+           RESPONSIVE
+        ============================================ */
+        @media (max-width: 480px) {
+            body { padding: 16px 12px 70px; }
+            .top-navbar { padding: 12px 14px; }
+            .brand-title { font-size: 19px; }
+            .badge-espace { font-size: 10px; padding: 6px 12px; }
+            #titreEvenementOrg { font-size: 21px; }
+            .tab-btn { font-size: 11px; padding: 10px 4px; }
+            .billet-card-actions { gap: 6px; }
+            .btn-action { padding: 8px 12px; font-size: 11px; }
+            .scanner-input-group { flex-direction: column; }
+            .scanner-input-group .btn-scan-manual { padding: 14px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- =============================================================
-         ===== NOUVEAU : OVERLAY D'INTRODUCTION (ajout uniquement)
-         Placé avant tout le reste du body. Ne modifie rien de la
-         page d'achat qui suit ; se retire tout seul puis disparaît.
-    ============================================================= -->
-    <div id="introOverlayGoldTix" aria-hidden="true">
-        <div class="intro-particles">
-            <span></span><span></span><span></span><span></span>
-            <span></span><span></span><span></span><span></span>
-        </div>
-        <button type="button" id="introSkipBtn" aria-label="Passer l'introduction">Passer</button>
-        <div class="intro-center">
-            <div class="intro-logo-wrap">
-                <h1 class="intro-logo">Gold<em>Tix</em></h1>
-                <p class="intro-tagline">Votre événement. Votre billetterie.</p>
+    <div class="page-wrapper">
+
+        <!-- ==================== NAVBAR ==================== -->
+        <nav class="top-navbar">
+            <div class="logo-container">
+                <img src="logo.png" alt="GoldTix Logo" class="site-logo">
+                <span class="brand-title">
+                    <span class="text-dark">Gold</span><span class="text-gold">Tix</span>
+                </span>
             </div>
-            <div class="intro-flow">
-                <div class="intro-flow-line"><span class="intro-flow-progress"></span></div>
-                <div class="intro-flow-step" data-step="1">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg>
-                    <span>Billet</span>
-                </div>
-                <div class="intro-flow-step" data-step="2">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><line x1="14" y1="14" x2="21" y2="14"/><line x1="14" y1="21" x2="21" y2="21"/><line x1="17.5" y1="14" x2="17.5" y2="21"/></svg>
-                    <span>QR Code</span>
-                </div>
-                <div class="intro-flow-step" data-step="3">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                    <span>Validation</span>
-                </div>
-                <div class="intro-flow-step" data-step="4">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-                    <span>Entrée</span>
+            <div class="navbar-right">
+                <span class="badge-espace">
+                    <span class="badge-dot"></span>
+                    Espace Organisateur
+                </span>
+                <button id="btnDeconnexion" class="btn-logout" onclick="deconnexion()">
+                    ⬅️Déconnexion
+                </button>
+            </div>
+        </nav>
+
+        <!-- ==================== BLOC AUTHENTIFICATION ==================== -->
+        <div id="blocAuthentification" class="auth-wrapper">
+
+            <!-- Écran : chargement initial (vérification de session) -->
+            <div id="authEcranChargement" class="auth-screen active">
+                <div class="auth-card">
+                    <div class="auth-card-inner">
+                        <div class="loading-dots"><span></span><span></span><span></span></div>
+                    </div>
                 </div>
             </div>
-            <p class="intro-ready">Préparez-vous…</p>
-        </div>
-    </div>
-    <script>
-    (function() {
-        var overlay = document.getElementById('introOverlayGoldTix');
-        if (!overlay) return;
 
-        // Empêche le scroll pendant l'intro (restauré à la fin)
-        document.documentElement.style.overflowY = 'hidden';
+            <!-- Écran 1 : première configuration -->
+            <div id="authEcranSetup" class="auth-screen">
+                <div class="auth-card">
+                    <div class="auth-card-inner">
+                        <div class="auth-icon-badge">🔐</div>
+                        <p class="auth-event-name" id="nomEvenementSetup">Chargement...</p>
+                        <h2 class="auth-title">Bienvenue dans votre espace organisateur </h2>
+                        <p class="auth-subtitle">Vous êtes sur le point de sécuriser votre espace. Créez votre mot de passe pour continuer.</p>
 
-        var prefersReducedMotion = window.matchMedia &&
-            window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                        <div id="authSetupError" class="auth-error-msg"></div>
 
-        function finirIntro() {
-            document.documentElement.style.overflowY = '';
-            overlay.classList.add('intro-hidden');
-        }
-
-        // Retire l'overlay dès que son animation de sortie se termine
-        overlay.addEventListener('animationend', function(e) {
-            if (e.target === overlay) finirIntro();
-        });
-
-        // Filet de sécurité si l'événement ne se déclenche pas
-        var timeoutSecurite = setTimeout(finirIntro, prefersReducedMotion ? 100 : 5200);
-
-        var skipBtn = document.getElementById('introSkipBtn');
-        if (skipBtn) {
-            skipBtn.addEventListener('click', function() {
-                clearTimeout(timeoutSecurite);
-                overlay.classList.add('intro-skip');
-                setTimeout(finirIntro, 520);
-            });
-        }
-
-        if (prefersReducedMotion) {
-            finirIntro();
-        }
-    })();
-    </script>
-    <!-- ===== FIN DE L'AJOUT — tout ce qui suit est votre page d'achat, strictement inchangée ===== -->
-
-    <!-- NAVBAR -->
-    <nav class="navbar anim-1" style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 8px 12px; box-sizing: border-box;">
-    <div class="brand" style="display: flex; align-items: center; gap: 6px; min-width: 0;">
-        <img src="logo.png" alt="GoldTix" class="brand-logo" style="height: 28px; width: auto; flex-shrink: 0;">
-        <div class="brand-name" style="font-size: 1.1rem; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Gold<em>Tix</em></div>
-    </div>
-    <span class="secure-badge" style="display: flex; align-items: center; gap: 4px; font-size: 0.75rem; white-space: nowrap; flex-shrink: 0;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-        </svg>
-        Billetterie Sécurisée
-    </span>
-</nav>
-
-    <!-- MAIN -->
-    <main class="main-wrapper">
-        <div id="detailsEvenement" class="anim-2">
-            <div class="card loading-card">
-                <p class="loading-text">
-                    <span class="spinner"></span>
-                    Chargement de votre experience...
-                </p>
-            </div>
-        </div>
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="footer anim-3">
-        <p class="footer-brand">— La Billetterie en Or —</p>
-        <p>
-            Platforme : <strong>GoldTix</strong>
-            <span class="footer-dot">|</span>
-            Développée par <strong>Abdiel KABRE</strong>
-        </p>
-        <p style="margin-top: 5px;">
-            <a href="mailto:abdielkabre2@gmail.com">abdielkabre2@gmail.com</a>
-            <span class="footer-dot">|</span>
-            <a href="https://wa.me/22653107345" target="_blank">+226 53 10 73 45</a>
-            <span class="footer-dot">/</span>
-            <a href="https://wa.me/212770967646" target="_blank">+212 770-967646</a>
-        </p>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase.js"></script>
-    <script>
-        // ─── SVG ICONS ────────────────────────────────────────────────────────────
-        const ICONS = {
-            calendar: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
-            clock:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
-            pin:      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
-            ticket:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg>`,
-            user:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
-            phone:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.65 3.27 2 2 0 0 1 3.62 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.29 6.29l1.02-.88a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`,
-            mobile:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>`,
-            card:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>`,
-            upload:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>`,
-            check:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
-            image:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
-            mail:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`,
-        };
-
-        // ─── MAIN LOADER ─────────────────────────────────────────────────────────
-        async function chargerPageAchatUnique() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const eventId = urlParams.get("event");
-            const container = document.getElementById("detailsEvenement");
-
-            if (!eventId) {
-                container.innerHTML = `
-                    <div class="card error-card">
-                        <h2>Lien invalide</h2>
-                        <p>Aucun evenement specifie dans ce lien.</p>
-                    </div>`;
-                return;
-            }
-
-            const { data: ev, error } = await window.supabaseClient
-                .from("evenements")
-                .select("*")
-                .eq("id", eventId)
-                .single();
-
-            if (error || !ev) {
-                container.innerHTML = `
-                    <div class="card error-card">
-                        <h2>Événement introuvable</h2>
-                        <p>Cet événement a été supprimé ou n'existe plus.</p>
-                    </div>`;
-                return;
-            }
-
-            // ── Colonne droite ──────────────────────────────────────────────────
-            let rightColumn = "";
-
-            if (ev.ventes_fermees) {
-                rightColumn = `
-                    <div class="card anim-3">
-                        <div class="closed-box">
-                            <div class="closed-box-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
-                                </svg>
-                            </div>
-                            <h3>Ventes Fermées</h3>
-                            <p>Les ventes en ligne de billets pour cet évènement viennent d'être fermées par l'organisateur.</p>
-                            <p>Merci pour votre intérêt et à bientôt !</p>
-                        </div>
-                    </div>`;
-            } else {
-                const infosCoordonnees = ev.beneficiaire_infos || 'Non renseigne';
-
-                // Categorie select
-                let categorieHTML = "";
-                if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_data.length > 0) {
-                    const options = ev.categories_data
-                        .map(cat => `<option value="${cat.nom} - ${cat.prix}">${cat.nom} (${cat.prix})</option>`)
-                        .join("");
-                    categorieHTML = `
-                        <div class="form-group">
-                            <label for="selectCategorie">Catégorie de billet</label>
-                            <select id="selectCategorie">${options}</select>
-                        </div>`;
-                }
-
-                // QR / RIB
-                const qrSection = (ev.rib_image_url || ev.qr_code_paiement) ? `
-                    <div class="qr-wrapper">
-                        <p class="qr-label">
-                            ${ICONS.card}
-                            RIB du bénéficiaire ci-dessous
-                        </p>
-                        <img src="${ev.rib_image_url || ev.qr_code_paiement}" alt="Support de paiement" class="qr-image">
-                    </div>` : "";
-
-                rightColumn = `
-                    <div class="card anim-3">
-
-                        <!-- ETAPE 1 : PAIEMENT -->
-                        <div class="payment-box">
-                            <p class="payment-box-title">
-                                ${ICONS.mobile}
-                                Etape 1 — Effectuer le paiement
-                            </p>
-                            <div class="info-rows">
-                                <div class="info-row">
-                                    <span class="info-row-label">${ICONS.user} Bénéficiaire des paiements</span>
-                                    <span class="info-row-value">${ev.beneficiaire_nom || 'Non renseigne'}</span>
-                                </div>
-                                <div class="info-row">
-                                    <span class="info-row-label">${ICONS.phone} Contact</span>
-                                    <span class="info-row-value">${infosCoordonnees}</span>
-                                </div>
-                            </div>
-                            ${qrSection}
-                        </div>
-
-                        <!-- ETAPE 2 : FORMULAIRE -->
-                        <h3 class="section-title">
-                            ${ICONS.mail}
-                            Etape 2 — Confirmez votre paiement
-                        </h3>
-
-                        ${categorieHTML}
-
-                        <div class="form-group">
-                            <label for="nomParticipant">Nom et Prénom(s) <span style="color: red;">*</span></label>
-                            <input type="text" id="nomParticipant" placeholder="ex : KONATE Jean">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="emailParticipant">Adresse e-mail (optionnelle - réception lien du billet)</label>
-                            <input type="email" id="emailParticipant" placeholder="ex : nom@gmail.com">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="telParticipant">Contact WhatsApp <span style="color: red;">*</span></label>
-                            <input type="tel" id="telParticipant" placeholder="ex : +226 ... / +212 ...">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Preuve de paiement (capture du reçu) <span style="color: red;">*</span></label>
-                            <div class="file-input-wrapper" id="fileWrapper">
-                                <input type="file" id="preuvePaiement" accept="image/*">
-                                <div class="file-input-display">
-                                    ${ICONS.upload}
-                                    <span>Cliquez pour choisir un fichier</span>
-                                    <em>JPG, PNG, WEBP acceptés(10MB max)</em>
-                                    <span class="file-name-preview" id="fileNamePreview"></span>
-                                </div>
+                        <div class="auth-form-group">
+                            <label for="setupPassword">Créez votre mot de passe</label>
+                            <div class="password-field-wrapper">
+                                <input type="password" id="setupPassword" placeholder="Au moins 6 caractères">
+                                <button type="button" class="eye-toggle" onclick="toggleVisibilitePassword('setupPassword')" aria-label="Afficher le mot de passe">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a21.6 21.6 0 015.06-6.06M9.9 4.24A10.4 10.4 0 0112 4c7 0 11 8 11 8a21.6 21.6 0 01-3.22 4.44M14.12 14.12a3 3 0 11-4.24-4.24"/>
+        <line x1="1" y1="1" x2="23" y2="23"/>
+    </svg>
+</button>
                             </div>
                         </div>
 
-                        <button class="btn-submit" id="btnValiderAchat">
-                            <span class="btn-icon">${ICONS.check}</span>
-                            <div class="spinner"></div>
-                            Valider mon paiement et obtenir mon billet
+                        <div class="auth-form-group">
+                            <label for="setupPasswordConfirm">Confirmez votre mot de passe</label>
+                            <div class="password-field-wrapper">
+                                <input type="password" id="setupPasswordConfirm" placeholder="Saisir à nouveau le mot de passe">
+                               <button type="button" class="eye-toggle" onclick="toggleVisibilitePassword('setupPasswordConfirm')" aria-label="Afficher le mot de passe">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a21.6 21.6 0 015.06-6.06M9.9 4.24A10.4 10.4 0 0112 4c7 0 11 8 11 8a21.6 21.6 0 01-3.22 4.44M14.12 14.12a3 3 0 11-4.24-4.24"/>
+        <line x1="1" y1="1" x2="23" y2="23"/>
+    </svg>
+</button>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn-auth-primary" id="btnSetup" onclick="soumettreCreationMotDePasse()">
+                            Sécuriser mon espace
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Écran 1bis : code de récupération affiché une seule fois -->
+            <div id="authEcranCodeGenere" class="auth-screen">
+                <div class="auth-card">
+                    <div class="auth-card-inner">
+                        <div class="auth-icon-badge">🔑</div>
+                        <h2 class="auth-title">Conservez votre code de récupération</h2>
+                        <p class="auth-subtitle">Ce code vous permettra de réinitialiser votre mot de passe en cas d'oubli. Il ne sera plus jamais affiché après cette page.</p>
+
+                        <div class="recovery-code-display">
+                            <div class="code-label">Code de récupération</div>
+                            <div class="code-value" id="codeRecuperationAffiche">GTX-0000-0000</div>
+                        </div>
+
+                        <p class="recovery-code-warning">Notez-le précieusement (capture d'écran, bloc-notes...). GoldTix ne pourra pas vous le redonner.</p>
+
+                        <button type="button" class="btn-auth-primary" onclick="confirmerCodeNote()">
+                            J'ai noté mon code, continuer
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Écran 2 : connexion -->
+            <div id="authEcranLogin" class="auth-screen">
+                <div class="auth-card">
+                    <div class="auth-card-inner">
+                        <div class="auth-icon-badge">🔐</div>
+                        <p class="auth-event-name" id="nomEvenementLogin">Chargement...</p>
+                        <h2 class="auth-title">Connexion à votre espace organisateur</h2>
+                        <p class="auth-subtitle">Entrez le mot de passe de cet espace pour accéder à la gestion de l'événement.</p>
+
+                        <div id="authLoginError" class="auth-error-msg"></div>
+
+                        <div class="auth-form-group">
+                            <label for="loginPassword">Mot de passe</label>
+                            <div class="password-field-wrapper">
+                                <input type="password" id="loginPassword" placeholder="Votre mot de passe">
+                              <button type="button" class="eye-toggle" onclick="toggleVisibilitePassword('loginPassword')" aria-label="Afficher le mot de passe">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a21.6 21.6 0 015.06-6.06M9.9 4.24A10.4 10.4 0 0112 4c7 0 11 8 11 8a21.6 21.6 0 01-3.22 4.44M14.12 14.12a3 3 0 11-4.24-4.24"/>
+        <line x1="1" y1="1" x2="23" y2="23"/>
+    </svg>
+</button>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn-auth-primary" id="btnLogin" onclick="soumettreConnexion()">
+                            Se connecter
                         </button>
 
-                    </div>`;
-            }
-
-            // ── Prix HTML ───────────────────────────────────────────────────────
-            let prixHTML = "";
-            if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_data.length > 0) {
-                prixHTML = ev.categories_data.map(c => `
-                    <div class="price-badge-item">
-                        ${ICONS.ticket}
-                        <strong>${c.nom}</strong>&nbsp;:&nbsp;${c.prix}
-                    </div>`).join("");
-            } else {
-                prixHTML = `<div class="price-badge-item">${ICONS.card} Prix : ${ev.prix || 'Gratuit'}</div>`;
-            }
-
-            // ── Affiche HTML ────────────────────────────────────────────────────
-            const posterHTML = ev.affiche_url
-                ? `<img src="${ev.affiche_url}" alt="Affiche de l'événement">`
-                : `<div class="poster-fallback">${ICONS.image}<p>Affiche non disponible</p></div>`;
-
-            // ── Injection ───────────────────────────────────────────────────────
-            container.innerHTML = `
-                <div class="grid">
-                    <div class="card card--event">
-                        <div class="poster-wrapper">${posterHTML}</div>
-                        <h1 class="event-title">${ev.titre}</h1>
-                                                <div class="meta-row">
-                            <span class="meta-item">
-                                ${ICONS.calendar}
-                                <span class="meta-text"><strong>Date :</strong> ${ev.date}</span>
-                            </span>
-                            <span class="meta-sep">—</span>
-                            <span class="meta-item">
-                                ${ICONS.clock}
-                                <span class="meta-text"><strong>Heure :</strong> ${ev.heure}</span>
-                            </span>
+                        <div class="auth-link-row">
+                            <a onclick="afficherEcranAuth('authEcranRecuperation')">Mot de passe oublié ?</a>
                         </div>
-                        <div class="meta-row">
-                            <span class="meta-item">
-                                ${ICONS.pin}
-                                <span class="meta-text"><strong>Lieu :</strong> ${ev.lieu}</span>
-                            </span>
-                        </div>
-                        <div class="price-badge">${prixHTML}</div>
                     </div>
-                    <div>${rightColumn}</div>
-                </div>`;
+                </div>
+            </div>
 
-            const posterImage = container.querySelector(".poster-wrapper img");
-            if (posterImage) {
-                posterImage.addEventListener("error", function() {
-                    const wrapper = this.closest(".poster-wrapper");
-                    if (wrapper) {
-                        wrapper.innerHTML = `<div class="poster-fallback">${ICONS.image}<p>Affiche non disponible</p></div>`;
-                    }
-                });
+            <!-- Écran 3 : saisie code de récupération -->
+            <div id="authEcranRecuperation" class="auth-screen">
+                <div class="auth-card">
+                    <div class="auth-card-inner">
+                        <div class="auth-icon-badge">🔑</div>
+                        <h2 class="auth-title">Réinitialiser votre mot de passe</h2>
+                        <p class="auth-subtitle">
+                            Entrez le code de récupération qui vous a été donné à la création de cet espace. 
+                           <strong style="color: #e74c3c;">Si vous l'avez perdu, contactez GoldTix au numéro qui se trouve tout en bas de la page.</strong>
+                        </p>
+                        <div id="authRecuperationError" class="auth-error-msg"></div>
+
+                        <div class="auth-form-group">
+                            <label for="recuperationCode">Code de récupération</label>
+                            <input type="text" id="recuperationCode" placeholder="GTX-XXXX-XXXX">
+                        </div>
+
+                        <button type="button" class="btn-auth-primary" id="btnRecuperation" onclick="soumettreCodeRecuperation()">
+                            Vérifier
+                        </button>
+
+                        <div class="auth-link-row">
+                            <a onclick="afficherEcranAuth('authEcranLogin')"> ⬅️ Retourer à la page de connexion</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Écran 4 : nouveau mot de passe après code validé -->
+            <div id="authEcranNouveauMdp" class="auth-screen">
+                <div class="auth-card">
+                    <div class="auth-card-inner">
+                        <div class="auth-icon-badge">🔐</div>
+                        <h2 class="auth-title">Créez votre nouveau mot de passe</h2>
+                        <p class="auth-subtitle">Votre code a été validé. Choisissez un nouveau mot de passe pour cet espace.</p>
+
+                        <div id="authNouveauMdpError" class="auth-error-msg"></div>
+
+                        <div class="auth-form-group">
+                            <label for="nouveauMdp">Nouveau mot de passe</label>
+                            <div class="password-field-wrapper">
+                                <input type="password" id="nouveauMdp" placeholder="Au moins 6 caractères">
+                              <button type="button" class="eye-toggle" onclick="toggleVisibilitePassword('nouveauMdp')" aria-label="Afficher le mot de passe">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a21.6 21.6 0 015.06-6.06M9.9 4.24A10.4 10.4 0 0112 4c7 0 11 8 11 8a21.6 21.6 0 01-3.22 4.44M14.12 14.12a3 3 0 11-4.24-4.24"/>
+        <line x1="1" y1="1" x2="23" y2="23"/>
+    </svg>
+</button>
+                            </div>
+                        </div>
+
+                        <div class="auth-form-group">
+                            <label for="nouveauMdpConfirm">Confirmez le mot de passe</label>
+                            <div class="password-field-wrapper">
+                                <input type="password" id="nouveauMdpConfirm" placeholder="Retapez le mot de passe">
+                               <button type="button" class="eye-toggle" onclick="toggleVisibilitePassword('nouveauMdpConfirm')" aria-label="Afficher le mot de passe">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a21.6 21.6 0 015.06-6.06M9.9 4.24A10.4 10.4 0 0112 4c7 0 11 8 11 8a21.6 21.6 0 01-3.22 4.44M14.12 14.12a3 3 0 11-4.24-4.24"/>
+        <line x1="1" y1="1" x2="23" y2="23"/>
+    </svg>
+</button>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn-auth-primary" id="btnNouveauMdp" onclick="soumettreNouveauMotDePasse()">
+                            Réinitialiser mon mot de passe
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Écran 4bis : nouveau code de récupération après reset -->
+            <div id="authEcranNouveauCodeGenere" class="auth-screen">
+                <div class="auth-card">
+                    <div class="auth-card-inner">
+                        <div class="auth-icon-badge">🔑</div>
+                        <h2 class="auth-title">Votre nouveau code de récupération</h2>
+                        <p class="auth-subtitle">L'ancien code n'est plus valide. Conservez précieusement ce nouveau code.</p>
+
+                        <div class="recovery-code-display">
+                            <div class="code-label">Nouveau code de récupération</div>
+                            <div class="code-value" id="nouveauCodeRecuperationAffiche">GTX-0000-0000</div>
+                        </div>
+
+                        <button type="button" class="btn-auth-primary" onclick="afficherEcranAuth('authEcranLogin')">
+                            J'ai noté mon code, aller à la connexion
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /#blocAuthentification -->
+
+        <!-- ==================== ESPACE PROTÉGÉ ==================== -->
+        <div id="espaceProtege" style="display:none;">
+
+            <!-- ==================== MAIN CARD ==================== -->
+            <div class="main-card">
+                <div class="main-card-inner">
+
+                    <!-- EVENT HEADER BANNER -->
+                    <div class="header-top" id="headerTopContainer">
+                        <span class="header-label">Votre evenement</span>
+                        <h1 id="titreEvenementOrg">Chargement...</h1>
+                        <p id="infosEvenementOrg">Connexion en cours...</p>
+                        <div class="header-banner-glow"></div>
+                    </div>
+
+                    <!-- STATUS BOX -->
+                    <div class="status-box">
+                        <div class="status-box-left">
+                            <span class="status-indicator" id="statusIndicator"></span>
+                            <span id="labelStatutVentes">Statut : chargement...</span>
+                        </div>
+                        <button
+                            id="btnToggleVentes"
+                            class="btn-toggle-ventes"
+                            onclick="toggleVentes()"
+                            style="background: var(--ink-900); color: white;">
+                            Patientez...
+                        </button>
+                    </div>
+
+                    <!-- TABS -->
+                    <div class="tabs">
+                        <button class="tab-btn active" onclick="changerOnglet('paiements', this)">En attente</button>
+                        <button class="tab-btn" id="btnTabValidees" onclick="changerOnglet('validees', this)">Confirmés (0)</button>
+                        <button class="tab-btn" onclick="changerOnglet('scanner', this)">Scanner QR</button>
+                    </div>
+
+                    <!-- ========== SECTION : PAIEMENTS ========== -->
+                    <div id="section-paiements" class="section-content active">
+                        <div class="section-header">
+                            <h2>Gestion des paiements</h2>
+                            <p>Examinez et validez les preuves de paiement. Le participant recevra son billet après confirmation.</p>
+                        </div>
+                        <div id="listePaiements">
+                            <div class="loading-dots">
+                                <span></span><span></span><span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ========== SECTION : VALIDES ========== -->
+                    <div id="section-validees" class="section-content">
+                        <div class="section-header">
+                            <h2 id="titreSectionValidees">Participants confirmés (0)</h2>
+                            <p>Liste complète des participants valides. Vous pouvez retirer un participant en cas d'empêchement.</p>
+                        </div>
+                        <div class="search-container">
+                            <div class="search-wrapper">
+                                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+                                </svg>
+                                <input
+                                    type="text"
+                                    id="searchValidees"
+                                    class="search-input"
+                                    placeholder="Rechercher un participant..."
+                                    oninput="filtrerParticipants()">
+                            </div>
+                        </div>
+                        <div id="listeValidees">
+                            <div class="loading-dots">
+                                <span></span><span></span><span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ========== SECTION : SCANNER ========== -->
+                    <div id="section-scanner" class="section-content">
+                        <div class="section-header">
+                            <h2>Contrôle des billets</h2>
+                            <p>Scannez le QR Code ou entrez l'ID manuellement pour valider l'entrée.</p>
+                        </div>
+
+                        <div class="scanner-frame">
+                            <span class="scanner-corner tl"></span>
+                            <span class="scanner-corner tr"></span>
+                            <span class="scanner-corner bl"></span>
+                            <span class="scanner-corner br"></span>
+                            <div id="reader"></div>
+                        </div>
+
+                        <div class="scanner-input-group">
+                            <input type="text" id="codeBilletInput" placeholder="Entrez l'ID du billet puis cliquez sur Vérifier...">
+                            <button class="btn-scan-manual" onclick="verifierBilletManuel()">Vérifier</button>
+                        </div>
+
+                        <div id="resultatScan">En attente de vérification...</div>
+                    </div>
+
+                </div><!-- /.main-card-inner -->
+            </div><!-- /.main-card -->
+
+        </div><!-- /#espaceProtege -->
+
+        <!-- ==================== FOOTER ==================== -->
+        <footer class="creator-footer">
+            <div class="footer-brand">
+                <div class="footer-brand-line"></div>
+                <span class="footer-slogan">La Billetterie en Or</span>
+                <div class="footer-brand-line right"></div>
+            </div>
+            <div class="footer-text">
+                <p>Plateforme <strong>GoldTix</strong> &mdash; Développée par <strong>Abdiel KABRE</strong></p>
+                <p>
+                    Email : <a href="mailto:abdielkabre2@gmail.com">abdielkabre2@gmail.com</a>
+                </p>
+                <p>
+                    WhatsApp :
+                    <a href="https://wa.me/22653107345" target="_blank">+226 53 10 73 45</a>
+                    &nbsp;&middot;&nbsp;
+                    <a href="https://wa.me/212770967646" target="_blank">+212 770 967 646</a>
+                </p>
+            </div>
+        </footer>
+
+    </div><!-- /.page-wrapper -->
+
+    <!-- ==================== SCRIPTS (STRICTEMENT INCHANGÉ) ==================== -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <script>
+        /* =============================================
+           ÉTAT GLOBAL
+        ============================================= */
+        const urlParams = new URLSearchParams(window.location.search);
+        let eventId = urlParams.get("event");
+        let html5QrCode = null;
+        let listeParticipantsValidesGlobal = [];
+        let statutVentesFermees = false;
+        let derniersBilletsScannes = {};
+        let nomEvenementCourant = "";
+
+        const AUTH_STORAGE_KEY = "goldtix_session_" + eventId;
+        let codeRecuperationValideTemporaire = null;
+        let sessionToken = null;
+
+        let chargementDemandesEnCours = false;
+        let debounceRecherche = null;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initialiserAuthentification();
+
+            document.addEventListener("click", function(event) {
+                let targetBtn = event.target.closest(".btn-changer-statut");
+                if (targetBtn) {
+                    let id = targetBtn.getAttribute("data-id");
+                    let statut = targetBtn.getAttribute("data-statut");
+                    changerStatut(id, statut);
+                    return;
+                }
+                let targetRetirer = event.target.closest(".btn-retirer-participant");
+                if (targetRetirer) {
+                    let id = targetRetirer.getAttribute("data-id");
+                    retirerParticipant(id);
+                    return;
+                }
+            });
+        });
+
+async function verifierExistenceEvenement(idEvenement) {
+    try {
+        const { data, error } = await window.supabaseClient
+            .from("evenements")
+            .select("id, titre")
+            .eq("id", idEvenement)
+            .maybeSingle();
+
+        if (error) {
+            console.error("Erreur vérification événement :", error);
+            return false;
+        }
+        if (data) {
+            nomEvenementCourant = data.titre || "";
+        }
+
+        return data !== null;
+    } catch (err) {
+        console.error("Erreur réseau vérification événement :", err);
+        return false;
+    }
+}
+function afficherNomEvenementAuth() {
+    const elSetup = document.getElementById("nomEvenementSetup");
+    const elLogin = document.getElementById("nomEvenementLogin");
+    const texte = nomEvenementCourant || "Événement";
+    if (elSetup) elSetup.textContent = texte;
+    if (elLogin) elLogin.textContent = texte;
+}
+
+function afficherEcranEvenementIntrouvable() {
+    document.querySelectorAll(".auth-screen").forEach(el => el.classList.remove("active"));
+    document.getElementById("authEcranChargement").innerHTML = `
+        <div class="auth-card">
+            <div class="auth-card-inner">
+                <div class="auth-icon-badge">⚠️</div>
+                <h2 class="auth-title">Événement introuvable</h2>
+                <p class="auth-subtitle">
+                    Cet événement a été supprimé ou n'existe plus.<br>
+                    Le lien que vous avez utilisé n'est plus valide.
+                </p>
+            </div>
+        </div>`;
+    document.getElementById("authEcranChargement").classList.add("active");
+}
+        async function initialiserAuthentification() {
+            if (!eventId) {
+                document.getElementById("authEcranChargement").innerHTML =
+                    '<div class="auth-card"><div class="auth-card-inner"><p class="auth-subtitle">Aucun événement spécifié. Ajoutez ?event=ID dans l\'URL.</p></div></div>';
+                return;
             }
+             const evenementExiste = await verifierExistenceEvenement(eventId);
+                 if (!evenementExiste) {
+                  afficherEcranEvenementIntrouvable();
+                 return;
+            }
+            afficherNomEvenementAuth();
 
-            // ── File input preview ──────────────────────────────────────────────
-            if (!ev.ventes_fermees) {
-                const fileInput = document.getElementById("preuvePaiement");
-                const filePreview = document.getElementById("fileNamePreview");
+            const tokenLocal = localStorage.getItem(AUTH_STORAGE_KEY);
 
-                fileInput.addEventListener("change", function() {
-                    if (this.files && this.files[0]) {
-                        filePreview.textContent = this.files[0].name;
-                        filePreview.style.display = "block";
-                        document.getElementById("fileWrapper").style.borderColor = "var(--gold-2)";
-                        document.getElementById("fileWrapper").style.background = "#fffdf5";
-                    }
-                });
+            if (tokenLocal) {
+                try {
+                    const { data: sessionValide, error } = await window.supabaseClient
+                        .rpc("organisateur_verifier_session", {
+                            p_evenement_id: eventId,
+                            p_token: tokenLocal
+                        });
 
-                // ── Soumission ──────────────────────────────────────────────────
-                document.getElementById("btnValiderAchat").onclick = async function() {
-                    const nom  = document.getElementById("nomParticipant").value.trim();
-                    const email = document.getElementById("emailParticipant").value.trim();
-                    const tel   = document.getElementById("telParticipant").value.trim();
-                    const fichierPreuve = document.getElementById("preuvePaiement").files[0];
-
-                    let typeBilletChoisi = "Standard";
-                    const selectCat = document.getElementById("selectCategorie");
-                    if (selectCat) {
-                        typeBilletChoisi = selectCat.value;
-                    } else if (ev.prix) {
-                        typeBilletChoisi = String(ev.prix);
-                    }
-
-                    if (!nom || !tel || !fichierPreuve) {
-                        alert("Vous devez obligatoirement entrer votre nom, numéro de téléphone et joindre la capture de paiement.");
+                    if (!error && sessionValide === true) {
+                        sessionToken = tokenLocal;
+                        entrerDansEspaceProtege();
                         return;
                     }
+                } catch (err) {
+                    console.error("Erreur vérification session :", err);
+                }
+                localStorage.removeItem(AUTH_STORAGE_KEY);
+            }
 
-                    const btn = document.getElementById("btnValiderAchat");
-                    btn.disabled = true;
-                    btn.classList.add("loading");
-                    btn.querySelector(".btn-submit span:not(.btn-icon)") && (btn.textContent = "");
-                    // Remplace le texte
-                    const label = document.createElement("span");
-                    label.textContent = "Validation et envoi securise en cours...";
-                    btn.appendChild(label);
+            try {
+                const { data: aMotDePasse, error } = await window.supabaseClient
+                    .rpc("organisateur_a_mot_de_passe", { p_evenement_id: eventId });
 
-                    try {
-                        // Verification fermeture ventes en temps reel
-                        const { data: verifEv } = await window.supabaseClient
-                            .from("evenements")
-                            .select("ventes_fermees")
-                            .eq("id", ev.id)
-                            .single();
+                if (error) throw error;
 
-                        if (verifEv && verifEv.ventes_fermees) {
-                            alert("Désolé, la vente des billets pour cet évènement vient d'être fermée.");
-                            window.location.reload();
-                            return;
-                        }
-
-                        // Upload preuve
-                        const fileExt = fichierPreuve.name.split('.').pop().toLowerCase();
-                        const fileName = `preuve-${Date.now()}-${Math.floor(Math.random() * 1000)}.${fileExt}`;
-
-                        const { error: uploadError } = await window.supabaseClient
-                            .storage
-                            .from("preuves")
-                            .upload(fileName, fichierPreuve, { cacheControl: '3600', upsert: false });
-
-                        if (uploadError) {
-                            alert("Erreur lors de l'envoi de la preuve : " + uploadError.message);
-                            btn.disabled = false;
-                            btn.classList.remove("loading");
-                            return;
-                        }
-
-                        const { data: urlData } = window.supabaseClient
-                            .storage
-                            .from("preuves")
-                            .getPublicUrl(fileName);
-
-                        const preuveUrl = urlData.publicUrl;
-
-                        // Insertion billet
-                        const { data: insertedBillet, error: insertError } = await window.supabaseClient
-                            .from("billets")
-                            .insert([{
-                                evenement_id: ev.id,
-                                nom_participant: nom,
-                                email:  email || null,
-                                telephone: tel,
-                                preuve_url: preuveUrl,
-                                type_billet: typeBilletChoisi,
-                                statut: "attente",
-                                utilise: false
-                            }])
-                            .select();
-
-                        if (insertError) {
-                            alert("Erreur lors de l'enregistrement du billet : " + insertError.message);
-                            btn.disabled = false;
-                            btn.classList.remove("loading");
-                            return;
-                        }
-
-                        if (insertedBillet && insertedBillet.length > 0) {
-                            window.location.href = `billet.html?id=${insertedBillet[0].id}`;
-                        }
-
-                    } catch (err) {
-                        console.error("Erreur inattendue :", err);
-                        alert("Une erreur inattendue est survenue lors du traitement.");
-                        btn.disabled = false;
-                        btn.classList.remove("loading");
-                    }
-                };
+                if (aMotDePasse === true) {
+                    afficherEcranAuth("authEcranLogin");
+                } else {
+                    afficherEcranAuth("authEcranSetup");
+                }
+            } catch (err) {
+                console.error("Erreur vérification configuration :", err);
+                document.getElementById("authEcranChargement").innerHTML =
+                    '<div class="auth-card"><div class="auth-card-inner"><p class="auth-subtitle">Erreur de connexion. Rechargez la page.</p></div></div>';
             }
         }
 
-        chargerPageAchatUnique();
+        function afficherEcranAuth(nomEcran) {
+            document.querySelectorAll(".auth-screen").forEach(el => el.classList.remove("active"));
+            document.getElementById(nomEcran).classList.add("active");
+        }
+
+        function entrerDansEspaceProtege() {
+            document.getElementById("blocAuthentification").style.display = "none";
+            document.getElementById("espaceProtege").style.display = "block";
+            document.getElementById("btnDeconnexion").style.display = "inline-flex";
+
+            chargerEspaceOrganisateur();
+            setInterval(() => { chargerToutesLesDemandes(); }, 120000);
+        }
+
+        function afficherErreurAuth(idErreur, message) {
+            const el = document.getElementById(idErreur);
+            el.textContent = message;
+            el.style.display = "block";
+        }
+        function masquerErreurAuth(idErreur) {
+            document.getElementById(idErreur).style.display = "none";
+        }
+
+const ICONE_OEIL_OUVERT = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+const ICONE_OEIL_BARRE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a21.6 21.6 0 015.06-6.06M9.9 4.24A10.4 10.4 0 0112 4c7 0 11 8 11 8a21.6 21.6 0 01-3.22 4.44M14.12 14.12a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+
+function toggleVisibilitePassword(inputId) {
+    const input = document.getElementById(inputId);
+    const btn = input.parentElement.querySelector(".eye-toggle");
+    if (input.type === "password") {
+        input.type = "text";
+        btn.innerHTML = ICONE_OEIL_OUVERT;
+        btn.setAttribute("aria-label", "Masquer le mot de passe");
+    } else {
+        input.type = "password";
+        btn.innerHTML = ICONE_OEIL_BARRE;
+        btn.setAttribute("aria-label", "Afficher le mot de passe");
+    }
+}
+
+        async function soumettreCreationMotDePasse() {
+            masquerErreurAuth("authSetupError");
+            const pwd = document.getElementById("setupPassword").value;
+            const pwdConfirm = document.getElementById("setupPasswordConfirm").value;
+
+            if (pwd.length < 6) {
+                afficherErreurAuth("authSetupError", "Le mot de passe doit contenir au moins 6 caractères.");
+                return;
+            }
+            if (pwd !== pwdConfirm) {
+                afficherErreurAuth("authSetupError", "Les deux mots de passe ne correspondent pas.");
+                return;
+            }
+
+            const btn = document.getElementById("btnSetup");
+            btn.disabled = true;
+            btn.textContent = "Sécurisation en cours...";
+
+            try {
+                const { data: code, error } = await window.supabaseClient
+                    .rpc("organisateur_creer_mot_de_passe", {
+                        p_evenement_id: eventId,
+                        p_mot_de_passe: pwd
+                    });
+
+                if (error) throw error;
+
+                document.getElementById("codeRecuperationAffiche").textContent = code;
+                afficherEcranAuth("authEcranCodeGenere");
+
+            } catch (err) {
+                afficherErreurAuth("authSetupError", err.message || "Erreur lors de la création du mot de passe.");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Sécuriser mon espace";
+            }
+        }
+
+        function confirmerCodeNote() {
+            document.getElementById("setupPassword").value = "";
+            document.getElementById("setupPasswordConfirm").value = "";
+            afficherEcranAuth("authEcranLogin");
+        }
+
+        async function soumettreConnexion() {
+            masquerErreurAuth("authLoginError");
+            const pwd = document.getElementById("loginPassword").value;
+
+            if (!pwd) {
+                afficherErreurAuth("authLoginError", "Veuillez entrer votre mot de passe.");
+                return;
+            }
+
+            const btn = document.getElementById("btnLogin");
+            btn.disabled = true;
+            btn.textContent = "Connexion en cours...";
+
+            try {
+                const { data: token, error } = await window.supabaseClient
+                    .rpc("organisateur_login", {
+                        p_evenement_id: eventId,
+                        p_mot_de_passe: pwd
+                    });
+
+                if (error) throw error;
+
+                localStorage.setItem(AUTH_STORAGE_KEY, token);
+                sessionToken = token;
+                document.getElementById("loginPassword").value = "";
+                entrerDansEspaceProtege();
+
+            } catch (err) {
+                afficherErreurAuth("authLoginError", "❌ Mot de passe incorrect. Veuillez réessayer.");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Se connecter";
+            }
+        }
+
+        async function soumettreCodeRecuperation() {
+            masquerErreurAuth("authRecuperationError");
+            const code = document.getElementById("recuperationCode").value.trim();
+
+            if (!code) {
+                afficherErreurAuth("authRecuperationError", "Veuillez entrer votre code de récupération.");
+                return;
+            }
+
+            const btn = document.getElementById("btnRecuperation");
+            btn.disabled = true;
+            btn.textContent = "Vérification...";
+
+            try {
+                const { data: valide, error } = await window.supabaseClient
+                    .rpc("organisateur_verifier_code_recuperation", {
+                        p_evenement_id: eventId,
+                        p_code: code
+                    });
+
+                if (error) throw error;
+
+                if (valide === true) {
+                    codeRecuperationValideTemporaire = code;
+                    document.getElementById("recuperationCode").value = "";
+                    afficherEcranAuth("authEcranNouveauMdp");
+                } else {
+                    afficherErreurAuth("authRecuperationError", "Code de récupération incorrect. Contactez GoldTix si le problème persiste.");
+                }
+
+            } catch (err) {
+                afficherErreurAuth("authRecuperationError", err.message || "Erreur lors de la vérification.");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Vérifier";
+            }
+        }
+
+        async function soumettreNouveauMotDePasse() {
+            masquerErreurAuth("authNouveauMdpError");
+            const pwd = document.getElementById("nouveauMdp").value;
+            const pwdConfirm = document.getElementById("nouveauMdpConfirm").value;
+
+            if (pwd.length < 6) {
+                afficherErreurAuth("authNouveauMdpError", "Le mot de passe doit contenir au moins 6 caractères.");
+                return;
+            }
+            if (pwd !== pwdConfirm) {
+                afficherErreurAuth("authNouveauMdpError", "Les deux mots de passe ne correspondent pas.");
+                return;
+            }
+            if (!codeRecuperationValideTemporaire) {
+                afficherErreurAuth("authNouveauMdpError", "Session de récupération expirée, recommencez.");
+                afficherEcranAuth("authEcranRecuperation");
+                return;
+            }
+
+            const btn = document.getElementById("btnNouveauMdp");
+            btn.disabled = true;
+            btn.textContent = "Réinitialisation en cours...";
+
+            try {
+                const { data: nouveauCode, error } = await window.supabaseClient
+                    .rpc("organisateur_reinitialiser_mot_de_passe", {
+                        p_evenement_id: eventId,
+                        p_code: codeRecuperationValideTemporaire,
+                        p_nouveau_mot_de_passe: pwd
+                    });
+
+                if (error) throw error;
+
+                codeRecuperationValideTemporaire = null;
+                document.getElementById("nouveauMdp").value = "";
+                document.getElementById("nouveauMdpConfirm").value = "";
+                document.getElementById("nouveauCodeRecuperationAffiche").textContent = nouveauCode;
+                afficherEcranAuth("authEcranNouveauCodeGenere");
+
+            } catch (err) {
+                afficherErreurAuth("authNouveauMdpError", err.message || "Erreur lors de la réinitialisation.");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Réinitialiser mon mot de passe";
+            }
+        }
+
+        async function deconnexion() {
+            const token = localStorage.getItem(AUTH_STORAGE_KEY);
+
+            if (token) {
+                try {
+                    await window.supabaseClient
+                        .rpc("organisateur_logout", {
+                            p_evenement_id: eventId,
+                            p_token: token
+                        });
+                } catch (err) {
+                    console.error("Erreur déconnexion serveur :", err);
+                }
+            }
+
+            localStorage.removeItem(AUTH_STORAGE_KEY);
+            sessionToken = null;
+            arreterScanner();
+
+            document.getElementById("espaceProtege").style.display = "none";
+            document.getElementById("btnDeconnexion").style.display = "none";
+            document.getElementById("blocAuthentification").style.display = "block";
+            document.getElementById("loginPassword").value = "";
+            afficherEcranAuth("authEcranLogin");
+        }
+
+        async function chargerEspaceOrganisateur() {
+            if (!eventId) {
+                document.getElementById("titreEvenementOrg").textContent = "Erreur : aucun evenement specifie.";
+                document.getElementById("infosEvenementOrg").textContent = "Ajoutez ?event=ID dans l'URL.";
+                return;
+            }
+
+            try {
+                const { data: evList, error } = await window.supabaseClient
+    .rpc("organisateur_charger_evenement", {
+        p_evenement_id: eventId,
+        p_token: sessionToken
+    });
+
+const ev = (evList && evList.length > 0) ? evList[0] : null;
+
+if (error || !ev) {
+                    document.getElementById("infosEvenementOrg").textContent = "Evenement introuvable.";
+                    return;
+                }
+
+                document.getElementById("titreEvenementOrg").textContent = ev.titre;
+                document.getElementById("infosEvenementOrg").innerHTML =
+                    `Date : ${ev.date} &nbsp;&middot;&nbsp; Heure : ${ev.heure} &nbsp;&middot;&nbsp; Lieu : ${ev.lieu}`;
+
+                let headerContainer = document.getElementById("headerTopContainer");
+                let eventImage = ev.affiche_url || ev.image_url || ev.affiche || ev.photo;
+
+                if (headerContainer && eventImage) {
+                    let imgElement = headerContainer.querySelector(".event-bg-img");
+                    if (!imgElement) {
+                        imgElement = document.createElement("img");
+                        imgElement.className = "event-bg-img";
+                        headerContainer.insertBefore(imgElement, headerContainer.firstChild);
+                    }
+                    imgElement.src = eventImage;
+                }
+
+                statutVentesFermees = ev.ventes_fermees || false;
+                mettreAJourBoutonVentes();
+                await chargerToutesLesDemandes();
+
+            } catch (err) {
+                console.error("Erreur chargement organisateur :", err);
+            }
+        }
+
+        async function chargerToutesLesDemandes() {
+            if (chargementDemandesEnCours) return;
+            chargementDemandesEnCours = true;
+
+            let containerPaiements = document.getElementById("listePaiements");
+
+            try {
+                const { data: billets, error } = await window.supabaseClient
+    .rpc("organisateur_charger_billets", {
+        p_evenement_id: eventId,
+        p_token: sessionToken
+    });
+
+if (error || !billets) {
+                    containerPaiements.innerHTML = renderEmptyState("Erreur lors du chargement des donnees.");
+                    return;
+                }
+
+                listeParticipantsValidesGlobal = [];
+                let morceauxHTML = [];
+                let maintenant = new Date().getTime();
+
+                billets.forEach(function(b) {
+                    let statutHtml = "";
+                    if (b.statut === "confirme") {
+                        statutHtml = renderBadge("confirme", "Confirmé / Payé");
+                    } else if (b.statut === "refuse") {
+                        statutHtml = renderBadge("refuse", "Refusé / Non reçu");
+                    } else {
+                        statutHtml = renderBadge("attente", "En attente");
+                    }
+
+                    if (b.statut === "confirme") {
+                        listeParticipantsValidesGlobal.push(b);
+
+                        if (b.updated_at) {
+                            let tempsMaj = new Date(b.updated_at).getTime();
+                            let tempsEcoule = maintenant - tempsMaj;
+
+                            if (tempsEcoule < 60000) {
+                                let secondesRestantes = Math.ceil((60000 - tempsEcoule) / 1000);
+                                let statutTemporaire = renderBadge("confirme", `Disparait dans ${secondesRestantes}s`);
+                                morceauxHTML.push(HTMLCartePaiement(b, statutTemporaire));
+                            }
+                        }
+                    } else {
+                        morceauxHTML.push(HTMLCartePaiement(b, statutHtml));
+                    }
+                });
+
+                containerPaiements.innerHTML = morceauxHTML.length > 0
+                    ? morceauxHTML.join("")
+                    : renderEmptyState("Aucune demande en attente de validation.");
+
+                afficherParticipantsValides(listeParticipantsValidesGlobal);
+                mettreAJourCompteurs(listeParticipantsValidesGlobal.length);
+
+            } catch (err) {
+                console.error("Erreur chargement demandes :", err);
+            } finally {
+                chargementDemandesEnCours = false;
+            }
+        }
+
+        function renderBadge(type, texte) {
+            return `<span class="badge-statut badge-${type}">
+                        <span class="badge-icon"></span>
+                        ${texte}
+                    </span>`;
+        }
+
+        function renderEmptyState(message) {
+            return `
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#94a3b8" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2
+                                M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                    </div>
+                    <p>${message}</p>
+                </div>`;
+        }
+
+        function HTMLCartePaiement(b, statutHtml) {
+            return `
+                <div class="billet-card">
+                    <div class="billet-card-header">
+                        ${statutHtml}
+                    </div>
+                    <div class="billet-card-body">
+                        <div class="billet-info-row">
+                            <span class="billet-info-label">Participant</span>
+                            <span class="billet-info-value">${b.nom_participant || 'Non renseigne'}</span>
+                        </div>
+                        <div class="billet-info-row">
+                            <span class="billet-info-label">WhatsApp</span>
+                            <span class="billet-info-value">${b.telephone || 'N/A'}</span>
+                        </div>
+                        <div style="margin-top: 14px;">
+                            <span class="preuve-label">Preuve de paiement</span>
+                            <a href="${b.preuve_url}" target="_blank">
+                                <img src="${b.preuve_url}" alt="Preuve de paiement" class="preuve-img">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="billet-card-actions">
+                        <button type="button"
+                            class="btn-action btn-confirmer btn-changer-statut"
+                            data-id="${b.id}" data-statut="confirme">
+                            J'ai reçu
+                        </button>
+                        <button type="button"
+                            class="btn-action btn-refuser btn-changer-statut"
+                            data-id="${b.id}" data-statut="refuse">
+                            Non reçu
+                        </button>
+                        <button type="button"
+                            class="btn-action btn-attente btn-changer-statut"
+                            data-id="${b.id}" data-statut="attente">
+                            Mettre en attente
+                        </button>
+                    </div>
+                </div>`;
+        }
+
+        function afficherParticipantsValides(liste) {
+            let containerValidees = document.getElementById("listeValidees");
+            if (liste.length === 0) {
+                containerValidees.innerHTML = renderEmptyState("Aucun participant valide pour le moment.");
+                return;
+            }
+
+            let html = "";
+            liste.forEach(function(b) {
+                html += `
+                    <div class="billet-card">
+                        <div class="billet-card-header">
+                            ${renderBadge("confirme", "Valide et Actif")}
+                        </div>
+                        <div class="billet-card-body">
+                            <div class="billet-info-row">
+                                <span class="billet-info-label">Participant</span>
+                                <span class="billet-info-value">${b.nom_participant || 'Non renseigne'}</span>
+                            </div>
+                            <div class="billet-info-row">
+                                <span class="billet-info-label">WhatsApp</span>
+                                <span class="billet-info-value">${b.telephone || 'N/A'}</span>
+                            </div>
+                            <div class="billet-info-row">
+                               <span class="billet-info-label">Catégorie</span>
+                               <span class="billet-info-value">${b.type_billet || 'Non spécifiée'}</span>
+                             </div>
+                            <div class="billet-info-row">
+                                <span class="billet-info-label">ID-Billet</span>
+                                <span class="billet-info-value">#${b.id}</span>
+                            </div>
+                        </div>
+                        <div class="billet-card-actions">
+                            <button type="button"
+                                class="btn-action btn-retirer btn-retirer-participant"
+                                data-id="${b.id}">
+                                Retirer ce participant
+                            </button>
+                        </div>
+                    </div>`;
+            });
+            containerValidees.innerHTML = html;
+        }
+
+        function filtrerParticipants() {
+            clearTimeout(debounceRecherche);
+            debounceRecherche = setTimeout(() => {
+                let recherche = document.getElementById("searchValidees").value.toLowerCase().trim();
+                let resultats = listeParticipantsValidesGlobal.filter(b => {
+                    let nom = b.nom_participant ? b.nom_participant.toLowerCase() : "";
+                    return nom.includes(recherche);
+                });
+                afficherParticipantsValides(resultats);
+            }, 150);
+        }
+
+        function mettreAJourCompteurs(nombre) {
+            let btnTabValidees = document.getElementById("btnTabValidees");
+            let titreValidees = document.getElementById("titreSectionValidees");
+            if (btnTabValidees) btnTabValidees.textContent = `Confirmes (${nombre})`;
+            if (titreValidees) titreValidees.textContent = `Participants confirmes (${nombre})`;
+        }
+
+        async function changerStatut(billetId, nouveauStatut) {
+            const { error } = await window.supabaseClient
+    .rpc("organisateur_changer_statut", {
+        p_evenement_id: eventId,
+        p_token: sessionToken,
+        p_billet_id: billetId,
+        p_nouveau_statut: nouveauStatut
+    });
+
+if (error) {
+    alert("Erreur lors de la mise a jour : " + error.message);
+    return;
+}
+
+            if (nouveauStatut === 'confirme') {
+    try {
+        const { data: unBillet, error: errBillet } = await window.supabaseClient
+            .from("billets")
+            .select("email, nom_participant")
+            .eq("id", billetId)
+            .maybeSingle();
+
+        if (!errBillet && unBillet && unBillet.email) {
+                        let lienBillet = `${window.location.origin}/billet.html?id=${billetId}`;
+                        const templateParams = {
+                            email: unBillet.email,
+                            nom_participant: unBillet.nom_participant,
+                            lien_billet: lienBillet
+                        };
+                        await emailjs.send('service_p8rnipf', 'template_ilhe1ca', templateParams);
+                    }
+                } catch (mailErr) {
+                    console.error('Erreur email :', mailErr);
+                }
+            }
+
+           await chargerToutesLesDemandes();
+        }
+
+        async function retirerParticipant(billetId) {
+            if (!confirm("Voulez-vous vraiment supprimer definitivement ce participant et son billet ?")) return;
+
+            const { error } = await window.supabaseClient
+    .rpc("organisateur_retirer_participant", {
+        p_evenement_id: eventId,
+        p_token: sessionToken,
+        p_billet_id: billetId
+    });
+
+            if (error) {
+                alert("Erreur lors de la suppression : " + error.message);
+                return;
+            }
+
+            await chargerToutesLesDemandes();
+        }
+
+let isScanLocked = false;
+
+async function traiterVerificationBillet(codeScanne) {
+    let resultatDiv = document.getElementById("resultatScan");
+    let code = codeScanne ? codeScanne.trim() : "";
+
+    if (!code) {
+        setResultat(resultatDiv, "warning", "Veuillez entrer l'ID ou scanner le QR Code du billet.");
+        return;
+    }
+
+    if (isScanLocked) return;
+    isScanLocked = true;
+
+    try {
+        const { data, error } = await window.supabaseClient
+            .rpc("organisateur_verifier_billet", {
+                p_evenement_id: eventId,
+                p_token: sessionToken,
+                p_code_scanne: code
+            });
+
+        if (error) {
+            setResultat(resultatDiv, "error", "Erreur de connexion avec la base de données.");
+            isScanLocked = false;
+            return;
+        }
+
+        const res = (data && data.length > 0) ? data[0] : null;
+
+        if (!res || res.resultat === "introuvable") {
+            setResultat(resultatDiv, "error", `Billet introuvable pour cet ID (${code}).`);
+            setTimeout(() => { isScanLocked = false; }, 2000);
+            return;
+        }
+
+        if (res.resultat === "non_confirme") {
+            setResultat(resultatDiv, "warning", `Entrée refusée : Billet non confirmé.`);
+            setTimeout(() => { isScanLocked = false; }, 2000);
+            return;
+        }
+
+        let maintenant = Date.now();
+
+        if (res.resultat === "deja_valide") {
+            if (derniersBilletsScannes[res.billet_id] && (maintenant - derniersBilletsScannes[res.billet_id] < 15000)) {
+                setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue Mr/Mme ${res.nom_participant || 'N/A'} !`);
+            } else {
+                setResultat(resultatDiv, "error", `BILLET DÉJÀ UTILISÉ — ${res.nom_participant || 'N/A'}`);
+            }
+            setTimeout(() => { isScanLocked = false; }, 2000);
+            return;
+        }
+
+        derniersBilletsScannes[res.billet_id] = maintenant;
+        setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue Mr/Mme ${res.nom_participant || 'N/A'} !`);
+
+        setTimeout(() => {
+            isScanLocked = false;
+        }, 3000);
+
+    } catch (err) {
+        console.error("Erreur lors de la vérification :", err);
+        isScanLocked = false;
+    }
+}
+        function setResultat(el, type, message) {
+            const styles = {
+                success: { bg: "#d1fae5", border: "rgba(16,185,129,0.3)", color: "#065f46" },
+                error:   { bg: "#fee2e2", border: "rgba(239,68,68,0.3)",  color: "#991b1b" },
+                warning: { bg: "#fef3c7", border: "rgba(245,158,11,0.3)", color: "#92400e" }
+            };
+            let s = styles[type] || styles.warning;
+            el.style.background = s.bg;
+            el.style.borderColor = s.border;
+            el.style.color = s.color;
+            el.textContent = message;
+        }
+
+        function verifierBilletManuel() {
+            let code = document.getElementById("codeBilletInput").value;
+            traiterVerificationBillet(code);
+            document.getElementById("codeBilletInput").value = "";
+        }
+
+        function changerOnglet(nomOnglet, buttonElement) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
+
+    if (buttonElement) buttonElement.classList.add('active');
+
+    if (nomOnglet === 'paiements') {
+        document.getElementById('section-paiements').classList.add('active');
+        arreterScanner();
+    } else if (nomOnglet === 'validees') {
+        document.getElementById('section-validees').classList.add('active');
+        arreterScanner();
+    } else {
+        document.getElementById('section-scanner').classList.add('active');
+        demarrerScanner();
+    }
+}
+
+function arreterScanner() {
+    if (html5QrCode && html5QrCode.isScanning) {
+        html5QrCode.stop().catch(err => console.log("Arret camera :", err));
+    }
+}
+
+function demarrerScanner() {
+    if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
+    if (html5QrCode.isScanning) return;
+
+    let resultatDiv = document.getElementById("resultatScan");
+    setResultat(resultatDiv, "warning", "Initialisation de la caméra...");
+
+    function qrboxFunction(viewfinderWidth, viewfinderHeight) {
+        let minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+        let size = Math.floor(minEdge * 0.7);
+        return { width: size, height: size };
+    }
+
+    html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: qrboxFunction },
+        (decodedText) => traiterVerificationBillet(decodedText),
+        (errorMessage) => {}
+    ).then(() => {
+        setResultat(resultatDiv, "warning", "Placez le QR code dans le cadre de scan.");
+    }).catch(err => {
+        console.log("Camera non dispo :", err);
+        setResultat(resultatDiv, "error", "Impossible d'accéder à la caméra : Accès à la caméra refusé ou caméra non disponible" );
+    });
+}
+
+        async function toggleVentes() {
+            statutVentesFermees = !statutVentesFermees;
+
+            const { error } = await window.supabaseClient
+    .rpc("organisateur_toggle_ventes", {
+        p_evenement_id: eventId,
+        p_token: sessionToken,
+        p_nouveau_statut: statutVentesFermees
+    });
+            if (error) {
+                alert("Erreur : " + error.message);
+                statutVentesFermees = !statutVentesFermees;
+                return;
+            }
+
+            mettreAJourBoutonVentes();
+        }
+
+        function mettreAJourBoutonVentes() {
+            let label = document.getElementById("labelStatutVentes");
+            let btn = document.getElementById("btnToggleVentes");
+            let indicator = document.getElementById("statusIndicator");
+            if (!label || !btn) return;
+
+            if (statutVentesFermees) {
+                label.innerHTML = `Ventes : <span style="color:#ef4444;font-weight:800;">FERMEES</span>`;
+                btn.textContent = "Ouvrir la vente";
+                btn.style.background = "linear-gradient(135deg, #10b981, #059669)";
+                btn.style.color = "#ffffff";
+                if (indicator) { indicator.className = "status-indicator closed"; }
+            } else {
+                label.innerHTML = `Ventes : <span style="color:#10b981;font-weight:800;">OUVERTES</span>`;
+                btn.textContent = "Fermer la vente";
+                btn.style.background = "linear-gradient(135deg, #ef4444, #dc2626)";
+                btn.style.color = "#ffffff";
+                if (indicator) { indicator.className = "status-indicator open"; }
+            }
+        }
     </script>
+
 </body>
 </html>
