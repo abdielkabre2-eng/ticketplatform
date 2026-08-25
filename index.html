@@ -864,10 +864,27 @@ img, svg, video, canvas {
          ajoutez ici <link rel="preconnect" href="https://xxxx.supabase.co" crossorigin>
          pour gagner encore un peu de temps sur la requête réseau réelle. -->
 
-    <!-- Chargement anticipé des scripts Supabase : ils commencent à se télécharger
-         immédiatement, en parallèle du reste de la page, sans bloquer l'affichage. -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-    <script src="supabase.js" defer></script>
+    <!-- =========================================================
+         CORRECTIF : détection du chargement des scripts Supabase.
+         Si le CDN jsdelivr échoue ou timeout (fréquent sur certains
+         réseaux mobiles), on le sait immédiatement via onerror,
+         au lieu de laisser window.supabaseClient rester undefined
+         en silence. Le script principal en bas de page vérifie
+         ce drapeau avant d'utiliser window.supabaseClient.
+    ========================================================== -->
+    <script>
+        window.__goldtixErreurChargementCDN = false;
+    </script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+        defer
+        onerror="window.__goldtixErreurChargementCDN = true;"
+    ></script>
+    <script
+        src="supabase.js"
+        defer
+        onerror="window.__goldtixErreurChargementCDN = true;"
+    ></script>
 </head>
 <body>
 
@@ -972,7 +989,7 @@ img, svg, video, canvas {
         }
     })();
     </script>
-    <!-- ===== FIN DE L'AJOUT — tout ce qui suit est votre page d'achat, strictement inchangée ===== -->
+    <!-- ===== FIN DE L'AJOUT — tout ce qui suit est votre page d'achat ===== -->
 
     <!-- NAVBAR -->
     <nav class="navbar anim-1" style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 8px 12px; box-sizing: border-box;">
@@ -1034,37 +1051,106 @@ img, svg, video, canvas {
             mail:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`,
         };
 
+        /* =============================================================
+           CORRECTIF PRINCIPAL : gestion d'erreur robuste + timeout
+           ============================================================
+           Trois filets de sécurité désormais en place :
+           1) Détection d'un échec de chargement du CDN Supabase
+              (via window.__goldtixErreurChargementCDN, voir <head>).
+           2) try/catch + AbortController(timeout) autour de la requête
+              Supabase elle-même, pour ne jamais rester bloqué en
+              attente indéfinie d'une réponse réseau.
+           3) Un filet de sécurité global (setTimeout de secours) qui
+              force un message d'erreur si, pour une raison quelconque
+              non prévue, le loader est encore affiché après 20s.
+           Dans tous les cas d'échec : message clair + bouton "Réessayer"
+           qui relance chargerPageAchatUnique(), au lieu d'un spinner
+           qui tourne indéfiniment sans explication.
+        ============================================================= */
+
+        function afficherErreurChargement(container, titre, message) {
+            container.innerHTML = `
+                <div class="card error-card">
+                    <h2>${titre}</h2>
+                    <p>${message}</p>
+                    <button class="btn-submit" style="margin-top: 20px;" onclick="chargerPageAchatUnique()">
+                        Réessayer
+                    </button>
+                </div>`;
+            window.dispatchEvent(new Event('goldtix:donneesPretes'));
+        }
+
         // ─── MAIN LOADER ─────────────────────────────────────────────────────────
         async function chargerPageAchatUnique() {
             const urlParams = new URLSearchParams(window.location.search);
             const eventId = urlParams.get("event");
             const container = document.getElementById("detailsEvenement");
 
+            // Remet le loader visible en cas de nouvel essai après une erreur
+            container.innerHTML = `
+                <div class="card loading-card">
+                    <p class="loading-text">
+                        <span class="spinner"></span>
+                        Chargement de votre experience...
+                    </p>
+                </div>`;
+
             if (!eventId) {
-                container.innerHTML = `
-                    <div class="card error-card">
-                        <h2>Lien invalide</h2>
-                        <p>Aucun evenement specifie dans ce lien.</p>
-                    </div>`;
-                window.dispatchEvent(new Event('goldtix:donneesPretes'));
+                afficherErreurChargement(container, "Lien invalide", "Aucun evenement specifie dans ce lien.");
                 return;
             }
 
-            const { data: ev, error } = await window.supabaseClient
-                .from("evenements")
-                .select("*")
-                .eq("id", eventId)
-                .single();
+            // Filet n°1 : le script Supabase (CDN ou local) n'a pas pu se charger
+            if (window.__goldtixErreurChargementCDN || !window.supabaseClient) {
+                afficherErreurChargement(
+                    container,
+                    "Connexion impossible",
+                    "Le chargement a échoué. Vérifiez votre connexion internet (Wi-Fi ou données mobiles) puis réessayez."
+                );
+                return;
+            }
+
+            let ev, error;
+
+            // Filet n°2 : try/catch + timeout explicite autour de la requête réseau
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s max
+
+                const resultat = await window.supabaseClient
+                    .from("evenements")
+                    .select("*")
+                    .eq("id", eventId)
+                    .abortSignal(controller.signal)
+                    .single();
+
+                clearTimeout(timeoutId);
+                ev = resultat.data;
+                error = resultat.error;
+
+            } catch (err) {
+                console.error("Erreur réseau lors du chargement de l'événement :", err);
+                afficherErreurChargement(
+                    container,
+                    "Connexion impossible",
+                    "Le chargement a échoué (réseau instable ou trop lent). Vérifiez votre connexion et réessayez."
+                );
+                return;
+            }
 
             if (error || !ev) {
-                container.innerHTML = `
-                    <div class="card error-card">
-                        <h2>Événement introuvable</h2>
-                        <p>Cet événement a été supprimé ou n'existe plus.</p>
-                    </div>`;
-                window.dispatchEvent(new Event('goldtix:donneesPretes'));
+                afficherErreurChargement(
+                    container,
+                    "Événement introuvable",
+                    "Cet événement a été supprimé ou n'existe plus."
+                );
                 return;
             }
+
+            // À partir d'ici, tout le reste est encapsulé dans un try/catch
+            // supplémentaire : une erreur inattendue dans la construction du
+            // HTML ne doit jamais non plus laisser le loader bloqué.
+            try {
 
             // ── Colonne droite ──────────────────────────────────────────────────
             let rightColumn = "";
@@ -1347,9 +1433,39 @@ img, svg, video, canvas {
             }
 
             window.dispatchEvent(new Event('goldtix:donneesPretes'));
+
+            } catch (err) {
+                // Filet n°3 (local à la fonction) : une erreur inattendue dans la
+                // construction de l'affichage ne doit jamais non plus laisser
+                // l'utilisateur bloqué sur le loader.
+                console.error("Erreur inattendue lors de l'affichage de l'événement :", err);
+                afficherErreurChargement(
+                    container,
+                    "Une erreur est survenue",
+                    "Impossible d'afficher les informations de l'événement. Réessayez."
+                );
+            }
         }
 
-        document.addEventListener('DOMContentLoaded', chargerPageAchatUnique);
+        document.addEventListener('DOMContentLoaded', function() {
+            chargerPageAchatUnique();
+
+            // Filet n°4, global et indépendant : si pour une raison quelconque
+            // (script qui n'a jamais démarré, blocage totalement inattendu) le
+            // loader est encore affiché après 20 secondes, on force un message
+            // d'erreur clair avec un bouton "Réessayer" plutôt que de laisser
+            // l'utilisateur devant un spinner qui tourne indéfiniment.
+            setTimeout(function() {
+                const container = document.getElementById("detailsEvenement");
+                if (container && container.querySelector(".loading-card")) {
+                    afficherErreurChargement(
+                        container,
+                        "Chargement trop long",
+                        "La connexion semble instable. Vérifiez votre réseau (Wi-Fi ou données mobiles) et réessayez."
+                    );
+                }
+            }, 20000);
+        });
     </script>
 </body>
 </html>
