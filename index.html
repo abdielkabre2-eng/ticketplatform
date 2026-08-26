@@ -1145,15 +1145,14 @@ if (!ev) {
     );
     return;
 }
-
-            if (error || !ev) {
-                afficherErreurChargement(
-                    container,
-                    "Événement introuvable",
-                    "Cet événement a été supprimé ou n'existe plus."
-                );
-                return;
-            }
+if (!ev) {
+    afficherErreurChargement(
+        container,
+        "Événement introuvable",
+        "Cet événement a été supprimé ou n'existe plus."
+    );
+    return;
+}
 
             // À partir d'ici, tout le reste est encapsulé dans un try/catch
             // supplémentaire : une erreur inattendue dans la construction du
