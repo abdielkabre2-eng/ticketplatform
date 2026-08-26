@@ -3,7 +3,7 @@ import formidable from "formidable";
 import fs from "fs";
 
 const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY;
+const supabaseKey = process.env.SUPABASE_KEY;
 
 // Désactiver le parseur JSON par défaut pour gérer le formulaire multipart/form-data
 export const config = {
@@ -33,21 +33,44 @@ export default async function handler(req, res) {
 
 async function handleGet(req, res, supabase) {
   const eventId = req.query.event;
-  if (!eventId) {
-    return res.status(400).json({ error: "Paramètre 'event' manquant" });
+  const ticketId = req.query.id;
+
+  // Option A : Recherche d'un événement (pour index.html)
+  if (eventId) {
+    const { data, error } = await supabase
+      .from("evenements")
+      .select("*")
+      .eq("id", eventId)
+      .single();
+
+    if (error || !data) {
+      return res.status(200).json({ event: null });
+    }
+    return res.status(200).json({ event: data });
   }
 
-  const { data, error } = await supabase
-    .from("evenements")
-    .select("*")
-    .eq("id", eventId)
-    .single();
+  // Option B : Recherche d'un billet + son événement (pour billet.html)
+  if (ticketId) {
+    const { data: ticket, error: errTicket } = await supabase
+      .from("billets")
+      .select("*")
+      .eq("id", ticketId)
+      .single();
 
-  if (error || !data) {
-    return res.status(200).json({ event: null });
+    if (errTicket || !ticket) {
+      return res.status(404).json({ ticket: null, event: null });
+    }
+
+    const { data: event } = await supabase
+      .from("evenements")
+      .select("*")
+      .eq("id", ticket.evenement_id)
+      .single();
+
+    return res.status(200).json({ ticket, event });
   }
 
-  return res.status(200).json({ event: data });
+  return res.status(400).json({ error: "Paramètre 'event' ou 'id' manquant" });
 }
 
 async function handlePost(req, res, supabase) {

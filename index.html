@@ -1261,95 +1261,80 @@ img, svg, video, canvas {
                 });
 
                 // ── Soumission — tout passe par POST /api/tickets ────────────────
-                document.getElementById("btnValiderAchat").onclick = async function() {
-                    const nom  = document.getElementById("nomParticipant").value.trim();
-                    const email = document.getElementById("emailParticipant").value.trim();
-                    const tel   = document.getElementById("telParticipant").value.trim();
-                    const fichierPreuve = document.getElementById("preuvePaiement").files[0];
+               const btnValiderAchat = document.getElementById("btnValiderAchat");
+const btnHTMLOriginal = btnValiderAchat.innerHTML; // Sauvegarde le HTML d'origine une seule fois
 
-                    let typeBilletChoisi = "Standard";
-                    const selectCat = document.getElementById("selectCategorie");
-                    if (selectCat) {
-                        typeBilletChoisi = selectCat.value;
-                    } else if (ev.prix) {
-                        typeBilletChoisi = String(ev.prix);
-                    }
+btnValiderAchat.onclick = async function() {
+    const nom   = document.getElementById("nomParticipant").value.trim();
+    const email = document.getElementById("emailParticipant").value.trim();
+    const tel   = document.getElementById("telParticipant").value.trim();
+    const fichierPreuve = document.getElementById("preuvePaiement").files[0];
 
-                    if (!nom || !tel || !fichierPreuve) {
-                        alert("Vous devez obligatoirement entrer votre nom, numéro de téléphone et joindre la capture de paiement.");
-                        return;
-                    }
+    let typeBilletChoisi = "Standard";
+    const selectCat = document.getElementById("selectCategorie");
+    if (selectCat) {
+        typeBilletChoisi = selectCat.value;
+    } else if (typeof ev !== 'undefined' && ev.prix) {
+        typeBilletChoisi = String(ev.prix);
+    }
 
-                    const btn = document.getElementById("btnValiderAchat");
-                    btn.disabled = true;
-                    btn.classList.add("loading");
-                    const label = document.createElement("span");
-                    label.textContent = "Validation et envoi securise en cours...";
-                    btn.appendChild(label);
+    if (!nom || !tel || !fichierPreuve) {
+        alert("Vous devez obligatoirement entrer votre nom, numéro de téléphone et joindre la capture de paiement.");
+        return;
+    }
 
-                    try {
-                        // 1. Vérification fermeture ventes en temps réel (toujours via l'API)
-                        const checkRes = await fetchAvecTimeout(
-                            '/api/tickets?event=' + encodeURIComponent(ev.id),
-                            { method: 'GET' },
-                            15000
-                        );
-                        const checkJson = await checkRes.json();
-                        const verifEv = checkJson ? checkJson.event : null;
+    if (btnValiderAchat.disabled) return; // Anti-double clic
+    btnValiderAchat.disabled = true;
 
-                        if (verifEv && verifEv.ventes_fermees) {
-                            alert("Désolé, la vente des billets pour cet évènement vient d'être fermée.");
-                            window.location.reload();
-                            return;
-                        }
+    // FIX VISUEL : Remplace tout le contenu du bouton au lieu d'ajouter un child par-dessus
+    btnValiderAchat.innerHTML = `<div class="spinner"></div> Validation et envoi sécurisé en cours...`;
 
-                        // 2. Envoi du formulaire + de la preuve de paiement en UNE SEULE
-                        //    requête POST vers /api/tickets. C'est la fonction serverless,
-                        //    côté serveur, qui se charge d'uploader le fichier sur Supabase
-                        //    Storage et d'insérer le billet — jamais le navigateur du client.
-                        const formData = new FormData();
-                        formData.append("event", ev.id);
-                        formData.append("nom_participant", nom);
-                        formData.append("email", email || "");
-                        formData.append("telephone", tel);
-                        formData.append("type_billet", typeBilletChoisi);
-                        formData.append("preuve", fichierPreuve);
+    try {
+        // Envoi direct du formulaire en UNE SEULE requête POST (suppression du GET de vérification inutile)
+        const formData = new FormData();
+        formData.append("event", ev.id);
+        formData.append("nom_participant", nom);
+        formData.append("email", email || "");
+        formData.append("telephone", tel);
+        formData.append("type_billet", typeBilletChoisi);
+        formData.append("preuve", fichierPreuve);
 
-                        const reponseAchat = await fetchAvecTimeout(
-                            '/api/tickets',
-                            { method: 'POST', body: formData },
-                            30000 // plus large : l'envoi d'une photo peut prendre du temps sur mobile
-                        );
+        const reponseAchat = await fetchAvecTimeout(
+            '/api/tickets',
+            { method: 'POST', body: formData },
+            30000
+        );
 
-                        let resultatAchat;
-                        try {
-                            resultatAchat = await reponseAchat.json();
-                        } catch (e) {
-                            resultatAchat = null;
-                        }
+        let resultatAchat;
+        try {
+            resultatAchat = await reponseAchat.json();
+        } catch (e) {
+            resultatAchat = null;
+        }
 
-                        if (!reponseAchat.ok || !resultatAchat || !resultatAchat.success) {
-                            const messageErreur = (resultatAchat && resultatAchat.error)
-                                ? resultatAchat.error
-                                : "Erreur lors de l'enregistrement du billet.";
-                            alert(messageErreur);
-                            btn.disabled = false;
-                            btn.classList.remove("loading");
-                            return;
-                        }
+        if (!reponseAchat.ok || !resultatAchat || !resultatAchat.success) {
+            const messageErreur = (resultatAchat && resultatAchat.error)
+                ? resultatAchat.error
+                : "Erreur lors de l'enregistrement du billet.";
+            alert(messageErreur);
+            btnValiderAchat.disabled = false;
+            btnValiderAchat.innerHTML = btnHTMLOriginal;
+            return;
+        }
 
-                        window.location.href = `billet.html?id=${resultatAchat.id}`;
+        // Redirection immédiate
+        window.location.href = `billet.html?id=${encodeURIComponent(resultatAchat.id)}`;
 
-                    } catch (err) {
-                        console.error("Erreur inattendue :", err);
-                        const messageErreur = (err && err.name === "AbortError")
-                            ? "La connexion met trop de temps à répondre. Vérifiez votre réseau puis réessayez."
-                            : "Une erreur inattendue est survenue lors du traitement.";
-                        alert(messageErreur);
-                        btn.disabled = false;
-                        btn.classList.remove("loading");
-                    }
-                };
+    } catch (err) {
+        console.error("Erreur inattendue :", err);
+        const messageErreur = (err && err.name === "AbortError")
+            ? "La connexion met trop de temps à répondre. Vérifiez votre réseau puis réessayez."
+            : "Une erreur inattendue est survenue lors du traitement.";
+        alert(messageErreur);
+        btnValiderAchat.disabled = false;
+        btnValiderAchat.innerHTML = btnHTMLOriginal;
+    }
+};
             }
 
             window.dispatchEvent(new Event('goldtix:donneesPretes'));

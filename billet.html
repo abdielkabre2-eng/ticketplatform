@@ -5,12 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Mon Billet - GoldTix</title>
 
-<!-- 1. Charger d'abord le SDK officiel de Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<!-- 2. Ensuite seulement, charger ton fichier de configuration supabase.js -->
-<script src="supabase.js"></script>
-
 <!-- 3. Enfin, les autres bibliothèques -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -649,15 +643,20 @@ btn.style.display = 'none';
         }
       }
 
-async function chargerBillet() {
-try {
-const { data: billet, error: billetError } = await supabaseClient
-            .from('billets').select('*').eq('id', billetId).single();
-if (billetError || !billet) { showError('Billet introuvable.'); return; }
+// Récupération via l'API Vercel (same-origin, 100% réseau mobile)
+const reponse = await fetch('/api/tickets?id=' + encodeURIComponent(billetId));
 
-const { data: ev, error: evError } = await supabaseClient
-            .from('evenements').select('*').eq('id', billet.evenement_id).single();
-if (evError || !ev) { showError("Événement introuvable."); return; }
+if (!reponse.ok) { 
+  showError('Billet introuvable.'); 
+  return; 
+}
+
+const data = await reponse.json();
+const billet = data.ticket;
+const ev     = data.event;
+
+if (!billet) { showError('Billet introuvable.'); return; }
+if (!ev)     { showError("Événement introuvable."); return; }
 
 let categories_data = [];
 if (ev.categories_data) {
