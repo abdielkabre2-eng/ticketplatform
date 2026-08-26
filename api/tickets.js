@@ -1,29 +1,11 @@
-// api/tickets.js
-//
-// Fonction serverless Vercel (Node.js). S'exécute sur les serveurs de
-// Vercel, jamais dans le navigateur du visiteur — c'est pour ça que le
-// SDK Supabase et sa clé peuvent être utilisés ici en toute sécurité,
-// même si l'appel direct depuis un téléphone posait problème.
-//
-// Nécessite : npm install @supabase/supabase-js formidable
-//
-// Variables d'environnement à définir sur Vercel (Project Settings > 
-// Environment Variables) :
-//   SUPABASE_URL              = https://xxxx.supabase.co
-//   SUPABASE_SERVICE_ROLE_KEY = la clé "service_role" (secrète, jamais
-//                                la clé "anon" utilisée côté client)
-
 import { createClient } from "@supabase/supabase-js";
 import formidable from "formidable";
 import fs from "fs";
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY;
 
-// Nécessaire pour désactiver le parseur JSON automatique de Vercel,
-// puisqu'on doit lire nous-mêmes le multipart/form-data (fichier + champs).
+// Désactiver le parseur JSON par défaut pour gérer le formulaire multipart/form-data
 export const config = {
   api: {
     bodyParser: false,
@@ -31,20 +13,25 @@ export const config = {
 };
 
 export default async function handler(req, res) {
+  // Sécurité : éviter l'erreur 500 si les variables d'environnement sont absentes
+  if (!supabaseUrl || !supabaseKey) {
+    return res.status(500).json({ error: "Variables d'environnement SUPABASE_URL ou SUPABASE_KEY manquantes sur Vercel." });
+  }
+
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
   if (req.method === "GET") {
-    return handleGet(req, res);
+    return handleGet(req, res, supabase);
   }
   if (req.method === "POST") {
-    return handlePost(req, res);
+    return handlePost(req, res, supabase);
   }
+  
   res.setHeader("Allow", "GET, POST");
   return res.status(405).json({ error: "Méthode non autorisée" });
 }
 
-// ────────────────────────────────────────────────────────────────
-// GET /api/tickets?event=ID  →  { event: {...} } ou { event: null }
-// ────────────────────────────────────────────────────────────────
-async function handleGet(req, res) {
+async function handleGet(req, res, supabase) {
   const eventId = req.query.event;
   if (!eventId) {
     return res.status(400).json({ error: "Paramètre 'event' manquant" });
@@ -63,13 +50,7 @@ async function handleGet(req, res) {
   return res.status(200).json({ event: data });
 }
 
-// ────────────────────────────────────────────────────────────────
-// POST /api/tickets  (multipart/form-data)
-//   champs : event, nom_participant, email, telephone, type_billet
-//   fichier : preuve
-// →  { success: true, id: <billetId> }  ou  { success: false, error }
-// ────────────────────────────────────────────────────────────────
-async function handlePost(req, res) {
+async function handlePost(req, res, supabase) {
   try {
     const { fields, files } = await parseFormulaire(req);
 
@@ -84,7 +65,6 @@ async function handlePost(req, res) {
       return res.status(400).json({ success: false, error: "Champs obligatoires manquants." });
     }
 
-    // Revérifie que les ventes ne sont pas fermées entre-temps
     const { data: ev, error: errEv } = await supabase
       .from("evenements")
       .select("ventes_fermees")
@@ -98,7 +78,6 @@ async function handlePost(req, res) {
       return res.status(409).json({ success: false, error: "La vente des billets pour cet évènement vient d'être fermée." });
     }
 
-    // Upload de la preuve de paiement (côté serveur, jamais côté client)
     const donneesFichier = fs.readFileSync(fichierPreuve.filepath);
     const extension = (fichierPreuve.originalFilename || "jpg").split(".").pop().toLowerCase();
     const nomFichier = `preuve-${Date.now()}-${Math.floor(Math.random() * 1000)}.${extension}`;
@@ -118,7 +97,6 @@ async function handlePost(req, res) {
 
     const { data: urlData } = supabase.storage.from("preuves").getPublicUrl(nomFichier);
 
-    // Insertion du billet
     const { data: billetInsere, error: erreurInsertion } = await supabase
       .from("billets")
       .insert([{
@@ -146,7 +124,7 @@ async function handlePost(req, res) {
 }
 
 function parseFormulaire(req) {
-  const form = formidable({ maxFileSize: 10 * 1024 * 1024 }); // 10 Mo max
+  const form = formidable({ maxFileSize: 10 * 1024 * 1024 });
   return new Promise((resolve, reject) => {
     form.parse(req, (err, fields, files) => {
       if (err) return reject(err);
