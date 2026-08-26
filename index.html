@@ -665,11 +665,6 @@ img, svg, video, canvas {
 
         /* =============================================================
            ===== INTRODUCTION ANIMÉE GOLDTIX (ajout uniquement)
-           Overlay plein écran. Se retire dès que les données de
-           l'événement sont prêtes (et qu'une durée minimale de
-           lecture s'est écoulée), avec un plafond de sécurité pour
-           ne jamais bloquer l'utilisateur trop longtemps sur un
-           réseau lent. Purement transform/opacity : coût GPU minimal.
         ============================================================= */
         #introOverlayGoldTix {
             position: fixed;
@@ -857,41 +852,11 @@ img, svg, video, canvas {
             }
         }
     </style>
-
-    <!-- Préconnexion au CDN des scripts Supabase pour gagner du temps sur mobile -->
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <!-- Astuce : si vous connaissez l'URL de votre projet Supabase (ex: https://xxxx.supabase.co),
-         ajoutez ici <link rel="preconnect" href="https://xxxx.supabase.co" crossorigin>
-         pour gagner encore un peu de temps sur la requête réseau réelle. -->
-
-    <!-- =========================================================
-         CORRECTIF : détection du chargement des scripts Supabase.
-         Si le CDN jsdelivr échoue ou timeout (fréquent sur certains
-         réseaux mobiles), on le sait immédiatement via onerror,
-         au lieu de laisser window.supabaseClient rester undefined
-         en silence. Le script principal en bas de page vérifie
-         ce drapeau avant d'utiliser window.supabaseClient.
-    ========================================================== -->
-    <script>
-        window.__goldtixErreurChargementCDN = false;
-    </script>
-    <script
-        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-        defer
-        onerror="window.__goldtixErreurChargementCDN = true;"
-    ></script>
-    <script
-        src="supabase.js"
-        defer
-        onerror="window.__goldtixErreurChargementCDN = true;"
-    ></script>
 </head>
 <body>
 
     <!-- =============================================================
-         ===== OVERLAY D'INTRODUCTION (ajout uniquement)
-         Placé avant tout le reste du body. Ne modifie rien de la
-         page d'achat qui suit ; se retire tout seul puis disparaît.
+         ===== OVERLAY D'INTRODUCTION (purement visuel, indépendant)
     ============================================================= -->
     <div id="introOverlayGoldTix" aria-hidden="true">
         <div class="intro-particles">
@@ -930,23 +895,11 @@ img, svg, video, canvas {
     (function() {
         var overlay = document.getElementById('introOverlayGoldTix');
         if (!overlay) return;
-
         document.documentElement.style.overflowY = 'hidden';
-
-        var prefersReducedMotion = window.matchMedia &&
-            window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-        // Durée minimale : le temps de laisser voir l'animation, pas plus.
-        // Plafond de sécurité : l'intro ne bloquera JAMAIS l'utilisateur
-        // plus longtemps que ça, même si le chargement des données est lent —
-        // dans ce cas, il retombera simplement sur le spinner de chargement
-        // normal de la page, ce qui est plus honnête qu'un écran figé.
+        var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         var DUREE_MIN = prefersReducedMotion ? 0 : 2000;
         var DUREE_MAX = prefersReducedMotion ? 0 : 3200;
-
-        var donneesPretes = false;
-        var minimumEcoule = false;
-        var dejaFini = false;
+        var donneesPretes = false, minimumEcoule = false, dejaFini = false;
 
         function terminerIntro() {
             if (dejaFini) return;
@@ -958,35 +911,15 @@ img, svg, video, canvas {
                 overlay.removeEventListener('animationend', gerer);
                 overlay.classList.add('intro-hidden');
             });
-            // Filet si l'evenement animationend ne se déclenche pas
             setTimeout(function() { overlay.classList.add('intro-hidden'); }, 650);
         }
-
-        function tenterDeFinir() {
-            if (donneesPretes && minimumEcoule) terminerIntro();
-        }
-
-        if (prefersReducedMotion) {
-            terminerIntro();
-            return;
-        }
-
+        function tenterDeFinir() { if (donneesPretes && minimumEcoule) terminerIntro(); }
+        if (prefersReducedMotion) { terminerIntro(); return; }
         setTimeout(function() { minimumEcoule = true; tenterDeFinir(); }, DUREE_MIN);
         setTimeout(function() { donneesPretes = true; tenterDeFinir(); }, DUREE_MAX);
-
-        // Se déclenche dès que la page d'achat a fini de charger les
-        // données de l'événement (que ce soit un succès ou une erreur) :
-        // si le réseau est rapide, l'intro peut se terminer plus tôt
-        // que le plafond de sécurité ci-dessus.
-        window.addEventListener('goldtix:donneesPretes', function() {
-            donneesPretes = true;
-            tenterDeFinir();
-        });
-
+        window.addEventListener('goldtix:donneesPretes', function() { donneesPretes = true; tenterDeFinir(); });
         var skipBtn = document.getElementById('introSkipBtn');
-        if (skipBtn) {
-            skipBtn.addEventListener('click', terminerIntro);
-        }
+        if (skipBtn) skipBtn.addEventListener('click', terminerIntro);
     })();
     </script>
     <!-- ===== FIN DE L'AJOUT — tout ce qui suit est votre page d'achat ===== -->
@@ -1035,6 +968,24 @@ img, svg, video, canvas {
     </footer>
 
     <script>
+        /* =============================================================
+           GOLDTIX — Page d'achat 100% "same-origin"
+           ==============================================================
+           AUCUN script tiers (CDN Supabase, SDK client) n'est chargé ici.
+           Le navigateur du visiteur ne contacte QUE le domaine sur lequel
+           il se trouve déjà (fetch relatif vers /api/tickets). C'est ce
+           qui règle le blocage constaté sur certains réseaux 3G/4G/5G :
+           ces réseaux/opérateurs peuvent filtrer ou ralentir des domaines
+           tiers (cdn.jsdelivr.net, *.supabase.co) qu'ils ne connaissent
+           pas, mais jamais le domaine principal du site que l'utilisateur
+           est justement en train de charger.
+
+           Lecture  : GET  /api/tickets?event=ID
+           Écriture : POST /api/tickets  (multipart/form-data)
+           Voir la note technique à la fin de ce fichier pour ce que la
+           fonction serverless /api/tickets doit faire côté serveur.
+        ============================================================= */
+
         // ─── SVG ICONS ────────────────────────────────────────────────────────────
         const ICONS = {
             calendar: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
@@ -1051,23 +1002,6 @@ img, svg, video, canvas {
             mail:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`,
         };
 
-        /* =============================================================
-           CORRECTIF PRINCIPAL : gestion d'erreur robuste + timeout
-           ============================================================
-           Trois filets de sécurité désormais en place :
-           1) Détection d'un échec de chargement du CDN Supabase
-              (via window.__goldtixErreurChargementCDN, voir <head>).
-           2) try/catch + AbortController(timeout) autour de la requête
-              Supabase elle-même, pour ne jamais rester bloqué en
-              attente indéfinie d'une réponse réseau.
-           3) Un filet de sécurité global (setTimeout de secours) qui
-              force un message d'erreur si, pour une raison quelconque
-              non prévue, le loader est encore affiché après 20s.
-           Dans tous les cas d'échec : message clair + bouton "Réessayer"
-           qui relance chargerPageAchatUnique(), au lieu d'un spinner
-           qui tourne indéfiniment sans explication.
-        ============================================================= */
-
         function afficherErreurChargement(container, titre, message) {
             container.innerHTML = `
                 <div class="card error-card">
@@ -1080,13 +1014,25 @@ img, svg, video, canvas {
             window.dispatchEvent(new Event('goldtix:donneesPretes'));
         }
 
+        // Petit utilitaire : un fetch avec timeout propre (AbortController),
+        // pour ne jamais rester bloqué en attente indéfinie d'une réponse.
+        async function fetchAvecTimeout(url, options, timeoutMs) {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+            try {
+                const reponse = await fetch(url, Object.assign({}, options, { signal: controller.signal }));
+                return reponse;
+            } finally {
+                clearTimeout(timeoutId);
+            }
+        }
+
         // ─── MAIN LOADER ─────────────────────────────────────────────────────────
         async function chargerPageAchatUnique() {
             const urlParams = new URLSearchParams(window.location.search);
             const eventId = urlParams.get("event");
             const container = document.getElementById("detailsEvenement");
 
-            // Remet le loader visible en cas de nouvel essai après une erreur
             container.innerHTML = `
                 <div class="card loading-card">
                     <p class="loading-text">
@@ -1100,63 +1046,39 @@ img, svg, video, canvas {
                 return;
             }
 
-            // Filet n°1 : le script Supabase (CDN ou local) n'a pas pu se charger
-            if (window.__goldtixErreurChargementCDN || !window.supabaseClient) {
+            let ev;
+            try {
+                const reponse = await fetchAvecTimeout(
+                    '/api/tickets?event=' + encodeURIComponent(eventId),
+                    { method: 'GET' },
+                    15000
+                );
+
+                if (!reponse.ok) {
+                    throw new Error("Erreur serveur (" + reponse.status + ")");
+                }
+
+                const data = await reponse.json();
+                ev = data.event;
+            } catch (err) {
+                console.error("Erreur réseau lors du chargement de l'événement :", err);
                 afficherErreurChargement(
                     container,
                     "Connexion impossible",
-                    "Le chargement a échoué. Vérifiez votre connexion internet (Wi-Fi ou données mobiles) puis réessayez."
+                    "Le chargement a échoué (réseau instable ou trop lent). Vérifiez votre connexion et réessayez."
                 );
                 return;
             }
 
-            let ev;
-try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
-    
-    // Appel sécurisé via la route API Vercel
-    const reponse = await fetch('/api/tickets?event=' + encodeURIComponent(eventId), {
-        signal: controller.signal
-    });
-    clearTimeout(timeoutId);
+            if (!ev) {
+                afficherErreurChargement(
+                    container,
+                    "Événement introuvable",
+                    "Cet événement a été supprimé ou n'existe plus."
+                );
+                return;
+            }
 
-    if (!reponse.ok) {
-        throw new Error("Erreur serveur (" + reponse.status + ")");
-    }
-
-    const data = await reponse.json();
-    ev = data.event;
-} catch (err) {
-    console.error("Erreur réseau lors du chargement de l'événement :", err);
-    afficherErreurChargement(
-        container,
-        "Connexion impossible",
-        "Le chargement a échoué (réseau instable ou trop lent). Vérifiez votre connexion et réessayez."
-    );
-    return;
-}
-
-if (!ev) {
-    afficherErreurChargement(
-        container,
-        "Événement introuvable",
-        "Cet événement a été supprimé ou n'existe plus."
-    );
-    return;
-}
-if (!ev) {
-    afficherErreurChargement(
-        container,
-        "Événement introuvable",
-        "Cet événement a été supprimé ou n'existe plus."
-    );
-    return;
-}
-
-            // À partir d'ici, tout le reste est encapsulé dans un try/catch
-            // supplémentaire : une erreur inattendue dans la construction du
-            // HTML ne doit jamais non plus laisser le loader bloqué.
             try {
 
             // ── Colonne droite ──────────────────────────────────────────────────
@@ -1338,7 +1260,7 @@ if (!ev) {
                     }
                 });
 
-                // ── Soumission ──────────────────────────────────────────────────
+                // ── Soumission — tout passe par POST /api/tickets ────────────────
                 document.getElementById("btnValiderAchat").onclick = async function() {
                     const nom  = document.getElementById("nomParticipant").value.trim();
                     const email = document.getElementById("emailParticipant").value.trim();
@@ -1361,15 +1283,17 @@ if (!ev) {
                     const btn = document.getElementById("btnValiderAchat");
                     btn.disabled = true;
                     btn.classList.add("loading");
-                    btn.querySelector(".btn-submit span:not(.btn-icon)") && (btn.textContent = "");
-                    // Remplace le texte
                     const label = document.createElement("span");
                     label.textContent = "Validation et envoi securise en cours...";
                     btn.appendChild(label);
 
                     try {
-                        // 1. Vérification fermeture ventes en temps réel via l'API Vercel
-                        const checkRes = await fetch('/api/tickets?event=' + encodeURIComponent(ev.id));
+                        // 1. Vérification fermeture ventes en temps réel (toujours via l'API)
+                        const checkRes = await fetchAvecTimeout(
+                            '/api/tickets?event=' + encodeURIComponent(ev.id),
+                            { method: 'GET' },
+                            15000
+                        );
                         const checkJson = await checkRes.json();
                         const verifEv = checkJson ? checkJson.event : null;
 
@@ -1379,58 +1303,49 @@ if (!ev) {
                             return;
                         }
 
-                        // 2. Upload preuve via Supabase
-                        const fileExt = fichierPreuve.name.split('.').pop().toLowerCase();
-                        const fileName = `preuve-${Date.now()}-${Math.floor(Math.random() * 1000)}.${fileExt}`;
+                        // 2. Envoi du formulaire + de la preuve de paiement en UNE SEULE
+                        //    requête POST vers /api/tickets. C'est la fonction serverless,
+                        //    côté serveur, qui se charge d'uploader le fichier sur Supabase
+                        //    Storage et d'insérer le billet — jamais le navigateur du client.
+                        const formData = new FormData();
+                        formData.append("event", ev.id);
+                        formData.append("nom_participant", nom);
+                        formData.append("email", email || "");
+                        formData.append("telephone", tel);
+                        formData.append("type_billet", typeBilletChoisi);
+                        formData.append("preuve", fichierPreuve);
 
-                        const { error: uploadError } = await window.supabaseClient
-                            .storage
-                            .from("preuves")
-                            .upload(fileName, fichierPreuve, { cacheControl: '3600', upsert: false });
+                        const reponseAchat = await fetchAvecTimeout(
+                            '/api/tickets',
+                            { method: 'POST', body: formData },
+                            30000 // plus large : l'envoi d'une photo peut prendre du temps sur mobile
+                        );
 
-                        if (uploadError) {
-                            alert("Erreur lors de l'envoi de la preuve : " + uploadError.message);
+                        let resultatAchat;
+                        try {
+                            resultatAchat = await reponseAchat.json();
+                        } catch (e) {
+                            resultatAchat = null;
+                        }
+
+                        if (!reponseAchat.ok || !resultatAchat || !resultatAchat.success) {
+                            const messageErreur = (resultatAchat && resultatAchat.error)
+                                ? resultatAchat.error
+                                : "Erreur lors de l'enregistrement du billet.";
+                            alert(messageErreur);
                             btn.disabled = false;
                             btn.classList.remove("loading");
                             return;
                         }
 
-                        const { data: urlData } = window.supabaseClient
-                            .storage
-                            .from("preuves")
-                            .getPublicUrl(fileName);
-
-                        const preuveUrl = urlData.publicUrl;
-
-                        // 3. Insertion du billet
-                        const { data: insertedBillet, error: insertError } = await window.supabaseClient
-                            .from("billets")
-                            .insert([{
-                                evenement_id: ev.id,
-                                nom_participant: nom,
-                                email:  email || null,
-                                telephone: tel,
-                                preuve_url: preuveUrl,
-                                type_billet: typeBilletChoisi,
-                                statut: "attente",
-                                utilise: false
-                            }])
-                            .select();
-
-                        if (insertError) {
-                            alert("Erreur lors de l'enregistrement du billet : " + insertError.message);
-                            btn.disabled = false;
-                            btn.classList.remove("loading");
-                            return;
-                        }
-
-                        if (insertedBillet && insertedBillet.length > 0) {
-                            window.location.href = `billet.html?id=${insertedBillet[0].id}`;
-                        }
+                        window.location.href = `billet.html?id=${resultatAchat.id}`;
 
                     } catch (err) {
                         console.error("Erreur inattendue :", err);
-                        alert("Une erreur inattendue est survenue lors du traitement.");
+                        const messageErreur = (err && err.name === "AbortError")
+                            ? "La connexion met trop de temps à répondre. Vérifiez votre réseau puis réessayez."
+                            : "Une erreur inattendue est survenue lors du traitement.";
+                        alert(messageErreur);
                         btn.disabled = false;
                         btn.classList.remove("loading");
                     }
@@ -1440,9 +1355,6 @@ if (!ev) {
             window.dispatchEvent(new Event('goldtix:donneesPretes'));
 
             } catch (err) {
-                // Filet n°3 (local à la fonction) : une erreur inattendue dans la
-                // construction de l'affichage ne doit jamais non plus laisser
-                // l'utilisateur bloqué sur le loader.
                 console.error("Erreur inattendue lors de l'affichage de l'événement :", err);
                 afficherErreurChargement(
                     container,
@@ -1455,11 +1367,9 @@ if (!ev) {
         document.addEventListener('DOMContentLoaded', function() {
             chargerPageAchatUnique();
 
-            // Filet n°4, global et indépendant : si pour une raison quelconque
-            // (script qui n'a jamais démarré, blocage totalement inattendu) le
-            // loader est encore affiché après 20 secondes, on force un message
-            // d'erreur clair avec un bouton "Réessayer" plutôt que de laisser
-            // l'utilisateur devant un spinner qui tourne indéfiniment.
+            // Filet de sécurité global : si le loader est encore affiché après
+            // 20 secondes pour une raison quelconque, on force un message clair
+            // avec un bouton "Réessayer" plutôt qu'un spinner qui tourne indéfiniment.
             setTimeout(function() {
                 const container = document.getElementById("detailsEvenement");
                 if (container && container.querySelector(".loading-card")) {
