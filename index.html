@@ -1110,33 +1110,41 @@ img, svg, video, canvas {
                 return;
             }
 
-            let ev, error;
+            let ev;
+try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    
+    // Appel sécurisé via la route API Vercel
+    const reponse = await fetch('/api/tickets?event=' + encodeURIComponent(eventId), {
+        signal: controller.signal
+    });
+    clearTimeout(timeoutId);
 
-            // Filet n°2 : try/catch + timeout explicite autour de la requête réseau
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s max
+    if (!reponse.ok) {
+        throw new Error("Erreur serveur (" + reponse.status + ")");
+    }
 
-                const resultat = await window.supabaseClient
-                    .from("evenements")
-                    .select("*")
-                    .eq("id", eventId)
-                    .abortSignal(controller.signal)
-                    .single();
+    const data = await reponse.json();
+    ev = data.event;
+} catch (err) {
+    console.error("Erreur réseau lors du chargement de l'événement :", err);
+    afficherErreurChargement(
+        container,
+        "Connexion impossible",
+        "Le chargement a échoué (réseau instable ou trop lent). Vérifiez votre connexion et réessayez."
+    );
+    return;
+}
 
-                clearTimeout(timeoutId);
-                ev = resultat.data;
-                error = resultat.error;
-
-            } catch (err) {
-                console.error("Erreur réseau lors du chargement de l'événement :", err);
-                afficherErreurChargement(
-                    container,
-                    "Connexion impossible",
-                    "Le chargement a échoué (réseau instable ou trop lent). Vérifiez votre connexion et réessayez."
-                );
-                return;
-            }
+if (!ev) {
+    afficherErreurChargement(
+        container,
+        "Événement introuvable",
+        "Cet événement a été supprimé ou n'existe plus."
+    );
+    return;
+}
 
             if (error || !ev) {
                 afficherErreurChargement(
@@ -1361,12 +1369,10 @@ img, svg, video, canvas {
                     btn.appendChild(label);
 
                     try {
-                        // Verification fermeture ventes en temps reel
-                        const { data: verifEv } = await window.supabaseClient
-                            .from("evenements")
-                            .select("ventes_fermees")
-                            .eq("id", ev.id)
-                            .single();
+                        // 1. Vérification fermeture ventes en temps réel via l'API Vercel
+                        const checkRes = await fetch('/api/tickets?event=' + encodeURIComponent(ev.id));
+                        const checkJson = await checkRes.json();
+                        const verifEv = checkJson ? checkJson.event : null;
 
                         if (verifEv && verifEv.ventes_fermees) {
                             alert("Désolé, la vente des billets pour cet évènement vient d'être fermée.");
@@ -1374,7 +1380,7 @@ img, svg, video, canvas {
                             return;
                         }
 
-                        // Upload preuve
+                        // 2. Upload preuve via Supabase
                         const fileExt = fichierPreuve.name.split('.').pop().toLowerCase();
                         const fileName = `preuve-${Date.now()}-${Math.floor(Math.random() * 1000)}.${fileExt}`;
 
@@ -1397,7 +1403,7 @@ img, svg, video, canvas {
 
                         const preuveUrl = urlData.publicUrl;
 
-                        // Insertion billet
+                        // 3. Insertion du billet
                         const { data: insertedBillet, error: insertError } = await window.supabaseClient
                             .from("billets")
                             .insert([{
