@@ -1833,514 +1833,579 @@
 
     </div><!-- /.page-wrapper -->
 
-    <!-- ==================== SCRIPTS (STRICTEMENT INCHANGÉ) ==================== -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase.js"></script>
-    <script src="https://unpkg.com/html5-qrcode"></script>
+   
+<script src="https://unpkg.com/html5-qrcode"></script>
 
-    <script>
-        /* =============================================
-           ÉTAT GLOBAL
-        ============================================= */
-        const urlParams = new URLSearchParams(window.location.search);
-        let eventId = urlParams.get("event");
-        let html5QrCode = null;
-        let listeParticipantsValidesGlobal = [];
-        let statutVentesFermees = false;
-        let derniersBilletsScannes = {};
-        let nomEvenementCourant = "";
+<script>
+    /* =============================================
+       ÉTAT GLOBAL
+    ============================================= */
+    const urlParams = new URLSearchParams(window.location.search);
+    let eventId = urlParams.get("event");
+    let html5QrCode = null;
+    let listeParticipantsValidesGlobal = [];
+    let statutVentesFermees = false;
+    let derniersBilletsScannes = {};
+    let nomEvenementCourant = "";
 
-        const AUTH_STORAGE_KEY = "goldtix_session_" + eventId;
-        let codeRecuperationValideTemporaire = null;
-        let sessionToken = null;
+    const AUTH_STORAGE_KEY = "goldtix_session_" + eventId;
+    let codeRecuperationValideTemporaire = null;
+    let sessionToken = null;
 
-        let chargementDemandesEnCours = false;
-        let debounceRecherche = null;
+    let chargementDemandesEnCours = false;
+    let debounceRecherche = null;
 
-        document.addEventListener("DOMContentLoaded", () => {
-            initialiserAuthentification();
+    /* =============================================
+       PONT UNIQUE VERS L'API SERVERLESS
+       Toutes les opérations organisateur passent par
+       POST /api/organisateur avec { action, ...payload }
+       -> plus aucun appel direct au domaine Supabase
+          depuis le navigateur.
+    ============================================= */
+    async function fetchAvecTimeout(url, options, timeoutMs) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+        try {
+            return await fetch(url, Object.assign({}, options, { signal: controller.signal }));
+        } finally {
+            clearTimeout(timeoutId);
+        }
+    }
 
-            document.addEventListener("click", function(event) {
-                let targetBtn = event.target.closest(".btn-changer-statut");
-                if (targetBtn) {
-                    let id = targetBtn.getAttribute("data-id");
-                    let statut = targetBtn.getAttribute("data-statut");
-                    changerStatut(id, statut);
-                    return;
-                }
-                let targetRetirer = event.target.closest(".btn-retirer-participant");
-                if (targetRetirer) {
-                    let id = targetRetirer.getAttribute("data-id");
-                    retirerParticipant(id);
-                    return;
-                }
-            });
+    async function callOrganisateurAPI(action, payload = {}, timeoutMs = 15000) {
+        const reponse = await fetchAvecTimeout(
+            '/api/organisateur',
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action, ...payload })
+            },
+            timeoutMs
+        );
+
+        let data = null;
+        try { data = await reponse.json(); } catch (e) { data = null; }
+
+        if (!reponse.ok || !data || data.success === false) {
+            const message = (data && data.error) ? data.error : `Erreur serveur (${reponse.status})`;
+            throw new Error(message);
+        }
+        return data; // { success: true, ...résultat }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        initialiserAuthentification();
+
+        document.addEventListener("click", function(event) {
+            let targetBtn = event.target.closest(".btn-changer-statut");
+            if (targetBtn) {
+                let id = targetBtn.getAttribute("data-id");
+                let statut = targetBtn.getAttribute("data-statut");
+                changerStatut(id, statut);
+                return;
+            }
+            let targetRetirer = event.target.closest(".btn-retirer-participant");
+            if (targetRetirer) {
+                let id = targetRetirer.getAttribute("data-id");
+                retirerParticipant(id);
+                return;
+            }
         });
+    });
 
-async function verifierExistenceEvenement(idEvenement) {
-    try {
-        const { data, error } = await window.supabaseClient
-            .from("evenements")
-            .select("id, titre")
-            .eq("id", idEvenement)
-            .maybeSingle();
-
-        if (error) {
-            console.error("Erreur vérification événement :", error);
+    /* =============================================
+       VÉRIFICATION EXISTENCE ÉVÉNEMENT
+    ============================================= */
+    async function verifierExistenceEvenement(idEvenement) {
+        try {
+            const data = await callOrganisateurAPI('verifier_existence_evenement', { evenementId: idEvenement });
+            if (data.exists) {
+                nomEvenementCourant = data.titre || "";
+            }
+            return !!data.exists;
+        } catch (err) {
+            console.error("Erreur réseau vérification événement :", err);
             return false;
         }
-        if (data) {
-            nomEvenementCourant = data.titre || "";
-        }
-
-        return data !== null;
-    } catch (err) {
-        console.error("Erreur réseau vérification événement :", err);
-        return false;
     }
-}
-function afficherNomEvenementAuth() {
-    const elSetup = document.getElementById("nomEvenementSetup");
-    const elLogin = document.getElementById("nomEvenementLogin");
-    const texte = nomEvenementCourant || "Événement";
-    if (elSetup) elSetup.textContent = texte;
-    if (elLogin) elLogin.textContent = texte;
-}
 
-function afficherEcranEvenementIntrouvable() {
-    document.querySelectorAll(".auth-screen").forEach(el => el.classList.remove("active"));
-    document.getElementById("authEcranChargement").innerHTML = `
-        <div class="auth-card">
-            <div class="auth-card-inner">
-                <div class="auth-icon-badge">⚠️</div>
-                <h2 class="auth-title">Événement introuvable</h2>
-                <p class="auth-subtitle">
-                    Cet événement a été supprimé ou n'existe plus.<br>
-                    Le lien que vous avez utilisé n'est plus valide.
-                </p>
-            </div>
-        </div>`;
-    document.getElementById("authEcranChargement").classList.add("active");
-}
-        async function initialiserAuthentification() {
-            if (!eventId) {
-                document.getElementById("authEcranChargement").innerHTML =
-                    '<div class="auth-card"><div class="auth-card-inner"><p class="auth-subtitle">Aucun événement spécifié. Ajoutez ?event=ID dans l\'URL.</p></div></div>';
-                return;
-            }
-             const evenementExiste = await verifierExistenceEvenement(eventId);
-                 if (!evenementExiste) {
-                  afficherEcranEvenementIntrouvable();
-                 return;
-            }
-            afficherNomEvenementAuth();
-
-            const tokenLocal = localStorage.getItem(AUTH_STORAGE_KEY);
-
-            if (tokenLocal) {
-                try {
-                    const { data: sessionValide, error } = await window.supabaseClient
-                        .rpc("organisateur_verifier_session", {
-                            p_evenement_id: eventId,
-                            p_token: tokenLocal
-                        });
-
-                    if (!error && sessionValide === true) {
-                        sessionToken = tokenLocal;
-                        entrerDansEspaceProtege();
-                        return;
-                    }
-                } catch (err) {
-                    console.error("Erreur vérification session :", err);
-                }
-                localStorage.removeItem(AUTH_STORAGE_KEY);
-            }
-
-            try {
-                const { data: aMotDePasse, error } = await window.supabaseClient
-                    .rpc("organisateur_a_mot_de_passe", { p_evenement_id: eventId });
-
-                if (error) throw error;
-
-                if (aMotDePasse === true) {
-                    afficherEcranAuth("authEcranLogin");
-                } else {
-                    afficherEcranAuth("authEcranSetup");
-                }
-            } catch (err) {
-                console.error("Erreur vérification configuration :", err);
-                document.getElementById("authEcranChargement").innerHTML =
-                    '<div class="auth-card"><div class="auth-card-inner"><p class="auth-subtitle">Erreur de connexion. Rechargez la page.</p></div></div>';
-            }
-        }
-
-        function afficherEcranAuth(nomEcran) {
-            document.querySelectorAll(".auth-screen").forEach(el => el.classList.remove("active"));
-            document.getElementById(nomEcran).classList.add("active");
-        }
-
-        function entrerDansEspaceProtege() {
-            document.getElementById("blocAuthentification").style.display = "none";
-            document.getElementById("espaceProtege").style.display = "block";
-            document.getElementById("btnDeconnexion").style.display = "inline-flex";
-
-            chargerEspaceOrganisateur();
-            setInterval(() => { chargerToutesLesDemandes(); }, 120000);
-        }
-
-        function afficherErreurAuth(idErreur, message) {
-            const el = document.getElementById(idErreur);
-            el.textContent = message;
-            el.style.display = "block";
-        }
-        function masquerErreurAuth(idErreur) {
-            document.getElementById(idErreur).style.display = "none";
-        }
-
-const ICONE_OEIL_OUVERT = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
-const ICONE_OEIL_BARRE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a21.6 21.6 0 015.06-6.06M9.9 4.24A10.4 10.4 0 0112 4c7 0 11 8 11 8a21.6 21.6 0 01-3.22 4.44M14.12 14.12a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
-
-function toggleVisibilitePassword(inputId) {
-    const input = document.getElementById(inputId);
-    const btn = input.parentElement.querySelector(".eye-toggle");
-    if (input.type === "password") {
-        input.type = "text";
-        btn.innerHTML = ICONE_OEIL_OUVERT;
-        btn.setAttribute("aria-label", "Masquer le mot de passe");
-    } else {
-        input.type = "password";
-        btn.innerHTML = ICONE_OEIL_BARRE;
-        btn.setAttribute("aria-label", "Afficher le mot de passe");
+    function afficherNomEvenementAuth() {
+        const elSetup = document.getElementById("nomEvenementSetup");
+        const elLogin = document.getElementById("nomEvenementLogin");
+        const texte = nomEvenementCourant || "Événement";
+        if (elSetup) elSetup.textContent = texte;
+        if (elLogin) elLogin.textContent = texte;
     }
-}
 
-        async function soumettreCreationMotDePasse() {
-            masquerErreurAuth("authSetupError");
-            const pwd = document.getElementById("setupPassword").value;
-            const pwdConfirm = document.getElementById("setupPasswordConfirm").value;
+    function afficherEcranEvenementIntrouvable() {
+        document.querySelectorAll(".auth-screen").forEach(el => el.classList.remove("active"));
+        document.getElementById("authEcranChargement").innerHTML = `
+            <div class="auth-card">
+                <div class="auth-card-inner">
+                    <div class="auth-icon-badge">⚠️</div>
+                    <h2 class="auth-title">Événement introuvable</h2>
+                    <p class="auth-subtitle">
+                        Cet événement a été supprimé ou n'existe plus.<br>
+                        Le lien que vous avez utilisé n'est plus valide.
+                    </p>
+                </div>
+            </div>`;
+        document.getElementById("authEcranChargement").classList.add("active");
+    }
 
-            if (pwd.length < 6) {
-                afficherErreurAuth("authSetupError", "Le mot de passe doit contenir au moins 6 caractères.");
-                return;
-            }
-            if (pwd !== pwdConfirm) {
-                afficherErreurAuth("authSetupError", "Les deux mots de passe ne correspondent pas.");
-                return;
-            }
+    /* =============================================
+       AUTHENTIFICATION
+    ============================================= */
+    async function initialiserAuthentification() {
+        if (!eventId) {
+            document.getElementById("authEcranChargement").innerHTML =
+                '<div class="auth-card"><div class="auth-card-inner"><p class="auth-subtitle">Aucun événement spécifié. Ajoutez ?event=ID dans l\'URL.</p></div></div>';
+            return;
+        }
 
-            const btn = document.getElementById("btnSetup");
-            btn.disabled = true;
-            btn.textContent = "Sécurisation en cours...";
+        const evenementExiste = await verifierExistenceEvenement(eventId);
+        if (!evenementExiste) {
+            afficherEcranEvenementIntrouvable();
+            return;
+        }
+        afficherNomEvenementAuth();
 
+        const tokenLocal = localStorage.getItem(AUTH_STORAGE_KEY);
+
+        if (tokenLocal) {
             try {
-                const { data: code, error } = await window.supabaseClient
-                    .rpc("organisateur_creer_mot_de_passe", {
-                        p_evenement_id: eventId,
-                        p_mot_de_passe: pwd
-                    });
-
-                if (error) throw error;
-
-                document.getElementById("codeRecuperationAffiche").textContent = code;
-                afficherEcranAuth("authEcranCodeGenere");
-
-            } catch (err) {
-                afficherErreurAuth("authSetupError", err.message || "Erreur lors de la création du mot de passe.");
-            } finally {
-                btn.disabled = false;
-                btn.textContent = "Sécuriser mon espace";
-            }
-        }
-
-        function confirmerCodeNote() {
-            document.getElementById("setupPassword").value = "";
-            document.getElementById("setupPasswordConfirm").value = "";
-            afficherEcranAuth("authEcranLogin");
-        }
-
-        async function soumettreConnexion() {
-            masquerErreurAuth("authLoginError");
-            const pwd = document.getElementById("loginPassword").value;
-
-            if (!pwd) {
-                afficherErreurAuth("authLoginError", "Veuillez entrer votre mot de passe.");
-                return;
-            }
-
-            const btn = document.getElementById("btnLogin");
-            btn.disabled = true;
-            btn.textContent = "Connexion en cours...";
-
-            try {
-                const { data: token, error } = await window.supabaseClient
-                    .rpc("organisateur_login", {
-                        p_evenement_id: eventId,
-                        p_mot_de_passe: pwd
-                    });
-
-                if (error) throw error;
-
-                localStorage.setItem(AUTH_STORAGE_KEY, token);
-                sessionToken = token;
-                document.getElementById("loginPassword").value = "";
-                entrerDansEspaceProtege();
-
-            } catch (err) {
-                afficherErreurAuth("authLoginError", "❌ Mot de passe incorrect. Veuillez réessayer.");
-            } finally {
-                btn.disabled = false;
-                btn.textContent = "Se connecter";
-            }
-        }
-
-        async function soumettreCodeRecuperation() {
-            masquerErreurAuth("authRecuperationError");
-            const code = document.getElementById("recuperationCode").value.trim();
-
-            if (!code) {
-                afficherErreurAuth("authRecuperationError", "Veuillez entrer votre code de récupération.");
-                return;
-            }
-
-            const btn = document.getElementById("btnRecuperation");
-            btn.disabled = true;
-            btn.textContent = "Vérification...";
-
-            try {
-                const { data: valide, error } = await window.supabaseClient
-                    .rpc("organisateur_verifier_code_recuperation", {
-                        p_evenement_id: eventId,
-                        p_code: code
-                    });
-
-                if (error) throw error;
-
-                if (valide === true) {
-                    codeRecuperationValideTemporaire = code;
-                    document.getElementById("recuperationCode").value = "";
-                    afficherEcranAuth("authEcranNouveauMdp");
-                } else {
-                    afficherErreurAuth("authRecuperationError", "Code de récupération incorrect. Contactez GoldTix si le problème persiste.");
-                }
-
-            } catch (err) {
-                afficherErreurAuth("authRecuperationError", err.message || "Erreur lors de la vérification.");
-            } finally {
-                btn.disabled = false;
-                btn.textContent = "Vérifier";
-            }
-        }
-
-        async function soumettreNouveauMotDePasse() {
-            masquerErreurAuth("authNouveauMdpError");
-            const pwd = document.getElementById("nouveauMdp").value;
-            const pwdConfirm = document.getElementById("nouveauMdpConfirm").value;
-
-            if (pwd.length < 6) {
-                afficherErreurAuth("authNouveauMdpError", "Le mot de passe doit contenir au moins 6 caractères.");
-                return;
-            }
-            if (pwd !== pwdConfirm) {
-                afficherErreurAuth("authNouveauMdpError", "Les deux mots de passe ne correspondent pas.");
-                return;
-            }
-            if (!codeRecuperationValideTemporaire) {
-                afficherErreurAuth("authNouveauMdpError", "Session de récupération expirée, recommencez.");
-                afficherEcranAuth("authEcranRecuperation");
-                return;
-            }
-
-            const btn = document.getElementById("btnNouveauMdp");
-            btn.disabled = true;
-            btn.textContent = "Réinitialisation en cours...";
-
-            try {
-                const { data: nouveauCode, error } = await window.supabaseClient
-                    .rpc("organisateur_reinitialiser_mot_de_passe", {
-                        p_evenement_id: eventId,
-                        p_code: codeRecuperationValideTemporaire,
-                        p_nouveau_mot_de_passe: pwd
-                    });
-
-                if (error) throw error;
-
-                codeRecuperationValideTemporaire = null;
-                document.getElementById("nouveauMdp").value = "";
-                document.getElementById("nouveauMdpConfirm").value = "";
-                document.getElementById("nouveauCodeRecuperationAffiche").textContent = nouveauCode;
-                afficherEcranAuth("authEcranNouveauCodeGenere");
-
-            } catch (err) {
-                afficherErreurAuth("authNouveauMdpError", err.message || "Erreur lors de la réinitialisation.");
-            } finally {
-                btn.disabled = false;
-                btn.textContent = "Réinitialiser mon mot de passe";
-            }
-        }
-
-        async function deconnexion() {
-            const token = localStorage.getItem(AUTH_STORAGE_KEY);
-
-            if (token) {
-                try {
-                    await window.supabaseClient
-                        .rpc("organisateur_logout", {
-                            p_evenement_id: eventId,
-                            p_token: token
-                        });
-                } catch (err) {
-                    console.error("Erreur déconnexion serveur :", err);
-                }
-            }
-
-            localStorage.removeItem(AUTH_STORAGE_KEY);
-            sessionToken = null;
-            arreterScanner();
-
-            document.getElementById("espaceProtege").style.display = "none";
-            document.getElementById("btnDeconnexion").style.display = "none";
-            document.getElementById("blocAuthentification").style.display = "block";
-            document.getElementById("loginPassword").value = "";
-            afficherEcranAuth("authEcranLogin");
-        }
-
-        async function chargerEspaceOrganisateur() {
-            if (!eventId) {
-                document.getElementById("titreEvenementOrg").textContent = "Erreur : aucun evenement specifie.";
-                document.getElementById("infosEvenementOrg").textContent = "Ajoutez ?event=ID dans l'URL.";
-                return;
-            }
-
-            try {
-                const { data: evList, error } = await window.supabaseClient
-    .rpc("organisateur_charger_evenement", {
-        p_evenement_id: eventId,
-        p_token: sessionToken
-    });
-
-const ev = (evList && evList.length > 0) ? evList[0] : null;
-
-if (error || !ev) {
-                    document.getElementById("infosEvenementOrg").textContent = "Evenement introuvable.";
-                    return;
-                }
-
-                document.getElementById("titreEvenementOrg").textContent = ev.titre;
-                document.getElementById("infosEvenementOrg").innerHTML =
-                    `Date : ${ev.date} &nbsp;&middot;&nbsp; Heure : ${ev.heure} &nbsp;&middot;&nbsp; Lieu : ${ev.lieu}`;
-
-                let headerContainer = document.getElementById("headerTopContainer");
-                let eventImage = ev.affiche_url || ev.image_url || ev.affiche || ev.photo;
-
-                if (headerContainer && eventImage) {
-                    let imgElement = headerContainer.querySelector(".event-bg-img");
-                    if (!imgElement) {
-                        imgElement = document.createElement("img");
-                        imgElement.className = "event-bg-img";
-                        headerContainer.insertBefore(imgElement, headerContainer.firstChild);
-                    }
-                    imgElement.src = eventImage;
-                }
-
-                statutVentesFermees = ev.ventes_fermees || false;
-                mettreAJourBoutonVentes();
-                await chargerToutesLesDemandes();
-
-            } catch (err) {
-                console.error("Erreur chargement organisateur :", err);
-            }
-        }
-
-        async function chargerToutesLesDemandes() {
-            if (chargementDemandesEnCours) return;
-            chargementDemandesEnCours = true;
-
-            let containerPaiements = document.getElementById("listePaiements");
-
-            try {
-                const { data: billets, error } = await window.supabaseClient
-    .rpc("organisateur_charger_billets", {
-        p_evenement_id: eventId,
-        p_token: sessionToken
-    });
-
-if (error || !billets) {
-                    containerPaiements.innerHTML = renderEmptyState("Erreur lors du chargement des donnees.");
-                    return;
-                }
-
-                listeParticipantsValidesGlobal = [];
-                let morceauxHTML = [];
-                let maintenant = new Date().getTime();
-
-                billets.forEach(function(b) {
-                    let statutHtml = "";
-                    if (b.statut === "confirme") {
-                        statutHtml = renderBadge("confirme", "Confirmé / Payé");
-                    } else if (b.statut === "refuse") {
-                        statutHtml = renderBadge("refuse", "Refusé / Non reçu");
-                    } else {
-                        statutHtml = renderBadge("attente", "En attente");
-                    }
-
-                    if (b.statut === "confirme") {
-                        listeParticipantsValidesGlobal.push(b);
-
-                        if (b.updated_at) {
-                            let tempsMaj = new Date(b.updated_at).getTime();
-                            let tempsEcoule = maintenant - tempsMaj;
-
-                            if (tempsEcoule < 60000) {
-                                let secondesRestantes = Math.ceil((60000 - tempsEcoule) / 1000);
-                                let statutTemporaire = renderBadge("confirme", `Disparait dans ${secondesRestantes}s`);
-                                morceauxHTML.push(HTMLCartePaiement(b, statutTemporaire));
-                            }
-                        }
-                    } else {
-                        morceauxHTML.push(HTMLCartePaiement(b, statutHtml));
-                    }
+                const data = await callOrganisateurAPI('verifier_session', {
+                    evenementId: eventId,
+                    token: tokenLocal
                 });
 
-                containerPaiements.innerHTML = morceauxHTML.length > 0
-                    ? morceauxHTML.join("")
-                    : renderEmptyState("Aucune demande en attente de validation.");
-
-                afficherParticipantsValides(listeParticipantsValidesGlobal);
-                mettreAJourCompteurs(listeParticipantsValidesGlobal.length);
-
+                if (data.valide === true) {
+                    sessionToken = tokenLocal;
+                    entrerDansEspaceProtege();
+                    return;
+                }
             } catch (err) {
-                console.error("Erreur chargement demandes :", err);
-            } finally {
-                chargementDemandesEnCours = false;
+                console.error("Erreur vérification session :", err);
+            }
+            localStorage.removeItem(AUTH_STORAGE_KEY);
+        }
+
+        try {
+            const data = await callOrganisateurAPI('a_mot_de_passe', { evenementId: eventId });
+
+            if (data.aMotDePasse === true) {
+                afficherEcranAuth("authEcranLogin");
+            } else {
+                afficherEcranAuth("authEcranSetup");
+            }
+        } catch (err) {
+            console.error("Erreur vérification configuration :", err);
+            document.getElementById("authEcranChargement").innerHTML =
+                '<div class="auth-card"><div class="auth-card-inner"><p class="auth-subtitle">Erreur de connexion. Rechargez la page.</p></div></div>';
+        }
+    }
+
+    function afficherEcranAuth(nomEcran) {
+        document.querySelectorAll(".auth-screen").forEach(el => el.classList.remove("active"));
+        document.getElementById(nomEcran).classList.add("active");
+    }
+
+    function entrerDansEspaceProtege() {
+        document.getElementById("blocAuthentification").style.display = "none";
+        document.getElementById("espaceProtege").style.display = "block";
+        document.getElementById("btnDeconnexion").style.display = "inline-flex";
+
+        chargerEspaceOrganisateur();
+        setInterval(() => { chargerToutesLesDemandes(); }, 120000);
+    }
+
+    function afficherErreurAuth(idErreur, message) {
+        const el = document.getElementById(idErreur);
+        el.textContent = message;
+        el.style.display = "block";
+    }
+    function masquerErreurAuth(idErreur) {
+        document.getElementById(idErreur).style.display = "none";
+    }
+
+    const ICONE_OEIL_OUVERT = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+    const ICONE_OEIL_BARRE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a21.6 21.6 0 015.06-6.06M9.9 4.24A10.4 10.4 0 0112 4c7 0 11 8 11 8a21.6 21.6 0 01-3.22 4.44M14.12 14.12a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+
+    function toggleVisibilitePassword(inputId) {
+        const input = document.getElementById(inputId);
+        const btn = input.parentElement.querySelector(".eye-toggle");
+        if (input.type === "password") {
+            input.type = "text";
+            btn.innerHTML = ICONE_OEIL_OUVERT;
+            btn.setAttribute("aria-label", "Masquer le mot de passe");
+        } else {
+            input.type = "password";
+            btn.innerHTML = ICONE_OEIL_BARRE;
+            btn.setAttribute("aria-label", "Afficher le mot de passe");
+        }
+    }
+
+    async function soumettreCreationMotDePasse() {
+        masquerErreurAuth("authSetupError");
+        const pwd = document.getElementById("setupPassword").value;
+        const pwdConfirm = document.getElementById("setupPasswordConfirm").value;
+
+        if (pwd.length < 6) {
+            afficherErreurAuth("authSetupError", "Le mot de passe doit contenir au moins 6 caractères.");
+            return;
+        }
+        if (pwd !== pwdConfirm) {
+            afficherErreurAuth("authSetupError", "Les deux mots de passe ne correspondent pas.");
+            return;
+        }
+
+        const btn = document.getElementById("btnSetup");
+        btn.disabled = true;
+        btn.textContent = "Sécurisation en cours...";
+
+        try {
+            const data = await callOrganisateurAPI('creer_mot_de_passe', {
+                evenementId: eventId,
+                motDePasse: pwd
+            });
+
+            document.getElementById("codeRecuperationAffiche").textContent = data.code;
+            afficherEcranAuth("authEcranCodeGenere");
+
+        } catch (err) {
+            afficherErreurAuth("authSetupError", err.message || "Erreur lors de la création du mot de passe.");
+        } finally {
+            btn.disabled = false;
+            btn.textContent = "Sécuriser mon espace";
+        }
+    }
+
+    function confirmerCodeNote() {
+        document.getElementById("setupPassword").value = "";
+        document.getElementById("setupPasswordConfirm").value = "";
+        afficherEcranAuth("authEcranLogin");
+    }
+
+    async function soumettreConnexion() {
+        masquerErreurAuth("authLoginError");
+        const pwd = document.getElementById("loginPassword").value;
+
+        if (!pwd) {
+            afficherErreurAuth("authLoginError", "Veuillez entrer votre mot de passe.");
+            return;
+        }
+
+        const btn = document.getElementById("btnLogin");
+        btn.disabled = true;
+        btn.textContent = "Connexion en cours...";
+
+        try {
+            const data = await callOrganisateurAPI('login', {
+                evenementId: eventId,
+                motDePasse: pwd
+            });
+
+            localStorage.setItem(AUTH_STORAGE_KEY, data.token);
+            sessionToken = data.token;
+            document.getElementById("loginPassword").value = "";
+            entrerDansEspaceProtege();
+
+        } catch (err) {
+            afficherErreurAuth("authLoginError", "❌ Mot de passe incorrect. Veuillez réessayer.");
+        } finally {
+            btn.disabled = false;
+            btn.textContent = "Se connecter";
+        }
+    }
+
+    async function soumettreCodeRecuperation() {
+        masquerErreurAuth("authRecuperationError");
+        const code = document.getElementById("recuperationCode").value.trim();
+
+        if (!code) {
+            afficherErreurAuth("authRecuperationError", "Veuillez entrer votre code de récupération.");
+            return;
+        }
+
+        const btn = document.getElementById("btnRecuperation");
+        btn.disabled = true;
+        btn.textContent = "Vérification...";
+
+        try {
+            const data = await callOrganisateurAPI('verifier_code_recuperation', {
+                evenementId: eventId,
+                code: code
+            });
+
+            if (data.valide === true) {
+                codeRecuperationValideTemporaire = code;
+                document.getElementById("recuperationCode").value = "";
+                afficherEcranAuth("authEcranNouveauMdp");
+            } else {
+                afficherErreurAuth("authRecuperationError", "Code de récupération incorrect. Contactez GoldTix si le problème persiste.");
+            }
+
+        } catch (err) {
+            afficherErreurAuth("authRecuperationError", err.message || "Erreur lors de la vérification.");
+        } finally {
+            btn.disabled = false;
+            btn.textContent = "Vérifier";
+        }
+    }
+
+    async function soumettreNouveauMotDePasse() {
+        masquerErreurAuth("authNouveauMdpError");
+        const pwd = document.getElementById("nouveauMdp").value;
+        const pwdConfirm = document.getElementById("nouveauMdpConfirm").value;
+
+        if (pwd.length < 6) {
+            afficherErreurAuth("authNouveauMdpError", "Le mot de passe doit contenir au moins 6 caractères.");
+            return;
+        }
+        if (pwd !== pwdConfirm) {
+            afficherErreurAuth("authNouveauMdpError", "Les deux mots de passe ne correspondent pas.");
+            return;
+        }
+        if (!codeRecuperationValideTemporaire) {
+            afficherErreurAuth("authNouveauMdpError", "Session de récupération expirée, recommencez.");
+            afficherEcranAuth("authEcranRecuperation");
+            return;
+        }
+
+        const btn = document.getElementById("btnNouveauMdp");
+        btn.disabled = true;
+        btn.textContent = "Réinitialisation en cours...";
+
+        try {
+            const data = await callOrganisateurAPI('reinitialiser_mot_de_passe', {
+                evenementId: eventId,
+                code: codeRecuperationValideTemporaire,
+                nouveauMotDePasse: pwd
+            });
+
+            codeRecuperationValideTemporaire = null;
+            document.getElementById("nouveauMdp").value = "";
+            document.getElementById("nouveauMdpConfirm").value = "";
+            document.getElementById("nouveauCodeRecuperationAffiche").textContent = data.nouveauCode;
+            afficherEcranAuth("authEcranNouveauCodeGenere");
+
+        } catch (err) {
+            afficherErreurAuth("authNouveauMdpError", err.message || "Erreur lors de la réinitialisation.");
+        } finally {
+            btn.disabled = false;
+            btn.textContent = "Réinitialiser mon mot de passe";
+        }
+    }
+
+    async function deconnexion() {
+        const token = localStorage.getItem(AUTH_STORAGE_KEY);
+
+        if (token) {
+            try {
+                await callOrganisateurAPI('logout', {
+                    evenementId: eventId,
+                    token: token
+                });
+            } catch (err) {
+                console.error("Erreur déconnexion serveur :", err);
             }
         }
 
-        function renderBadge(type, texte) {
-            return `<span class="badge-statut badge-${type}">
-                        <span class="badge-icon"></span>
-                        ${texte}
-                    </span>`;
+        localStorage.removeItem(AUTH_STORAGE_KEY);
+        sessionToken = null;
+        arreterScanner();
+
+        document.getElementById("espaceProtege").style.display = "none";
+        document.getElementById("btnDeconnexion").style.display = "none";
+        document.getElementById("blocAuthentification").style.display = "block";
+        document.getElementById("loginPassword").value = "";
+        afficherEcranAuth("authEcranLogin");
+    }
+
+    /* =============================================
+       CHARGEMENT DE L'ESPACE ORGANISATEUR
+    ============================================= */
+    async function chargerEspaceOrganisateur() {
+        if (!eventId) {
+            document.getElementById("titreEvenementOrg").textContent = "Erreur : aucun evenement specifie.";
+            document.getElementById("infosEvenementOrg").textContent = "Ajoutez ?event=ID dans l'URL.";
+            return;
         }
 
-        function renderEmptyState(message) {
-            return `
-                <div class="empty-state">
-                    <div class="empty-state-icon">
-                        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#94a3b8" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2
-                                M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                        </svg>
+        try {
+            const data = await callOrganisateurAPI('charger_evenement', {
+                evenementId: eventId,
+                token: sessionToken
+            });
+            const ev = data.event;
+
+            if (!ev) {
+                document.getElementById("infosEvenementOrg").textContent = "Evenement introuvable.";
+                return;
+            }
+
+            document.getElementById("titreEvenementOrg").textContent = ev.titre;
+            document.getElementById("infosEvenementOrg").innerHTML =
+                `Date : ${ev.date} &nbsp;&middot;&nbsp; Heure : ${ev.heure} &nbsp;&middot;&nbsp; Lieu : ${ev.lieu}`;
+
+            let headerContainer = document.getElementById("headerTopContainer");
+            let eventImage = ev.affiche_url || ev.image_url || ev.affiche || ev.photo;
+
+            if (headerContainer && eventImage) {
+                let imgElement = headerContainer.querySelector(".event-bg-img");
+                if (!imgElement) {
+                    imgElement = document.createElement("img");
+                    imgElement.className = "event-bg-img";
+                    headerContainer.insertBefore(imgElement, headerContainer.firstChild);
+                }
+                imgElement.src = eventImage;
+            }
+
+            statutVentesFermees = ev.ventes_fermees || false;
+            mettreAJourBoutonVentes();
+            await chargerToutesLesDemandes();
+
+        } catch (err) {
+            console.error("Erreur chargement organisateur :", err);
+        }
+    }
+
+    async function chargerToutesLesDemandes() {
+        if (chargementDemandesEnCours) return;
+        chargementDemandesEnCours = true;
+
+        let containerPaiements = document.getElementById("listePaiements");
+
+        try {
+            const data = await callOrganisateurAPI('charger_billets', {
+                evenementId: eventId,
+                token: sessionToken
+            });
+            const billets = data.billets || [];
+
+            listeParticipantsValidesGlobal = [];
+            let morceauxHTML = [];
+            let maintenant = new Date().getTime();
+
+            billets.forEach(function(b) {
+                let statutHtml = "";
+                if (b.statut === "confirme") {
+                    statutHtml = renderBadge("confirme", "Confirmé / Payé");
+                } else if (b.statut === "refuse") {
+                    statutHtml = renderBadge("refuse", "Refusé / Non reçu");
+                } else {
+                    statutHtml = renderBadge("attente", "En attente");
+                }
+
+                if (b.statut === "confirme") {
+                    listeParticipantsValidesGlobal.push(b);
+
+                    if (b.updated_at) {
+                        let tempsMaj = new Date(b.updated_at).getTime();
+                        let tempsEcoule = maintenant - tempsMaj;
+
+                        if (tempsEcoule < 60000) {
+                            let secondesRestantes = Math.ceil((60000 - tempsEcoule) / 1000);
+                            let statutTemporaire = renderBadge("confirme", `Disparait dans ${secondesRestantes}s`);
+                            morceauxHTML.push(HTMLCartePaiement(b, statutTemporaire));
+                        }
+                    }
+                } else {
+                    morceauxHTML.push(HTMLCartePaiement(b, statutHtml));
+                }
+            });
+
+            containerPaiements.innerHTML = morceauxHTML.length > 0
+                ? morceauxHTML.join("")
+                : renderEmptyState("Aucune demande en attente de validation.");
+
+            afficherParticipantsValides(listeParticipantsValidesGlobal);
+            mettreAJourCompteurs(listeParticipantsValidesGlobal.length);
+
+        } catch (err) {
+            console.error("Erreur chargement demandes :", err);
+            containerPaiements.innerHTML = renderEmptyState("Erreur lors du chargement des donnees.");
+        } finally {
+            chargementDemandesEnCours = false;
+        }
+    }
+
+    function renderBadge(type, texte) {
+        return `<span class="badge-statut badge-${type}">
+                    <span class="badge-icon"></span>
+                    ${texte}
+                </span>`;
+    }
+
+    function renderEmptyState(message) {
+        return `
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#94a3b8" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2
+                            M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                </div>
+                <p>${message}</p>
+            </div>`;
+    }
+
+    function HTMLCartePaiement(b, statutHtml) {
+        return `
+            <div class="billet-card">
+                <div class="billet-card-header">
+                    ${statutHtml}
+                </div>
+                <div class="billet-card-body">
+                    <div class="billet-info-row">
+                        <span class="billet-info-label">Participant</span>
+                        <span class="billet-info-value">${b.nom_participant || 'Non renseigne'}</span>
                     </div>
-                    <p>${message}</p>
-                </div>`;
+                    <div class="billet-info-row">
+                        <span class="billet-info-label">WhatsApp</span>
+                        <span class="billet-info-value">${b.telephone || 'N/A'}</span>
+                    </div>
+                    <div style="margin-top: 14px;">
+                        <span class="preuve-label">Preuve de paiement</span>
+                        <a href="${b.preuve_url}" target="_blank">
+                            <img src="${b.preuve_url}" alt="Preuve de paiement" class="preuve-img">
+                        </a>
+                    </div>
+                </div>
+                <div class="billet-card-actions">
+                    <button type="button"
+                        class="btn-action btn-confirmer btn-changer-statut"
+                        data-id="${b.id}" data-statut="confirme">
+                        J'ai reçu
+                    </button>
+                    <button type="button"
+                        class="btn-action btn-refuser btn-changer-statut"
+                        data-id="${b.id}" data-statut="refuse">
+                        Non reçu
+                    </button>
+                    <button type="button"
+                        class="btn-action btn-attente btn-changer-statut"
+                        data-id="${b.id}" data-statut="attente">
+                        Mettre en attente
+                    </button>
+                </div>
+            </div>`;
+    }
+
+    function afficherParticipantsValides(liste) {
+        let containerValidees = document.getElementById("listeValidees");
+        if (liste.length === 0) {
+            containerValidees.innerHTML = renderEmptyState("Aucun participant valide pour le moment.");
+            return;
         }
 
-        function HTMLCartePaiement(b, statutHtml) {
-            return `
+        let html = "";
+        liste.forEach(function(b) {
+            html += `
                 <div class="billet-card">
                     <div class="billet-card-header">
-                        ${statutHtml}
+                        ${renderBadge("confirme", "Valide et Actif")}
                     </div>
                     <div class="billet-card-body">
                         <div class="billet-info-row">
@@ -2351,397 +2416,348 @@ if (error || !billets) {
                             <span class="billet-info-label">WhatsApp</span>
                             <span class="billet-info-value">${b.telephone || 'N/A'}</span>
                         </div>
-                        <div style="margin-top: 14px;">
-                            <span class="preuve-label">Preuve de paiement</span>
-                            <a href="${b.preuve_url}" target="_blank">
-                                <img src="${b.preuve_url}" alt="Preuve de paiement" class="preuve-img">
-                            </a>
+                        <div class="billet-info-row">
+                           <span class="billet-info-label">Catégorie</span>
+                           <span class="billet-info-value">${b.type_billet || 'Non spécifiée'}</span>
+                         </div>
+                        <div class="billet-info-row">
+                            <span class="billet-info-label">ID-Billet</span>
+                            <span class="billet-info-value">#${b.id}</span>
                         </div>
                     </div>
                     <div class="billet-card-actions">
                         <button type="button"
-                            class="btn-action btn-confirmer btn-changer-statut"
-                            data-id="${b.id}" data-statut="confirme">
-                            J'ai reçu
-                        </button>
-                        <button type="button"
-                            class="btn-action btn-refuser btn-changer-statut"
-                            data-id="${b.id}" data-statut="refuse">
-                            Non reçu
-                        </button>
-                        <button type="button"
-                            class="btn-action btn-attente btn-changer-statut"
-                            data-id="${b.id}" data-statut="attente">
-                            Mettre en attente
+                            class="btn-action btn-retirer btn-retirer-participant"
+                            data-id="${b.id}">
+                            Retirer ce participant
                         </button>
                     </div>
                 </div>`;
-        }
+        });
+        containerValidees.innerHTML = html;
+    }
 
-        function afficherParticipantsValides(liste) {
-            let containerValidees = document.getElementById("listeValidees");
-            if (liste.length === 0) {
-                containerValidees.innerHTML = renderEmptyState("Aucun participant valide pour le moment.");
-                return;
-            }
-
-            let html = "";
-            liste.forEach(function(b) {
-                html += `
-                    <div class="billet-card">
-                        <div class="billet-card-header">
-                            ${renderBadge("confirme", "Valide et Actif")}
-                        </div>
-                        <div class="billet-card-body">
-                            <div class="billet-info-row">
-                                <span class="billet-info-label">Participant</span>
-                                <span class="billet-info-value">${b.nom_participant || 'Non renseigne'}</span>
-                            </div>
-                            <div class="billet-info-row">
-                                <span class="billet-info-label">WhatsApp</span>
-                                <span class="billet-info-value">${b.telephone || 'N/A'}</span>
-                            </div>
-                            <div class="billet-info-row">
-                               <span class="billet-info-label">Catégorie</span>
-                               <span class="billet-info-value">${b.type_billet || 'Non spécifiée'}</span>
-                             </div>
-                            <div class="billet-info-row">
-                                <span class="billet-info-label">ID-Billet</span>
-                                <span class="billet-info-value">#${b.id}</span>
-                            </div>
-                        </div>
-                        <div class="billet-card-actions">
-                            <button type="button"
-                                class="btn-action btn-retirer btn-retirer-participant"
-                                data-id="${b.id}">
-                                Retirer ce participant
-                            </button>
-                        </div>
-                    </div>`;
+    function filtrerParticipants() {
+        clearTimeout(debounceRecherche);
+        debounceRecherche = setTimeout(() => {
+            let recherche = document.getElementById("searchValidees").value.toLowerCase().trim();
+            let resultats = listeParticipantsValidesGlobal.filter(b => {
+                let nom = b.nom_participant ? b.nom_participant.toLowerCase() : "";
+                return nom.includes(recherche);
             });
-            containerValidees.innerHTML = html;
+            afficherParticipantsValides(resultats);
+        }, 150);
+    }
+
+    function mettreAJourCompteurs(nombre) {
+        let btnTabValidees = document.getElementById("btnTabValidees");
+        let titreValidees = document.getElementById("titreSectionValidees");
+        if (btnTabValidees) btnTabValidees.textContent = `Confirmes (${nombre})`;
+        if (titreValidees) titreValidees.textContent = `Participants confirmes (${nombre})`;
+    }
+
+    /* =============================================
+       CHANGEMENT DE STATUT + ENVOI D'EMAIL (EmailJS,
+       inchangé — ce n'est pas un appel Supabase)
+    ============================================= */
+    async function changerStatut(billetId, nouveauStatut) {
+        let data;
+        try {
+            data = await callOrganisateurAPI('changer_statut', {
+                evenementId: eventId,
+                token: sessionToken,
+                billetId: billetId,
+                nouveauStatut: nouveauStatut
+            });
+        } catch (err) {
+            alert("Erreur lors de la mise a jour : " + err.message);
+            return;
         }
 
-        function filtrerParticipants() {
-            clearTimeout(debounceRecherche);
-            debounceRecherche = setTimeout(() => {
-                let recherche = document.getElementById("searchValidees").value.toLowerCase().trim();
-                let resultats = listeParticipantsValidesGlobal.filter(b => {
-                    let nom = b.nom_participant ? b.nom_participant.toLowerCase() : "";
-                    return nom.includes(recherche);
-                });
-                afficherParticipantsValides(resultats);
-            }, 150);
-        }
-
-        function mettreAJourCompteurs(nombre) {
-            let btnTabValidees = document.getElementById("btnTabValidees");
-            let titreValidees = document.getElementById("titreSectionValidees");
-            if (btnTabValidees) btnTabValidees.textContent = `Confirmes (${nombre})`;
-            if (titreValidees) titreValidees.textContent = `Participants confirmes (${nombre})`;
-        }
-
-        async function changerStatut(billetId, nouveauStatut) {
-            const { error } = await window.supabaseClient
-    .rpc("organisateur_changer_statut", {
-        p_evenement_id: eventId,
-        p_token: sessionToken,
-        p_billet_id: billetId,
-        p_nouveau_statut: nouveauStatut
-    });
-
-if (error) {
-    alert("Erreur lors de la mise a jour : " + error.message);
-    return;
-}
-
-            if (nouveauStatut === 'confirme') {
-    try {
-        const { data: unBillet, error: errBillet } = await window.supabaseClient
-            .from("billets")
-            .select("email, nom_participant")
-            .eq("id", billetId)
-            .maybeSingle();
-
-        if (!errBillet && unBillet && unBillet.email) {
-                        let lienBillet = `${window.location.origin}/billet.html?id=${billetId}`;
-                        const templateParams = {
-                            email: unBillet.email,
-                            nom_participant: unBillet.nom_participant,
-                            lien_billet: lienBillet
-                        };
-                        await emailjs.send('service_p8rnipf', 'template_ilhe1ca', templateParams);
-                    }
-                } catch (mailErr) {
-                    console.error('Erreur email :', mailErr);
+        if (nouveauStatut === 'confirme') {
+            try {
+                // Le serveur renvoie désormais directement email + nom_participant
+                // du billet concerné (plus besoin d'un second appel Supabase).
+                const billetContact = data.billet;
+                if (billetContact && billetContact.email) {
+                    let lienBillet = `${window.location.origin}/billet.html?id=${billetId}`;
+                    const templateParams = {
+                        email: billetContact.email,
+                        nom_participant: billetContact.nom_participant,
+                        lien_billet: lienBillet
+                    };
+                    await emailjs.send('service_p8rnipf', 'template_ilhe1ca', templateParams);
                 }
+            } catch (mailErr) {
+                console.error('Erreur email :', mailErr);
             }
-
-           await chargerToutesLesDemandes();
         }
 
-        async function retirerParticipant(billetId) {
-            if (!confirm("Voulez-vous vraiment supprimer definitivement ce participant et son billet ?")) return;
+        await chargerToutesLesDemandes();
+    }
 
-            const { error } = await window.supabaseClient
-    .rpc("organisateur_retirer_participant", {
-        p_evenement_id: eventId,
-        p_token: sessionToken,
-        p_billet_id: billetId
-    });
+    async function retirerParticipant(billetId) {
+        if (!confirm("Voulez-vous vraiment supprimer definitivement ce participant et son billet ?")) return;
 
-            if (error) {
-                alert("Erreur lors de la suppression : " + error.message);
+        try {
+            await callOrganisateurAPI('retirer_participant', {
+                evenementId: eventId,
+                token: sessionToken,
+                billetId: billetId
+            });
+        } catch (err) {
+            alert("Erreur lors de la suppression : " + err.message);
+            return;
+        }
+
+        await chargerToutesLesDemandes();
+    }
+
+    /* =============================================
+       SCANNER QR
+    ============================================= */
+    let isScanLocked = false;
+
+    async function traiterVerificationBillet(codeScanne) {
+        let resultatDiv = document.getElementById("resultatScan");
+        let code = codeScanne ? codeScanne.trim() : "";
+
+        if (!code) {
+            setResultat(resultatDiv, "warning", "Veuillez entrer l'ID ou scanner le QR Code du billet.");
+            return;
+        }
+
+        if (isScanLocked) return;
+        isScanLocked = true;
+
+        try {
+            const data = await callOrganisateurAPI('verifier_billet', {
+                evenementId: eventId,
+                token: sessionToken,
+                codeScanne: code
+            });
+
+            const res = data.resultat_scan || null;
+
+            if (!res || res.resultat === "introuvable") {
+                setResultat(resultatDiv, "error", `Billet introuvable pour cet ID (${code}).`);
+                setTimeout(() => { isScanLocked = false; }, 2000);
                 return;
             }
 
-            await chargerToutesLesDemandes();
-        }
-
-let isScanLocked = false;
-
-async function traiterVerificationBillet(codeScanne) {
-    let resultatDiv = document.getElementById("resultatScan");
-    let code = codeScanne ? codeScanne.trim() : "";
-
-    if (!code) {
-        setResultat(resultatDiv, "warning", "Veuillez entrer l'ID ou scanner le QR Code du billet.");
-        return;
-    }
-
-    if (isScanLocked) return;
-    isScanLocked = true;
-
-    try {
-        const { data, error } = await window.supabaseClient
-            .rpc("organisateur_verifier_billet", {
-                p_evenement_id: eventId,
-                p_token: sessionToken,
-                p_code_scanne: code
-            });
-
-        if (error) {
-            setResultat(resultatDiv, "error", "Erreur de connexion avec la base de données.");
-            isScanLocked = false;
-            return;
-        }
-
-        const res = (data && data.length > 0) ? data[0] : null;
-
-        if (!res || res.resultat === "introuvable") {
-            setResultat(resultatDiv, "error", `Billet introuvable pour cet ID (${code}).`);
-            setTimeout(() => { isScanLocked = false; }, 2000);
-            return;
-        }
-
-        if (res.resultat === "non_confirme") {
-            setResultat(resultatDiv, "warning", `Entrée refusée : Billet non confirmé.`);
-            setTimeout(() => { isScanLocked = false; }, 2000);
-            return;
-        }
-
-        let maintenant = Date.now();
-
-        if (res.resultat === "deja_valide") {
-            if (derniersBilletsScannes[res.billet_id] && (maintenant - derniersBilletsScannes[res.billet_id] < 15000)) {
-                setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue Mr/Mme ${res.nom_participant || 'N/A'} !`);
-            } else {
-                setResultat(resultatDiv, "error", `BILLET DÉJÀ UTILISÉ — ${res.nom_participant || 'N/A'}`);
+            if (res.resultat === "non_confirme") {
+                setResultat(resultatDiv, "warning", `Entrée refusée : Billet non confirmé.`);
+                setTimeout(() => { isScanLocked = false; }, 2000);
+                return;
             }
-            setTimeout(() => { isScanLocked = false; }, 2000);
-            return;
-        }
 
-        derniersBilletsScannes[res.billet_id] = maintenant;
-        setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue Mr/Mme ${res.nom_participant || 'N/A'} !`);
+            let maintenant = Date.now();
 
-        setTimeout(() => {
+            if (res.resultat === "deja_valide") {
+                if (derniersBilletsScannes[res.billet_id] && (maintenant - derniersBilletsScannes[res.billet_id] < 15000)) {
+                    setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue Mr/Mme ${res.nom_participant || 'N/A'} !`);
+                } else {
+                    setResultat(resultatDiv, "error", `BILLET DÉJÀ UTILISÉ — ${res.nom_participant || 'N/A'}`);
+                }
+                setTimeout(() => { isScanLocked = false; }, 2000);
+                return;
+            }
+
+            derniersBilletsScannes[res.billet_id] = maintenant;
+            setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue Mr/Mme ${res.nom_participant || 'N/A'} !`);
+
+            setTimeout(() => {
+                isScanLocked = false;
+            }, 3000);
+
+        } catch (err) {
+            console.error("Erreur lors de la vérification :", err);
+            setResultat(resultatDiv, "error", "Erreur de connexion avec le serveur.");
             isScanLocked = false;
-        }, 3000);
-
-    } catch (err) {
-        console.error("Erreur lors de la vérification :", err);
-        isScanLocked = false;
+        }
     }
-}
-        function setResultat(el, type, message) {
-            const styles = {
-                success: { bg: "#d1fae5", border: "rgba(16,185,129,0.3)", color: "#065f46" },
-                error:   { bg: "#fee2e2", border: "rgba(239,68,68,0.3)",  color: "#991b1b" },
-                warning: { bg: "#fef3c7", border: "rgba(245,158,11,0.3)", color: "#92400e" }
-            };
-            let s = styles[type] || styles.warning;
-            el.style.background = s.bg;
-            el.style.borderColor = s.border;
-            el.style.color = s.color;
-            el.textContent = message;
+
+    function setResultat(el, type, message) {
+        const styles = {
+            success: { bg: "#d1fae5", border: "rgba(16,185,129,0.3)", color: "#065f46" },
+            error:   { bg: "#fee2e2", border: "rgba(239,68,68,0.3)",  color: "#991b1b" },
+            warning: { bg: "#fef3c7", border: "rgba(245,158,11,0.3)", color: "#92400e" }
+        };
+        let s = styles[type] || styles.warning;
+        el.style.background = s.bg;
+        el.style.borderColor = s.border;
+        el.style.color = s.color;
+        el.textContent = message;
+    }
+
+    function verifierBilletManuel() {
+        let code = document.getElementById("codeBilletInput").value;
+        traiterVerificationBillet(code);
+        document.getElementById("codeBilletInput").value = "";
+    }
+
+    function changerOnglet(nomOnglet, buttonElement) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
+
+        if (buttonElement) buttonElement.classList.add('active');
+
+        if (nomOnglet === 'paiements') {
+            document.getElementById('section-paiements').classList.add('active');
+            arreterScanner();
+        } else if (nomOnglet === 'validees') {
+            document.getElementById('section-validees').classList.add('active');
+            arreterScanner();
+        } else {
+            document.getElementById('section-scanner').classList.add('active');
+            demarrerScanner();
+        }
+    }
+
+    function arreterScanner() {
+        if (html5QrCode && html5QrCode.isScanning) {
+            html5QrCode.stop().catch(err => console.log("Arret camera :", err));
+        }
+    }
+
+    function demarrerScanner() {
+        if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
+        if (html5QrCode.isScanning) return;
+
+        let resultatDiv = document.getElementById("resultatScan");
+        setResultat(resultatDiv, "warning", "Initialisation de la caméra...");
+
+        function qrboxFunction(viewfinderWidth, viewfinderHeight) {
+            let minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+            let size = Math.floor(minEdge * 0.7);
+            return { width: size, height: size };
         }
 
-        function verifierBilletManuel() {
-            let code = document.getElementById("codeBilletInput").value;
-            traiterVerificationBillet(code);
-            document.getElementById("codeBilletInput").value = "";
-        }
-
-        function changerOnglet(nomOnglet, buttonElement) {
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
-
-    if (buttonElement) buttonElement.classList.add('active');
-
-    if (nomOnglet === 'paiements') {
-        document.getElementById('section-paiements').classList.add('active');
-        arreterScanner();
-    } else if (nomOnglet === 'validees') {
-        document.getElementById('section-validees').classList.add('active');
-        arreterScanner();
-    } else {
-        document.getElementById('section-scanner').classList.add('active');
-        demarrerScanner();
-    }
-}
-
-function arreterScanner() {
-    if (html5QrCode && html5QrCode.isScanning) {
-        html5QrCode.stop().catch(err => console.log("Arret camera :", err));
-    }
-}
-
-function demarrerScanner() {
-    if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
-    if (html5QrCode.isScanning) return;
-
-    let resultatDiv = document.getElementById("resultatScan");
-    setResultat(resultatDiv, "warning", "Initialisation de la caméra...");
-
-    function qrboxFunction(viewfinderWidth, viewfinderHeight) {
-        let minEdge = Math.min(viewfinderWidth, viewfinderHeight);
-        let size = Math.floor(minEdge * 0.7);
-        return { width: size, height: size };
+        html5QrCode.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: qrboxFunction },
+            (decodedText) => traiterVerificationBillet(decodedText),
+            (errorMessage) => {}
+        ).then(() => {
+            setResultat(resultatDiv, "warning", "Placez le QR code dans le cadre de scan.");
+        }).catch(err => {
+            console.log("Camera non dispo :", err);
+            setResultat(resultatDiv, "error", "Impossible d'accéder à la caméra : Accès à la caméra refusé ou caméra non disponible" );
+        });
     }
 
-    html5QrCode.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: qrboxFunction },
-        (decodedText) => traiterVerificationBillet(decodedText),
-        (errorMessage) => {}
-    ).then(() => {
-        setResultat(resultatDiv, "warning", "Placez le QR code dans le cadre de scan.");
-    }).catch(err => {
-        console.log("Camera non dispo :", err);
-        setResultat(resultatDiv, "error", "Impossible d'accéder à la caméra : Accès à la caméra refusé ou caméra non disponible" );
-    });
-}
+    /* =============================================
+       OUVERTURE / FERMETURE DES VENTES
+    ============================================= */
+    async function toggleVentes() {
+        statutVentesFermees = !statutVentesFermees;
 
-        async function toggleVentes() {
+        try {
+            await callOrganisateurAPI('toggle_ventes', {
+                evenementId: eventId,
+                token: sessionToken,
+                nouveauStatut: statutVentesFermees
+            });
+        } catch (err) {
+            alert("Erreur : " + err.message);
             statutVentesFermees = !statutVentesFermees;
-
-            const { error } = await window.supabaseClient
-    .rpc("organisateur_toggle_ventes", {
-        p_evenement_id: eventId,
-        p_token: sessionToken,
-        p_nouveau_statut: statutVentesFermees
-    });
-            if (error) {
-                alert("Erreur : " + error.message);
-                statutVentesFermees = !statutVentesFermees;
-                return;
-            }
-
-            mettreAJourBoutonVentes();
+            return;
         }
 
-        function mettreAJourBoutonVentes() {
-            let label = document.getElementById("labelStatutVentes");
-            let btn = document.getElementById("btnToggleVentes");
-            let indicator = document.getElementById("statusIndicator");
-            if (!label || !btn) return;
+        mettreAJourBoutonVentes();
+    }
 
-            if (statutVentesFermees) {
-                label.innerHTML = `Ventes : <span style="color:#ef4444;font-weight:800;">FERMEES</span>`;
-                btn.textContent = "Ouvrir la vente";
-                btn.style.background = "linear-gradient(135deg, #10b981, #059669)";
-                btn.style.color = "#ffffff";
-                if (indicator) { indicator.className = "status-indicator closed"; }
-            } else {
-                label.innerHTML = `Ventes : <span style="color:#10b981;font-weight:800;">OUVERTES</span>`;
-                btn.textContent = "Fermer la vente";
-                btn.style.background = "linear-gradient(135deg, #ef4444, #dc2626)";
-                btn.style.color = "#ffffff";
-                if (indicator) { indicator.className = "status-indicator open"; }
-            }
+    function mettreAJourBoutonVentes() {
+        let label = document.getElementById("labelStatutVentes");
+        let btn = document.getElementById("btnToggleVentes");
+        let indicator = document.getElementById("statusIndicator");
+        if (!label || !btn) return;
+
+        if (statutVentesFermees) {
+            label.innerHTML = `Ventes : <span style="color:#ef4444;font-weight:800;">FERMEES</span>`;
+            btn.textContent = "Ouvrir la vente";
+            btn.style.background = "linear-gradient(135deg, #10b981, #059669)";
+            btn.style.color = "#ffffff";
+            if (indicator) { indicator.className = "status-indicator closed"; }
+        } else {
+            label.innerHTML = `Ventes : <span style="color:#10b981;font-weight:800;">OUVERTES</span>`;
+            btn.textContent = "Fermer la vente";
+            btn.style.background = "linear-gradient(135deg, #ef4444, #dc2626)";
+            btn.style.color = "#ffffff";
+            if (indicator) { indicator.className = "status-indicator open"; }
+        }
+    }
+
+    /* =============================================
+       INTRO GOLDTIX — écran d'ouverture (inchangé)
+    ============================================= */
+    (function () {
+        const introEl = document.getElementById("introGoldTix");
+        if (!introEl) return;
+
+        const reduitMouvement = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const stages = introEl.querySelectorAll(".intro-stage");
+        const checkItems = introEl.querySelectorAll(".intro-check-item");
+        let minuteries = [];
+        let dejaFerme = false;
+
+        function planifier(fn, delai) {
+            minuteries.push(setTimeout(fn, delai));
         }
 
-        /* =============================================
-           INTRO GOLDTIX — écran d'ouverture
-        ============================================= */
-        (function () {
-            const introEl = document.getElementById("introGoldTix");
-            if (!introEl) return;
+        function allerAuStage(numero) {
+            stages.forEach(s => s.classList.remove("intro-stage-active"));
+            const cible = introEl.querySelector('.intro-stage[data-stage="' + numero + '"]');
+            if (cible) cible.classList.add("intro-stage-active");
+        }
 
-            const reduitMouvement = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-            const stages = introEl.querySelectorAll(".intro-stage");
-            const checkItems = introEl.querySelectorAll(".intro-check-item");
-            let minuteries = [];
-            let dejaFerme = false;
-
-            function planifier(fn, delai) {
-                minuteries.push(setTimeout(fn, delai));
+        function genererParticules() {
+            const conteneur = document.getElementById("introParticles");
+            if (!conteneur) return;
+            const total = window.innerWidth < 480 ? 10 : 18;
+            let html = "";
+            for (let i = 0; i < total; i++) {
+                const gauche = Math.round(Math.random() * 100);
+                const bas = Math.round(Math.random() * 30);
+                const delai = (Math.random() * 4).toFixed(2);
+                const duree = (3.5 + Math.random() * 2.5).toFixed(2);
+                html += '<span class="intro-particle" style="left:' + gauche + '%; bottom:' + bas + '%; animation-delay:' + delai + 's; animation-duration:' + duree + 's;"></span>';
             }
+            conteneur.innerHTML = html;
+        }
 
-            function allerAuStage(numero) {
-                stages.forEach(s => s.classList.remove("intro-stage-active"));
-                const cible = introEl.querySelector('.intro-stage[data-stage="' + numero + '"]');
-                if (cible) cible.classList.add("intro-stage-active");
-            }
+        function fermerIntro() {
+            if (dejaFerme) return;
+            dejaFerme = true;
+            minuteries.forEach(id => clearTimeout(id));
+            minuteries = [];
+            introEl.classList.add("intro-hidden");
+            setTimeout(() => {
+                introEl.classList.add("intro-removed");
+            }, 750);
+        }
 
-            function genererParticules() {
-                const conteneur = document.getElementById("introParticles");
-                if (!conteneur) return;
-                const total = window.innerWidth < 480 ? 10 : 18;
-                let html = "";
-                for (let i = 0; i < total; i++) {
-                    const gauche = Math.round(Math.random() * 100);
-                    const bas = Math.round(Math.random() * 30);
-                    const delai = (Math.random() * 4).toFixed(2);
-                    const duree = (3.5 + Math.random() * 2.5).toFixed(2);
-                    html += '<span class="intro-particle" style="left:' + gauche + '%; bottom:' + bas + '%; animation-delay:' + delai + 's; animation-duration:' + duree + 's;"></span>';
-                }
-                conteneur.innerHTML = html;
-            }
+        window.passerIntroGoldTix = fermerIntro;
 
-            function fermerIntro() {
-                if (dejaFerme) return;
-                dejaFerme = true;
-                minuteries.forEach(id => clearTimeout(id));
-                minuteries = [];
-                introEl.classList.add("intro-hidden");
-                setTimeout(() => {
-                    introEl.classList.add("intro-removed");
-                }, 750);
-            }
+        if (reduitMouvement) {
+            fermerIntro();
+            return;
+        }
 
-            window.passerIntroGoldTix = fermerIntro;
+        genererParticules();
 
-            if (reduitMouvement) {
-                fermerIntro();
-                return;
-            }
+        planifier(() => allerAuStage(2), 1400);
 
-            genererParticules();
+        planifier(() => allerAuStage(3), 3200);
+        checkItems.forEach((item, index) => {
+            planifier(() => item.classList.add("intro-checked"), 3600 + index * 500);
+        });
 
-            planifier(() => allerAuStage(2), 1400);
+        planifier(() => allerAuStage(4), 6100);
 
-            planifier(() => allerAuStage(3), 3200);
-            checkItems.forEach((item, index) => {
-                planifier(() => item.classList.add("intro-checked"), 3600 + index * 500);
-            });
-
-            planifier(() => allerAuStage(4), 6100);
-
-            planifier(fermerIntro, 8200);
-        })();
-    </script>
+        planifier(fermerIntro, 8200);
+    })();
+</script>
 
 </body>
 </html>
