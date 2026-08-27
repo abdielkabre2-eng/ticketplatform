@@ -351,292 +351,242 @@
         </p>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase.js"></script>
 
     <script>
     let listeGlobaleEvenements = [];
-
-    // FONCTIONS D'OUVERTURE ET FERMETURE DE LA MODALE DE CRÉATION (AJOUTÉES ICI)
-    function ouvrirModalCreation() {
-        document.getElementById("modalEvent").style.display = "flex";
+ 
+// ---------------------------------------------------------------------------
+// Pont vers l'API serverless
+// ---------------------------------------------------------------------------
+async function callSuperAdminAPI(action, payload = {}) {
+    const reponse = await fetch('/api/super-admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, ...payload })
+    });
+ 
+    const resultat = await reponse.json();
+ 
+    if (!reponse.ok) {
+        throw new Error(resultat.error || 'Erreur inconnue de l\'API.');
     }
-
-    function fermerModalCreation() {
-        document.getElementById("modalEvent").style.display = "none";
-    }
-
-    async function chargerMesEvenements() {
-        const container = document.getElementById("listeEvenements");
-        if (!window.supabaseClient) {
-            container.innerHTML = "<p>Erreur : supabase.js introuvable.</p>";
+ 
+    return resultat;
+}
+ 
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]); // on retire le préfixe data:...;base64,
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+ 
+// FONCTIONS D'OUVERTURE ET FERMETURE DE LA MODALE DE CRÉATION
+function ouvrirModalCreation() {
+    document.getElementById("modalEvent").style.display = "flex";
+}
+ 
+function fermerModalCreation() {
+    document.getElementById("modalEvent").style.display = "none";
+}
+ 
+async function chargerMesEvenements() {
+    const container = document.getElementById("listeEvenements");
+ 
+    try {
+        const { evenements } = await callSuperAdminAPI('lister_evenements');
+ 
+        if (!evenements || evenements.length === 0) {
+            container.innerHTML = "<p>Aucun événement créé pour le moment.</p>";
             return;
         }
-
-        try {
-            const { data: evenements, error } = await window.supabaseClient
-                .from("evenements")
-                .select("*")
-                .order("created_at", { ascending: false });
-
-            if (error) throw error;
-
-            if (!evenements || evenements.length === 0) {
-                container.innerHTML = "<p>Aucun événement créé pour le moment.</p>";
-                return;
+ 
+        listeGlobaleEvenements = evenements;
+ 
+        container.innerHTML = evenements.map(ev => {
+            let affichagePrix = "Gratuit";
+            if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_data.length > 0) {
+                affichagePrix = ev.categories_data.map(c => `${c.nom}: ${c.prix}`).join(" | ");
+            } else if (ev.prix) {
+                affichagePrix = ev.prix;
             }
-
-            listeGlobaleEvenements = evenements;
-
-            container.innerHTML = evenements.map(ev => {
-                let affichagePrix = "Gratuit";
-                if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_data.length > 0) {
-                    affichagePrix = ev.categories_data.map(c => `${c.nom}: ${c.prix}`).join(" | ");
-                } else if (ev.prix) {
-                    affichagePrix = ev.prix;
-                }
-
-                return `
-                    <div class="event-card" onclick="ouvrirModalDetails('${ev.id}')">
-                        <h3 class="event-title">${ev.titre}</h3>
-                        <p class="event-info">📅/⏱️ ${ev.date || 'Non précisée'} à ${ev.heure || ''}</p>
-                        <p class="event-info">📍 ${ev.lieu || 'Non précisé'}</p>
-                        <p class="event-info">💵 Tarifs : ${affichagePrix}</p>
-                        <p class="event-info">👤 Bénéficiaire des paiements : ${ev.beneficiaire_nom || ''}</p>
-                        <button type="button" class="btn-supprimer" onclick="supprimerEvenement(event, '${ev.id}')">            
-                        Supprimer l'événement        
-                        </button>
-                    </div>
-                `;
-            }).join("");
-
-        } catch (err) {
-            console.error("Erreur :", err);
-            container.innerHTML = `<p>Erreur lors du chargement : ${err.message}</p>`;
-        }
-    }
-
-    function genererChampsCategories() {
-        const nb = document.getElementById("nombreCategories").value;
-        const container = document.getElementById("dynamicCategoriesContainer");
-        container.innerHTML = "";
-
-        for (let i = 1; i <= nb; i++) {
-            container.innerHTML += `
-                <div style="background: #fafaf9; border: 1px solid rgba(217, 119, 6, 0.2); padding: 12px; border-radius: 12px; margin-bottom: 10px;">
-                    <p style="margin: 0 0 8px 0; font-weight: 700; font-size: 12px; color: #d97706;">Type ${i}</p>
-                    <div style="display: flex; gap: 8px;">
-                        <div style="flex: 1;">
-                            <label style="font-size: 10px; color: #64748b;">Nom de catégorie (ex: Standard, VIP)</label>
-                            <input type="text" id="cat_nom_${i}" class="form-control" placeholder="Nom ${i}" required style="width:100%; padding:8px; border-radius:8px; border:1px solid #cbd5e1;">
-                        </div>
-                        <div style="flex: 1;">
-                            <label style="font-size: 10px; color: #64748b;">Prix (ex: 20dhs ou 2000 FCFA)</label>
-                            <input type="text" id="cat_prix_${i}" class="form-control" placeholder="Prix ${i}" required style="width:100%; padding:8px; border-radius:8px; border:1px solid #cbd5e1;">
-                        </div>
-                    </div>
+ 
+            return `
+                <div class="event-card" onclick="ouvrirModalDetails('${ev.id}')">
+                    <h3 class="event-title">${ev.titre}</h3>
+                    <p class="event-info">📅/⏱️ ${ev.date || 'Non précisée'} à ${ev.heure || ''}</p>
+                    <p class="event-info">📍 ${ev.lieu || 'Non précisé'}</p>
+                    <p class="event-info">💵 Tarifs : ${affichagePrix}</p>
+                    <p class="event-info">👤 Bénéficiaire des paiements : ${ev.beneficiaire_nom || ''}</p>
+                    <button type="button" class="btn-supprimer" onclick="supprimerEvenement(event, '${ev.id}')">
+                    Supprimer l'événement
+                    </button>
                 </div>
             `;
-        }
+        }).join("");
+ 
+    } catch (err) {
+        console.error("Erreur :", err);
+        container.innerHTML = `<p>Erreur lors du chargement : ${err.message}</p>`;
     }
-
-    document.addEventListener("DOMContentLoaded", () => {
-        if (document.getElementById("nombreCategories")) {
-            genererChampsCategories();
-        }
-    });
-
-    function ouvrirModalDetails(idEvenement) {
+}
+ 
+function genererChampsCategories() {
+    const nb = document.getElementById("nombreCategories").value;
+    const container = document.getElementById("dynamicCategoriesContainer");
+    container.innerHTML = "";
+ 
+    for (let i = 1; i <= nb; i++) {
+        container.innerHTML += `
+            <div style="background: #fafaf9; border: 1px solid rgba(217, 119, 6, 0.2); padding: 12px; border-radius: 12px; margin-bottom: 10px;">
+                <p style="margin: 0 0 8px 0; font-weight: 700; font-size: 12px; color: #d97706;">Type ${i}</p>
+                <div style="display: flex; gap: 8px;">
+                    <div style="flex: 1;">
+                        <label style="font-size: 10px; color: #64748b;">Nom de catégorie (ex: Standard, VIP)</label>
+                        <input type="text" id="cat_nom_${i}" class="form-control" placeholder="Nom ${i}" required style="width:100%; padding:8px; border-radius:8px; border:1px solid #cbd5e1;">
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="font-size: 10px; color: #64748b;">Prix (ex: 20dhs ou 2000 FCFA)</label>
+                        <input type="text" id="cat_prix_${i}" class="form-control" placeholder="Prix ${i}" required style="width:100%; padding:8px; border-radius:8px; border:1px solid #cbd5e1;">
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+}
+ 
+document.addEventListener("DOMContentLoaded", () => {
+    if (document.getElementById("nombreCategories")) {
+        genererChampsCategories();
+    }
+});
+ 
+function ouvrirModalDetails(idEvenement) {
     const ev = listeGlobaleEvenements.find(e => e.id == idEvenement);
     if (!ev) return;
     document.getElementById("detail-titre").innerText = "Gérer : " + ev.titre;
-    
+ 
     const baseUrl = "https://ticketplatform-kappa.vercel.app";
-    // Lien acheteur : la racine du site sert déjà index.html, donc pas besoin de le préciser
     document.getElementById("lien-acheteur").value = `${baseUrl}/?event=${ev.id}`;
-    // Lien vendeur : on retire simplement le .html
     document.getElementById("lien-vendeur").value = `${baseUrl}/admin-organisateur?event=${ev.id}`;
     document.getElementById("modalDetails").style.display = "flex";
 }
-    
-    function fermerModalDetails() { 
-        document.getElementById("modalDetails").style.display = "none"; 
-    }
-
-    function copierLien(inputId) {
-        const input = document.getElementById(inputId);
-        input.select();
-        input.setSelectionRange(0, 99999);
-        document.execCommand("copy");
-        alert("Lien copié dans le presse-papier !");
-    }
-
-    async function uploaderFichierSupabase(file, dossier) {
-        const fileExt = file.name.split('.').pop().toLowerCase();
-        const randomString = Math.random().toString(36).substring(2, 8);
-        const fileName = `${dossier}/${Date.now()}_${randomString}.${fileExt}`;
-
-        const { data, error } = await window.supabaseClient.storage
-            .from('preuves')
-            .upload(fileName, file);
-
-        if (error) {
-            throw new Error("Erreur d'upload : " + error.message);
-        }
-
-        const { data: publicUrlData } = window.supabaseClient.storage
-            .from('preuves')
-            .getPublicUrl(fileName);
-
-        return publicUrlData.publicUrl;
-    }
-
-    document.getElementById("formEvent").addEventListener("submit", async (e) => {
-        e.preventDefault();
-        
-        const btnSubmit = document.getElementById("btnSubmitForm");
-        btnSubmit.disabled = true;
-        btnSubmit.textContent = "Création en cours...";
-
-        try {
-            const fileAfficheInput = document.getElementById("fileAffiche").files[0];
-            const fileRibInput = document.getElementById("fileRib").files[0];
-
-            if (!fileAfficheInput || !fileRibInput) {
-                alert("Veuillez sélectionner l'affiche et l'image du RIB/QR code.");
-                btnSubmit.disabled = false;
-                btnSubmit.textContent = "Enregistrer";
-                return;
-            }
-
-            const nombreCategories = parseInt(document.getElementById("nombreCategories").value);
-            let categoriesArray = [];
-
-            for (let i = 1; i <= nombreCategories; i++) {
-                let nom = document.getElementById(`cat_nom_${i}`).value;
-                let prix = document.getElementById(`cat_prix_${i}`).value;
-                categoriesArray.push({
-                    type: String(i),
-                    nom: nom,
-                    prix: prix
-                });
-            }
-
-            const afficheUrl = await uploaderFichierSupabase(fileAfficheInput, 'affiches');
-            const ribUrl = await uploaderFichierSupabase(fileRibInput, 'ribs');
-
-            const nouvelEvenement = {
-                titre: document.getElementById("titre").value,
-                date: document.getElementById("date").value,
-                heure: document.getElementById("heure").value,
-                lieu: document.getElementById("lieu").value,
-                nombre_categories: nombreCategories,
-                categories_data: categoriesArray,
-                affiche_url: afficheUrl,
-                beneficiaire_nom: document.getElementById("beneficiaire_nom").value,
-                beneficiaire_infos: document.getElementById("beneficiaire_infos").value,
-                rib_image_url: ribUrl
-            };
-
-            const { error } = await window.supabaseClient
-                .from("evenements")
-                .insert([nouvelEvenement]);
-
-            if (error) throw error;
-
-            document.getElementById("formEvent").reset();
-            fermerModalCreation();
-            genererChampsCategories();
-            chargerMesEvenements();
-            alert("Événement créé avec succès !");
-
-        } catch (err) {
-            console.error("Erreur :", err);
-            alert("Erreur : " + err.message);
-        } finally {
+ 
+function fermerModalDetails() {
+    document.getElementById("modalDetails").style.display = "none";
+}
+ 
+function copierLien(inputId) {
+    const input = document.getElementById(inputId);
+    input.select();
+    input.setSelectionRange(0, 99999);
+    document.execCommand("copy");
+    alert("Lien copié dans le presse-papier !");
+}
+ 
+document.getElementById("formEvent").addEventListener("submit", async (e) => {
+    e.preventDefault();
+ 
+    const btnSubmit = document.getElementById("btnSubmitForm");
+    btnSubmit.disabled = true;
+    btnSubmit.textContent = "Création en cours...";
+ 
+    try {
+        const fileAfficheInput = document.getElementById("fileAffiche").files[0];
+        const fileRibInput = document.getElementById("fileRib").files[0];
+ 
+        if (!fileAfficheInput || !fileRibInput) {
+            alert("Veuillez sélectionner l'affiche et l'image du RIB/QR code.");
             btnSubmit.disabled = false;
             btnSubmit.textContent = "Enregistrer";
+            return;
         }
-    });
-
-    document.addEventListener("DOMContentLoaded", chargerMesEvenements);
-
-    // Fonction principale de suppression de l'événement mise à jour
+ 
+        const nombreCategories = parseInt(document.getElementById("nombreCategories").value);
+        let categoriesArray = [];
+ 
+        for (let i = 1; i <= nombreCategories; i++) {
+            let nom = document.getElementById(`cat_nom_${i}`).value;
+            let prix = document.getElementById(`cat_prix_${i}`).value;
+            categoriesArray.push({
+                type: String(i),
+                nom: nom,
+                prix: prix
+            });
+        }
+ 
+        // Conversion des fichiers en base64 pour les envoyer dans le JSON
+        const [afficheBase64, ribBase64] = await Promise.all([
+            fileToBase64(fileAfficheInput),
+            fileToBase64(fileRibInput)
+        ]);
+ 
+        await callSuperAdminAPI('creer_evenement', {
+            titre: document.getElementById("titre").value,
+            date: document.getElementById("date").value,
+            heure: document.getElementById("heure").value,
+            lieu: document.getElementById("lieu").value,
+            nombre_categories: nombreCategories,
+            categories_data: categoriesArray,
+            beneficiaire_nom: document.getElementById("beneficiaire_nom").value,
+            beneficiaire_infos: document.getElementById("beneficiaire_infos").value,
+            fileAffiche: {
+                nom: fileAfficheInput.name,
+                type: fileAfficheInput.type,
+                data: afficheBase64
+            },
+            fileRib: {
+                nom: fileRibInput.name,
+                type: fileRibInput.type,
+                data: ribBase64
+            }
+        });
+ 
+        document.getElementById("formEvent").reset();
+        fermerModalCreation();
+        genererChampsCategories();
+        chargerMesEvenements();
+        alert("Événement créé avec succès !");
+ 
+    } catch (err) {
+        console.error("Erreur :", err);
+        alert("Erreur : " + err.message);
+    } finally {
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = "Enregistrer";
+    }
+});
+ 
+document.addEventListener("DOMContentLoaded", chargerMesEvenements);
+ 
 async function supprimerEvenement(event, idEvenement) {
     event.stopPropagation();
-    
+ 
     const ev = listeGlobaleEvenements ? listeGlobaleEvenements.find(e => e.id == idEvenement) : null;
     const nomEvenement = ev ? ev.titre : "cet événement";
-    
+ 
     const confirmation = confirm(
         `Voulez-vous vraiment supprimer définitivement "${nomEvenement}" ?\n\n` +
         `Cette action est IRRÉVERSIBLE : le lien de billetterie, l'espace organisateur, ` +
         `les paiements et tous les participants associés seront supprimés pour toujours.`
     );
-    
+ 
     if (!confirmation) return;
-
+ 
     try {
-        // 1. Supprimer les billets liés
-        const { error: errBillets } = await window.supabaseClient
-            .from("billets")
-            .delete()
-            .eq("evenement_id", idEvenement);
-            
-        if (errBillets) console.warn("Avertissement (billets) :", errBillets.message);
-
-        // 2. Supprimer les fichiers stockés (affiche + RIB/QR code)
-        const cheminsASupprimer = [];
-        if (ev) {
-            const cheminAffiche = extraireCheminStockage(ev.affiche_url);
-            const cheminRib = extraireCheminStockage(ev.rib_image_url);
-            if (cheminAffiche) cheminsASupprimer.push(cheminAffiche);
-            if (cheminRib) cheminsASupprimer.push(cheminRib);
-        }
-        
-        if (cheminsASupprimer.length > 0) {
-            const { error: errStorage } = await window.supabaseClient.storage
-                .from('preuves')
-                .remove(cheminsASupprimer);
-                
-            if (errStorage) console.warn("Avertissement (fichiers) :", errStorage.message);
-        }
-
-        // 3. Supprimer l'événement avec vérification stricte (.select())
-        const { data: dataEvenement, error: errEvenement } = await window.supabaseClient
-            .from("evenements")
-            .delete()
-            .eq("id", idEvenement)
-            .select();
-            
-        if (errEvenement) throw errEvenement;
-        
-        if (!dataEvenement || dataEvenement.length === 0) {
-            throw new Error(
-                "Aucun événement n'a été supprimé côté serveur. " +
-                "Vérifiez qu'une policy RLS 'DELETE' existe sur la table 'evenements' dans Supabase."
-            );
-        }
-
-        // 4. Rafraîchir la liste et notifier
+        await callSuperAdminAPI('supprimer_evenement', { id: idEvenement });
         await chargerMesEvenements();
         alert("Événement supprimé définitivement.");
-
     } catch (err) {
         console.error("Erreur suppression :", err);
         alert("Erreur lors de la suppression : " + err.message);
     }
 }
 
-// Fonction utilitaire pour extraire le chemin interne du fichier
-function extraireCheminStockage(urlPublique) {
-    if (!urlPublique) return null;
-    const marqueur = "/preuves/";
-    const index = urlPublique.indexOf(marqueur);
-    if (index === -1) return null;
-    return urlPublique.substring(index + marqueur.length);
-}
 
     </script>
+
 </body>
 </html>
