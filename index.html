@@ -982,9 +982,18 @@ img, svg, video, canvas {
 
            Lecture  : GET  /api/tickets?event=ID
            Écriture : POST /api/tickets  (multipart/form-data)
-           Voir la note technique à la fin de ce fichier pour ce que la
-           fonction serverless /api/tickets doit faire côté serveur.
-        ============================================================= */
+
+           Révision de sécurité/robustesse (cette version) :
+           - Verrou anti-chevauchement sur chargerPageAchatUnique() : un
+             clic répété sur "Réessayer" pendant qu'une requête est déjà
+             en vol ne déclenche plus d'appel concurrent.
+           - Le filet de sécurité "chargement trop long" est désormais
+             armé à CHAQUE appel (et nettoyé à la fin), plutôt qu'une
+             seule fois au chargement initial de la page.
+           - Contrôle de la taille du fichier de preuve de paiement côté
+             client (10 Mo max, alignement avec le texte affiché) avant
+             l'envoi, pour éviter une attente inutile côté utilisateur.
+        ============================================= */
 
         // ─── SVG ICONS ────────────────────────────────────────────────────────────
         const ICONS = {
@@ -1001,6 +1010,15 @@ img, svg, video, canvas {
             image:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
             mail:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`,
         };
+
+        // Taille maximale acceptée pour la preuve de paiement (cohérent avec le
+        // texte affiché "10MB max" dans le formulaire).
+        const TAILLE_MAX_FICHIER = 10 * 1024 * 1024; // 10 Mo
+
+        // Verrou global anti-chevauchement : évite que deux appels à
+        // chargerPageAchatUnique() (ex. double clic sur "Réessayer") ne
+        // s'exécutent en parallèle et ne se marchent dessus.
+        let chargementEnCours = false;
 
         function afficherErreurChargement(container, titre, message) {
             container.innerHTML = `
@@ -1029,6 +1047,10 @@ img, svg, video, canvas {
 
         // ─── MAIN LOADER ─────────────────────────────────────────────────────────
         async function chargerPageAchatUnique() {
+            // Empêche deux chargements simultanés (ex. clics répétés sur "Réessayer").
+            if (chargementEnCours) return;
+            chargementEnCours = true;
+
             const urlParams = new URLSearchParams(window.location.search);
             const eventId = urlParams.get("event");
             const container = document.getElementById("detailsEvenement");
@@ -1041,303 +1063,343 @@ img, svg, video, canvas {
                     </p>
                 </div>`;
 
-            if (!eventId) {
-                afficherErreurChargement(container, "Lien invalide", "Aucun evenement specifie dans ce lien.");
-                return;
-            }
+            // Filet de sécurité propre à CET appel : si le chargement traîne trop,
+            // on affiche un message clair au lieu d'un spinner infini. Il est
+            // systématiquement nettoyé en fin d'appel (succès ou erreur).
+            const watchdog = setTimeout(function() {
+                if (container.querySelector(".loading-card")) {
+                    afficherErreurChargement(
+                        container,
+                        "Chargement trop long",
+                        "La connexion semble instable. Vérifiez votre réseau (Wi-Fi ou données mobiles) et réessayez."
+                    );
+                }
+            }, 20000);
 
-            let ev;
             try {
-                const reponse = await fetchAvecTimeout(
-                    '/api/tickets?event=' + encodeURIComponent(eventId),
-                    { method: 'GET' },
-                    15000
-                );
-
-                if (!reponse.ok) {
-                    throw new Error("Erreur serveur (" + reponse.status + ")");
+                if (!eventId) {
+                    afficherErreurChargement(container, "Lien invalide", "Aucun evenement specifie dans ce lien.");
+                    return;
                 }
 
-                const data = await reponse.json();
-                ev = data.event;
-            } catch (err) {
-                console.error("Erreur réseau lors du chargement de l'événement :", err);
-                afficherErreurChargement(
-                    container,
-                    "Connexion impossible",
-                    "Le chargement a échoué (réseau instable ou trop lent). Vérifiez votre connexion et réessayez."
-                );
-                return;
-            }
+                let ev;
+                try {
+                    const reponse = await fetchAvecTimeout(
+                        '/api/tickets?event=' + encodeURIComponent(eventId),
+                        { method: 'GET' },
+                        15000
+                    );
 
-            if (!ev) {
-                afficherErreurChargement(
-                    container,
-                    "Événement introuvable",
-                    "Cet événement a été supprimé ou n'existe plus."
-                );
-                return;
-            }
+                    if (!reponse.ok) {
+                        throw new Error("Erreur serveur (" + reponse.status + ")");
+                    }
 
-            try {
+                    const data = await reponse.json();
+                    ev = data.event;
+                } catch (err) {
+                    console.error("Erreur réseau lors du chargement de l'événement :", err);
+                    afficherErreurChargement(
+                        container,
+                        "Connexion impossible",
+                        "Le chargement a échoué (réseau instable ou trop lent). Vérifiez votre connexion et réessayez."
+                    );
+                    return;
+                }
 
-            // ── Colonne droite ──────────────────────────────────────────────────
-            let rightColumn = "";
+                if (!ev) {
+                    afficherErreurChargement(
+                        container,
+                        "Événement introuvable",
+                        "Cet événement a été supprimé ou n'existe plus."
+                    );
+                    return;
+                }
 
-            if (ev.ventes_fermees) {
-                rightColumn = `
-                    <div class="card anim-3">
-                        <div class="closed-box">
-                            <div class="closed-box-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
-                                </svg>
+                // ── Colonne droite ──────────────────────────────────────────────────
+                let rightColumn = "";
+
+                if (ev.ventes_fermees) {
+                    rightColumn = `
+                        <div class="card anim-3">
+                            <div class="closed-box">
+                                <div class="closed-box-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+                                    </svg>
+                                </div>
+                                <h3>Ventes Fermées</h3>
+                                <p>Les ventes en ligne de billets pour cet évènement viennent d'être fermées par l'organisateur.</p>
+                                <p>Merci pour votre intérêt et à bientôt !</p>
                             </div>
-                            <h3>Ventes Fermées</h3>
-                            <p>Les ventes en ligne de billets pour cet évènement viennent d'être fermées par l'organisateur.</p>
-                            <p>Merci pour votre intérêt et à bientôt !</p>
-                        </div>
-                    </div>`;
-            } else {
-                const infosCoordonnees = ev.beneficiaire_infos || 'Non renseigne';
+                        </div>`;
+                } else {
+                    const infosCoordonnees = ev.beneficiaire_infos || 'Non renseigne';
 
-                // Categorie select
-                let categorieHTML = "";
-                if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_data.length > 0) {
-                    const options = ev.categories_data
-                        .map(cat => `<option value="${cat.nom} - ${cat.prix}">${cat.nom} (${cat.prix})</option>`)
-                        .join("");
-                    categorieHTML = `
-                        <div class="form-group">
-                            <label for="selectCategorie">Catégorie de billet</label>
-                            <select id="selectCategorie">${options}</select>
+                    // Categorie select
+                    let categorieHTML = "";
+                    if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_data.length > 0) {
+                        const options = ev.categories_data
+                            .map(cat => `<option value="${cat.nom} - ${cat.prix}">${cat.nom} (${cat.prix})</option>`)
+                            .join("");
+                        categorieHTML = `
+                            <div class="form-group">
+                                <label for="selectCategorie">Catégorie de billet</label>
+                                <select id="selectCategorie">${options}</select>
+                            </div>`;
+                    }
+
+                    // QR / RIB
+                    const qrSection = (ev.rib_image_url || ev.qr_code_paiement) ? `
+                        <div class="qr-wrapper">
+                            <p class="qr-label">
+                                ${ICONS.card}
+                                RIB du bénéficiaire ci-dessous
+                            </p>
+                            <img src="${ev.rib_image_url || ev.qr_code_paiement}" alt="Support de paiement" class="qr-image">
+                        </div>` : "";
+
+                    rightColumn = `
+                        <div class="card anim-3">
+
+                            <!-- ETAPE 1 : PAIEMENT -->
+                            <div class="payment-box">
+                                <p class="payment-box-title">
+                                    ${ICONS.mobile}
+                                    Etape 1 — Effectuer le paiement
+                                </p>
+                                <div class="info-rows">
+                                    <div class="info-row">
+                                        <span class="info-row-label">${ICONS.user} Bénéficiaire des paiements</span>
+                                        <span class="info-row-value">${ev.beneficiaire_nom || 'Non renseigne'}</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="info-row-label">${ICONS.phone} Contact</span>
+                                        <span class="info-row-value">${infosCoordonnees}</span>
+                                    </div>
+                                </div>
+                                ${qrSection}
+                            </div>
+
+                            <!-- ETAPE 2 : FORMULAIRE -->
+                            <h3 class="section-title">
+                                ${ICONS.mail}
+                                Etape 2 — Confirmez votre paiement
+                            </h3>
+
+                            ${categorieHTML}
+
+                            <div class="form-group">
+                                <label for="nomParticipant">Nom et Prénom(s) <span style="color: red;">*</span></label>
+                                <input type="text" id="nomParticipant" placeholder="ex : KONATE Jean">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="emailParticipant">Adresse e-mail (optionnelle - réception lien du billet)</label>
+                                <input type="email" id="emailParticipant" placeholder="ex : nom@gmail.com">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="telParticipant">Contact WhatsApp <span style="color: red;">*</span></label>
+                                <input type="tel" id="telParticipant" placeholder="ex : +226 ... / +212 ...">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Preuve de paiement (capture du reçu) <span style="color: red;">*</span></label>
+                                <div class="file-input-wrapper" id="fileWrapper">
+                                    <input type="file" id="preuvePaiement" accept="image/*">
+                                    <div class="file-input-display">
+                                        ${ICONS.upload}
+                                        <span>Cliquez pour choisir un fichier</span>
+                                        <em>JPG, PNG, WEBP acceptés(10MB max)</em>
+                                        <span class="file-name-preview" id="fileNamePreview"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="btn-submit" id="btnValiderAchat">
+                                <span class="btn-icon">${ICONS.check}</span>
+                                <div class="spinner"></div>
+                                Valider mon paiement et obtenir mon billet
+                            </button>
+
                         </div>`;
                 }
 
-                // QR / RIB
-                const qrSection = (ev.rib_image_url || ev.qr_code_paiement) ? `
-                    <div class="qr-wrapper">
-                        <p class="qr-label">
-                            ${ICONS.card}
-                            RIB du bénéficiaire ci-dessous
-                        </p>
-                        <img src="${ev.rib_image_url || ev.qr_code_paiement}" alt="Support de paiement" class="qr-image">
-                    </div>` : "";
+                // ── Prix HTML ───────────────────────────────────────────────────────
+                let prixHTML = "";
+                if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_data.length > 0) {
+                    prixHTML = ev.categories_data.map(c => `
+                        <div class="price-badge-item">
+                            ${ICONS.ticket}
+                            <strong>${c.nom}</strong>&nbsp;:&nbsp;${c.prix}
+                        </div>`).join("");
+                } else {
+                    prixHTML = `<div class="price-badge-item">${ICONS.card} Prix : ${ev.prix || 'Gratuit'}</div>`;
+                }
 
-                rightColumn = `
-                    <div class="card anim-3">
+                // ── Affiche HTML ────────────────────────────────────────────────────
+                const posterHTML = ev.affiche_url
+                    ? `<img src="${ev.affiche_url}" alt="Affiche de l'événement">`
+                    : `<div class="poster-fallback">${ICONS.image}<p>Affiche non disponible</p></div>`;
 
-                        <!-- ETAPE 1 : PAIEMENT -->
-                        <div class="payment-box">
-                            <p class="payment-box-title">
-                                ${ICONS.mobile}
-                                Etape 1 — Effectuer le paiement
-                            </p>
-                            <div class="info-rows">
-                                <div class="info-row">
-                                    <span class="info-row-label">${ICONS.user} Bénéficiaire des paiements</span>
-                                    <span class="info-row-value">${ev.beneficiaire_nom || 'Non renseigne'}</span>
-                                </div>
-                                <div class="info-row">
-                                    <span class="info-row-label">${ICONS.phone} Contact</span>
-                                    <span class="info-row-value">${infosCoordonnees}</span>
-                                </div>
+                // ── Injection ───────────────────────────────────────────────────────
+                container.innerHTML = `
+                    <div class="grid">
+                        <div class="card card--event">
+                            <div class="poster-wrapper">${posterHTML}</div>
+                            <h1 class="event-title">${ev.titre}</h1>
+                                                    <div class="meta-row">
+                                <span class="meta-item">
+                                    ${ICONS.calendar}
+                                    <span class="meta-text"><strong>Date :</strong> ${ev.date}</span>
+                                </span>
+                                <span class="meta-sep">—</span>
+                                <span class="meta-item">
+                                    ${ICONS.clock}
+                                    <span class="meta-text"><strong>Heure :</strong> ${ev.heure}</span>
+                                </span>
                             </div>
-                            ${qrSection}
-                        </div>
-
-                        <!-- ETAPE 2 : FORMULAIRE -->
-                        <h3 class="section-title">
-                            ${ICONS.mail}
-                            Etape 2 — Confirmez votre paiement
-                        </h3>
-
-                        ${categorieHTML}
-
-                        <div class="form-group">
-                            <label for="nomParticipant">Nom et Prénom(s) <span style="color: red;">*</span></label>
-                            <input type="text" id="nomParticipant" placeholder="ex : KONATE Jean">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="emailParticipant">Adresse e-mail (optionnelle - réception lien du billet)</label>
-                            <input type="email" id="emailParticipant" placeholder="ex : nom@gmail.com">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="telParticipant">Contact WhatsApp <span style="color: red;">*</span></label>
-                            <input type="tel" id="telParticipant" placeholder="ex : +226 ... / +212 ...">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Preuve de paiement (capture du reçu) <span style="color: red;">*</span></label>
-                            <div class="file-input-wrapper" id="fileWrapper">
-                                <input type="file" id="preuvePaiement" accept="image/*">
-                                <div class="file-input-display">
-                                    ${ICONS.upload}
-                                    <span>Cliquez pour choisir un fichier</span>
-                                    <em>JPG, PNG, WEBP acceptés(10MB max)</em>
-                                    <span class="file-name-preview" id="fileNamePreview"></span>
-                                </div>
+                            <div class="meta-row">
+                                <span class="meta-item">
+                                    ${ICONS.pin}
+                                    <span class="meta-text"><strong>Lieu :</strong> ${ev.lieu}</span>
+                                </span>
                             </div>
+                            <div class="price-badge">${prixHTML}</div>
                         </div>
-
-                        <button class="btn-submit" id="btnValiderAchat">
-                            <span class="btn-icon">${ICONS.check}</span>
-                            <div class="spinner"></div>
-                            Valider mon paiement et obtenir mon billet
-                        </button>
-
+                        <div>${rightColumn}</div>
                     </div>`;
-            }
 
-            // ── Prix HTML ───────────────────────────────────────────────────────
-            let prixHTML = "";
-            if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_data.length > 0) {
-                prixHTML = ev.categories_data.map(c => `
-                    <div class="price-badge-item">
-                        ${ICONS.ticket}
-                        <strong>${c.nom}</strong>&nbsp;:&nbsp;${c.prix}
-                    </div>`).join("");
-            } else {
-                prixHTML = `<div class="price-badge-item">${ICONS.card} Prix : ${ev.prix || 'Gratuit'}</div>`;
-            }
+                const posterImage = container.querySelector(".poster-wrapper img");
+                if (posterImage) {
+                    posterImage.addEventListener("error", function() {
+                        const wrapper = this.closest(".poster-wrapper");
+                        if (wrapper) {
+                            wrapper.innerHTML = `<div class="poster-fallback">${ICONS.image}<p>Affiche non disponible</p></div>`;
+                        }
+                    });
+                }
 
-            // ── Affiche HTML ────────────────────────────────────────────────────
-            const posterHTML = ev.affiche_url
-                ? `<img src="${ev.affiche_url}" alt="Affiche de l'événement">`
-                : `<div class="poster-fallback">${ICONS.image}<p>Affiche non disponible</p></div>`;
+                // ── File input preview ──────────────────────────────────────────────
+                if (!ev.ventes_fermees) {
+                    const fileInput = document.getElementById("preuvePaiement");
+                    const filePreview = document.getElementById("fileNamePreview");
 
-            // ── Injection ───────────────────────────────────────────────────────
-            container.innerHTML = `
-                <div class="grid">
-                    <div class="card card--event">
-                        <div class="poster-wrapper">${posterHTML}</div>
-                        <h1 class="event-title">${ev.titre}</h1>
-                                                <div class="meta-row">
-                            <span class="meta-item">
-                                ${ICONS.calendar}
-                                <span class="meta-text"><strong>Date :</strong> ${ev.date}</span>
-                            </span>
-                            <span class="meta-sep">—</span>
-                            <span class="meta-item">
-                                ${ICONS.clock}
-                                <span class="meta-text"><strong>Heure :</strong> ${ev.heure}</span>
-                            </span>
-                        </div>
-                        <div class="meta-row">
-                            <span class="meta-item">
-                                ${ICONS.pin}
-                                <span class="meta-text"><strong>Lieu :</strong> ${ev.lieu}</span>
-                            </span>
-                        </div>
-                        <div class="price-badge">${prixHTML}</div>
-                    </div>
-                    <div>${rightColumn}</div>
-                </div>`;
+                    fileInput.addEventListener("change", function() {
+                        if (this.files && this.files[0]) {
+                            const fichier = this.files[0];
 
-            const posterImage = container.querySelector(".poster-wrapper img");
-            if (posterImage) {
-                posterImage.addEventListener("error", function() {
-                    const wrapper = this.closest(".poster-wrapper");
-                    if (wrapper) {
-                        wrapper.innerHTML = `<div class="poster-fallback">${ICONS.image}<p>Affiche non disponible</p></div>`;
-                    }
-                });
-            }
+                            // Contrôle de taille immédiat : évite de laisser l'utilisateur
+                            // remplir tout le formulaire avant de découvrir, au clic sur
+                            // "Valider", que son fichier est trop volumineux.
+                            if (fichier.size > TAILLE_MAX_FICHIER) {
+                                alert("Ce fichier dépasse la taille maximale autorisée (10 Mo). Choisissez une image plus légère.");
+                                this.value = "";
+                                filePreview.style.display = "none";
+                                document.getElementById("fileWrapper").style.borderColor = "";
+                                document.getElementById("fileWrapper").style.background = "";
+                                return;
+                            }
 
-            // ── File input preview ──────────────────────────────────────────────
-            if (!ev.ventes_fermees) {
-                const fileInput = document.getElementById("preuvePaiement");
-                const filePreview = document.getElementById("fileNamePreview");
+                            filePreview.textContent = fichier.name;
+                            filePreview.style.display = "block";
+                            document.getElementById("fileWrapper").style.borderColor = "var(--gold-2)";
+                            document.getElementById("fileWrapper").style.background = "#fffdf5";
+                        }
+                    });
 
-                fileInput.addEventListener("change", function() {
-                    if (this.files && this.files[0]) {
-                        filePreview.textContent = this.files[0].name;
-                        filePreview.style.display = "block";
-                        document.getElementById("fileWrapper").style.borderColor = "var(--gold-2)";
-                        document.getElementById("fileWrapper").style.background = "#fffdf5";
-                    }
-                });
+                    // ── Soumission — tout passe par POST /api/tickets ────────────────
+                    const btnValiderAchat = document.getElementById("btnValiderAchat");
+                    const btnHTMLOriginal = btnValiderAchat.innerHTML; // Sauvegarde le HTML d'origine une seule fois
 
-                // ── Soumission — tout passe par POST /api/tickets ────────────────
-               const btnValiderAchat = document.getElementById("btnValiderAchat");
-const btnHTMLOriginal = btnValiderAchat.innerHTML; // Sauvegarde le HTML d'origine une seule fois
+                    btnValiderAchat.onclick = async function() {
+                        const nom   = document.getElementById("nomParticipant").value.trim();
+                        const email = document.getElementById("emailParticipant").value.trim();
+                        const tel   = document.getElementById("telParticipant").value.trim();
+                        const fichierPreuve = document.getElementById("preuvePaiement").files[0];
 
-btnValiderAchat.onclick = async function() {
-    const nom   = document.getElementById("nomParticipant").value.trim();
-    const email = document.getElementById("emailParticipant").value.trim();
-    const tel   = document.getElementById("telParticipant").value.trim();
-    const fichierPreuve = document.getElementById("preuvePaiement").files[0];
+                        let typeBilletChoisi = "Standard";
+                        const selectCat = document.getElementById("selectCategorie");
+                        if (selectCat) {
+                            typeBilletChoisi = selectCat.value;
+                        } else if (typeof ev !== 'undefined' && ev.prix) {
+                            typeBilletChoisi = String(ev.prix);
+                        }
 
-    let typeBilletChoisi = "Standard";
-    const selectCat = document.getElementById("selectCategorie");
-    if (selectCat) {
-        typeBilletChoisi = selectCat.value;
-    } else if (typeof ev !== 'undefined' && ev.prix) {
-        typeBilletChoisi = String(ev.prix);
-    }
+                        if (!nom || !tel || !fichierPreuve) {
+                            alert("Vous devez obligatoirement entrer votre nom, numéro de téléphone et joindre la capture de paiement.");
+                            return;
+                        }
 
-    if (!nom || !tel || !fichierPreuve) {
-        alert("Vous devez obligatoirement entrer votre nom, numéro de téléphone et joindre la capture de paiement.");
-        return;
-    }
+                        // Contrôle de taille en dernier recours (au cas où le fichier
+                        // aurait été substitué après l'événement "change" initial).
+                        if (fichierPreuve.size > TAILLE_MAX_FICHIER) {
+                            alert("Le fichier de preuve de paiement dépasse 10 Mo. Choisissez une image plus légère.");
+                            return;
+                        }
 
-    if (btnValiderAchat.disabled) return; // Anti-double clic
-    btnValiderAchat.disabled = true;
+                        // Validation légère de l'email (champ optionnel) : on ne bloque
+                        // que si un email a été saisi et qu'il est manifestement invalide.
+                        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                            alert("L'adresse e-mail saisie ne semble pas valide. Vous pouvez aussi laisser ce champ vide.");
+                            return;
+                        }
 
-    // FIX VISUEL : Remplace tout le contenu du bouton au lieu d'ajouter un child par-dessus
-    btnValiderAchat.innerHTML = `<div class="spinner"></div> Validation et envoi sécurisé en cours...`;
+                        if (btnValiderAchat.disabled) return; // Anti-double clic
+                        btnValiderAchat.disabled = true;
 
-    try {
-        // Envoi direct du formulaire en UNE SEULE requête POST (suppression du GET de vérification inutile)
-        const formData = new FormData();
-        formData.append("event", ev.id);
-        formData.append("nom_participant", nom);
-        formData.append("email", email || "");
-        formData.append("telephone", tel);
-        formData.append("type_billet", typeBilletChoisi);
-        formData.append("preuve", fichierPreuve);
+                        // FIX VISUEL : Remplace tout le contenu du bouton au lieu d'ajouter un child par-dessus
+                        btnValiderAchat.innerHTML = `<div class="spinner"></div> Validation et envoi sécurisé en cours...`;
 
-        const reponseAchat = await fetchAvecTimeout(
-            '/api/tickets',
-            { method: 'POST', body: formData },
-            30000
-        );
+                        try {
+                            // Envoi direct du formulaire en UNE SEULE requête POST (suppression du GET de vérification inutile)
+                            const formData = new FormData();
+                            formData.append("event", ev.id);
+                            formData.append("nom_participant", nom);
+                            formData.append("email", email || "");
+                            formData.append("telephone", tel);
+                            formData.append("type_billet", typeBilletChoisi);
+                            formData.append("preuve", fichierPreuve);
 
-        let resultatAchat;
-        try {
-            resultatAchat = await reponseAchat.json();
-        } catch (e) {
-            resultatAchat = null;
-        }
+                            const reponseAchat = await fetchAvecTimeout(
+                                '/api/tickets',
+                                { method: 'POST', body: formData },
+                                30000
+                            );
 
-        if (!reponseAchat.ok || !resultatAchat || !resultatAchat.success) {
-            const messageErreur = (resultatAchat && resultatAchat.error)
-                ? resultatAchat.error
-                : "Erreur lors de l'enregistrement du billet.";
-            alert(messageErreur);
-            btnValiderAchat.disabled = false;
-            btnValiderAchat.innerHTML = btnHTMLOriginal;
-            return;
-        }
+                            let resultatAchat;
+                            try {
+                                resultatAchat = await reponseAchat.json();
+                            } catch (e) {
+                                resultatAchat = null;
+                            }
 
-        // Redirection immédiate
-        window.location.href = `billet.html?id=${encodeURIComponent(resultatAchat.id)}`;
+                            if (!reponseAchat.ok || !resultatAchat || !resultatAchat.success) {
+                                const messageErreur = (resultatAchat && resultatAchat.error)
+                                    ? resultatAchat.error
+                                    : "Erreur lors de l'enregistrement du billet.";
+                                alert(messageErreur);
+                                btnValiderAchat.disabled = false;
+                                btnValiderAchat.innerHTML = btnHTMLOriginal;
+                                return;
+                            }
 
-    } catch (err) {
-        console.error("Erreur inattendue :", err);
-        const messageErreur = (err && err.name === "AbortError")
-            ? "La connexion met trop de temps à répondre. Vérifiez votre réseau puis réessayez."
-            : "Une erreur inattendue est survenue lors du traitement.";
-        alert(messageErreur);
-        btnValiderAchat.disabled = false;
-        btnValiderAchat.innerHTML = btnHTMLOriginal;
-    }
-};
-            }
+                            // Redirection immédiate
+                            window.location.href = `billet.html?id=${encodeURIComponent(resultatAchat.id)}`;
 
-            window.dispatchEvent(new Event('goldtix:donneesPretes'));
+                        } catch (err) {
+                            console.error("Erreur inattendue :", err);
+                            const messageErreur = (err && err.name === "AbortError")
+                                ? "La connexion met trop de temps à répondre. Vérifiez votre réseau puis réessayez."
+                                : "Une erreur inattendue est survenue lors du traitement.";
+                            alert(messageErreur);
+                            btnValiderAchat.disabled = false;
+                            btnValiderAchat.innerHTML = btnHTMLOriginal;
+                        }
+                    };
+                }
+
+                window.dispatchEvent(new Event('goldtix:donneesPretes'));
 
             } catch (err) {
                 console.error("Erreur inattendue lors de l'affichage de l'événement :", err);
@@ -1346,25 +1408,14 @@ btnValiderAchat.onclick = async function() {
                     "Une erreur est survenue",
                     "Impossible d'afficher les informations de l'événement. Réessayez."
                 );
+            } finally {
+                clearTimeout(watchdog);
+                chargementEnCours = false;
             }
         }
 
         document.addEventListener('DOMContentLoaded', function() {
             chargerPageAchatUnique();
-
-            // Filet de sécurité global : si le loader est encore affiché après
-            // 20 secondes pour une raison quelconque, on force un message clair
-            // avec un bouton "Réessayer" plutôt qu'un spinner qui tourne indéfiniment.
-            setTimeout(function() {
-                const container = document.getElementById("detailsEvenement");
-                if (container && container.querySelector(".loading-card")) {
-                    afficherErreurChargement(
-                        container,
-                        "Chargement trop long",
-                        "La connexion semble instable. Vérifiez votre réseau (Wi-Fi ou données mobiles) et réessayez."
-                    );
-                }
-            }, 20000);
         });
     </script>
 </body>
