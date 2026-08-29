@@ -1819,8 +1819,8 @@
                         <div class="quota-box-top">
                             <div class="quota-label">
                                 <span class="quota-title">Définir le nombre de billets disponibles</span>
-                                <span class="quota-sub">Lorsque le nombre défini est atteint, les ventes seront fermées automatiquement.</span>
-                                <span class="quota-sub">Laissez ce champ vide si aucune limite de billets n’est souhaitée.</span>
+                                <span class="quota-sub">Les ventes seront automatiquement fermées une fois le nombre de billets atteint.</span>
+                                <span class="quota-sub">Laissez ce champ vide pour ne définir aucune limite..</span>
                             </div>
                             <div class="quota-input-group">
                                 <input
@@ -1829,7 +1829,7 @@
                                     min="0"
                                     step="1"
                                     inputmode="numeric"
-                                    placeholder="500max"
+                                    placeholder="Max 500"
                                     onchange="onChangementLimiteBillets()">
                                 <span class="quota-save-status" id="quotaSaveStatus"></span>
                             </div>
