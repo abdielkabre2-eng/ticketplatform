@@ -986,10 +986,12 @@ ${ev.heure ? `<div class="event-meta-pill">
         }
 
         const qrSection = document.querySelector('.qr-section');
+        const qrFrame = document.querySelector('.qr-frame');
         const qrContainerElement = document.getElementById('qrcode');
 
         if (isConfirmed) {
           if (qrSection) qrSection.style.display = '';
+          if (qrFrame) qrFrame.style.display = '';
           const refEl = document.getElementById('billetRef');
           if (refEl) refEl.textContent = billet.numero_billet || billet.id || '—';
 
