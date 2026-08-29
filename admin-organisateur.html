@@ -2411,10 +2411,10 @@
         synchroniserListeValidees(nouveauxValidesGlobal);
 
         // Le compteur "En attente" doit refléter ce qui reste réellement affiché
-        // dans cet onglet : tant qu'un billet n'est pas confirmé (attente OU
-        // refusé), il y reste visible. Seule une confirmation doit le faire
-        // baisser — un refus ne doit pas le diminuer.
-        const nombreEnAttenteReel = billets.filter(b => b.statut !== 'confirme').length;
+        // dans cet onglet : les statuts 'attente' ET 'refuse' y restent visibles.
+        // Seule une confirmation ('confirme') fait sortir le billet de cet onglet,
+        // donc c'est la seule action qui doit faire baisser ce chiffre.
+        const nombreEnAttenteReel = billets.filter(b => b.statut === 'attente' || b.statut === 'refuse').length;
         mettreAJourCompteurs(nouveauxValidesGlobal.length, nombreEnAttenteReel);
     }
 
