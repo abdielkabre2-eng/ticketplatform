@@ -62,7 +62,9 @@ export default async function handler(req, res) {
 
       case "toggle_ventes":
         return await toggleVentes(supabase, payload, res);
-
+        
+      case "definir_limite_billets":
+        return await definirLimiteBillets(supabase, payload, res);
       default:
         return res.status(400).json({ success: false, error: "Action inconnue." });
     }
@@ -347,6 +349,27 @@ async function toggleVentes(supabase, payload, res) {
     p_evenement_id: evenementId,
     p_token: token,
     p_nouveau_statut: nouveauStatut,
+  });
+
+  if (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+  return res.status(200).json({ success: true });
+}
+async function definirLimiteBillets(supabase, payload, res) {
+  const { evenementId, token, limiteBillets } = payload;
+  const limiteValide =
+    limiteBillets === null ||
+    (typeof limiteBillets === "number" && Number.isInteger(limiteBillets) && limiteBillets >= 0);
+
+  if (!evenementId || !token || !limiteValide) {
+    return res.status(400).json({ success: false, error: "Paramètres manquants ou invalides." });
+  }
+
+  const { error } = await supabase.rpc("organisateur_definir_limite_billets", {
+    p_evenement_id: evenementId,
+    p_token: token,
+    p_limite: limiteBillets,
   });
 
   if (error) {

@@ -90,7 +90,7 @@ async function handlePost(req, res, supabase) {
 
     const { data: ev, error: errEv } = await supabase
       .from("evenements")
-      .select("ventes_fermees")
+      .select("ventes_fermees, limite_billets")
       .eq("id", eventId)
       .single();
 
@@ -100,6 +100,25 @@ async function handlePost(req, res, supabase) {
     if (ev.ventes_fermees) {
       return res.status(409).json({ success: false, error: "La vente des billets pour cet évènement vient d'être fermée." });
     }
+
+    // Vérification serveur du quota (miroir de la jauge affichée côté organisateur) :
+    // on ne fait confiance qu'à un comptage frais en base, jamais à une valeur
+    // envoyée par le client, pour empêcher un dépassement par soumission manuelle.
+    if (ev.limite_billets !== null && ev.limite_billets !== undefined) {
+      const { count: nombreOccupantLeQuota, error: errCount } = await supabase
+        .from("billets")
+        .select("id", { count: "exact", head: true })
+        .eq("evenement_id", eventId)
+        .in("statut", ["attente", "confirme"]);
+
+      if (errCount) {
+        return res.status(500).json({ success: false, error: "Erreur lors de la vérification du quota." });
+      }
+      if (nombreOccupantLeQuota >= ev.limite_billets) {
+        return res.status(409).json({ success: false, error: "Le quota de billets disponibles pour cet évènement est atteint." });
+      }
+    }
+
 
     const donneesFichier = fs.readFileSync(fichierPreuve.filepath);
     const extension = (fichierPreuve.originalFilename || "jpg").split(".").pop().toLowerCase();

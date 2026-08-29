@@ -1381,6 +1381,92 @@
         }
 
         @media (prefers-reduced-motion: reduce) { #introGoldTix { display: none !important; } }
+
+        /* ============================================
+           JAUGE DE BILLETS (quota optionnel)
+        ============================================ */
+        .quota-box {
+            background: var(--ink-50);
+            border: 1px solid var(--ink-200);
+            border-radius: var(--radius-md);
+            padding: 14px 18px;
+            margin-bottom: 24px;
+        }
+        .quota-box-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .quota-label {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .quota-label span.quota-title {
+            font-family: var(--font-display);
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--ink-700);
+        }
+        .quota-label span.quota-sub {
+            font-size: 11.5px;
+            color: var(--ink-400);
+        }
+        .quota-input-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .quota-input-group input {
+            width: 100px;
+            padding: 9px 12px;
+            background: #ffffff;
+            border: 1px solid var(--ink-200);
+            border-radius: var(--radius-xs);
+            font-family: var(--font-display);
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--ink-900);
+            text-align: center;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .quota-input-group input:focus {
+            border-color: var(--gold-500);
+            box-shadow: 0 0 0 3px rgba(245,158,11,0.12);
+        }
+        .quota-input-group input::placeholder { color: var(--ink-400); font-weight: 500; }
+        .quota-save-status {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--ink-400);
+            min-width: 60px;
+        }
+        .quota-progress-track {
+            width: 100%;
+            height: 8px;
+            background: var(--ink-200);
+            border-radius: 50px;
+            overflow: hidden;
+        }
+        .quota-progress-fill {
+            height: 100%;
+            border-radius: 50px;
+            background: var(--grad-gold);
+            transition: width 0.4s ease, background 0.3s ease;
+            width: 0%;
+        }
+        .quota-progress-fill.quota-full { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .quota-count-text {
+            margin-top: 8px;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--ink-500);
+        }
+        .quota-count-text strong { color: var(--ink-900); }
     </style>
 </head>
 <body>
@@ -1728,6 +1814,31 @@
                         </button>
                     </div>
 
+                    <!-- JAUGE / LIMITE DE BILLETS (optionnelle) -->
+                    <div class="quota-box">
+                        <div class="quota-box-top">
+                            <div class="quota-label">
+                                <span class="quota-title">Nombre de billets disponibles</span>
+                                <span class="quota-sub">Laissez vide pour aucune limite</span>
+                            </div>
+                            <div class="quota-input-group">
+                                <input
+                                    type="number"
+                                    id="inputLimiteBillets"
+                                    min="0"
+                                    step="1"
+                                    inputmode="numeric"
+                                    placeholder="Illimité"
+                                    onchange="onChangementLimiteBillets()">
+                                <span class="quota-save-status" id="quotaSaveStatus"></span>
+                            </div>
+                        </div>
+                        <div class="quota-progress-track" id="quotaProgressTrack" style="display:none;">
+                            <div class="quota-progress-fill" id="quotaProgressFill"></div>
+                        </div>
+                        <p class="quota-count-text" id="quotaCountText" style="display:none;"></p>
+                    </div>
+
                     <!-- TABS -->
                     <div class="tabs">
                         <button class="tab-btn active" id="btnTabPaiements" onclick="changerOnglet('paiements', this)">En attente (0)</button>
@@ -1740,6 +1851,7 @@
                         <div class="section-header">
                             <h2>Gestion des paiements</h2>
                             <p>Examinez et validez les preuves de paiement. Le participant recevra son billet après confirmation.</p>
+                            <p>Les paiements confirmés basculeront dans la section "Confirmés" après 1min. Les paiements refusés ou en attente resteront dans cette section "En attente".</p>
                             <span class="section-trust-note">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
                                 Aucun billet n'est délivré sans votre validation manuelle
@@ -1861,6 +1973,19 @@
 
     let chargementDemandesEnCours = false;
     let debounceRecherche = null;
+
+    /* =============================================
+       JAUGE DE BILLETS (quota optionnel)
+       -> limiteBilletsCourante = null tant qu'aucune
+          limite n'a été définie (comportement inchangé)
+       -> fermetureAutoDejaDeclenchee évite de renvoyer
+          l'appel toggle_ventes en boucle une fois que
+          la fermeture automatique a déjà eu lieu pour
+          l'état courant
+    ============================================= */
+    let limiteBilletsCourante = null;
+    let fermetureAutoDejaDeclenchee = false;
+    let debounceLimiteBillets = null;
 
     /* =============================================
        SYNCHRONISATION TEMPS RÉEL (polling intelligent)
@@ -2332,6 +2457,18 @@
 
             statutVentesFermees = ev.ventes_fermees || false;
             mettreAJourBoutonVentes();
+
+            // Initialise l'état de la jauge à partir de la valeur enregistrée côté serveur.
+            // null/undefined => illimité (comportement inchangé)
+            limiteBilletsCourante = (ev.limite_billets === null || ev.limite_billets === undefined)
+                ? null
+                : Number(ev.limite_billets);
+            fermetureAutoDejaDeclenchee = statutVentesFermees; // évite de re-fermer inutilement au chargement
+            const inputLimite = document.getElementById("inputLimiteBillets");
+            if (inputLimite) {
+                inputLimite.value = (limiteBilletsCourante === null) ? "" : String(limiteBilletsCourante);
+            }
+
             await chargerToutesLesDemandes();
 
         } catch (err) {
@@ -2416,6 +2553,12 @@
         // donc c'est la seule action qui doit faire baisser ce chiffre.
         const nombreEnAttenteReel = billets.filter(b => b.statut === 'attente' || b.statut === 'refuse').length;
         mettreAJourCompteurs(nouveauxValidesGlobal.length, nombreEnAttenteReel);
+
+        // Jauge de billets : total pris en compte = billets en attente + confirmés
+        // (les billets refusés ne consomment pas le quota, puisqu'ils ne
+        // deviendront jamais un billet valide).
+        const nombreOccupantLeQuota = billets.filter(b => b.statut === 'attente' || b.statut === 'confirme').length;
+        mettreAJourJaugeBillets(nombreOccupantLeQuota);
     }
 
     function synchroniserListePaiements(cibleMap) {
@@ -2698,6 +2841,123 @@
     }
 
     /* =============================================
+       JAUGE DE BILLETS : saisie / sauvegarde de la limite
+    ============================================= */
+    function onChangementLimiteBillets() {
+        clearTimeout(debounceLimiteBillets);
+        debounceLimiteBillets = setTimeout(() => {
+            sauvegarderLimiteBillets();
+        }, 400);
+    }
+
+    async function sauvegarderLimiteBillets() {
+        const input = document.getElementById("inputLimiteBillets");
+        const statutEl = document.getElementById("quotaSaveStatus");
+        if (!input) return;
+
+        const valeurBrute = input.value.trim();
+        let nouvelleLimite = null;
+
+        if (valeurBrute !== "") {
+            const n = Number(valeurBrute);
+            if (!Number.isFinite(n) || n < 0) {
+                if (statutEl) { statutEl.textContent = "Valeur invalide"; statutEl.style.color = "var(--red-500)"; }
+                return;
+            }
+            nouvelleLimite = Math.floor(n);
+            input.value = String(nouvelleLimite);
+        }
+
+        if (statutEl) { statutEl.textContent = "Enregistrement..."; statutEl.style.color = "var(--ink-400)"; }
+
+        try {
+            await callOrganisateurAPI('definir_limite_billets', {
+                evenementId: eventId,
+                token: sessionToken,
+                limiteBillets: nouvelleLimite // null = illimité
+            });
+
+            limiteBilletsCourante = nouvelleLimite;
+            // Une nouvelle limite (ou une limite augmentée/retirée) doit pouvoir
+            // redéclencher la fermeture automatique si le total la dépasse encore,
+            // et ne doit plus bloquer une réouverture manuelle sinon.
+            fermetureAutoDejaDeclenchee = false;
+
+            if (statutEl) { statutEl.textContent = "✓ Enregistré"; statutEl.style.color = "var(--green-600)"; }
+            setTimeout(() => { if (statutEl) statutEl.textContent = ""; }, 2000);
+
+            // Recalcule immédiatement la jauge avec les données déjà en mémoire
+            await chargerToutesLesDemandes();
+
+        } catch (err) {
+            console.error("Erreur sauvegarde limite billets :", err);
+            if (statutEl) { statutEl.textContent = "Erreur"; statutEl.style.color = "var(--red-500)"; }
+        }
+    }
+
+    /* =============================================
+       JAUGE DE BILLETS : affichage + fermeture auto
+    ============================================= */
+    function mettreAJourJaugeBillets(nombreOccupantLeQuota) {
+        const track = document.getElementById("quotaProgressTrack");
+        const fill = document.getElementById("quotaProgressFill");
+        const texte = document.getElementById("quotaCountText");
+
+        if (limiteBilletsCourante === null || limiteBilletsCourante === undefined) {
+            if (track) track.style.display = "none";
+            if (texte) texte.style.display = "none";
+            fermetureAutoDejaDeclenchee = false; // pas de limite => plus rien à surveiller
+            return;
+        }
+
+        const limite = limiteBilletsCourante;
+        const pourcentage = limite > 0 ? Math.min(100, Math.round((nombreOccupantLeQuota / limite) * 100)) : 100;
+        const atteint = nombreOccupantLeQuota >= limite;
+
+        if (track) track.style.display = "block";
+        if (texte) texte.style.display = "block";
+        if (fill) {
+            fill.style.width = pourcentage + "%";
+            fill.classList.toggle("quota-full", atteint);
+        }
+        if (texte) {
+            texte.innerHTML = atteint
+                ? `<strong>${nombreOccupantLeQuota}</strong> / ${limite} billets — quota atteint`
+                : `<strong>${nombreOccupantLeQuota}</strong> / ${limite} billets réservés`;
+        }
+
+        // Fermeture automatique des ventes dès que le quota est atteint ou dépassé.
+        // On ne déclenche l'appel serveur qu'une seule fois par franchissement,
+        // pour ne pas spammer toggle_ventes à chaque tick de polling, et on ne
+        // touche jamais au statut si les ventes sont déjà fermées (l'organisateur
+        // a pu les fermer manuellement, ou les rouvrir volontairement après coup).
+        if (atteint && !statutVentesFermees && !fermetureAutoDejaDeclenchee) {
+            fermetureAutoDejaDeclenchee = true;
+            fermerVentesAutomatiquement();
+        } else if (!atteint) {
+            // Le quota n'est plus atteint (limite augmentée, ou billet retiré/refusé) :
+            // on autorise un futur re-déclenchement si le total remonte au-dessus.
+            fermetureAutoDejaDeclenchee = false;
+        }
+    }
+
+    async function fermerVentesAutomatiquement() {
+        try {
+            await callOrganisateurAPI('toggle_ventes', {
+                evenementId: eventId,
+                token: sessionToken,
+                nouveauStatut: true
+            });
+            statutVentesFermees = true;
+            mettreAJourBoutonVentes();
+        } catch (err) {
+            console.error("Erreur fermeture automatique des ventes (quota atteint) :", err);
+            // On réautorise une nouvelle tentative au prochain tick de polling.
+            fermetureAutoDejaDeclenchee = false;
+        }
+    }
+
+    /* =============================================
        SCANNER QR
     ============================================= */
     let isScanLocked = false;
@@ -2847,6 +3107,11 @@
             statutVentesFermees = !statutVentesFermees;
             return;
         }
+
+        // Une réouverture manuelle doit pouvoir re-déclencher la fermeture
+        // automatique plus tard si le quota est toujours atteint, mais ne
+        // doit pas la redéclencher immédiatement dans la même action.
+        fermetureAutoDejaDeclenchee = statutVentesFermees;
 
         mettreAJourBoutonVentes();
     }
