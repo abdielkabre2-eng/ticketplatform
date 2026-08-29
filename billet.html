@@ -616,11 +616,52 @@ const params   = new URLSearchParams(window.location.search);
 const billetId = params.get('id');
 if (!billetId) { showError('Aucun identifiant de billet fourni.'); return; }
 
-// Bouton de rafraîchissement du footer (attente / refuse)
-const tfReloadBtn = document.getElementById('tfReloadBtn');
-if (tfReloadBtn) {
-tfReloadBtn.addEventListener('click', () => {
-location.reload();
+      // ---------------------------------------------------------------
+      // SYNCHRONISATION AUTOMATIQUE (polling intelligent, same-origin)
+      // Pas de rechargement de page : on interroge périodiquement
+      // /api/tickets (déjà utilisée pour le chargement initial) et on
+      // ne met à jour que les portions du DOM dont le contenu a changé.
+      // ---------------------------------------------------------------
+      let dernierSignatureAffichee = null;
+      let verificationEnCours = false;
+      let pollingBilletIntervalId = null;
+      let pollingBilletActif = false;
+      const POLLING_BILLET_INTERVAL_MS = 4500;
+
+      function demarrerPollingBillet() {
+        if (pollingBilletActif) return;
+        pollingBilletActif = true;
+        if (pollingBilletIntervalId) clearInterval(pollingBilletIntervalId);
+        pollingBilletIntervalId = setInterval(() => {
+          if (document.hidden) return;
+          verifierMiseAJour(false);
+        }, POLLING_BILLET_INTERVAL_MS);
+      }
+
+      function arreterPollingBillet() {
+        pollingBilletActif = false;
+        if (pollingBilletIntervalId) {
+          clearInterval(pollingBilletIntervalId);
+          pollingBilletIntervalId = null;
+        }
+      }
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          arreterPollingBillet();
+        } else {
+          demarrerPollingBillet();
+          verifierMiseAJour(false);
+        }
+      });
+      window.addEventListener('pagehide', arreterPollingBillet);
+
+      // Bouton de rafraîchissement du footer (attente / refuse)
+      // -> ne recharge plus la page : il force juste une vérification immédiate.
+      const tfReloadBtn = document.getElementById('tfReloadBtn');
+      if (tfReloadBtn) {
+        tfReloadBtn.addEventListener('click', () => {
+          verifierMiseAJour(true);
         });
       }
 
@@ -643,23 +684,57 @@ btn.style.display = 'none';
         }
       }
 
+      // Bannière de statut (attente / refusé / confirmé) — markup inchangé,
+      // simplement factorisé pour être réutilisé par le chargement initial
+      // ET par les mises à jour automatiques (polling) sans dupliquer le HTML.
+      function statusBannerHTML(statut) {
+        if (statut === 'attente' || statut === 'en_attente') {
+          return `<div class="status-banner attente">
+                <div class="status-icon"><div class="status-pulse"></div></div>
+                <div>
+                  <div style="font-weight:800; font-size:.82rem;">Paiement en attente de confirmation</div>
+                  <div style="font-size:.7rem; font-weight:500; opacity:.75; margin-top:2px;">Veuillez patienter quelques instants, la page se met à jour automatiquement dès que votre paiement est traité.</div>
+                  <div style="font-size:.65rem; font-weight:500; font-style:italic; opacity:.75; margin-top:10px;">Si votre billet n'est toujours pas disponible après 1 heure, veuillez contacter le bénéficiaire afin de vérifier que votre paiement a bien été reçu et validé.</div>
+                </div>
+              </div>`;
+        } else if (statut === 'refuse' || statut === 'annule') {
+          return `<div class="status-banner refuse">
+                <div class="status-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+                <div>
+                  <div style="font-weight:800; font-size:.82rem;">Paiement refusé</div>
+                  <div style="font-size:.7rem; font-weight:500; opacity:.75; margin-top:2px;">Votre paiement n'a pas été confirmé. Veuillez contacter le bénéficiaire pour vérifier sa réception.</div>
+                  <div style="font-size:.7rem; font-weight:500; opacity:.75; margin-top:2px;">Dès que votre paiement est confirmé, la page se mettra à jour automatiquement afin de récupérer votre billet.</div>
+                </div>
+              </div>`;
+        }
+        return `<div class="status-banner" style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.3); color:#10b981; padding:12px 16px; border-radius:12px; display:flex; align-items:center; gap:12px;">
+                <div style="width:8px; height:8px; background:#10b981; border-radius:50%; box-shadow:0 0 8px #10b981;"></div>
+                <div style="font-weight:800; font-size:.82rem;">Billet validé et actif</div>
+              </div>`;
+      }
+
       // ---------------------------------------------------------------
       // FONCTION : chargerBillet
       // (CORRECTIF : ouverture de la fonction + du bloc try réinjectées.
       //  C'était l'accolade manquante qui cassait toute la syntaxe du
       //  fichier en cascade jusqu'à la fin.)
       // ---------------------------------------------------------------
+      async function recupererDonneesBillet() {
+        // Récupération via l'API Vercel (same-origin, 100% réseau mobile)
+        const reponse = await fetch('/api/tickets?id=' + encodeURIComponent(billetId));
+        if (!reponse.ok) return null;
+        return await reponse.json();
+      }
+
       async function chargerBillet() {
         try {
-          // Récupération via l'API Vercel (same-origin, 100% réseau mobile)
-          const reponse = await fetch('/api/tickets?id=' + encodeURIComponent(billetId));
+          const data = await recupererDonneesBillet();
 
-          if (!reponse.ok) {
+          if (!data) {
             showError('Billet introuvable.');
             return;
           }
 
-          const data   = await reponse.json();
           const billet = data.ticket;
           const ev     = data.event;
 
@@ -775,30 +850,7 @@ ${ev.heure ? `<div class="event-meta-pill">
           // Mise à jour du bouton de rafraîchissement dans le footer selon le statut
           updateFooterReloadButton(statut);
 
-          if (statut === 'attente' || statut === 'en_attente') {
-            statusZone.innerHTML = `<div class="status-banner attente">
-                <div class="status-icon"><div class="status-pulse"></div></div>
-                <div>
-                  <div style="font-weight:800; font-size:.82rem;">Paiement en attente de confirmation</div>
-                  <div style="font-size:.7rem; font-weight:500; opacity:.75; margin-top:2px;">Veuillez patienter quelques instants, puis cliquez sur «Rafraîchir» pour vérifier l'état de votre paiement.</div>
-                  <div style="font-size:.65rem; font-weight:500; font-style:italic; opacity:.75; margin-top:10px;">Si votre billet n'est toujours pas disponible après 1 heure, veuillez contacter le bénéficiaire afin de vérifier que votre paiement a bien été reçu et validé.</div>
-                </div>
-              </div>`;
-          } else if (statut === 'refuse' || statut === 'annule') {
-            statusZone.innerHTML = `<div class="status-banner refuse">
-                <div class="status-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
-                <div>
-                  <div style="font-weight:800; font-size:.82rem;">Paiement refusé</div>
-                  <div style="font-size:.7rem; font-weight:500; opacity:.75; margin-top:2px;">Votre paiement n'a pas été confirmé. Veuillez contacter le bénéficiaire pour vérifier sa réception.</div>
-                  <div style="font-size:.7rem; font-weight:500; opacity:.75; margin-top:2px;">Dès que votre paiement est confirmé, patientez quelques instants puis cliquez sur <strong>«Réessayer»</strong> afin de récupérer votre billet.</div>
-                </div>
-              </div>`;
-          } else {
-            statusZone.innerHTML = `<div class="status-banner" style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.3); color:#10b981; padding:12px 16px; border-radius:12px; display:flex; align-items:center; gap:12px;">
-                <div style="width:8px; height:8px; background:#10b981; border-radius:50%; box-shadow:0 0 8px #10b981;"></div>
-                <div style="font-weight:800; font-size:.82rem;">Billet validé et actif</div>
-              </div>`;
-          }
+          statusZone.innerHTML = statusBannerHTML(statut);
 
           const infoGrid = document.getElementById('infoGrid');
           const cells = [
@@ -812,6 +864,7 @@ ${ev.heure ? `<div class="event-meta-pill">
           cells.forEach((cell, i) => {
             const div = document.createElement('div');
             div.className = 'info-cell' + (cell.full ? ' full' : '');
+            if (cell.label === 'ID-billet') div.id = 'cellIdBillet';
             div.style.animationDelay = (0.25 + i * 0.055) + 's';
             const valueStyle = cell.accent ? `color:${ts.badgeClr}; font-weight:800;` : '';
             div.innerHTML = `<span class="cell-label">${cell.label}</span><span class="cell-value" style="${valueStyle}">${escHTML(String(cell.value))}</span><span class="cell-icon">${cell.icon}</span>`;
@@ -848,15 +901,124 @@ ${ev.heure ? `<div class="event-meta-pill">
             if (qrNodes.length > 1) {
               Array.from(qrNodes).slice(1).forEach(node => node.remove());
             }
+
+            qrContainerElement.dataset.genere = String(billet.id);
           }
 
+          // Empreinte de l'état actuellement affiché : sert de référence pour
+          // que le polling ne touche au DOM que si quelque chose a réellement changé.
+          dernierSignatureAffichee = `${statut}|${billet.numero_billet || ''}|${billet.id || ''}`;
+
           showTicket();
+          demarrerPollingBillet();
 
         } catch(err) {
           console.error('Erreur chargerBillet:', err);
           showError('Une erreur est survenue. Veuillez réessayer.');
         }
       } // <-- fermeture de async function chargerBillet()
+
+      // ---------------------------------------------------------------
+      // FONCTION : verifierMiseAJour
+      // Appelée par le polling (silencieuse) et par le bouton
+      // Rafraîchir/Réessayer (forcerErreur = true). Ne modifie le DOM
+      // que si le statut affiché a réellement changé depuis la dernière
+      // vérification, jamais via un rechargement de page.
+      // ---------------------------------------------------------------
+      async function verifierMiseAJour(forcerErreur) {
+        if (verificationEnCours) return;
+        verificationEnCours = true;
+
+        try {
+          const data = await recupererDonneesBillet();
+          if (!data) { if (forcerErreur) showError('Billet introuvable.'); return; }
+
+          const billet = data.ticket;
+          const ev = data.event;
+          if (!billet) { if (forcerErreur) showError('Billet introuvable.'); return; }
+          if (!ev)     { if (forcerErreur) showError("Événement introuvable."); return; }
+
+          const statut = (billet.statut || 'attente').trim().toLowerCase();
+          const signature = `${statut}|${billet.numero_billet || ''}|${billet.id || ''}`;
+
+          if (signature === dernierSignatureAffichee) return; // rien de nouveau
+
+          dernierSignatureAffichee = signature;
+          mettreAJourStatutAffiche(billet, statut);
+
+        } catch (err) {
+          console.error('Erreur verifierMiseAJour:', err);
+          if (forcerErreur) showError('Une erreur est survenue. Veuillez réessayer.');
+        } finally {
+          verificationEnCours = false;
+        }
+      }
+
+      // ---------------------------------------------------------------
+      // FONCTION : mettreAJourStatutAffiche
+      // Mise à jour DYNAMIQUE du DOM (aucune reconstruction complète,
+      // aucun rechargement) : bannière de statut, bouton Rafraîchir,
+      // bouton de téléchargement, cellule ID-billet et bloc QR code.
+      // Le reste (titre, image, date, lieu, catégorie...) ne change
+      // jamais pour un même billet et n'est donc pas retouché ici.
+      // ---------------------------------------------------------------
+      function mettreAJourStatutAffiche(billet, statut) {
+        const isConfirmed = (statut === 'confirme' || statut === 'valide');
+
+        updateFooterReloadButton(statut);
+
+        const statusZone = document.getElementById('statusBannerZone');
+        if (statusZone) statusZone.innerHTML = statusBannerHTML(statut);
+
+        const dlBtn = document.getElementById('downloadTicket');
+        if (dlBtn) dlBtn.style.display = isConfirmed ? 'flex' : 'none';
+
+        const infoGrid = document.getElementById('infoGrid');
+        let idCell = document.getElementById('cellIdBillet');
+        if (isConfirmed && !idCell && infoGrid) {
+          idCell = document.createElement('div');
+          idCell.className = 'info-cell full';
+          idCell.id = 'cellIdBillet';
+          idCell.innerHTML = `<span class="cell-label">ID-billet</span><span class="cell-value">${escHTML(String(billet.numero_billet || billet.id || '—'))}</span><span class="cell-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg></span>`;
+          infoGrid.appendChild(idCell);
+        } else if (!isConfirmed && idCell) {
+          idCell.remove();
+        }
+
+        const qrSection = document.querySelector('.qr-section');
+        const qrContainerElement = document.getElementById('qrcode');
+
+        if (isConfirmed) {
+          if (qrSection) qrSection.style.display = '';
+          const refEl = document.getElementById('billetRef');
+          if (refEl) refEl.textContent = billet.numero_billet || billet.id || '—';
+
+          if (qrContainerElement && qrContainerElement.dataset.genere !== String(billet.id)) {
+            qrContainerElement.innerHTML = '';
+            qrContainerElement.style.width = '150px';
+            qrContainerElement.style.height = '150px';
+            qrContainerElement.style.margin = '0 auto';
+
+            new QRCode(qrContainerElement, {
+              text: String(billet.id),
+              width: 150,
+              height: 150,
+              colorDark: '#000000',
+              colorLight: '#ffffff',
+              correctLevel: QRCode.CorrectLevel.M
+            });
+
+            const qrNodes = qrContainerElement.querySelectorAll('canvas, img');
+            if (qrNodes.length > 1) {
+              Array.from(qrNodes).slice(1).forEach(node => node.remove());
+            }
+
+            qrContainerElement.dataset.genere = String(billet.id);
+          }
+        } else {
+          if (qrSection) qrSection.style.display = 'none';
+        }
+      }
 
       // FONCTION : telechargerPDF
      function telechargerPDF() {
