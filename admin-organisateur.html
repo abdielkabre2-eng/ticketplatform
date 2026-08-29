@@ -1730,7 +1730,7 @@
 
                     <!-- TABS -->
                     <div class="tabs">
-                        <button class="tab-btn active" onclick="changerOnglet('paiements', this)">En attente</button>
+                        <button class="tab-btn active" id="btnTabPaiements" onclick="changerOnglet('paiements', this)">En attente (0)</button>
                         <button class="tab-btn" id="btnTabValidees" onclick="changerOnglet('validees', this)">Confirmés (0)</button>
                         <button class="tab-btn" onclick="changerOnglet('scanner', this)">Scanner QR</button>
                     </div>
@@ -1863,6 +1863,22 @@
     let debounceRecherche = null;
 
     /* =============================================
+       SYNCHRONISATION TEMPS RÉEL (polling intelligent)
+       -> pas de WebSocket Supabase Realtime (contrainte
+          réseaux mobiles), on reste same-origin et on
+          réutilise l'API /api/organisateur existante.
+       -> pendingRenderState / confirmedRenderState gardent
+          la correspondance id -> élément DOM déjà affiché,
+          ce qui permet de ne modifier que ce qui a changé
+          au lieu de réécrire toute la liste à chaque tick.
+    ============================================= */
+    const POLLING_INTERVAL_MS = 4500;
+    let pollingIntervalId = null;
+    let pollingActif = false;
+    let pendingRenderState = new Map();   // billetId -> { el, sig }
+    let confirmedRenderState = new Map(); // billetId -> { el, sig }
+
+    /* =============================================
        PONT UNIQUE VERS L'API SERVERLESS
        Toutes les opérations organisateur passent par
        POST /api/organisateur avec { action, ...payload }
@@ -1918,6 +1934,18 @@
                 return;
             }
         });
+
+        // Le polling doit s'arrêter net si l'utilisateur quitte/ferme la page,
+        // et se mettre en pause/reprendre quand l'onglet est masqué/redevient visible.
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) {
+                arreterPolling();
+            } else if (sessionToken) {
+                demarrerPolling();
+                chargerToutesLesDemandes();
+            }
+        });
+        window.addEventListener("pagehide", arreterPolling);
     });
 
     /* =============================================
@@ -2023,7 +2051,7 @@
         document.getElementById("btnDeconnexion").style.display = "inline-flex";
 
         chargerEspaceOrganisateur();
-        setInterval(() => { chargerToutesLesDemandes(); }, 120000);
+        demarrerPolling();
     }
 
     function afficherErreurAuth(idErreur, message) {
@@ -2221,12 +2249,46 @@
         localStorage.removeItem(AUTH_STORAGE_KEY);
         sessionToken = null;
         arreterScanner();
+        arreterPolling();
+
+        pendingRenderState.clear();
+        confirmedRenderState.clear();
+        const containerPaiements = document.getElementById("listePaiements");
+        const containerValidees = document.getElementById("listeValidees");
+        if (containerPaiements) containerPaiements.innerHTML = `<div class="loading-dots"><span></span><span></span><span></span></div>`;
+        if (containerValidees) containerValidees.innerHTML = `<div class="loading-dots"><span></span><span></span><span></span></div>`;
 
         document.getElementById("espaceProtege").style.display = "none";
         document.getElementById("btnDeconnexion").style.display = "none";
         document.getElementById("blocAuthentification").style.display = "block";
         document.getElementById("loginPassword").value = "";
         afficherEcranAuth("authEcranLogin");
+    }
+
+    /* =============================================
+       POLLING INTELLIGENT
+       - 1 seule boucle possible à la fois (pollingActif)
+       - se coupe quand l'onglet est masqué ou quitté
+       - reprend immédiatement quand l'onglet redevient visible
+       - réutilise systématiquement l'action "charger_billets"
+         déjà existante de l'API organisateur
+    ============================================= */
+    function demarrerPolling() {
+        if (pollingActif) return;
+        pollingActif = true;
+        if (pollingIntervalId) clearInterval(pollingIntervalId);
+        pollingIntervalId = setInterval(() => {
+            if (document.hidden) return;
+            chargerToutesLesDemandes();
+        }, POLLING_INTERVAL_MS);
+    }
+
+    function arreterPolling() {
+        pollingActif = false;
+        if (pollingIntervalId) {
+            clearInterval(pollingIntervalId);
+            pollingIntervalId = null;
+        }
     }
 
     /* =============================================
@@ -2281,60 +2343,181 @@
         if (chargementDemandesEnCours) return;
         chargementDemandesEnCours = true;
 
-        let containerPaiements = document.getElementById("listePaiements");
-
         try {
             const data = await callOrganisateurAPI('charger_billets', {
                 evenementId: eventId,
                 token: sessionToken
             });
-            const billets = data.billets || [];
-
-            listeParticipantsValidesGlobal = [];
-            let morceauxHTML = [];
-            let maintenant = new Date().getTime();
-
-            billets.forEach(function(b) {
-                let statutHtml = "";
-                if (b.statut === "confirme") {
-                    statutHtml = renderBadge("confirme", "Confirmé / Payé");
-                } else if (b.statut === "refuse") {
-                    statutHtml = renderBadge("refuse", "Refusé / Non reçu");
-                } else {
-                    statutHtml = renderBadge("attente", "En attente");
-                }
-
-                if (b.statut === "confirme") {
-                    listeParticipantsValidesGlobal.push(b);
-
-                    if (b.updated_at) {
-                        let tempsMaj = new Date(b.updated_at).getTime();
-                        let tempsEcoule = maintenant - tempsMaj;
-
-                        if (tempsEcoule < 60000) {
-                            let secondesRestantes = Math.ceil((60000 - tempsEcoule) / 1000);
-                            let statutTemporaire = renderBadge("confirme", `Disparait dans ${secondesRestantes}s`);
-                            morceauxHTML.push(HTMLCartePaiement(b, statutTemporaire));
-                        }
-                    }
-                } else {
-                    morceauxHTML.push(HTMLCartePaiement(b, statutHtml));
-                }
-            });
-
-            containerPaiements.innerHTML = morceauxHTML.length > 0
-                ? morceauxHTML.join("")
-                : renderEmptyState("Aucune demande en attente de validation.");
-
-            afficherParticipantsValides(listeParticipantsValidesGlobal);
-            mettreAJourCompteurs(listeParticipantsValidesGlobal.length);
+            appliquerMiseAJourBillets(data.billets || []);
 
         } catch (err) {
             console.error("Erreur chargement demandes :", err);
-            containerPaiements.innerHTML = renderEmptyState("Erreur lors du chargement des donnees.");
+            // Une erreur de polling ne doit pas effacer une interface déjà en cours
+            // d'utilisation : on ne montre l'état d'erreur que si rien n'est encore affiché.
+            if (pendingRenderState.size === 0) {
+                const containerPaiements = document.getElementById("listePaiements");
+                if (containerPaiements) containerPaiements.innerHTML = renderEmptyState("Erreur lors du chargement des donnees.");
+            }
         } finally {
             chargementDemandesEnCours = false;
         }
+    }
+
+    /* =============================================
+       APPLICATION DES DONNÉES REÇUES (diff + DOM)
+       Calcule les deux ensembles cibles (attente / confirmés)
+       à partir des données fraîches, puis ne touche au DOM
+       que pour les cartes ajoutées, supprimées ou modifiées.
+    ============================================= */
+    function appliquerMiseAJourBillets(billets) {
+        const maintenant = Date.now();
+        const cibleAttente = new Map(); // id -> { billet, statutHtml, sig }
+        const nouveauxValidesGlobal = [];
+
+        billets.forEach(function(b) {
+            const idStr = String(b.id);
+
+            if (b.statut === "confirme") {
+                nouveauxValidesGlobal.push(b);
+
+                if (b.updated_at) {
+                    const tempsMaj = new Date(b.updated_at).getTime();
+                    const tempsEcoule = maintenant - tempsMaj;
+                    if (tempsEcoule < 60000) {
+                        const secondesRestantes = Math.ceil((60000 - tempsEcoule) / 1000);
+                        const statutTemporaire = renderBadge("confirme", `Disparait dans ${secondesRestantes}s`);
+                        cibleAttente.set(idStr, {
+                            billet: b,
+                            statutHtml: statutTemporaire,
+                            sig: `confirme-fade|${b.nom_participant || ''}|${b.telephone || ''}|${b.preuve_url || ''}|${secondesRestantes}`
+                        });
+                    }
+                }
+            } else {
+                const statutHtml = (b.statut === "refuse")
+                    ? renderBadge("refuse", "Refusé / Non reçu")
+                    : renderBadge("attente", "En attente");
+                cibleAttente.set(idStr, {
+                    billet: b,
+                    statutHtml: statutHtml,
+                    sig: `${b.statut}|${b.nom_participant || ''}|${b.telephone || ''}|${b.preuve_url || ''}`
+                });
+            }
+        });
+
+        listeParticipantsValidesGlobal = nouveauxValidesGlobal;
+
+        synchroniserListePaiements(cibleAttente);
+        synchroniserListeValidees(nouveauxValidesGlobal);
+
+        const nombreEnAttenteReel = billets.filter(b => b.statut === 'attente').length;
+        mettreAJourCompteurs(nouveauxValidesGlobal.length, nombreEnAttenteReel);
+    }
+
+    function synchroniserListePaiements(cibleMap) {
+        const container = document.getElementById("listePaiements");
+        if (!container) return;
+
+        // Première synchronisation après le chargement initial (spinner encore affiché)
+        if (pendingRenderState.size === 0 && container.querySelector('.loading-dots')) {
+            container.innerHTML = "";
+        }
+
+        // Supprime les cartes qui ne sont plus présentes dans les données reçues
+        pendingRenderState.forEach((entry, id) => {
+            if (!cibleMap.has(id)) {
+                entry.el.remove();
+                pendingRenderState.delete(id);
+            }
+        });
+
+        if (cibleMap.size === 0) {
+            if (!container.querySelector('.empty-state')) {
+                container.innerHTML = renderEmptyState("Aucune demande en attente de validation.");
+            }
+            return;
+        }
+
+        const emptyEl = container.querySelector('.empty-state');
+        if (emptyEl) emptyEl.remove();
+
+        cibleMap.forEach((donnees, id) => {
+            const existant = pendingRenderState.get(id);
+            if (!existant) {
+                // Nouvelle carte : on l'ajoute en haut de la liste pour la mettre en évidence
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = HTMLCartePaiement(donnees.billet, donnees.statutHtml);
+                const carteEl = wrapper.firstElementChild;
+                container.insertBefore(carteEl, container.firstChild);
+                pendingRenderState.set(id, { el: carteEl, sig: donnees.sig });
+            } else if (existant.sig !== donnees.sig) {
+                // Contenu modifié : on ne remplace que cette carte-là
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = HTMLCartePaiement(donnees.billet, donnees.statutHtml);
+                const nouvelleCarteEl = wrapper.firstElementChild;
+                existant.el.replaceWith(nouvelleCarteEl);
+                pendingRenderState.set(id, { el: nouvelleCarteEl, sig: donnees.sig });
+            }
+            // sinon : rien n'a changé pour ce billet, on ne touche pas au DOM
+        });
+    }
+
+    function synchroniserListeValidees(liste) {
+        const recherche = (document.getElementById("searchValidees")?.value || "").toLowerCase().trim();
+        const listeFiltree = recherche
+            ? liste.filter(b => (b.nom_participant || "").toLowerCase().includes(recherche))
+            : liste;
+
+        const container = document.getElementById("listeValidees");
+        if (!container) return;
+
+        if (confirmedRenderState.size === 0 && container.querySelector('.loading-dots')) {
+            container.innerHTML = "";
+        }
+
+        const cibleMap = new Map();
+        listeFiltree.forEach(b => {
+            cibleMap.set(String(b.id), {
+                billet: b,
+                sig: `${b.nom_participant || ''}|${b.telephone || ''}|${b.type_billet || ''}`
+            });
+        });
+
+        confirmedRenderState.forEach((entry, id) => {
+            if (!cibleMap.has(id)) {
+                entry.el.remove();
+                confirmedRenderState.delete(id);
+            }
+        });
+
+        if (cibleMap.size === 0) {
+            if (!container.querySelector('.empty-state')) {
+                container.innerHTML = renderEmptyState(
+                    recherche ? "Aucun participant ne correspond a votre recherche." : "Aucun participant valide pour le moment."
+                );
+            }
+            return;
+        }
+
+        const emptyEl = container.querySelector('.empty-state');
+        if (emptyEl) emptyEl.remove();
+
+        cibleMap.forEach((donnees, id) => {
+            const existant = confirmedRenderState.get(id);
+            if (!existant) {
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = HTMLCarteValidee(donnees.billet);
+                const carteEl = wrapper.firstElementChild;
+                container.appendChild(carteEl);
+                confirmedRenderState.set(id, { el: carteEl, sig: donnees.sig });
+            } else if (existant.sig !== donnees.sig) {
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = HTMLCarteValidee(donnees.billet);
+                const nouvelleCarteEl = wrapper.firstElementChild;
+                existant.el.replaceWith(nouvelleCarteEl);
+                confirmedRenderState.set(id, { el: nouvelleCarteEl, sig: donnees.sig });
+            }
+        });
     }
 
     function renderBadge(type, texte) {
@@ -2400,67 +2583,57 @@
             </div>`;
     }
 
-    function afficherParticipantsValides(liste) {
-        let containerValidees = document.getElementById("listeValidees");
-        if (liste.length === 0) {
-            containerValidees.innerHTML = renderEmptyState("Aucun participant valide pour le moment.");
-            return;
-        }
-
-        let html = "";
-        liste.forEach(function(b) {
-            html += `
-                <div class="billet-card">
-                    <div class="billet-card-header">
-                        ${renderBadge("confirme", "Valide et Actif")}
+    function HTMLCarteValidee(b) {
+        return `
+            <div class="billet-card">
+                <div class="billet-card-header">
+                    ${renderBadge("confirme", "Valide et Actif")}
+                </div>
+                <div class="billet-card-body">
+                    <div class="billet-info-row">
+                        <span class="billet-info-label">Participant</span>
+                        <span class="billet-info-value">${b.nom_participant || 'Non renseigne'}</span>
                     </div>
-                    <div class="billet-card-body">
-                        <div class="billet-info-row">
-                            <span class="billet-info-label">Participant</span>
-                            <span class="billet-info-value">${b.nom_participant || 'Non renseigne'}</span>
-                        </div>
-                        <div class="billet-info-row">
-                            <span class="billet-info-label">WhatsApp</span>
-                            <span class="billet-info-value">${b.telephone || 'N/A'}</span>
-                        </div>
-                        <div class="billet-info-row">
-                           <span class="billet-info-label">Catégorie</span>
-                           <span class="billet-info-value">${b.type_billet || 'Non spécifiée'}</span>
-                         </div>
-                        <div class="billet-info-row">
-                            <span class="billet-info-label">ID-Billet</span>
-                            <span class="billet-info-value">#${b.id}</span>
-                        </div>
+                    <div class="billet-info-row">
+                        <span class="billet-info-label">WhatsApp</span>
+                        <span class="billet-info-value">${b.telephone || 'N/A'}</span>
                     </div>
-                    <div class="billet-card-actions">
-                        <button type="button"
-                            class="btn-action btn-retirer btn-retirer-participant"
-                            data-id="${b.id}">
-                            Retirer ce participant
-                        </button>
+                    <div class="billet-info-row">
+                       <span class="billet-info-label">Catégorie</span>
+                       <span class="billet-info-value">${b.type_billet || 'Non spécifiée'}</span>
+                     </div>
+                    <div class="billet-info-row">
+                        <span class="billet-info-label">ID-Billet</span>
+                        <span class="billet-info-value">#${b.id}</span>
                     </div>
-                </div>`;
-        });
-        containerValidees.innerHTML = html;
+                </div>
+                <div class="billet-card-actions">
+                    <button type="button"
+                        class="btn-action btn-retirer btn-retirer-participant"
+                        data-id="${b.id}">
+                        Retirer ce participant
+                    </button>
+                </div>
+            </div>`;
     }
 
     function filtrerParticipants() {
         clearTimeout(debounceRecherche);
         debounceRecherche = setTimeout(() => {
-            let recherche = document.getElementById("searchValidees").value.toLowerCase().trim();
-            let resultats = listeParticipantsValidesGlobal.filter(b => {
-                let nom = b.nom_participant ? b.nom_participant.toLowerCase() : "";
-                return nom.includes(recherche);
-            });
-            afficherParticipantsValides(resultats);
+            synchroniserListeValidees(listeParticipantsValidesGlobal);
         }, 150);
     }
 
-    function mettreAJourCompteurs(nombre) {
+    function mettreAJourCompteurs(nombreConfirmes, nombreEnAttente) {
         let btnTabValidees = document.getElementById("btnTabValidees");
         let titreValidees = document.getElementById("titreSectionValidees");
-        if (btnTabValidees) btnTabValidees.textContent = `Confirmes (${nombre})`;
-        if (titreValidees) titreValidees.textContent = `Participants confirmes (${nombre})`;
+        if (btnTabValidees) btnTabValidees.textContent = `Confirmés (${nombreConfirmes})`;
+        if (titreValidees) titreValidees.textContent = `Participants confirmés (${nombreConfirmes})`;
+
+        if (typeof nombreEnAttente === 'number') {
+            let btnTabPaiements = document.getElementById("btnTabPaiements");
+            if (btnTabPaiements) btnTabPaiements.textContent = `En attente (${nombreEnAttente})`;
+        }
     }
 
     /* =============================================
