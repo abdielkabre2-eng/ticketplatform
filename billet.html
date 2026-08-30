@@ -445,7 +445,15 @@ box-shadow: 0 8px 36px rgba(217,119,6,.55), 0 0 0 1px rgba(245,158,11,.5), inset
 transform: translateY(0) scale(.99);
 box-shadow: 0 2px 12px rgba(217,119,6,.35);
     }
-
+.pdf-note {
+    max-width: 320px;
+    margin-top: 10px;
+    text-align: center;
+    font-size: .68rem;
+    line-height: 1.5;
+    color: var(--text-lo);
+    animation: fadeUp .6s ease .68s both;
+}
 .creator-footer {
 width: 100%; z-index: 1; position: relative;
 padding: 24px 20px; border-top: 1px solid var(--border);
@@ -582,6 +590,8 @@ body { background: #fff !important; }
 </svg>
       Télécharger mon billet PDF
 </button>
+
+<p class="pdf-note">Note : Le billet PDF téléchargé est une version optimisée et simplifiée pour faciliter l'enregistrement et l'impression.</p>
 </div>
 
 <footer class="creator-footer">
@@ -845,7 +855,12 @@ ${ev.heure ? `<div class="event-meta-pill">
           const statusZone = document.getElementById('statusBannerZone');
           const isConfirmed = (statut === 'confirme' || statut === 'valide');
 
-          if (!isConfirmed) { const dlBtn = document.getElementById('downloadTicket'); if (dlBtn) dlBtn.style.display = 'none'; }
+          if (!isConfirmed) {
+              const dlBtn = document.getElementById('downloadTicket');
+               if (dlBtn) dlBtn.style.display = 'none';
+               const pdfNote = document.querySelector('.pdf-note');
+                if (pdfNote) pdfNote.style.display = 'none';
+            }
 
           // Mise à jour du bouton de rafraîchissement dans le footer selon le statut
           updateFooterReloadButton(statut);
@@ -972,6 +987,8 @@ ${ev.heure ? `<div class="event-meta-pill">
 
         const dlBtn = document.getElementById('downloadTicket');
         if (dlBtn) dlBtn.style.display = isConfirmed ? 'flex' : 'none';
+        const pdfNote = document.querySelector('.pdf-note');
+        if (pdfNote) pdfNote.style.display = isConfirmed ? 'block' : 'none';
 
         const infoGrid = document.getElementById('infoGrid');
         let idCell = document.getElementById('cellIdBillet');
