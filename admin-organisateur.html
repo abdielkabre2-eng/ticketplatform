@@ -2999,7 +2999,7 @@
             let maintenant = Date.now();
 
             if (res.resultat === "deja_valide") {
-                if (derniersBilletsScannes[res.billet_id] && (maintenant - derniersBilletsScannes[res.billet_id] < 15000)) {
+                if (derniersBilletsScannes[res.billet_id] && (maintenant - derniersBilletsScannes[res.billet_id] < 5000)) {
                     setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue Mr/Mme ${res.nom_participant || 'N/A'} !`);
                 } else {
                     setResultat(resultatDiv, "error", `BILLET DÉJÀ UTILISÉ — ${res.nom_participant || 'N/A'}`);
