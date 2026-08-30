@@ -2521,8 +2521,8 @@
                 if (b.updated_at) {
                     const tempsMaj = new Date(b.updated_at).getTime();
                     const tempsEcoule = maintenant - tempsMaj;
-                    if (tempsEcoule < 60000) {
-                        const secondesRestantes = Math.ceil((60000 - tempsEcoule) / 1000);
+                    if (tempsEcoule < 10000) {
+                        const secondesRestantes = Math.ceil((10000 - tempsEcoule) / 1000);
                         const statutTemporaire = renderBadge("confirme", `Disparait dans ${secondesRestantes}s`);
                         cibleAttente.set(idStr, {
                             billet: b,

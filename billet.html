@@ -9,6 +9,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
 :root {
 --gold-100: #fef3c7;
@@ -445,15 +446,6 @@ box-shadow: 0 8px 36px rgba(217,119,6,.55), 0 0 0 1px rgba(245,158,11,.5), inset
 transform: translateY(0) scale(.99);
 box-shadow: 0 2px 12px rgba(217,119,6,.35);
     }
-.pdf-note {
-    max-width: 320px;
-    margin-top: 10px;
-    text-align: center;
-    font-size: .68rem;
-    line-height: 1.5;
-    color: var(--text-lo);
-    animation: fadeUp .6s ease .68s both;
-}
 .creator-footer {
 width: 100%; z-index: 1; position: relative;
 padding: 24px 20px; border-top: 1px solid var(--border);
@@ -590,8 +582,6 @@ body { background: #fff !important; }
 </svg>
       Télécharger mon billet PDF
 </button>
-
-<p class="pdf-note">Note : Le billet PDF téléchargé est une version optimisée et simplifiée pour faciliter l'enregistrement et l'impression.</p>
 </div>
 
 <footer class="creator-footer">
@@ -858,8 +848,6 @@ ${ev.heure ? `<div class="event-meta-pill">
           if (!isConfirmed) {
               const dlBtn = document.getElementById('downloadTicket');
                if (dlBtn) dlBtn.style.display = 'none';
-               const pdfNote = document.querySelector('.pdf-note');
-                if (pdfNote) pdfNote.style.display = 'none';
             }
 
           // Mise à jour du bouton de rafraîchissement dans le footer selon le statut
@@ -987,8 +975,6 @@ ${ev.heure ? `<div class="event-meta-pill">
 
         const dlBtn = document.getElementById('downloadTicket');
         if (dlBtn) dlBtn.style.display = isConfirmed ? 'flex' : 'none';
-        const pdfNote = document.querySelector('.pdf-note');
-        if (pdfNote) pdfNote.style.display = isConfirmed ? 'block' : 'none';
 
         const infoGrid = document.getElementById('infoGrid');
         let idCell = document.getElementById('cellIdBillet');
@@ -1037,6 +1023,27 @@ ${ev.heure ? `<div class="event-meta-pill">
         } else {
           if (qrSection) qrSection.style.display = 'none';
         }
+      }
+
+      // FONCTION : demanderConfirmationTelechargement
+      // Affiche une confirmation SweetAlert2 avant de lancer la génération
+      // du PDF. La génération (telechargerPDF) ne démarre que si
+      // l'utilisateur clique sur le bouton de confirmation "Télécharger".
+      function demanderConfirmationTelechargement() {
+        Swal.fire({
+          icon: 'info',
+          title: 'Téléchargement du billet',
+          text: "Le billet que vous aurez en PDF est une version optimisée et simplifiée",
+          confirmButtonText: 'Télécharger',
+          confirmButtonColor: '#d97706',
+          background: '#111010',
+          color: '#fafaf9',
+          buttonsStyling: true
+        }).then((result) => {
+          if (result.isConfirmed) {
+            telechargerPDF();
+          }
+        });
       }
 
       // FONCTION : telechargerPDF
@@ -1119,7 +1126,7 @@ ${ev.heure ? `<div class="event-meta-pill">
       </div>
       ${qrDataUrl ? `
         <img src="${qrDataUrl}" style="width:160px; height:160px; margin:0 auto; display:block; border:8px solid #fff; box-shadow:0 0 0 1px #e7e5e4;" />
-        <div style="font-size:10px; color:#a8a29e; margin-top:8px; letter-spacing:.05em;">RÉF. ${billetRef}</div>
+        <div style="font-size:10px; color:#a8a29e; margin-top:8px; letter-spacing:.05em;">Code QR - ID ${billetRef}</div>
       ` : ''}
       <div style="font-size:9px; color:#a8a29e; margin-top:16px; letter-spacing:.08em; text-transform:uppercase;">
         GoldTix · Billet unique
@@ -1198,7 +1205,7 @@ ${ev.heure ? `<div class="event-meta-pill">
       }
 
       const dlBtn = document.getElementById('downloadTicket');
-      if (dlBtn) dlBtn.addEventListener('click', telechargerPDF);
+      if (dlBtn) dlBtn.addEventListener('click', demanderConfirmationTelechargement);
 
       chargerBillet();
     });
