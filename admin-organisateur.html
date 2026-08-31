@@ -589,51 +589,63 @@
         .billet-card-body { padding: 10px 18px 18px; }
 
         .billet-info-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 7px 0;
-            border-bottom: 1px solid var(--ink-100);
+          display: flex;
+          align-items: center;
+           justify-content: space-between;
+           gap: 10px;
+           padding: 6px 0;
+           border-bottom: 1px solid var(--ink-100);
         }
-        .billet-info-row:last-of-type { border-bottom: none; }
+       .billet-info-row:last-of-type { border-bottom: none; }
 
-        .billet-info-label {
-            font-family: var(--font-display);
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--ink-400);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            width: 80px;
+     .billet-info-label {
+            font-family: var(--font-body);
+            font-size: 13px;
+            font-weight: 500;
+            color: #78716c;
+            text-transform: none;
+            letter-spacing: 0;
+            width: auto;
             flex-shrink: 0;
-        }
+       }
 
-        .billet-info-value { font-size: 14px; font-weight: 600; color: var(--ink-900); }
-
+        .billet-info-value { font-size: 13px; font-weight: 600; color: #111827; text-align: right; }
         .billet-card .preuve-label {
-            font-family: var(--font-display);
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--ink-400);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-family: var(--font-body);
+            font-size: 13px;
+            font-weight: 500;
+            color: #78716c;
+            text-transform: none;
+            letter-spacing: 0;
             margin-bottom: 8px;
             display: block;
         }
 
-        .billet-card a img,
-        .billet-card img.preuve-img {
-            width: 100%;
-            max-height: 170px;
-            height: auto;
-            object-fit: contain;
-            object-position: center;
-            display: block;
-            background: #f8fafc;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--ink-200);
-            transition: opacity 0.2s;
-        }
+         .preuve-container {
+    margin-top: 14px;
+    text-align: center;
+}
+.preuve-container .preuve-label {
+    text-align: left;
+}
+.preuve-link {
+    display: inline-block;
+    max-width: 100%;
+}
+.billet-card a img,
+.billet-card img.preuve-img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 250px;
+    object-fit: contain;
+    margin: 0 auto;
+    background: #f8fafc;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--ink-200);
+    transition: opacity 0.2s;
+}
 
         .billet-card a:hover img { opacity: 0.9; }
 
@@ -650,47 +662,112 @@
            BADGES
         ============================================ */
         .badge-statut {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 5px 12px;
-            border-radius: 50px;
-            font-family: var(--font-display);
-            font-size: 10px;
-            font-weight: 800;
-            letter-spacing: 0.6px;
-            text-transform: uppercase;
-        }
+         display: inline-flex;
+         align-items: center;
+         gap: 5px;
+         padding: 4px 10px;
+         border-radius: 50px;
+         font-family: var(--font-body);
+         font-size: 10.5px;
+         font-weight: 600;
+         letter-spacing: 0.1px;
+         text-transform: none;
+      }
         .badge-statut .badge-icon { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
 
-        .badge-confirme { background: var(--green-100); color: var(--green-700); border: 1px solid rgba(16,185,129,0.25); }
+        .badge-confirme { background: #ecfdf5; color: #059669; border: 1px solid rgba(16,185,129,0.16); }
         .badge-confirme .badge-icon { background: var(--green-500); }
 
-        .badge-refuse { background: var(--red-100); color: var(--red-700); border: 1px solid rgba(239,68,68,0.25); }
+        .badge-refuse { background: #fef2f2; color: #dc2626; border: 1px solid rgba(239,68,68,0.16); }
         .badge-refuse .badge-icon { background: var(--red-500); }
 
-        .badge-attente { background: var(--amber-100); color: var(--amber-800); border: 1px solid rgba(245,158,11,0.30); }
+        .badge-attente { background: #fffbeb; color: #b45309; border: 1px solid rgba(245,158,11,0.18); }
         .badge-attente .badge-icon { background: var(--amber-500); }
+        /* ============================================
+           CARTE PARTICIPANT CONFIRMÉ — style minimaliste
+           (scopé à .billet-card-confirme uniquement,
+           n'affecte jamais les cartes de l'onglet "En attente")
+        ============================================ */
+        .billet-card-confirme .billet-card-header {
+            padding: 12px 16px 0;
+        }
+
+        .billet-card-confirme .badge-statut {
+            padding: 4px 10px;
+            font-size: 10.5px;
+            font-weight: 600;
+            letter-spacing: 0.1px;
+            text-transform: none;
+            border-radius: 50px;
+        }
+
+        .billet-card-confirme .badge-confirme {
+            background: #ecfdf5;
+            color: #059669;
+            border: 1px solid rgba(16,185,129,0.16);
+        }
+
+        .billet-card-confirme .billet-card-body {
+            padding: 8px 16px 14px;
+        }
+
+        .billet-card-confirme .billet-info-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--ink-100);
+        }
+        .billet-card-confirme .billet-info-row:last-of-type { border-bottom: none; }
+
+        .billet-card-confirme .billet-info-label {
+            font-family: var(--font-body);
+            width: auto;
+            text-transform: none;
+            letter-spacing: 0;
+            font-size: 13px;
+            font-weight: 500;
+            color: #78716c;
+        }
+
+        .billet-card-confirme .billet-info-value {
+            font-family: var(--font-body);
+            font-size: 13px;
+            font-weight: 600;
+            color: #111827;
+            text-align: right;
+        }
+
+        .billet-card-confirme .billet-card-actions {
+            padding: 10px 16px;
+            gap: 8px;
+        }
+
+        .billet-card-confirme .btn-retirer {
+            padding: 7px 12px;
+            font-size: 12px;
+        }
 
         /* ============================================
            ACTION BUTTONS
         ============================================ */
         button { font-family: var(--font-display); cursor: pointer; }
 
-        .btn-action {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 9px 16px;
-            border-radius: var(--radius-xs);
-            border: none;
-            font-family: var(--font-display);
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
-            letter-spacing: 0.2px;
-        }
+       .btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: var(--radius-xs);
+    border: none;
+    font-family: var(--font-display);
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+    letter-spacing: 0.2px;
+}
         .btn-action:hover { transform: translateY(-1px); filter: brightness(1.05); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
         .btn-action:active { transform: translateY(0); box-shadow: none; }
         .btn-action:focus-visible { outline: 2px solid var(--ink-900); outline-offset: 2px; }
@@ -2690,52 +2767,52 @@
     }
 
     function HTMLCartePaiement(b, statutHtml) {
-        return `
-            <div class="billet-card">
-                <div class="billet-card-header">
-                    ${statutHtml}
+    return `
+        <div class="billet-card">
+            <div class="billet-card-header">
+                ${statutHtml}
+            </div>
+            <div class="billet-card-body">
+                <div class="billet-info-row">
+                    <span class="billet-info-label">Participant</span>
+                    <span class="billet-info-value">${b.nom_participant || 'Non renseigne'}</span>
                 </div>
-                <div class="billet-card-body">
-                    <div class="billet-info-row">
-                        <span class="billet-info-label">Participant</span>
-                        <span class="billet-info-value">${b.nom_participant || 'Non renseigne'}</span>
-                    </div>
-                    <div class="billet-info-row">
-                        <span class="billet-info-label">WhatsApp</span>
-                        <span class="billet-info-value">${b.telephone || 'N/A'}</span>
-                    </div>
-                    <div style="margin-top: 14px;">
-                        <span class="preuve-label">Preuve de paiement</span>
-                        <a href="${b.preuve_url}" target="_blank">
-                            <img src="${b.preuve_url}" alt="Preuve de paiement" class="preuve-img">
-                        </a>
-                    </div>
+                <div class="billet-info-row">
+                    <span class="billet-info-label">WhatsApp</span>
+                    <span class="billet-info-value">${b.telephone || 'N/A'}</span>
                 </div>
-                <div class="billet-card-actions">
-                    <button type="button"
-                        class="btn-action btn-confirmer btn-changer-statut"
-                        data-id="${b.id}" data-statut="confirme">
-                        J'ai reçu
-                    </button>
-                    <button type="button"
-                        class="btn-action btn-refuser btn-changer-statut"
-                        data-id="${b.id}" data-statut="refuse">
-                        Non reçu
-                    </button>
-                    <button type="button"
-                        class="btn-action btn-attente btn-changer-statut"
-                        data-id="${b.id}" data-statut="attente">
-                        Mettre en attente
-                    </button>
+                <div class="preuve-container">
+                    <span class="preuve-label">Preuve de paiement</span>
+                    <a href="${b.preuve_url}" target="_blank" class="preuve-link">
+                        <img src="${b.preuve_url}" alt="Preuve de paiement" class="preuve-img">
+                    </a>
                 </div>
-            </div>`;
-    }
+            </div>
+            <div class="billet-card-actions">
+                <button type="button"
+                    class="btn-action btn-confirmer btn-changer-statut"
+                    data-id="${b.id}" data-statut="confirme">
+                    J'ai reçu
+                </button>
+                <button type="button"
+                    class="btn-action btn-refuser btn-changer-statut"
+                    data-id="${b.id}" data-statut="refuse">
+                    Non reçu
+                </button>
+                <button type="button"
+                    class="btn-action btn-attente btn-changer-statut"
+                    data-id="${b.id}" data-statut="attente">
+                    Mettre en attente
+                </button>
+            </div>
+        </div>`;
+}
 
     function HTMLCarteValidee(b) {
         return `
-            <div class="billet-card">
+            <div class="billet-card billet-card-confirme">
                 <div class="billet-card-header">
-                    ${renderBadge("confirme", "Valide et Actif")}
+                    ${renderBadge("confirme", "Valide et actif")}
                 </div>
                 <div class="billet-card-body">
                     <div class="billet-info-row">
@@ -2752,7 +2829,7 @@
                      </div>
                     <div class="billet-info-row">
                         <span class="billet-info-label">ID-Billet</span>
-                        <span class="billet-info-value">#${b.id}</span>
+                        <span class="billet-info-value">${b.id}</span>
                     </div>
                 </div>
                 <div class="billet-card-actions">

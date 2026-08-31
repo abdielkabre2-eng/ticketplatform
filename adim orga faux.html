@@ -243,30 +243,29 @@
             animation: pulse-ring 1.8s ease-out infinite;
         }
 
-        .navbar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .navbar-right { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 
         .btn-logout {
-            display: none;
-            align-items: center;
-            gap: 6px;
-            background: var(--ink-50);
-            color: var(--ink-500);
-            border: 1px solid var(--ink-200);
-            padding: 8px 14px;
-            border-radius: 50px;
-            font-family: var(--font-display);
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.4px;
-            cursor: pointer;
-            transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.15s;
-        }
-        .btn-logout:hover {
-            background: var(--red-100);
-            color: var(--red-700);
-            border-color: rgba(239,68,68,0.3);
-            transform: translateY(-1px);
-        }
+    display: none;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #ffffff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: var(--radius-xs);
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+}
+.btn-logout:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
         .btn-logout:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
 
         /* ============================================
@@ -590,51 +589,63 @@
         .billet-card-body { padding: 10px 18px 18px; }
 
         .billet-info-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 7px 0;
-            border-bottom: 1px solid var(--ink-100);
+          display: flex;
+          align-items: center;
+           justify-content: space-between;
+           gap: 10px;
+           padding: 6px 0;
+           border-bottom: 1px solid var(--ink-100);
         }
-        .billet-info-row:last-of-type { border-bottom: none; }
+       .billet-info-row:last-of-type { border-bottom: none; }
 
-        .billet-info-label {
-            font-family: var(--font-display);
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--ink-400);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            width: 80px;
+     .billet-info-label {
+            font-family: var(--font-body);
+            font-size: 13px;
+            font-weight: 500;
+            color: #78716c;
+            text-transform: none;
+            letter-spacing: 0;
+            width: auto;
             flex-shrink: 0;
-        }
+       }
 
-        .billet-info-value { font-size: 14px; font-weight: 600; color: var(--ink-900); }
-
+        .billet-info-value { font-size: 13px; font-weight: 600; color: #111827; text-align: right; }
         .billet-card .preuve-label {
-            font-family: var(--font-display);
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--ink-400);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-family: var(--font-body);
+            font-size: 13px;
+            font-weight: 500;
+            color: #78716c;
+            text-transform: none;
+            letter-spacing: 0;
             margin-bottom: 8px;
             display: block;
         }
 
-        .billet-card a img,
-        .billet-card img.preuve-img {
-            width: 100%;
-            max-height: 170px;
-            height: auto;
-            object-fit: contain;
-            object-position: center;
-            display: block;
-            background: #f8fafc;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--ink-200);
-            transition: opacity 0.2s;
-        }
+         .preuve-container {
+    margin-top: 14px;
+    text-align: center;
+}
+.preuve-container .preuve-label {
+    text-align: left;
+}
+.preuve-link {
+    display: inline-block;
+    max-width: 100%;
+}
+.billet-card a img,
+.billet-card img.preuve-img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 250px;
+    object-fit: contain;
+    margin: 0 auto;
+    background: #f8fafc;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--ink-200);
+    transition: opacity 0.2s;
+}
 
         .billet-card a:hover img { opacity: 0.9; }
 
@@ -651,47 +662,112 @@
            BADGES
         ============================================ */
         .badge-statut {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 5px 12px;
-            border-radius: 50px;
-            font-family: var(--font-display);
-            font-size: 10px;
-            font-weight: 800;
-            letter-spacing: 0.6px;
-            text-transform: uppercase;
-        }
+         display: inline-flex;
+         align-items: center;
+         gap: 5px;
+         padding: 4px 10px;
+         border-radius: 50px;
+         font-family: var(--font-body);
+         font-size: 10.5px;
+         font-weight: 600;
+         letter-spacing: 0.1px;
+         text-transform: none;
+      }
         .badge-statut .badge-icon { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
 
-        .badge-confirme { background: var(--green-100); color: var(--green-700); border: 1px solid rgba(16,185,129,0.25); }
+        .badge-confirme { background: #ecfdf5; color: #059669; border: 1px solid rgba(16,185,129,0.16); }
         .badge-confirme .badge-icon { background: var(--green-500); }
 
-        .badge-refuse { background: var(--red-100); color: var(--red-700); border: 1px solid rgba(239,68,68,0.25); }
+        .badge-refuse { background: #fef2f2; color: #dc2626; border: 1px solid rgba(239,68,68,0.16); }
         .badge-refuse .badge-icon { background: var(--red-500); }
 
-        .badge-attente { background: var(--amber-100); color: var(--amber-800); border: 1px solid rgba(245,158,11,0.30); }
+        .badge-attente { background: #fffbeb; color: #b45309; border: 1px solid rgba(245,158,11,0.18); }
         .badge-attente .badge-icon { background: var(--amber-500); }
+        /* ============================================
+           CARTE PARTICIPANT CONFIRMÉ — style minimaliste
+           (scopé à .billet-card-confirme uniquement,
+           n'affecte jamais les cartes de l'onglet "En attente")
+        ============================================ */
+        .billet-card-confirme .billet-card-header {
+            padding: 12px 16px 0;
+        }
+
+        .billet-card-confirme .badge-statut {
+            padding: 4px 10px;
+            font-size: 10.5px;
+            font-weight: 600;
+            letter-spacing: 0.1px;
+            text-transform: none;
+            border-radius: 50px;
+        }
+
+        .billet-card-confirme .badge-confirme {
+            background: #ecfdf5;
+            color: #059669;
+            border: 1px solid rgba(16,185,129,0.16);
+        }
+
+        .billet-card-confirme .billet-card-body {
+            padding: 8px 16px 14px;
+        }
+
+        .billet-card-confirme .billet-info-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--ink-100);
+        }
+        .billet-card-confirme .billet-info-row:last-of-type { border-bottom: none; }
+
+        .billet-card-confirme .billet-info-label {
+            font-family: var(--font-body);
+            width: auto;
+            text-transform: none;
+            letter-spacing: 0;
+            font-size: 13px;
+            font-weight: 500;
+            color: #78716c;
+        }
+
+        .billet-card-confirme .billet-info-value {
+            font-family: var(--font-body);
+            font-size: 13px;
+            font-weight: 600;
+            color: #111827;
+            text-align: right;
+        }
+
+        .billet-card-confirme .billet-card-actions {
+            padding: 10px 16px;
+            gap: 8px;
+        }
+
+        .billet-card-confirme .btn-retirer {
+            padding: 7px 12px;
+            font-size: 12px;
+        }
 
         /* ============================================
            ACTION BUTTONS
         ============================================ */
         button { font-family: var(--font-display); cursor: pointer; }
 
-        .btn-action {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 9px 16px;
-            border-radius: var(--radius-xs);
-            border: none;
-            font-family: var(--font-display);
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
-            letter-spacing: 0.2px;
-        }
+       .btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: var(--radius-xs);
+    border: none;
+    font-family: var(--font-display);
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+    letter-spacing: 0.2px;
+}
         .btn-action:hover { transform: translateY(-1px); filter: brightness(1.05); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
         .btn-action:active { transform: translateY(0); box-shadow: none; }
         .btn-action:focus-visible { outline: 2px solid var(--ink-900); outline-offset: 2px; }
@@ -1381,6 +1457,92 @@
         }
 
         @media (prefers-reduced-motion: reduce) { #introGoldTix { display: none !important; } }
+
+        /* ============================================
+           JAUGE DE BILLETS (quota optionnel)
+        ============================================ */
+        .quota-box {
+            background: var(--ink-50);
+            border: 1px solid var(--ink-200);
+            border-radius: var(--radius-md);
+            padding: 14px 18px;
+            margin-bottom: 24px;
+        }
+        .quota-box-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .quota-label {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .quota-label span.quota-title {
+            font-family: var(--font-display);
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--ink-700);
+        }
+        .quota-label span.quota-sub {
+            font-size: 11.5px;
+            color: var(--ink-400);
+        }
+        .quota-input-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .quota-input-group input {
+            width: 100px;
+            padding: 9px 12px;
+            background: #ffffff;
+            border: 1px solid var(--ink-200);
+            border-radius: var(--radius-xs);
+            font-family: var(--font-display);
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--ink-900);
+            text-align: center;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .quota-input-group input:focus {
+            border-color: var(--gold-500);
+            box-shadow: 0 0 0 3px rgba(245,158,11,0.12);
+        }
+        .quota-input-group input::placeholder { color: var(--ink-400); font-weight: 500; }
+        .quota-save-status {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--ink-400);
+            min-width: 60px;
+        }
+        .quota-progress-track {
+            width: 100%;
+            height: 8px;
+            background: var(--ink-200);
+            border-radius: 50px;
+            overflow: hidden;
+        }
+        .quota-progress-fill {
+            height: 100%;
+            border-radius: 50px;
+            background: var(--grad-gold);
+            transition: width 0.4s ease, background 0.3s ease;
+            width: 0%;
+        }
+        .quota-progress-fill.quota-full { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .quota-count-text {
+            margin-top: 8px;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--ink-500);
+        }
+        .quota-count-text strong { color: var(--ink-900); }
     </style>
 </head>
 <body>
@@ -1728,6 +1890,32 @@
                         </button>
                     </div>
 
+                    <!-- JAUGE / LIMITE DE BILLETS (optionnelle) -->
+                    <div class="quota-box">
+                        <div class="quota-box-top">
+                            <div class="quota-label">
+                                <span class="quota-title">Définir le nombre de billets disponibles pour votre événement</span>
+                                <span class="quota-sub">Les ventes seront automatiquement fermées une fois le nombre de billets atteint.</span>
+                                <span class="quota-sub">Laissez ce champ vide pour ne définir aucune limite.</span>
+                            </div>
+                            <div class="quota-input-group">
+                                <input
+                                    type="number"
+                                    id="inputLimiteBillets"
+                                    min="0"
+                                    step="1"
+                                    inputmode="numeric"
+                                    placeholder="Max 500"
+                                    onchange="onChangementLimiteBillets()">
+                                <span class="quota-save-status" id="quotaSaveStatus"></span>
+                            </div>
+                        </div>
+                        <div class="quota-progress-track" id="quotaProgressTrack" style="display:none;">
+                            <div class="quota-progress-fill" id="quotaProgressFill"></div>
+                        </div>
+                        <p class="quota-count-text" id="quotaCountText" style="display:none;"></p>
+                    </div>
+
                     <!-- TABS -->
                     <div class="tabs">
                         <button class="tab-btn active" id="btnTabPaiements" onclick="changerOnglet('paiements', this)">En attente (0)</button>
@@ -1784,6 +1972,7 @@
                         <div class="section-header">
                             <h2>Contrôle des billets</h2>
                             <p>Scannez le QR Code ou entrez l'ID manuellement pour valider l'entrée.</p>
+                            <p><strong>En cas d’erreur ou de problème lors du scan, veuillez actualiser la page. Si le problème persiste, veuillez contacter GoldTix.</strong></p>
                         </div>
 
                         <div class="scanner-frame">
@@ -1862,6 +2051,19 @@
 
     let chargementDemandesEnCours = false;
     let debounceRecherche = null;
+
+    /* =============================================
+       JAUGE DE BILLETS (quota optionnel)
+       -> limiteBilletsCourante = null tant qu'aucune
+          limite n'a été définie (comportement inchangé)
+       -> fermetureAutoDejaDeclenchee évite de renvoyer
+          l'appel toggle_ventes en boucle une fois que
+          la fermeture automatique a déjà eu lieu pour
+          l'état courant
+    ============================================= */
+    let limiteBilletsCourante = null;
+    let fermetureAutoDejaDeclenchee = false;
+    let debounceLimiteBillets = null;
 
     /* =============================================
        SYNCHRONISATION TEMPS RÉEL (polling intelligent)
@@ -2333,6 +2535,18 @@
 
             statutVentesFermees = ev.ventes_fermees || false;
             mettreAJourBoutonVentes();
+
+            // Initialise l'état de la jauge à partir de la valeur enregistrée côté serveur.
+            // null/undefined => illimité (comportement inchangé)
+            limiteBilletsCourante = (ev.limite_billets === null || ev.limite_billets === undefined)
+                ? null
+                : Number(ev.limite_billets);
+            fermetureAutoDejaDeclenchee = statutVentesFermees; // évite de re-fermer inutilement au chargement
+            const inputLimite = document.getElementById("inputLimiteBillets");
+            if (inputLimite) {
+                inputLimite.value = (limiteBilletsCourante === null) ? "" : String(limiteBilletsCourante);
+            }
+
             await chargerToutesLesDemandes();
 
         } catch (err) {
@@ -2384,8 +2598,8 @@
                 if (b.updated_at) {
                     const tempsMaj = new Date(b.updated_at).getTime();
                     const tempsEcoule = maintenant - tempsMaj;
-                    if (tempsEcoule < 60000) {
-                        const secondesRestantes = Math.ceil((60000 - tempsEcoule) / 1000);
+                    if (tempsEcoule < 10000) {
+                        const secondesRestantes = Math.ceil((10000 - tempsEcoule) / 1000);
                         const statutTemporaire = renderBadge("confirme", `Disparait dans ${secondesRestantes}s`);
                         cibleAttente.set(idStr, {
                             billet: b,
@@ -2417,6 +2631,12 @@
         // donc c'est la seule action qui doit faire baisser ce chiffre.
         const nombreEnAttenteReel = billets.filter(b => b.statut === 'attente' || b.statut === 'refuse').length;
         mettreAJourCompteurs(nouveauxValidesGlobal.length, nombreEnAttenteReel);
+
+        // Jauge de billets : total pris en compte = billets en attente + confirmés
+        // (les billets refusés ne consomment pas le quota, puisqu'ils ne
+        // deviendront jamais un billet valide).
+        const nombreOccupantLeQuota = billets.filter(b => b.statut === 'attente' || b.statut === 'confirme').length;
+        mettreAJourJaugeBillets(nombreOccupantLeQuota);
     }
 
     function synchroniserListePaiements(cibleMap) {
@@ -2547,52 +2767,52 @@
     }
 
     function HTMLCartePaiement(b, statutHtml) {
-        return `
-            <div class="billet-card">
-                <div class="billet-card-header">
-                    ${statutHtml}
+    return `
+        <div class="billet-card">
+            <div class="billet-card-header">
+                ${statutHtml}
+            </div>
+            <div class="billet-card-body">
+                <div class="billet-info-row">
+                    <span class="billet-info-label">Participant</span>
+                    <span class="billet-info-value">${b.nom_participant || 'Non renseigne'}</span>
                 </div>
-                <div class="billet-card-body">
-                    <div class="billet-info-row">
-                        <span class="billet-info-label">Participant</span>
-                        <span class="billet-info-value">${b.nom_participant || 'Non renseigne'}</span>
-                    </div>
-                    <div class="billet-info-row">
-                        <span class="billet-info-label">WhatsApp</span>
-                        <span class="billet-info-value">${b.telephone || 'N/A'}</span>
-                    </div>
-                    <div style="margin-top: 14px;">
-                        <span class="preuve-label">Preuve de paiement</span>
-                        <a href="${b.preuve_url}" target="_blank">
-                            <img src="${b.preuve_url}" alt="Preuve de paiement" class="preuve-img">
-                        </a>
-                    </div>
+                <div class="billet-info-row">
+                    <span class="billet-info-label">WhatsApp</span>
+                    <span class="billet-info-value">${b.telephone || 'N/A'}</span>
                 </div>
-                <div class="billet-card-actions">
-                    <button type="button"
-                        class="btn-action btn-confirmer btn-changer-statut"
-                        data-id="${b.id}" data-statut="confirme">
-                        J'ai reçu
-                    </button>
-                    <button type="button"
-                        class="btn-action btn-refuser btn-changer-statut"
-                        data-id="${b.id}" data-statut="refuse">
-                        Non reçu
-                    </button>
-                    <button type="button"
-                        class="btn-action btn-attente btn-changer-statut"
-                        data-id="${b.id}" data-statut="attente">
-                        Mettre en attente
-                    </button>
+                <div class="preuve-container">
+                    <span class="preuve-label">Preuve de paiement</span>
+                    <a href="${b.preuve_url}" target="_blank" class="preuve-link">
+                        <img src="${b.preuve_url}" alt="Preuve de paiement" class="preuve-img">
+                    </a>
                 </div>
-            </div>`;
-    }
+            </div>
+            <div class="billet-card-actions">
+                <button type="button"
+                    class="btn-action btn-confirmer btn-changer-statut"
+                    data-id="${b.id}" data-statut="confirme">
+                    J'ai reçu
+                </button>
+                <button type="button"
+                    class="btn-action btn-refuser btn-changer-statut"
+                    data-id="${b.id}" data-statut="refuse">
+                    Non reçu
+                </button>
+                <button type="button"
+                    class="btn-action btn-attente btn-changer-statut"
+                    data-id="${b.id}" data-statut="attente">
+                    Mettre en attente
+                </button>
+            </div>
+        </div>`;
+}
 
     function HTMLCarteValidee(b) {
         return `
-            <div class="billet-card">
+            <div class="billet-card billet-card-confirme">
                 <div class="billet-card-header">
-                    ${renderBadge("confirme", "Valide et Actif")}
+                    ${renderBadge("confirme", "Valide et actif")}
                 </div>
                 <div class="billet-card-body">
                     <div class="billet-info-row">
@@ -2609,7 +2829,7 @@
                      </div>
                     <div class="billet-info-row">
                         <span class="billet-info-label">ID-Billet</span>
-                        <span class="billet-info-value">#${b.id}</span>
+                        <span class="billet-info-value">${b.id}</span>
                     </div>
                 </div>
                 <div class="billet-card-actions">
@@ -2699,6 +2919,123 @@
     }
 
     /* =============================================
+       JAUGE DE BILLETS : saisie / sauvegarde de la limite
+    ============================================= */
+    function onChangementLimiteBillets() {
+        clearTimeout(debounceLimiteBillets);
+        debounceLimiteBillets = setTimeout(() => {
+            sauvegarderLimiteBillets();
+        }, 400);
+    }
+
+    async function sauvegarderLimiteBillets() {
+        const input = document.getElementById("inputLimiteBillets");
+        const statutEl = document.getElementById("quotaSaveStatus");
+        if (!input) return;
+
+        const valeurBrute = input.value.trim();
+        let nouvelleLimite = null;
+
+        if (valeurBrute !== "") {
+            const n = Number(valeurBrute);
+            if (!Number.isFinite(n) || n < 0) {
+                if (statutEl) { statutEl.textContent = "Valeur invalide"; statutEl.style.color = "var(--red-500)"; }
+                return;
+            }
+            nouvelleLimite = Math.floor(n);
+            input.value = String(nouvelleLimite);
+        }
+
+        if (statutEl) { statutEl.textContent = "Enregistrement..."; statutEl.style.color = "var(--ink-400)"; }
+
+        try {
+            await callOrganisateurAPI('definir_limite_billets', {
+                evenementId: eventId,
+                token: sessionToken,
+                limiteBillets: nouvelleLimite // null = illimité
+            });
+
+            limiteBilletsCourante = nouvelleLimite;
+            // Une nouvelle limite (ou une limite augmentée/retirée) doit pouvoir
+            // redéclencher la fermeture automatique si le total la dépasse encore,
+            // et ne doit plus bloquer une réouverture manuelle sinon.
+            fermetureAutoDejaDeclenchee = false;
+
+            if (statutEl) { statutEl.textContent = "✓ Enregistré"; statutEl.style.color = "var(--green-600)"; }
+            setTimeout(() => { if (statutEl) statutEl.textContent = ""; }, 2000);
+
+            // Recalcule immédiatement la jauge avec les données déjà en mémoire
+            await chargerToutesLesDemandes();
+
+        } catch (err) {
+            console.error("Erreur sauvegarde limite billets :", err);
+            if (statutEl) { statutEl.textContent = "Erreur"; statutEl.style.color = "var(--red-500)"; }
+        }
+    }
+
+    /* =============================================
+       JAUGE DE BILLETS : affichage + fermeture auto
+    ============================================= */
+    function mettreAJourJaugeBillets(nombreOccupantLeQuota) {
+        const track = document.getElementById("quotaProgressTrack");
+        const fill = document.getElementById("quotaProgressFill");
+        const texte = document.getElementById("quotaCountText");
+
+        if (limiteBilletsCourante === null || limiteBilletsCourante === undefined) {
+            if (track) track.style.display = "none";
+            if (texte) texte.style.display = "none";
+            fermetureAutoDejaDeclenchee = false; // pas de limite => plus rien à surveiller
+            return;
+        }
+
+        const limite = limiteBilletsCourante;
+        const pourcentage = limite > 0 ? Math.min(100, Math.round((nombreOccupantLeQuota / limite) * 100)) : 100;
+        const atteint = nombreOccupantLeQuota >= limite;
+
+        if (track) track.style.display = "block";
+        if (texte) texte.style.display = "block";
+        if (fill) {
+            fill.style.width = pourcentage + "%";
+            fill.classList.toggle("quota-full", atteint);
+        }
+        if (texte) {
+            texte.innerHTML = atteint
+                ? `<strong>${nombreOccupantLeQuota}</strong> / ${limite} billets — quota atteint`
+                : `<strong>${nombreOccupantLeQuota}</strong> / ${limite} billets réservés`;
+        }
+
+        // Fermeture automatique des ventes dès que le quota est atteint ou dépassé.
+        // On ne déclenche l'appel serveur qu'une seule fois par franchissement,
+        // pour ne pas spammer toggle_ventes à chaque tick de polling, et on ne
+        // touche jamais au statut si les ventes sont déjà fermées (l'organisateur
+        // a pu les fermer manuellement, ou les rouvrir volontairement après coup).
+        if (atteint && !statutVentesFermees && !fermetureAutoDejaDeclenchee) {
+            fermetureAutoDejaDeclenchee = true;
+            fermerVentesAutomatiquement();
+        } else if (!atteint) {
+            // Le quota n'est plus atteint (limite augmentée, ou billet retiré/refusé) :
+            // on autorise un futur re-déclenchement si le total remonte au-dessus.
+            fermetureAutoDejaDeclenchee = false;
+        }
+    }
+
+    async function fermerVentesAutomatiquement() {
+        try {
+            await callOrganisateurAPI('toggle_ventes', {
+                evenementId: eventId,
+                token: sessionToken,
+                nouveauStatut: true
+            });
+            statutVentesFermees = true;
+            mettreAJourBoutonVentes();
+        } catch (err) {
+            console.error("Erreur fermeture automatique des ventes (quota atteint) :", err);
+            // On réautorise une nouvelle tentative au prochain tick de polling.
+            fermetureAutoDejaDeclenchee = false;
+        }
+    }
+
+    /* =============================================
        SCANNER QR
     ============================================= */
     let isScanLocked = false;
@@ -2739,7 +3076,7 @@
             let maintenant = Date.now();
 
             if (res.resultat === "deja_valide") {
-                if (derniersBilletsScannes[res.billet_id] && (maintenant - derniersBilletsScannes[res.billet_id] < 15000)) {
+                if (derniersBilletsScannes[res.billet_id] && (maintenant - derniersBilletsScannes[res.billet_id] < 5000)) {
                     setResultat(resultatDiv, "success", `ENTRÉE VALIDE — Bienvenue Mr/Mme ${res.nom_participant || 'N/A'} !`);
                 } else {
                     setResultat(resultatDiv, "error", `BILLET DÉJÀ UTILISÉ — ${res.nom_participant || 'N/A'}`);
@@ -2848,6 +3185,11 @@
             statutVentesFermees = !statutVentesFermees;
             return;
         }
+
+        // Une réouverture manuelle doit pouvoir re-déclencher la fermeture
+        // automatique plus tard si le quota est toujours atteint, mais ne
+        // doit pas la redéclencher immédiatement dans la même action.
+        fermetureAutoDejaDeclenchee = statutVentesFermees;
 
         mettreAJourBoutonVentes();
     }
