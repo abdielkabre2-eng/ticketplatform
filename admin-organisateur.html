@@ -2885,7 +2885,7 @@
                 // du billet concerné (plus besoin d'un second appel Supabase).
                 const billetContact = data.billet;
                 if (billetContact && billetContact.email) {
-                    let lienBillet = `${window.location.origin}/billet.html?id=${billetId}`;
+                    let lienBillet = `${window.location.origin}/billet.html?id=${billetContact.code_public}`;
                     const templateParams = {
                         email: billetContact.email,
                         nom_participant: billetContact.nom_participant,

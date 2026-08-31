@@ -286,7 +286,7 @@ async function changerStatut(supabase, payload, res) {
   if (nouveauStatut === "confirme") {
     const { data: unBillet } = await supabase
       .from("billets")
-      .select("email, nom_participant")
+      .select("email, nom_participant, code_public")
       .eq("id", billetId)
       .single();
     billetContact = unBillet || null;

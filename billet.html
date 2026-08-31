@@ -928,7 +928,7 @@ ${ev.heure ? `<div class="event-meta-pill">
             document.getElementById('billetRef').textContent = billet.numero_billet || billet.id || '—';
 
             // On encode uniquement l'ID du billet, en texte brut
-            const qrData = String(billet.id);
+            const qrData = String(billet.code_public);
 
             const qrContainerElement = document.getElementById('qrcode');
             qrContainerElement.innerHTML = '';

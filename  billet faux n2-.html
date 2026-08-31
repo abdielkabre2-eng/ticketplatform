@@ -1,1026 +1,1422 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Mon Billet - GoldTix</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Achat de Billet | GoldTix</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* =============================================
+           VARIABLES & RESET
+        ============================================= */
+        :root {
+            --gold-1: #f59e0b;
+            --gold-2: #d97706;
+            --gold-3: #b45309;
+            --gold-gradient: linear-gradient(135deg, var(--gold-1) 0%, var(--gold-3) 100%);
+            --gold-glow: rgba(217, 119, 6, 0.28);
+            --gold-glow-soft: rgba(245, 158, 11, 0.08);
 
-<!-- 3. Enfin, les autres bibliothèques -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<style>
-:root {
---gold-100: #fef3c7;
---gold-200: #fde68a;
---gold-300: #fcd34d;
---gold-400: #fbbf24;
---gold-500: #f59e0b;
---gold-600: #d97706;
---gold-700: #b45309;
---gold-800: #92400e;
---gold-900: #78350f;
+            --bg: #f7f8fa;
+            --surface: rgba(255, 255, 255, 0.92);
+            --surface-raised: #ffffff;
+            --border: rgba(217, 119, 6, 0.13);
+            --border-neutral: #e8ecf0;
 
---t0-a: #f59e0b; --t0-b: #d97706; --t0-c: #92400e; --t0-glow: rgba(245,158,11,.45);
---t1-a: #facc15; --t1-b: #eab308; --t1-c: #713f12; --t1-glow: rgba(250,204,21,.45);
---t2-a: #10b981; --t2-b: #059669; --t2-c: #064e3b; --t2-glow: rgba(16,185,129,.40);
---t3-a: #f43f5e; --t3-b: #e11d48; --t3-c: #881337; --t3-glow: rgba(244,63,94,.40);
+            --text: #0d1117;
+            --text-sub: #5a6478;
+            --text-muted: #8a94a6;
 
---bg-page:   #0c0a09;
---bg-card:   #111010;
---bg-cell:   rgba(255,255,255,.04);
---border:    rgba(255,255,255,.08);
---text-hi:   #fafaf9;
---text-mid:  #a8a29e;
---text-lo:   #57534e;
---radius-lg: 24px;
---radius-md: 14px;
---radius-sm: 8px;
---shadow-ticket: 0 32px 80px rgba(0,0,0,.75), 0 0 0 1px rgba(255,255,255,.06);
---font: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-    }
+            --green: #059669;
+            --green-bg: rgba(16, 185, 129, 0.09);
+            --green-border: rgba(16, 185, 129, 0.22);
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+            --red: #dc2626;
+            --red-bg: #fef2f2;
+            --red-border: #fecaca;
 
-@font-face {
-font-family: 'Plus Jakarta Sans';
-src: local('Plus Jakarta Sans'), local('PlusJakartaSans');
-    }
+            --radius-xl: 28px;
+            --radius-lg: 18px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
 
-html {
-    scroll-behavior: smooth;
+            --shadow-card: 0 24px 48px -16px rgba(217, 119, 6, 0.09), 0 8px 24px -8px rgba(0,0,0,0.04);
+            --shadow-hover: 0 32px 64px -20px rgba(217, 119, 6, 0.17), 0 12px 32px -12px rgba(0,0,0,0.06);
+            --shadow-glow: 0 12px 30px var(--gold-glow);
+
+            --ease: cubic-bezier(0.16, 1, 0.3, 1);
+            --transition: all 0.4s var(--ease);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html {
     overflow-x: hidden;
     width: 100%;
     max-width: 100%;
 }
 
-body {
-    font-family: var(--font);
-    background: var(--bg-page);
-    color: var(--text-hi);
-    min-height: 100dvh;
+       body {
+    font-family: 'DM Sans', sans-serif;
+    background-color: var(--bg);
+    background-image:
+        radial-gradient(ellipse at 8% 8%, rgba(245, 158, 11, 0.07) 0px, transparent 55%),
+    radial-gradient(ellipse at 92% 92%, rgba(217, 119, 6, 0.05) 0px, transparent 55%);
+    color: var(--text);
     width: 100%;
     max-width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    padding: 28px 20px 90px;
+    line-height: 1.6;
+    min-height: 100vh;
     overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
 }
 
 img, svg, video, canvas {
     max-width: 100%;
 }
 
-body::before {
-content: '';
-position: fixed; inset: 0;
-background:
-radial-gradient(ellipse 60% 35% at 50% -5%, rgba(217,119,6,.18) 0%, transparent 70%),
-radial-gradient(ellipse 40% 25% at 90% 80%, rgba(120,53,15,.12) 0%, transparent 60%);
-pointer-events: none; z-index: 0;
-    }
+        /* =============================================
+           ANIMATIONS
+        ============================================= */
+       @keyframes entranceUp {
+    from { opacity: 0; transform: translateY(36px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 18px rgba(217,119,6,0.2); }
+            50%       { box-shadow: 0 0 34px rgba(217,119,6,0.46); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(-5px); }
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        @keyframes shimmer {
+            0%   { background-position: -400px 0; }
+            100% { background-position: 400px 0; }
+        }
 
-body::after {
-content: '';
-position: fixed; inset: 0;
-background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
-opacity: .5; pointer-events: none; z-index: 0;
-    }
+        .anim-1 { animation: entranceUp 0.9s var(--ease) both; }
+        .anim-2 { animation: entranceUp 0.9s var(--ease) 0.18s both; opacity: 0; }
+        .anim-3 { animation: entranceUp 0.9s var(--ease) 0.36s both; opacity: 0; }
 
-.top-navbar {
-position: sticky; top: 0; z-index: 100;
-width: 100%;
-display: flex; align-items: center; justify-content: space-between;
-padding: 14px 20px;
-background: rgba(12,10,9,.72);
-backdrop-filter: blur(20px) saturate(160%);
--webkit-backdrop-filter: blur(20px) saturate(160%);
-border-bottom: 1px solid rgba(217,119,6,.18);
-    }
+        /* =============================================
+           NAVBAR
+        ============================================= */
+       .navbar {
+    max-width: 1100px;
+    margin: 0 auto 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 14px 22px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.03);
+}
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+            text-decoration: none;
+        }
 
-.navbar-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-.navbar-logo { height: 32px; width: auto; filter: drop-shadow(0 0 6px rgba(245,158,11,.5)); }
-.navbar-name {
-font-size: .8rem; font-weight: 800;
-letter-spacing: .12em; text-transform: uppercase;
-background: linear-gradient(135deg, var(--gold-400), var(--gold-600));
--webkit-background-clip: text; -webkit-text-fill-color: transparent;
-background-clip: text;
-    }
-.navbar-badge {
-display: flex; align-items: center; gap: 6px;
-padding: 5px 12px; border-radius: 99px;
-background: linear-gradient(135deg, rgba(245,158,11,.15), rgba(217,119,6,.08));
-border: 1px solid rgba(245,158,11,.3);
-font-size: .68rem; font-weight: 700;
-letter-spacing: .08em; text-transform: uppercase;
-color: var(--gold-400);
-    }
-.navbar-badge::before {
-content: ''; display: block; width: 6px; height: 6px; border-radius: 50%;
-background: var(--gold-400); box-shadow: 0 0 6px var(--gold-400);
-animation: pulse-dot 2s ease-in-out infinite;
-    }
-@keyframes pulse-dot {
-0%,100% { opacity:1; transform:scale(1); }
-50%      { opacity:.5; transform:scale(.7); }
-    }
+        .brand-logo {
+            height: 34px;
+            width: auto;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+        .brand-logo:hover { transform: scale(1.06) rotate(-3deg); }
 
-.state-screen {
-flex: 1; display: flex; flex-direction: column;
-align-items: center; justify-content: center;
-gap: 20px; padding: 40px 24px;
-z-index: 1; position: relative;
-animation: fadeUp .6s ease both;
-    }
-.loader-ring {
-width: 56px; height: 56px; border-radius: 50%;
-border: 3px solid rgba(245,158,11,.15);
-border-top-color: var(--gold-500);
-animation: spin 1s linear infinite;
-    }
-@keyframes spin { to { transform: rotate(360deg); } }
-.state-screen .state-title { font-size: 1rem; font-weight: 700; color: var(--text-mid); text-align: center; }
-.state-screen .state-sub { font-size: .8rem; color: var(--text-lo); text-align: center; max-width: 260px; line-height: 1.6; }
-.error-icon {
-width: 56px; height: 56px; display: flex; align-items: center; justify-content: center;
-border-radius: 50%; background: rgba(244,63,94,.12); border: 1px solid rgba(244,63,94,.3);
-    }
+        .brand-name {
+            font-family: 'Syne', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.4px;
+            color: var(--text);
+            white-space: nowrap;
+        }
+        .brand-name em {
+            font-style: normal;
+            background: var(--gold-gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-.ticket-wrapper {
-flex: 1; width: 100%; max-width: 440px;
-padding: 28px 16px 40px;
-display: flex; flex-direction: column;
-align-items: center; gap: 24px;
-position: relative; z-index: 1;
-animation: fadeUp .7s cubic-bezier(.22,1,.36,1) both;
-    }
-@keyframes fadeUp {
-from { opacity:0; transform:translateY(24px); }
-to   { opacity:1; transform:translateY(0); }
-    }
+        .secure-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: var(--green-bg);
+            color: var(--green);
+            border: 1px solid var(--green-border);
+            padding: 7px 13px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .secure-badge svg { width: 12px; height: 12px; }
 
-.ticket {
-width: 100%; border-radius: var(--radius-lg);
-background: var(--bg-card); box-shadow: var(--shadow-ticket);
-overflow: visible; position: relative;
-animation: ticketReveal .9s cubic-bezier(.22,1,.36,1) .1s both;
-    }
-@keyframes ticketReveal {
-from { opacity:0; transform:translateY(32px) scale(.97); }
-to   { opacity:1; transform:translateY(0) scale(1); }
-    }
-.ticket::before {
-content: ''; position: absolute; inset: -1px;
-border-radius: calc(var(--radius-lg) + 1px);
-background: var(--tier-gradient, linear-gradient(135deg, var(--gold-500), var(--gold-700)));
-z-index: -1; opacity: .6;
-    }
-.ticket::after {
-content: ''; position: absolute; inset: 0; border-radius: var(--radius-lg);
-background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,.04) 50%, transparent 60%);
-background-size: 200% 100%;
-animation: shimmer 4s ease-in-out infinite;
-pointer-events: none; z-index: 10;
-    }
-@keyframes shimmer {
-0%   { background-position: 200% 0; }
-50%  { background-position: -200% 0; }
-100% { background-position: 200% 0; }
-    }
+        /* =============================================
+           LAYOUT
+        ============================================= */
+        .main-wrapper { max-width: 1100px; margin: 0 auto; }
 
-.ticket.tier-0 { --tier-gradient: linear-gradient(145deg, var(--t0-a), var(--t0-b), var(--t0-c)); --tier-a: var(--t0-a); --tier-b: var(--t0-b); --tier-glow: var(--t0-glow); }
-.ticket.tier-1 { --tier-gradient: linear-gradient(145deg, var(--t1-a), var(--t1-b), #854d0e, var(--t1-c)); --tier-a: var(--t1-a); --tier-b: var(--t1-b); --tier-glow: var(--t1-glow); }
-.ticket.tier-2 { --tier-gradient: linear-gradient(145deg, var(--t2-a), var(--t2-b), #065f46, var(--t2-c)); --tier-a: var(--t2-a); --tier-b: var(--t2-b); --tier-glow: var(--t2-glow); }
-.ticket.tier-3 { --tier-gradient: linear-gradient(145deg, var(--t3-a), var(--t3-b), #9f1239, var(--t3-c)); --tier-a: var(--t3-a); --tier-b: var(--t3-b); --tier-glow: var(--t3-glow); }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1.15fr;
+            gap: 32px;
+            align-items: start;
+        }
+        @media (max-width: 900px) {
+            .grid { grid-template-columns: 1fr; }
+        }
 
-.ticket-wrapper .ticket-glow {
-position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-width: 80%; height: 100%; border-radius: 50%;
-filter: blur(60px); opacity: .25; pointer-events: none; z-index: -1;
-    }
+        /* =============================================
+           CARDS
+        ============================================= */
+       .card {
+    background: var(--surface);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: var(--radius-xl);
+    padding: 32px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-card);
+    transition: var(--transition);
+}
+        .card--event:hover { box-shadow: var(--shadow-hover); }
 
-.ticket-header {
-position: relative; border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-overflow: hidden; min-height: 190px;
-    }
-#event-bg-img {
-position: absolute; inset: 0; width: 100%; height: 100%;
-object-fit: cover; object-position: center top;
-transform: scale(1.04); transition: transform 8s ease;
-    }
-.ticket:hover #event-bg-img { transform: scale(1); }
-.header-scrim {
-position: absolute; inset: 0;
-background:
-linear-gradient(0deg, rgba(12,10,9,1) 0%, rgba(12,10,9,.82) 35%, rgba(12,10,9,.28) 70%, rgba(12,10,9,.05) 100%),
-linear-gradient(180deg, rgba(0,0,0,.55) 0%, transparent 40%);
-    }
-.header-color-wash { position: absolute; inset: 0; opacity: .22; mix-blend-mode: color; }
-.ticket.tier-0 .header-color-wash { background: var(--t0-a); }
-.ticket.tier-1 .header-color-wash { background: var(--t1-a); }
-.ticket.tier-2 .header-color-wash { background: var(--t2-a); }
-.ticket.tier-3 .header-color-wash { background: var(--t3-a); }
+        /* =============================================
+           POSTER
+        ============================================= */
+        .poster-wrapper {
+            width: 100%;
+            min-height: 320px;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            background: linear-gradient(180deg, #fffdf9 0%, #f8f5f0 100%);
+            margin-bottom: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border: 1px solid rgba(217,119,6,0.1);
+            box-shadow: 0 10px 28px rgba(0,0,0,0.04);
+            padding: 12px;
+            transition: var(--transition);
+            position: relative;
+        }
+        .poster-wrapper:hover { transform: scale(1.012); }
+        .poster-wrapper img {
+            display: block;
+            width: auto;
+            max-width: 100%;
+            height: auto;
+            max-height: 500px;
+            object-fit: contain;
+            object-position: center center;
+            border-radius: var(--radius-md);
+            margin: 0 auto;
+        }
+        .poster-fallback {
+            width: 100%;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 600;
+            background: linear-gradient(135deg, rgba(245,158,11,0.04), rgba(217,119,6,0.02));
+            border-radius: var(--radius-md);
+            border: 1px dashed rgba(217,119,6,0.15);
+            padding: 24px 18px;
+        }
+        .poster-fallback svg {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 10px;
+            opacity: 0.35;
+            display: block;
+        }
+        .poster-fallback p {
+            margin: 0;
+            line-height: 1.4;
+            display: block;
+            text-align: center;
+        }
 
-#ticketHeaderBlock {
-position: relative; z-index: 2; padding: 18px 20px 22px;
-display: flex; flex-direction: column; gap: 10px;
-    }
-.category-badge {
-display: inline-flex; align-items: center; gap: 7px;
-align-self: flex-start; padding: 5px 13px 5px 7px; border-radius: 99px;
-backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-font-size: .7rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
-animation: badgePop .5s cubic-bezier(.34,1.56,.64,1) .3s both;
-    }
-@keyframes badgePop {
-from { opacity:0; transform:scale(.7) translateY(-6px); }
-to   { opacity:1; transform:scale(1) translateY(0); }
-    }
-.badge-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        /* =============================================
+           EVENT INFO
+        ============================================= */
+        .event-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text);
+            margin: 0 0 18px;
+            letter-spacing: -0.6px;
+            line-height: 1.25;
+        }
 
-.event-title-h {
-font-size: 1.35rem; font-weight: 800; line-height: 1.2; color: var(--text-hi);
-text-shadow: 0 2px 12px rgba(0,0,0,.8); letter-spacing: -.01em;
-animation: fadeUp .6s ease .2s both;
-    }
-.event-meta-pill {
-display: inline-flex; align-items: center; gap: 6px;
-background: rgba(255,255,255,.08); backdrop-filter: blur(8px);
-border: 1px solid rgba(255,255,255,.12); border-radius: 99px;
-padding: 4px 10px; font-size: .72rem; font-weight: 600; color: var(--gold-300);
-animation: fadeUp .6s ease .35s both;
-    }
-.meta-icon { width: 12px; height: 12px; opacity: .8; }
+                .meta-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            row-gap: 6px;
+            gap: 10px;
+            font-size: 14.5px;
+            color: var(--text-sub);
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+        .meta-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .meta-text {
+            white-space: nowrap;
+        }
+        .meta-row svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--gold-2); }
+        .meta-row strong { color: var(--text); }
+        .meta-sep { color: var(--border-neutral); margin: 0 4px; }
 
-.status-banner {
-display: flex; align-items: center; gap: 10px;
-padding: 13px 18px; font-size: .82rem; font-weight: 700; letter-spacing: .02em;
-    }
-.status-banner.attente {
-background: linear-gradient(90deg, rgba(245,158,11,.12), rgba(217,119,6,.06));
-border-bottom: 1px solid rgba(245,158,11,.2); color: var(--gold-400);
-    }
-.status-banner.refuse {
-background: linear-gradient(90deg, rgba(244,63,94,.12), rgba(225,29,72,.06));
-border-bottom: 1px solid rgba(244,63,94,.2); color: #fb7185;
-    }
-.status-icon {
-width: 28px; height: 28px; border-radius: 50%;
-display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
-.attente .status-icon { background: rgba(245,158,11,.2); }
-.refuse .status-icon  { background: rgba(244,63,94,.2); }
-.status-pulse {
-width: 8px; height: 8px; border-radius: 50%;
-background: currentColor; box-shadow: 0 0 0 0 currentColor;
-animation: ripple 2s ease-in-out infinite;
-    }
-@keyframes ripple {
-0%,100% { box-shadow: 0 0 0 0 currentColor; opacity:1; }
-60%      { box-shadow: 0 0 0 8px transparent; opacity:.3; }
-    }
+        .price-badge {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+            margin-top: 18px;
+            padding: 14px 22px;
+            background: var(--gold-gradient);
+            color: #fff;
+            border-radius: var(--radius-lg);
+            font-weight: 700;
+            font-size: 14.5px;
+            box-shadow: var(--shadow-glow);
+            animation: float 4s ease-in-out infinite;
+            width: 100%;
+        }
+        .price-badge-item { display: flex; align-items: center; gap: 8px; }
+        .price-badge-item svg { width: 15px; height: 15px; opacity: 0.85; }
 
-.ticket-body { padding: 20px 18px 0; position: relative; }
-.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.info-cell {
-background: var(--bg-cell); border: 1px solid var(--border);
-border-radius: var(--radius-md); padding: 12px 14px;
-display: flex; flex-direction: column; gap: 4px;
-position: relative; overflow: hidden;
-animation: cellReveal .5s ease both;
-transition: border-color .25s, background .25s;
-    }
-.info-cell:hover { border-color: rgba(245,158,11,.25); background: rgba(245,158,11,.04); }
-.info-cell.full { grid-column: 1 / -1; }
-@keyframes cellReveal {
-from { opacity:0; transform:translateY(8px); }
-to   { opacity:1; transform:translateY(0); }
-    }
-.info-cell:nth-child(1) { animation-delay: .25s; }
-.info-cell:nth-child(2) { animation-delay: .30s; }
-.info-cell:nth-child(3) { animation-delay: .35s; }
-.info-cell:nth-child(4) { animation-delay: .40s; }
-.info-cell:nth-child(5) { animation-delay: .45s; }
-.info-cell:nth-child(6) { animation-delay: .50s; }
-.info-cell::before {
-content: ''; position: absolute; top: 0; left: 0;
-width: 3px; height: 100%; border-radius: 3px 0 0 3px;
-background: var(--tier-gradient, linear-gradient(var(--gold-500), var(--gold-700)));
-opacity: 0; transition: opacity .25s;
-    }
-.info-cell:hover::before { opacity: 1; }
-.cell-label { font-size: .6rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-lo); }
-.cell-value { font-size: .82rem; font-weight: 700; color: var(--text-hi); line-height: 1.3; word-break: break-word; }
-.cell-icon { position: absolute; bottom: 8px; right: 10px; opacity: .07; }
+        /* =============================================
+           PAYMENT BOX
+        ============================================= */
+        .payment-box {
+            background: linear-gradient(135deg, #fefce8, #fef9c3);
+            border: 1px solid rgba(245,158,11,0.28);
+            border-radius: var(--radius-lg);
+            padding: 22px;
+            margin-bottom: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+        .payment-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 4px; height: 100%;
+            background: var(--gold-gradient);
+        }
 
-.tear-separator { position: relative; margin: 18px 0 0; display: flex; align-items: center; }
-.notch-left, .notch-right {
-width: 22px; height: 22px; border-radius: 50%;
-background: var(--bg-page); border: 1px solid rgba(255,255,255,.06);
-flex-shrink: 0; position: relative; z-index: 2;
-    }
-.notch-left  { margin-left: -11px; }
-.notch-right { margin-right: -11px; }
-.dashed-line { flex: 1; border: none; border-top: 2px dashed rgba(255,255,255,.1); }
-.tear-label {
-position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-background: var(--bg-card); padding: 2px 10px; border-radius: 99px;
-font-size: .58rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
-color: var(--text-lo); border: 1px solid var(--border); white-space: nowrap;
-    }
+        .payment-box-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--text);
+            letter-spacing: 0.7px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+        .payment-box-title svg { width: 14px; height: 14px; color: var(--gold-2); }
 
-.qr-section { padding: 20px 18px 22px; display: flex; flex-direction: column; align-items: center; gap: 14px; animation: fadeUp .6s ease .55s both; }
-.qr-frame {
-position: relative; z-index: 11;
-width: 182px; height: 182px;
-padding: 14px; border-radius: var(--radius-md); background: #fff;
-display: flex; align-items: center; justify-content: center;
-box-shadow:
-0 0 0 1px rgba(255,255,255,.12),
-0 8px 32px rgba(0,0,0,.4),
-0 0 40px var(--tier-glow, var(--t0-glow));
-transition: box-shadow .3s, transform .3s;
-    }
-.qr-frame:hover {
-transform: scale(1.02);
-box-shadow:
-0 0 0 1px rgba(255,255,255,.2),
-0 12px 40px rgba(0,0,0,.5),
-0 0 60px var(--tier-glow, var(--t0-glow));
-    }
+        .info-rows { display: flex; flex-direction: column; gap: 10px; }
 
-#qrcode {
-width: 150px !important;
-height: 150px !important;
-display: flex !important;
-align-items: center !important;
-justify-content: center !important;
-margin: 0 !important;
-background: #fff !important;
-overflow: hidden !important;
-    }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.72);
+            padding: 11px 15px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(245,158,11,0.13);
+            flex-wrap: wrap; 
+        }
+        .info-row-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11.5px;
+            color: var(--text-muted);
+            font-weight: 700;
+            white-space: normal;
+            letter-spacing: 0.2px;
+            min-width: 0; 
+        }
+        .info-row-label svg { width: 13px; height: 13px; }
+        .info-row-value {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-align: right;
+            min-width: 0;  
+        }
 
-#qrcode canvas,
-#qrcode img {
-display: block !important;
-width: 150px !important;
-height: 150px !important;
-max-width: 150px !important;
-max-height: 150px !important;
-margin: 0 auto !important;
-border-radius: 4px;
-    }
+        .qr-wrapper {
+            margin-top: 14px;
+            background: rgba(255,255,255,0.8);
+            padding: 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(245,158,11,0.13);
+            text-align: center;
+        }
+        .qr-label {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .qr-label svg { width: 13px; height: 13px; }
+        .qr-image {
+            max-width: 190px;
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            display: inline-block;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.07);
+            border: 1px solid var(--border-neutral);
+            background: #fff;
+            padding: 6px;
+            object-fit: contain;
+        }
 
-.qr-corner { position: absolute; width: 16px; height: 16px; border-color: var(--tier-a, var(--gold-500)); border-style: solid; border-width: 0; }
-.qr-corner.tl { top: -2px; left: -2px; border-top-width: 3px; border-left-width: 3px; border-radius: 4px 0 0 0; }
-.qr-corner.tr { top: -2px; right: -2px; border-top-width: 3px; border-right-width: 3px; border-radius: 0 4px 0 0; }
-.qr-corner.bl { bottom: -2px; left: -2px; border-bottom-width: 3px; border-left-width: 3px; border-radius: 0 0 0 4px; }
-.qr-corner.br { bottom: -2px; right: -2px; border-bottom-width: 3px; border-right-width: 3px; border-radius: 0 0 4px 0; }
+        /* =============================================
+           FORM
+        ============================================= */
+        .section-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 17px;
+            font-weight: 800;
+            margin: 0 0 20px;
+            color: var(--text);
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title svg { width: 18px; height: 18px; color: var(--gold-2); }
 
-.qr-ref-label { font-size: .62rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-lo); }
-.qr-ref-value { font-size: .72rem; font-weight: 800; color: var(--text-mid); font-variant-numeric: tabular-nums; letter-spacing: .05em; }
+        .form-group { margin-bottom: 20px; }
 
-.ticket-footer-strip {
-display: flex; align-items: center; justify-content: space-between;
-padding: 12px 18px; border-top: 1px solid var(--border);
-border-radius: 0 0 var(--radius-lg) var(--radius-lg); background: rgba(0,0,0,.25);
-gap: 10px;
-    }
-.tf-brand {
-font-size: .65rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
-background: linear-gradient(135deg, var(--gold-400), var(--gold-600));
--webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-flex-shrink: 0;
-    }
-.tf-valid { display: flex; align-items: center; gap: 5px; font-size: .62rem; font-weight: 600; color: var(--text-lo); flex-shrink: 0; }
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--gold-3);
+            margin-bottom: 8px;
+            text-transform: none;
+            letter-spacing: 0.9px;
+        }
 
-.tf-reload-btn {
-display: none;
-align-items: center; gap: 6px;
-padding: 6px 14px;
-border-radius: 99px;
-background: rgba(245,158,11,.08);
-border: 1px solid rgba(245,158,11,.35);
-color: var(--gold-400);
-font-family: var(--font);
-font-size: .64rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
-cursor: pointer;
-transition: background .2s, border-color .2s, transform .2s, color .2s;
-white-space: nowrap;
-    }
-.tf-reload-btn svg { width: 12px; height: 12px; transition: transform .4s ease; flex-shrink: 0; }
-.tf-reload-btn:hover {
-background: rgba(245,158,11,.16);
-border-color: rgba(245,158,11,.55);
-color: var(--gold-300);
-    }
-.tf-reload-btn:hover svg { transform: rotate(180deg); }
-.tf-reload-btn:active { transform: scale(.96); }
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        select {
+            width: 100%;
+            padding: 15px 17px;
+            font-size: 14.5px;
+            font-family: 'DM Sans', sans-serif;
+            border: 2px solid var(--border-neutral);
+            border-radius: var(--radius-lg);
+            outline: none;
+            background: var(--surface-raised);
+            color: var(--text);
+            transition: var(--transition);
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus,
+        select:focus {
+            border-color: var(--gold-2);
+            box-shadow: 0 0 0 5px var(--gold-glow);
+            background: #fff;
+            transform: translateY(-2px);
+        }
+        input::placeholder { color: var(--text-muted); }
 
-#downloadTicket {
-width: 100%; max-width: 360px; padding: 15px 28px;
-border: none; cursor: pointer; border-radius: 99px;
-background: linear-gradient(135deg, var(--gold-400) 0%, var(--gold-600) 60%, var(--gold-700) 100%);
-color: #0c0a09; font-family: var(--font);
-font-size: .85rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
-display: flex; align-items: center; justify-content: center; gap: 10px;
-box-shadow:
-0 4px 24px rgba(217,119,6,.45),
-0 0 0 1px rgba(245,158,11,.3),
-inset 0 1px 0 rgba(255,255,255,.25);
-transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s;
-animation: fadeUp .6s ease .65s both; position: relative; overflow: hidden;
-    }
-#downloadTicket::before {
-content: ''; position: absolute; inset: 0;
-background: linear-gradient(135deg, rgba(255,255,255,.2), transparent 50%); border-radius: inherit;
-    }
-#downloadTicket:hover {
-transform: translateY(-2px) scale(1.02);
-box-shadow: 0 8px 36px rgba(217,119,6,.55), 0 0 0 1px rgba(245,158,11,.5), inset 0 1px 0 rgba(255,255,255,.3);
-    }
-#downloadTicket:active {
-transform: translateY(0) scale(.99);
-box-shadow: 0 2px 12px rgba(217,119,6,.35);
-    }
+        /* File Input Custom */
+        .file-input-wrapper {
+            position: relative;
+            border: 2px dashed var(--border-neutral);
+            border-radius: var(--radius-lg);
+            background: #fbfcfd;
+            transition: var(--transition);
+            overflow: hidden;
+        }
+        .file-input-wrapper:hover {
+            border-color: var(--gold-2);
+            background: #fffdf5;
+        }
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+        .file-input-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            gap: 8px;
+            pointer-events: none;
+        }
+        .file-input-display svg { width: 28px; height: 28px; color: var(--gold-2); opacity: 0.7; }
+        .file-input-display span {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--text-sub);
+        }
+        .file-input-display em {
+            font-style: normal;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        .file-name-preview {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--gold-3);
+            margin-top: 4px;
+            display: none;
+        }
 
-.creator-footer {
-width: 100%; z-index: 1; position: relative;
-padding: 24px 20px; border-top: 1px solid var(--border);
-margin-top: auto; animation: fadeUp .6s ease .7s both;
-    }
-.footer-inner { max-width: 440px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-.footer-brand { display: flex; align-items: center; gap: 8px; }
-.footer-logo-wrap {
-width: 28px; height: 28px; border-radius: 8px;
-background: linear-gradient(135deg, var(--gold-500), var(--gold-700));
-display: flex; align-items: center; justify-content: center;
-font-size: .65rem; font-weight: 900; color: #0c0a09; letter-spacing: -.02em;
-    }
-.footer-wordmark { font-size: .75rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--text-mid); }
-.footer-tagline { font-size: .62rem; color: var(--text-lo); letter-spacing: .08em; text-transform: uppercase; font-weight: 600; }
-.footer-contacts { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.footer-contact-item { font-size: .68rem; color: var(--text-lo); font-weight: 500; }
-.footer-contact-item a { color: var(--gold-600); text-decoration: none; transition: color .2s; }
-.footer-contact-item a:hover { color: var(--gold-400); }
-.footer-dev { font-size: .6rem; color: var(--text-lo); text-align: center; border-top: 1px solid var(--border); padding-top: 12px; width: 100%; }
+        /* Submit Button */
+        .btn-submit {
+            background: var(--gold-gradient);
+            color: #fff;
+            border: none;
+            padding: 17px 24px;
+            width: 100%;
+            border-radius: var(--radius-lg);
+            font-size: 15.5px;
+            font-weight: 700;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-glow);
+            margin-top: 8px;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+        }
+        .btn-submit::after {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: inherit;
+            background: var(--gold-gradient);
+            filter: blur(14px);
+            opacity: 0.3;
+            z-index: -1;
+            pointer-events: none;
+            animation: pulseGlowOpacity 3s ease-in-out infinite;
+        }
+        .btn-submit:disabled::after { opacity: 0; }
+        @keyframes pulseGlowOpacity {
+            0%, 100% { opacity: 0.22; }
+            50%      { opacity: 0.48; }
+        }
 
-.tier-pattern { position: absolute; inset: 0; border-radius: var(--radius-sm); pointer-events: none; z-index: 0; opacity: .03; }
-.ticket-body > *:not(.tier-pattern) { position: relative; z-index: 1; }
+        /* =============================================
+           STATES
+        ============================================= */
+        .loading-card {
+            text-align: center;
+            padding: 70px 24px;
+        }
+        .loading-shimmer {
+            height: 18px;
+            border-radius: 6px;
+            background: linear-gradient(90deg, #f0f2f5 25%, #e8ecf0 50%, #f0f2f5 75%);
+            background-size: 400px 100%;
+            animation: shimmer 1.4s infinite linear;
+            margin: 0 auto;
+        }
+        .loading-text {
+            color: var(--text-muted);
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .loading-text .spinner {
+            width: 18px; height: 18px;
+            border: 2.5px solid var(--border-neutral);
+            border-top-color: var(--gold-2);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
 
-@media print {
-body { background: #fff !important; }
-.top-navbar, #downloadTicket, .creator-footer { display:none !important; }
-.ticket-wrapper { padding: 0; }
-    }
-@media (min-width: 480px) {
-.ticket-wrapper { padding: 36px 24px 56px; }
-.event-title-h { font-size: 1.5rem; }
-    }
-</style>
+        .closed-box {
+            background: var(--red-bg);
+            border: 1px solid var(--red-border);
+            border-radius: var(--radius-lg);
+            padding: 40px 28px;
+            text-align: center;
+        }
+        .closed-box-icon {
+            width: 52px; height: 52px;
+            background: rgba(220,38,38,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+        }
+        .closed-box-icon svg { width: 24px; height: 24px; color: var(--red); }
+        .closed-box h3 { color: var(--red); font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 10px; }
+        .closed-box p { color: #991b1b; font-size: 14.5px; line-height: 1.65; }
+        .closed-box p + p { margin-top: 10px; color: var(--text-muted); font-size: 13px; font-weight: 600; }
+
+        .error-card {
+            text-align: center;
+            padding: 60px 24px;
+        }
+        .error-card h2 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 10px; }
+        .error-card p { color: var(--text-sub); font-size: 14.5px; }
+
+        /* =============================================
+           FOOTER
+        ============================================= */
+        .footer {
+            max-width: 1100px;
+            margin: 64px auto 0;
+            padding-top: 28px;
+            border-top: 1px solid var(--border-neutral);
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .footer-brand {
+            font-family: 'Syne', sans-serif;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--gold-2);
+            margin-bottom: 8px;
+        }
+        .footer a {
+            color: var(--gold-2);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+        .footer a:hover { color: var(--gold-3); text-decoration: underline; }
+        .footer-dot { margin: 0 6px; color: var(--border-neutral); }
+
+        /* =============================================
+           RESPONSIVE TWEAKS
+        ============================================= */
+        @media (max-width: 600px) {
+            body { padding: 18px 14px 70px; }
+            .card { padding: 22px 18px; }
+            .event-title { font-size: 22px; }
+        }
+
+        /* =============================================================
+           ===== INTRODUCTION ANIMÉE GOLDTIX (ajout uniquement)
+        ============================================================= */
+        #introOverlayGoldTix {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background:
+                radial-gradient(ellipse 80% 60% at 50% 20%, rgba(245,158,11,0.10) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 50% at 80% 80%, rgba(217,119,6,0.08) 0%, transparent 60%),
+                #0a0908;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        #introOverlayGoldTix.intro-exit { animation: introOverlayExit 0.5s ease forwards; }
+        #introOverlayGoldTix.intro-hidden { display: none !important; }
+
+        @keyframes introOverlayExit {
+            0%   { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(1.04); }
+        }
+
+        .intro-particles { position: absolute; inset: 0; pointer-events: none; }
+        .intro-particles span {
+            position: absolute;
+            width: 3px; height: 3px;
+            background: rgba(245,158,11,0.55);
+            border-radius: 50%;
+            box-shadow: 0 0 6px rgba(245,158,11,0.6);
+            opacity: 0;
+            animation: introParticleFloat 3.6s ease-in-out infinite;
+        }
+        .intro-particles span:nth-child(1){ top:15%; left:12%; animation-delay:.1s; }
+        .intro-particles span:nth-child(2){ top:70%; left:20%; animation-delay:.6s; }
+        .intro-particles span:nth-child(3){ top:25%; left:80%; animation-delay:.3s; }
+        .intro-particles span:nth-child(4){ top:60%; left:88%; animation-delay:.9s; }
+        .intro-particles span:nth-child(5){ top:85%; left:50%; animation-delay:.5s; }
+        .intro-particles span:nth-child(6){ top:10%; left:55%; animation-delay:1.1s; }
+        .intro-particles span:nth-child(7){ top:45%; left:6%; animation-delay:.8s; }
+        .intro-particles span:nth-child(8){ top:40%; left:94%; animation-delay:1.3s; }
+
+        @keyframes introParticleFloat {
+            0%, 100% { opacity: 0; transform: translateY(0); }
+            50%      { opacity: 1; transform: translateY(-14px); }
+        }
+
+        #introSkipBtn {
+            position: absolute;
+            top: 20px; right: 20px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(245,158,11,0.25);
+            color: rgba(255,255,255,0.75);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.4px;
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            backdrop-filter: blur(6px);
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+            z-index: 2;
+        }
+        #introSkipBtn:hover { background: rgba(245,158,11,0.15); color: #fff; border-color: rgba(245,158,11,0.5); }
+
+        .intro-center { position: relative; text-align: center; padding: 24px; z-index: 1; max-width: 480px; width: 100%; }
+
+        .intro-logo-wrap { opacity: 0; animation: introFadeUp 0.6s ease 0.15s forwards; }
+        .intro-logo {
+            font-family: 'Syne', sans-serif;
+            font-size: 44px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            color: #f5f5f4;
+            margin: 0;
+            text-shadow: 0 0 24px rgba(245,158,11,0.35), 0 0 60px rgba(245,158,11,0.15);
+            animation: introLogoGlow 2.4s ease-in-out infinite 0.4s;
+        }
+        .intro-logo em {
+            font-style: normal;
+            background: linear-gradient(135deg, #f59e0b, #b45309);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .intro-tagline {
+            margin-top: 10px;
+            font-size: 13px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: rgba(245,197,109,0.75);
+            font-weight: 600;
+            opacity: 0;
+            animation: introFadeUp 0.6s ease 0.35s forwards;
+        }
+
+        @keyframes introFadeUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes introLogoGlow {
+            0%, 100% { text-shadow: 0 0 24px rgba(245,158,11,0.35), 0 0 60px rgba(245,158,11,0.15); }
+            50%      { text-shadow: 0 0 34px rgba(245,158,11,0.55), 0 0 80px rgba(245,158,11,0.25); }
+        }
+
+        .intro-flow {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 46px;
+            opacity: 0;
+            animation: introFadeUp 0.5s ease 0.6s forwards;
+        }
+        .intro-flow-line {
+            position: absolute;
+            top: 19px; left: 8%; right: 8%;
+            height: 2px;
+            background: rgba(255,255,255,0.08);
+            overflow: hidden;
+            border-radius: 2px;
+        }
+        .intro-flow-progress {
+            display: block;
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #f59e0b, #d97706);
+            animation: introLineFill 1.6s ease 0.7s forwards;
+        }
+        @keyframes introLineFill { to { width: 100%; } }
+
+        .intro-flow-step {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            color: rgba(255,255,255,0.35);
+        }
+        .intro-flow-step svg {
+            width: 22px; height: 22px;
+            padding: 9px;
+            border-radius: 50%;
+            background: #14110d;
+            border: 1.5px solid rgba(255,255,255,0.12);
+            box-sizing: content-box;
+            transform: scale(0.85);
+            opacity: 0.5;
+        }
+        .intro-flow-step span {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+        }
+        .intro-flow-step[data-step="1"] svg { animation: introStepLight 0.35s ease 0.75s forwards; }
+        .intro-flow-step[data-step="2"] svg { animation: introStepLight 0.35s ease 1.1s forwards; }
+        .intro-flow-step[data-step="3"] svg { animation: introStepLight 0.35s ease 1.45s forwards; }
+        .intro-flow-step[data-step="4"] svg { animation: introStepLight 0.35s ease 1.8s forwards; }
+        @keyframes introStepLight {
+            0%   { transform: scale(0.85); opacity: 0.5; border-color: rgba(255,255,255,0.12); color: rgba(255,255,255,0.35); }
+            50%  { transform: scale(1.15); }
+            100% { transform: scale(1); opacity: 1; border-color: rgba(245,158,11,0.6); color: #f59e0b; box-shadow: 0 0 16px rgba(245,158,11,0.35); }
+        }
+
+        .intro-ready {
+            margin-top: 34px;
+            font-size: 14px;
+            color: rgba(255,255,255,0.55);
+            font-weight: 500;
+            opacity: 0;
+            animation: introFadeUp 0.5s ease 2.0s forwards;
+        }
+
+        @media (max-width: 480px) {
+            .intro-logo { font-size: 32px; }
+            .intro-flow-step span { display: none; }
+            .intro-flow { margin-top: 34px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            #introOverlayGoldTix, #introOverlayGoldTix * {
+                animation-duration: 0.01ms !important;
+                animation-delay: 0s !important;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<nav class="top-navbar">
-<a class="navbar-brand" href="#">
-<img src="images/logo.png" alt="GoldTix" class="navbar-logo" />
-<span class="navbar-name">GoldTix</span>
-</a>
-<div class="navbar-badge">Billet Authentique</div>
+    <!-- =============================================================
+         ===== OVERLAY D'INTRODUCTION (purement visuel, indépendant)
+    ============================================================= -->
+    <div id="introOverlayGoldTix" aria-hidden="true">
+        <div class="intro-particles">
+            <span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span>
+        </div>
+        <button type="button" id="introSkipBtn" aria-label="Passer l'introduction">Passer</button>
+        <div class="intro-center">
+            <div class="intro-logo-wrap">
+                <h1 class="intro-logo">Gold<em>Tix</em></h1>
+                <p class="intro-tagline">Votre événement. Votre billetterie.</p>
+            </div>
+            <div class="intro-flow">
+                <div class="intro-flow-line"><span class="intro-flow-progress"></span></div>
+                <div class="intro-flow-step" data-step="1">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg>
+                    <span>Billet</span>
+                </div>
+                <div class="intro-flow-step" data-step="2">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><line x1="14" y1="14" x2="21" y2="14"/><line x1="14" y1="21" x2="21" y2="21"/><line x1="17.5" y1="14" x2="17.5" y2="21"/></svg>
+                    <span>QR Code</span>
+                </div>
+                <div class="intro-flow-step" data-step="3">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Validation</span>
+                </div>
+                <div class="intro-flow-step" data-step="4">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                    <span>Entrée</span>
+                </div>
+            </div>
+            <p class="intro-ready">Préparez-vous…</p>
+        </div>
+    </div>
+    <script>
+    (function() {
+        var overlay = document.getElementById('introOverlayGoldTix');
+        if (!overlay) return;
+        document.documentElement.style.overflowY = 'hidden';
+        var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var DUREE_MIN = prefersReducedMotion ? 0 : 2000;
+        var DUREE_MAX = prefersReducedMotion ? 0 : 3200;
+        var donneesPretes = false, minimumEcoule = false, dejaFini = false;
+
+        function terminerIntro() {
+            if (dejaFini) return;
+            dejaFini = true;
+            document.documentElement.style.overflowY = '';
+            overlay.classList.add('intro-exit');
+            overlay.addEventListener('animationend', function gerer(e) {
+                if (e.target !== overlay) return;
+                overlay.removeEventListener('animationend', gerer);
+                overlay.classList.add('intro-hidden');
+            });
+            setTimeout(function() { overlay.classList.add('intro-hidden'); }, 650);
+        }
+        function tenterDeFinir() { if (donneesPretes && minimumEcoule) terminerIntro(); }
+        if (prefersReducedMotion) { terminerIntro(); return; }
+        setTimeout(function() { minimumEcoule = true; tenterDeFinir(); }, DUREE_MIN);
+        setTimeout(function() { donneesPretes = true; tenterDeFinir(); }, DUREE_MAX);
+        window.addEventListener('goldtix:donneesPretes', function() { donneesPretes = true; tenterDeFinir(); });
+        var skipBtn = document.getElementById('introSkipBtn');
+        if (skipBtn) skipBtn.addEventListener('click', terminerIntro);
+    })();
+    </script>
+    <!-- ===== FIN DE L'AJOUT — tout ce qui suit est votre page d'achat ===== -->
+
+    <!-- NAVBAR -->
+    <nav class="navbar anim-1" style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 8px 12px; box-sizing: border-box;">
+    <div class="brand" style="display: flex; align-items: center; gap: 6px; min-width: 0;">
+        <img src="images/logo.png" alt="GoldTix" class="brand-logo" style="height: 28px; width: auto; flex-shrink: 0;">
+        <div class="brand-name" style="font-size: 1.1rem; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Gold<em>Tix</em></div>
+    </div>
+    <span class="secure-badge" style="display: flex; align-items: center; gap: 4px; font-size: 0.75rem; white-space: nowrap; flex-shrink: 0;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        Billetterie Sécurisée
+    </span>
 </nav>
 
-<div id="loadingScreen" class="state-screen">
-<div class="loader-ring"></div>
-<p class="state-title">Chargement de votre billet…</p>
-<p class="state-sub">Récupération des données en cours, veuillez patienter.</p>
-</div>
-
-<div id="errorScreen" class="state-screen" style="display:none;">
-<div class="error-icon">
-<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2" stroke-linecap="round">
-<circle cx="12" cy="12" r="10"/>
-<line x1="15" y1="9" x2="9" y2="15"/>
-<line x1="9" y1="9" x2="15" y2="15"/>
-</svg>
-</div>
-<p class="state-title" id="errorMessage">Billet introuvable</p>
-<p class="state-sub">Vérifiez que le lien est correct ou contactez l'organisateur.</p>
-</div>
-
-<div class="ticket-wrapper" id="ticketWrapper" style="display:none;">
-<div class="ticket-glow" id="ticketGlow"></div>
-
-<div class="ticket" id="ticketContent">
-<div class="ticket-header" id="ticketHeaderOuter">
-<img id="event-bg-img" src="" alt="Affiche" style="display:none;" />
-<div class="header-scrim"></div>
-<div class="header-color-wash"></div>
-<div id="ticketHeaderBlock"><!-- injecté par JS --></div>
-</div>
-
-<div id="statusBannerZone"></div>
-
-<div class="ticket-body">
-<svg class="tier-pattern" id="tierPattern" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-<defs>
-<pattern id="hex" x="0" y="0" width="40" height="35" patternUnits="userSpaceOnUse">
-<polygon points="20,2 38,11 38,29 20,38 2,29 2,11" fill="none" stroke="white" stroke-width="1"/>
-</pattern>
-</defs>
-<rect width="100%" height="100%" fill="url(#hex)"/>
-</svg>
-<div class="info-grid" id="infoGrid"></div>
-</div>
-
-<div class="tear-separator">
-<div class="notch-left"></div>
-<hr class="dashed-line" />
-<div class="tear-label">Billet · Zone de validation</div>
-<hr class="dashed-line" />
-<div class="notch-right"></div>
-</div>
-
-<div class="qr-section">
-<div class="qr-frame">
-<div class="qr-corner tl"></div>
-<div class="qr-corner tr"></div>
-<div class="qr-corner bl"></div>
-<div class="qr-corner br"></div>
-<div id="qrcode"></div>
-</div>
-<div class="qr-ref-label">Code QR </div>
-<div class="qr-ref-value" id="billetRef">—</div>
-</div>
-
-<div class="ticket-footer-strip">
-<span class="tf-brand">GoldTix</span>
-<button id="tfReloadBtn" class="tf-reload-btn" type="button">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-<polyline points="23 4 23 10 17 10"/>
-<polyline points="1 20 1 14 7 14"/>
-<path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-</svg>
-<span id="tfReloadLabel">Rafraîchir</span>
-</button>
-<div class="tf-valid">
-<svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-<circle cx="5" cy="5" r="4.5" stroke="#d97706" stroke-width="1"/>
-<path d="M3 5l1.3 1.4L7 3.5" stroke="#d97706" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-<span>Billet unique</span>
-</div>
-</div>
-</div>
-
-<button id="downloadTicket">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-<polyline points="7 10 12 15 17 10"/>
-<line x1="12" y1="15" x2="12" y2="3"/>
-</svg>
-      Télécharger mon billet PDF
-</button>
-</div>
-
-<footer class="creator-footer">
-<div class="footer-inner">
-<div class="footer-brand">
-<div class="footer-logo-wrap">GT</div>
-<span class="footer-wordmark">GoldTix</span>
-</div>
-<p class="footer-tagline">La Billetterie en Or</p>
-<div class="footer-contacts">
-<p class="footer-contact-item">E-mail : <a href="mailto:goldtixbilletterie@gmail.com">goldtixbilletterie@gmail.com</a></p>
-<p class="footer-contact-item">WhatsApp : <a href="https://wa.me/22653107345">+226 53 10 73 45</a></p>
-</div>
-<p class="footer-dev">Développée par <strong style="color:var(--text-mid)">Abdiel KABRE</strong> · GoldTix &copy; 2026</p>
-</div>
-</footer>
-
-<script>
-document.addEventListener('DOMContentLoaded', async () => {
-function showLoading(v) { document.getElementById('loadingScreen').style.display = v ? 'flex' : 'none'; }
-function showError(msg) {
-document.getElementById('loadingScreen').style.display = 'none';
-document.getElementById('errorScreen').style.display = 'flex';
-if (msg) document.getElementById('errorMessage').textContent = msg;
-      }
-function showTicket() {
-document.getElementById('loadingScreen').style.display = 'none';
-document.getElementById('ticketWrapper').style.display = 'flex';
-      }
-
-const params   = new URLSearchParams(window.location.search);
-const billetId = params.get('id');
-if (!billetId) { showError('Aucun identifiant de billet fourni.'); return; }
-
-// Bouton de rafraîchissement du footer (attente / refuse)
-const tfReloadBtn = document.getElementById('tfReloadBtn');
-if (tfReloadBtn) {
-tfReloadBtn.addEventListener('click', () => {
-location.reload();
-        });
-      }
-
-function updateFooterReloadButton(statut) {
-const btn = document.getElementById('tfReloadBtn');
-const label = document.getElementById('tfReloadLabel');
-if (!btn || !label) return;
-
-const enAttente = (statut === 'attente' || statut === 'en_attente' || statut === 'pending');
-const refuse    = (statut === 'refuse' || statut === 'rejected' || statut === 'annule');
-
-if (enAttente) {
-label.textContent = 'Rafraîchir';
-btn.style.display = 'inline-flex';
-        } else if (refuse) {
-label.textContent = 'Réessayer';
-btn.style.display = 'inline-flex';
-        } else {
-btn.style.display = 'none';
-        }
-      }
-
-      // ---------------------------------------------------------------
-      // FONCTION : chargerBillet
-      // (CORRECTIF : ouverture de la fonction + du bloc try réinjectées.
-      //  C'était l'accolade manquante qui cassait toute la syntaxe du
-      //  fichier en cascade jusqu'à la fin.)
-      // ---------------------------------------------------------------
-      async function chargerBillet() {
-        try {
-          // Récupération via l'API Vercel (same-origin, 100% réseau mobile)
-          const reponse = await fetch('/api/tickets?id=' + encodeURIComponent(billetId));
-
-          if (!reponse.ok) {
-            showError('Billet introuvable.');
-            return;
-          }
-
-          const data   = await reponse.json();
-          const billet = data.ticket;
-          const ev     = data.event;
-
-          if (!billet) { showError('Billet introuvable.'); return; }
-          if (!ev)     { showError("Événement introuvable."); return; }
-
-          let categories_data = [];
-          if (ev.categories_data) {
-            try { categories_data = typeof ev.categories_data === 'string' ? JSON.parse(ev.categories_data) : ev.categories_data; }
-            catch(e) { categories_data = []; }
-          }
-
-          let nomCategorie = billet.nom_categorie || billet.type_billet || 'Standard';
-          let categorieIndex = 0;
-          let totalCategories = categories_data.length;
-
-          if (categories_data.length > 0) {
-            let foundIndex = -1;
-            if (billet.categorie_id) {
-              foundIndex = categories_data.findIndex(c => String(c.id) === String(billet.categorie_id));
-            }
-            if (foundIndex === -1 && billet.nom_categorie) {
-              foundIndex = categories_data.findIndex(c => c.nom === billet.nom_categorie || c.name === billet.nom_categorie);
-            }
-            if (foundIndex === -1 && billet.type_billet) {
-              foundIndex = categories_data.findIndex(c => c.nom === billet.type_billet || c.name === billet.type_billet);
-            }
-            if (foundIndex !== -1) {
-              categorieIndex = foundIndex;
-              const cat = categories_data[foundIndex];
-              nomCategorie = cat.nom || cat.name || nomCategorie;
-            }
-          }
-
-          let tierClass = 'tier-0';
-          if (totalCategories <= 1) { tierClass = 'tier-0'; }
-          else if (totalCategories === 2) { tierClass = categorieIndex === 0 ? 'tier-1' : 'tier-0'; }
-          else if (totalCategories === 3) {
-            if (categorieIndex === 0) tierClass = 'tier-1';
-            else if (categorieIndex === 1) tierClass = 'tier-2';
-            else tierClass = 'tier-0';
-          } else {
-            if (categorieIndex === 0) tierClass = 'tier-1';
-            else if (categorieIndex === 1) tierClass = 'tier-2';
-            else if (categorieIndex === 2) tierClass = 'tier-3';
-            else tierClass = 'tier-0';
-          }
-
-          const tierStyles = {
-            'tier-0': { badgeBg:'rgba(217,119,6,.22)', badgeBdr:'rgba(245,158,11,.45)', badgeClr:'#fcd34d', dotClr:'#f59e0b', glowClr:'rgba(245,158,11,.3)', label:'Standard' },
-            'tier-1': { badgeBg:'rgba(250,204,21,.22)', badgeBdr:'rgba(250,204,21,.5)', badgeClr:'#fef08a', dotClr:'#facc15', glowClr:'rgba(250,204,21,.35)', label:'Premium' },
-            'tier-2': { badgeBg:'rgba(16,185,129,.18)', badgeBdr:'rgba(16,185,129,.4)', badgeClr:'#6ee7b7', dotClr:'#10b981', glowClr:'rgba(16,185,129,.3)', label:'Émeraude' },
-            'tier-3': { badgeBg:'rgba(244,63,94,.18)', badgeBdr:'rgba(244,63,94,.4)', badgeClr:'#fda4af', dotClr:'#f43f5e', glowClr:'rgba(244,63,94,.3)', label:'Rubis' }
-          };
-          const ts = tierStyles[tierClass];
-          const badgeBgStyle  = `background:${ts.badgeBg}; border:1px solid ${ts.badgeBdr}; color:${ts.badgeClr};`;
-          const passCardStyle = `box-shadow: 0 0 0 2px ${ts.badgeBdr}, 0 24px 64px rgba(0,0,0,.7), 0 0 80px ${ts.glowClr};`;
-
-          const ticketEl = document.getElementById('ticketContent');
-          ticketEl.classList.add(tierClass);
-          ticketEl.style.cssText += passCardStyle;
-
-          const glowEl = document.getElementById('ticketGlow');
-          glowEl.style.cssText = `background: radial-gradient(ellipse, ${ts.dotClr} 0%, transparent 70%); width:120%; height:60%; top:10%; left:50%; transform:translateX(-50%); position:absolute; opacity:.18; filter:blur(40px);`;
-
-          const imgUrl = ev.affiche_url || ev.image_url || ev.affiche || null;
-          const bgImg = document.getElementById('event-bg-img');
-          if (imgUrl) {
-            // CORRECTIF : crossOrigin AVANT de définir src, pour éviter que le canvas
-            // soit "taint" (contaminé) par une image cross-origin sans en-têtes CORS.
-            // Un canvas taint bloque silencieusement toDataURL()/toBlob() sur mobile.
-            bgImg.crossOrigin = 'anonymous';
-            bgImg.src = imgUrl;
-            bgImg.style.display = 'block';
-            bgImg.onerror = () => { bgImg.style.display = 'none'; applyHeaderFallback(ts.dotClr); };
-          } else { applyHeaderFallback(ts.dotClr); }
-
-          function applyHeaderFallback(color) {
-            const hdr = document.querySelector('.ticket-header');
-            if (hdr) { hdr.style.background = `linear-gradient(160deg, ${color}22 0%, #0c0a09 100%)`; hdr.style.minHeight = '140px'; }
-          }
-
-          const dateStr = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' }) : '—';
-          const headerEl = document.getElementById('ticketHeaderBlock');
-          headerEl.innerHTML = `
-            <div class="category-badge" style="${badgeBgStyle}">
-              <span class="badge-dot" style="background:${ts.dotClr}; box-shadow:0 0 6px ${ts.dotClr};"></span>
-${escHTML(nomCategorie)}
+    <!-- MAIN -->
+    <main class="main-wrapper">
+        <div id="detailsEvenement" class="anim-2">
+            <div class="card loading-card">
+                <p class="loading-text">
+                    <span class="spinner"></span>
+                    Chargement de votre experience...
+                </p>
             </div>
-            <h1 class="event-title-h">${escHTML(ev.titre || 'Événement')}</h1>
-            <div style="display:flex; gap:8px; flex-wrap:wrap;">
-              <div class="event-meta-pill">
-                <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="${ts.dotClr}" stroke-width="2" stroke-linecap="round">
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                  <line x1="16" y1="2" x2="16" y2="6"/>
-                  <line x1="8"  y1="2" x2="8"  y2="6"/>
-                  <line x1="3"  y1="10" x2="21" y2="10"/>
-                </svg>
-${escHTML(dateStr)}
-              </div>
-${ev.heure ? `<div class="event-meta-pill">
-                <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="${ts.dotClr}" stroke-width="2" stroke-linecap="round">
-                  <circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 12"/>
-                </svg>${escHTML(ev.heure)}</div>` : ''}
-            </div>`;
+        </div>
+    </main>
 
-          const statut = (billet.statut || 'attente').trim().toLowerCase();
-          const statusZone = document.getElementById('statusBannerZone');
-          const isConfirmed = (statut === 'confirme' || statut === 'valide');
+    <!-- FOOTER -->
+    <footer class="footer anim-3">
+        <p class="footer-brand">— La Billetterie en Or —</p>
+        <p>
+            Platforme : <strong>GoldTix</strong>
+            <span class="footer-dot">|</span>
+            Développée par <strong>Abdiel KABRE</strong>
+        </p>
+        <p style="margin-top: 5px;">
+            <a href="mailto:abdielkabre2@gmail.com">abdielkabre2@gmail.com</a>
+            <span class="footer-dot">|</span>
+            <a href="https://wa.me/22653107345" target="_blank">+226 53 10 73 45</a>
+            <span class="footer-dot">/</span>
+            <a href="https://wa.me/212770967646" target="_blank">+212 770-967646</a>
+        </p>
+    </footer>
 
-          if (!isConfirmed) { const dlBtn = document.getElementById('downloadTicket'); if (dlBtn) dlBtn.style.display = 'none'; }
+    <script>
+        /* =============================================================
+           GOLDTIX — Page d'achat 100% "same-origin"
+           ==============================================================
+           AUCUN script tiers (CDN Supabase, SDK client) n'est chargé ici.
+           Le navigateur du visiteur ne contacte QUE le domaine sur lequel
+           il se trouve déjà (fetch relatif vers /api/tickets). C'est ce
+           qui règle le blocage constaté sur certains réseaux 3G/4G/5G :
+           ces réseaux/opérateurs peuvent filtrer ou ralentir des domaines
+           tiers (cdn.jsdelivr.net, *.supabase.co) qu'ils ne connaissent
+           pas, mais jamais le domaine principal du site que l'utilisateur
+           est justement en train de charger.
 
-          // Mise à jour du bouton de rafraîchissement dans le footer selon le statut
-          updateFooterReloadButton(statut);
+           Lecture  : GET  /api/tickets?event=ID
+           Écriture : POST /api/tickets  (multipart/form-data)
 
-          if (statut === 'attente' || statut === 'en_attente') {
-            statusZone.innerHTML = `<div class="status-banner attente">
-                <div class="status-icon"><div class="status-pulse"></div></div>
-                <div>
-                  <div style="font-weight:800; font-size:.82rem;">Paiement en attente de confirmation</div>
-                  <div style="font-size:.7rem; font-weight:500; opacity:.75; margin-top:2px;">Veuillez patienter quelques instants, puis cliquez sur «Rafraîchir» pour vérifier l'état de votre paiement.</div>
-                  <div style="font-size:.65rem; font-weight:500; font-style:italic; opacity:.75; margin-top:10px;">Si votre billet n'est toujours pas disponible après 1 heure, veuillez contacter le bénéficiaire afin de vérifier que votre paiement a bien été reçu et validé.</div>
-                </div>
-              </div>`;
-          } else if (statut === 'refuse' || statut === 'annule') {
-            statusZone.innerHTML = `<div class="status-banner refuse">
-                <div class="status-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
-                <div>
-                  <div style="font-weight:800; font-size:.82rem;">Paiement refusé</div>
-                  <div style="font-size:.7rem; font-weight:500; opacity:.75; margin-top:2px;">Votre paiement n'a pas été confirmé. Veuillez contacter le bénéficiaire pour vérifier sa réception.</div>
-                  <div style="font-size:.7rem; font-weight:500; opacity:.75; margin-top:2px;">Dès que votre paiement est confirmé, patientez quelques instants puis cliquez sur <strong>«Réessayer»</strong> afin de récupérer votre billet.</div>
-                </div>
-              </div>`;
-          } else {
-            statusZone.innerHTML = `<div class="status-banner" style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.3); color:#10b981; padding:12px 16px; border-radius:12px; display:flex; align-items:center; gap:12px;">
-                <div style="width:8px; height:8px; background:#10b981; border-radius:50%; box-shadow:0 0 8px #10b981;"></div>
-                <div style="font-weight:800; font-size:.82rem;">Billet validé et actif</div>
-              </div>`;
-          }
+           Révision de sécurité/robustesse (cette version) :
+           - Verrou anti-chevauchement sur chargerPageAchatUnique() : un
+             clic répété sur "Réessayer" pendant qu'une requête est déjà
+             en vol ne déclenche plus d'appel concurrent.
+           - Le filet de sécurité "chargement trop long" est désormais
+             armé à CHAQUE appel (et nettoyé à la fin), plutôt qu'une
+             seule fois au chargement initial de la page.
+           - Contrôle de la taille du fichier de preuve de paiement côté
+             client (10 Mo max, alignement avec le texte affiché) avant
+             l'envoi, pour éviter une attente inutile côté utilisateur.
+        ============================================= */
 
-          const infoGrid = document.getElementById('infoGrid');
-          const cells = [
-            { label:'Titulaire', value: billet.nom_participant || '—', icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`, full:false },
-            { label:'Téléphone', value: billet.telephone || '—', icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><rect x="7" y="2" width="10" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>`, full:false },
-            { label:'Catégorie', value: nomCategorie, icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`, full:false, accent:true },
-            { label:'Lieu', value: ev.lieu || '—', icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>`, full:false },
-            ...(ev.beneficiaire_nom ? [{ label:'Bénéficiaire_paiements', value: ev.beneficiaire_nom + (ev.beneficiaire_infos ? ' · ' + ev.beneficiaire_infos : ''), icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`, full:true }] : []),
-            ...(isConfirmed ? [{ label:'ID-billet', value: billet.numero_billet || billet.id || '—', icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg>`, full:true }] : [])
-          ];
-          cells.forEach((cell, i) => {
-            const div = document.createElement('div');
-            div.className = 'info-cell' + (cell.full ? ' full' : '');
-            div.style.animationDelay = (0.25 + i * 0.055) + 's';
-            const valueStyle = cell.accent ? `color:${ts.badgeClr}; font-weight:800;` : '';
-            div.innerHTML = `<span class="cell-label">${cell.label}</span><span class="cell-value" style="${valueStyle}">${escHTML(String(cell.value))}</span><span class="cell-icon">${cell.icon}</span>`;
-            infoGrid.appendChild(div);
-          });
+        // ─── SVG ICONS ────────────────────────────────────────────────────────────
+        const ICONS = {
+            calendar: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+            clock:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+            pin:      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
+            ticket:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg>`,
+            user:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+            phone:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.65 3.27 2 2 0 0 1 3.62 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.29 6.29l1.02-.88a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`,
+            mobile:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>`,
+            card:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>`,
+            upload:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>`,
+            check:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
+            image:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
+            mail:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`,
+        };
 
-          if (!isConfirmed) {
-            const qrWrapper = document.getElementById('qrcode');
-            if (qrWrapper && qrWrapper.parentElement) qrWrapper.parentElement.style.display = 'none';
-            const refEl = document.getElementById('billetRef');
-            if (refEl && refEl.parentElement) refEl.parentElement.style.display = 'none';
-          } else {
-            document.getElementById('billetRef').textContent = billet.numero_billet || billet.id || '—';
+        // Taille maximale acceptée pour la preuve de paiement (cohérent avec le
+        // texte affiché "10MB max" dans le formulaire).
+        const TAILLE_MAX_FICHIER = 10 * 1024 * 1024; // 10 Mo
 
-            // On encode uniquement l'ID du billet, en texte brut
-            const qrData = String(billet.id);
+        // Verrou global anti-chevauchement : évite que deux appels à
+        // chargerPageAchatUnique() (ex. double clic sur "Réessayer") ne
+        // s'exécutent en parallèle et ne se marchent dessus.
+        let chargementEnCours = false;
 
-            const qrContainerElement = document.getElementById('qrcode');
-            qrContainerElement.innerHTML = '';
-            qrContainerElement.style.width = '150px';
-            qrContainerElement.style.height = '150px';
-            qrContainerElement.style.margin = '0 auto';
+        function afficherErreurChargement(container, titre, message) {
+            container.innerHTML = `
+                <div class="card error-card">
+                    <h2>${titre}</h2>
+                    <p>${message}</p>
+                    <button class="btn-submit" style="margin-top: 20px;" onclick="chargerPageAchatUnique()">
+                        Réessayer
+                    </button>
+                </div>`;
+            window.dispatchEvent(new Event('goldtix:donneesPretes'));
+        }
 
-            new QRCode(qrContainerElement, {
-              text: qrData,
-              width: 150,
-              height: 150,
-              colorDark: '#000000',
-              colorLight: '#ffffff',
-              correctLevel: QRCode.CorrectLevel.M
-            });
-
-            const qrNodes = qrContainerElement.querySelectorAll('canvas, img');
-            if (qrNodes.length > 1) {
-              Array.from(qrNodes).slice(1).forEach(node => node.remove());
+        // Petit utilitaire : un fetch avec timeout propre (AbortController),
+        // pour ne jamais rester bloqué en attente indéfinie d'une réponse.
+        async function fetchAvecTimeout(url, options, timeoutMs) {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+            try {
+                const reponse = await fetch(url, Object.assign({}, options, { signal: controller.signal }));
+                return reponse;
+            } finally {
+                clearTimeout(timeoutId);
             }
-          }
-
-          showTicket();
-
-        } catch(err) {
-          console.error('Erreur chargerBillet:', err);
-          showError('Une erreur est survenue. Veuillez réessayer.');
         }
-      } // <-- fermeture de async function chargerBillet()
 
-      // FONCTION : telechargerPDF
-     function telechargerPDF() {
-  const filename = 'billet-goldtix-' + (new URLSearchParams(window.location.search).get('id') || 'ticket') + '.pdf';
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        // ─── MAIN LOADER ─────────────────────────────────────────────────────────
+        async function chargerPageAchatUnique() {
+            // Empêche deux chargements simultanés (ex. clics répétés sur "Réessayer").
+            if (chargementEnCours) return;
+            chargementEnCours = true;
 
-  let pdfWindow = null;
-  if (isMobile) {
-    pdfWindow = window.open('', '_blank');
-    if (pdfWindow) {
-      pdfWindow.document.write(
-        '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Billet GoldTix</title>' +
-        '<style>body{margin:0;display:flex;align-items:center;justify-content:center;' +
-        'height:100vh;background:#0c0a09;color:#a8a29e;font-family:sans-serif;font-size:14px;}</style>' +
-        '</head><body>Génération de votre billet…</body></html>'
-      );
-    }
-  }
+            const urlParams = new URLSearchParams(window.location.search);
+            const eventId = urlParams.get("event");
+            const container = document.getElementById("detailsEvenement");
 
-  const btn = document.getElementById('downloadTicket');
-  const original = btn.innerHTML;
-  btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9" stroke-dasharray="56" style="animation:spin 1s linear infinite;"/></svg> Génération du PDF…`;
-  btn.disabled = true;
-  btn.style.opacity = '.7';
+            container.innerHTML = `
+                <div class="card loading-card">
+                    <p class="loading-text">
+                        <span class="spinner"></span>
+                        Chargement de votre experience...
+                    </p>
+                </div>`;
 
-  function resetButton() {
-    btn.innerHTML = original;
-    btn.disabled = false;
-    btn.style.opacity = '1';
-  }
+            // Filet de sécurité propre à CET appel : si le chargement traîne trop,
+            // on affiche un message clair au lieu d'un spinner infini. Il est
+            // systématiquement nettoyé en fin d'appel (succès ou erreur).
+            const watchdog = setTimeout(function() {
+                if (container.querySelector(".loading-card")) {
+                    afficherErreurChargement(
+                        container,
+                        "Chargement trop long",
+                        "La connexion semble instable. Vérifiez votre réseau (Wi-Fi ou données mobiles) et réessayez."
+                    );
+                }
+            }, 20000);
 
-  const eventTitle   = document.querySelector('.event-title-h')?.textContent.trim() || 'Événement';
-  const categoryText = document.querySelector('.category-badge')?.textContent.trim() || 'Standard';
-  const metaPills    = Array.from(document.querySelectorAll('.event-meta-pill')).map(p => p.textContent.trim());
-  const cellValues   = Array.from(document.querySelectorAll('.info-cell')).map(c => ({
-    label: c.querySelector('.cell-label')?.textContent.trim() || '',
-    value: c.querySelector('.cell-value')?.textContent.trim() || ''
-  }));
-  const billetRef    = document.getElementById('billetRef')?.textContent.trim() || '';
-  const accentColor  = getComputedStyle(document.getElementById('ticketContent')).getPropertyValue('--tier-a').trim() || '#f59e0b';
+            try {
+                if (!eventId) {
+                    afficherErreurChargement(container, "Lien invalide", "Aucun evenement specifie dans ce lien.");
+                    return;
+                }
 
-  const qrSourceEl = document.querySelector('#qrcode canvas, #qrcode img');
-  let qrDataUrl = null;
-  if (qrSourceEl) {
-    if (qrSourceEl.tagName === 'CANVAS') {
-      qrDataUrl = qrSourceEl.toDataURL('image/png');
-    } else if (qrSourceEl.tagName === 'IMG') {
-      qrDataUrl = qrSourceEl.src;
-    }
-  }
+                let ev;
+                try {
+                    const reponse = await fetchAvecTimeout(
+                        '/api/tickets?event=' + encodeURIComponent(eventId),
+                        { method: 'GET' },
+                        15000
+                    );
 
-  const pdfContainer = document.createElement('div');
-  pdfContainer.style.cssText = `
-    position: fixed; left: -9999px; top: 0;
-    width: 380px; padding: 24px;
-    background: #ffffff; color: #111010;
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  `;
+                    if (!reponse.ok) {
+                        throw new Error("Erreur serveur (" + reponse.status + ")");
+                    }
 
-  pdfContainer.innerHTML = `
-    <div style="border:2px solid ${accentColor}; border-radius:16px; padding:20px; text-align:center;">
-      <div style="font-size:11px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:${accentColor}; margin-bottom:6px;">
-        ${categoryText}
-      </div>
-      <div style="font-size:20px; font-weight:800; margin-bottom:10px; line-height:1.25;">
-        ${eventTitle}
-      </div>
-      <div style="font-size:12px; color:#57534e; margin-bottom:16px;">
-        ${metaPills.join(' · ')}
-      </div>
-      <div style="border-top:2px dashed #d6d3d1; margin:14px 0;"></div>
-      <div style="text-align:left; display:flex; flex-direction:column; gap:8px; margin-bottom:16px;">
-        ${cellValues.map(c => `
-          <div style="display:flex; justify-content:space-between; font-size:12px; border-bottom:1px solid #f1f0ef; padding-bottom:6px;">
-            <span style="color:#78716c; font-weight:600;">${c.label}</span>
-            <span style="font-weight:700; text-align:right; max-width:60%;">${c.value}</span>
-          </div>
-        `).join('')}
-      </div>
-      ${qrDataUrl ? `
-        <img src="${qrDataUrl}" style="width:160px; height:160px; margin:0 auto; display:block; border:8px solid #fff; box-shadow:0 0 0 1px #e7e5e4;" />
-        <div style="font-size:10px; color:#a8a29e; margin-top:8px; letter-spacing:.05em;">Code QR - ID ${billetRef}</div>
-      ` : ''}
-      <div style="font-size:9px; color:#a8a29e; margin-top:16px; letter-spacing:.08em; text-transform:uppercase;">
-        GoldTix · Billet unique
-      </div>
-    </div>
-  `;
+                    const data = await reponse.json();
+                    ev = data.event;
+                } catch (err) {
+                    console.error("Erreur réseau lors du chargement de l'événement :", err);
+                    afficherErreurChargement(
+                        container,
+                        "Connexion impossible",
+                        "Le chargement a échoué (réseau instable ou trop lent). Vérifiez votre connexion et réessayez."
+                    );
+                    return;
+                }
 
-  document.body.appendChild(pdfContainer);
+                if (!ev) {
+                    afficherErreurChargement(
+                        container,
+                        "Événement introuvable",
+                        "Cet événement a été supprimé ou n'existe plus."
+                    );
+                    return;
+                }
 
-  html2canvas(pdfContainer, {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: '#ffffff',
-    logging: false
-  })
-    .then((canvas) => {
-      document.body.removeChild(pdfContainer);
+                // ── Colonne droite ──────────────────────────────────────────────────
+                let rightColumn = "";
 
-      const imgData = canvas.toDataURL('image/jpeg', 0.95);
-      const { jsPDF } = window.jspdf;
+                if (ev.ventes_fermees) {
+                    rightColumn = `
+                        <div class="card anim-3">
+                            <div class="closed-box">
+                                <div class="closed-box-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+                                    </svg>
+                                </div>
+                                <h3>Ventes Fermées</h3>
+                                <p>Les ventes en ligne de billets pour cet évènement viennent d'être fermées par l'organisateur.</p>
+                                <p>Merci pour votre intérêt et à bientôt !</p>
+                            </div>
+                        </div>`;
+                } else {
+                    const infosCoordonnees = ev.beneficiaire_infos || 'Non renseigne';
 
-      const marginMm = 6;
-      const maxWidthMm = 100;
-      const pxToMm = maxWidthMm / canvas.width;
-      const imgWidthMm = canvas.width * pxToMm;
-      const imgHeightMm = canvas.height * pxToMm;
-      const pageWidth = imgWidthMm + marginMm * 2;
-      const pageHeight = imgHeightMm + marginMm * 2;
+                    // Categorie select
+                    let categorieHTML = "";
+                    if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_data.length > 0) {
+                        const options = ev.categories_data
+                            .map(cat => `<option value="${cat.nom} - ${cat.prix}">${cat.nom} (${cat.prix})</option>`)
+                            .join("");
+                        categorieHTML = `
+                            <div class="form-group">
+                                <label for="selectCategorie">Catégorie de billet</label>
+                                <select id="selectCategorie">${options}</select>
+                            </div>`;
+                    }
 
-      const pdf = new jsPDF({
-        unit: 'mm',
-        format: [pageWidth, pageHeight],
-        orientation: 'portrait'
-      });
+                    // QR / RIB
+                    const qrSection = (ev.rib_image_url || ev.qr_code_paiement) ? `
+                        <div class="qr-wrapper">
+                            <p class="qr-label">
+                                ${ICONS.card}
+                                RIB du bénéficiaire ci-dessous
+                            </p>
+                            <img src="${ev.rib_image_url || ev.qr_code_paiement}" alt="Support de paiement" class="qr-image">
+                        </div>` : "";
 
-      pdf.addImage(imgData, 'JPEG', marginMm, marginMm, imgWidthMm, imgHeightMm, undefined, 'FAST');
-      return pdf.output('blob');
-    })
-    .then((pdfBlob) => {
-      const blobURL = URL.createObjectURL(pdfBlob);
+                    rightColumn = `
+                        <div class="card anim-3">
 
-      if (isMobile) {
-        if (pdfWindow) {
-          // On redirige la fenêtre déjà ouverte vers le PDF prêt.
-          pdfWindow.location.href = blobURL;
-        } else {
-          
-          window.location.href = blobURL;
+                            <!-- ETAPE 1 : PAIEMENT -->
+                            <div class="payment-box">
+                                <p class="payment-box-title">
+                                    ${ICONS.mobile}
+                                    Etape 1 — Effectuer le paiement
+                                </p>
+                                <div class="info-rows">
+                                    <div class="info-row">
+                                        <span class="info-row-label">${ICONS.user} Bénéficiaire des paiements</span>
+                                        <span class="info-row-value">${ev.beneficiaire_nom || 'Non renseigne'}</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="info-row-label">${ICONS.phone} Contact</span>
+                                        <span class="info-row-value">${infosCoordonnees}</span>
+                                    </div>
+                                </div>
+                                ${qrSection}
+                            </div>
+
+                            <!-- ETAPE 2 : FORMULAIRE -->
+                            <h3 class="section-title">
+                                ${ICONS.mail}
+                                Etape 2 — Confirmez votre paiement
+                            </h3>
+
+                            ${categorieHTML}
+
+                            <div class="form-group">
+                                <label for="nomParticipant">Nom et Prénom(s) <span style="color: red;">*</span></label>
+                                <input type="text" id="nomParticipant" placeholder="ex : KONATE Jean">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="emailParticipant">Adresse e-mail (optionnelle - réception lien du billet)</label>
+                                <input type="email" id="emailParticipant" placeholder="ex : nom@gmail.com">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="telParticipant">Contact WhatsApp <span style="color: red;">*</span></label>
+                                <input type="tel" id="telParticipant" placeholder="ex : +226 ... / +212 ...">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Preuve de paiement (capture du reçu) <span style="color: red;">*</span></label>
+                                <div class="file-input-wrapper" id="fileWrapper">
+                                    <input type="file" id="preuvePaiement" accept="image/*">
+                                    <div class="file-input-display">
+                                        ${ICONS.upload}
+                                        <span>Cliquez pour choisir un fichier</span>
+                                        <em>JPG, PNG, WEBP acceptés(2MB max)</em>
+                                        <span class="file-name-preview" id="fileNamePreview"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="btn-submit" id="btnValiderAchat">
+                                <span class="btn-icon">${ICONS.check}</span>
+                                <div class="spinner"></div>
+                                Valider mon paiement et obtenir mon billet
+                            </button>
+
+                        </div>`;
+                }
+
+                // ── Prix HTML ───────────────────────────────────────────────────────
+                let prixHTML = "";
+                if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_data.length > 0) {
+                    prixHTML = ev.categories_data.map(c => `
+                        <div class="price-badge-item">
+                            ${ICONS.ticket}
+                            <strong>${c.nom}</strong>&nbsp;:&nbsp;${c.prix}
+                        </div>`).join("");
+                } else {
+                    prixHTML = `<div class="price-badge-item">${ICONS.card} Prix : ${ev.prix || 'Gratuit'}</div>`;
+                }
+
+                // ── Affiche HTML ────────────────────────────────────────────────────
+                const posterHTML = ev.affiche_url
+                    ? `<img src="${ev.affiche_url}" alt="Affiche de l'événement">`
+                    : `<div class="poster-fallback">${ICONS.image}<p>Affiche non disponible</p></div>`;
+
+                // ── Injection ───────────────────────────────────────────────────────
+                container.innerHTML = `
+                    <div class="grid">
+                        <div class="card card--event">
+                            <div class="poster-wrapper">${posterHTML}</div>
+                            <h1 class="event-title">${ev.titre}</h1>
+                                                    <div class="meta-row">
+                                <span class="meta-item">
+                                    ${ICONS.calendar}
+                                    <span class="meta-text"><strong>Date :</strong> ${ev.date}</span>
+                                </span>
+                                <span class="meta-sep">—</span>
+                                <span class="meta-item">
+                                    ${ICONS.clock}
+                                    <span class="meta-text"><strong>Heure :</strong> ${ev.heure}</span>
+                                </span>
+                            </div>
+                            <div class="meta-row">
+                                <span class="meta-item">
+                                    ${ICONS.pin}
+                                    <span class="meta-text"><strong>Lieu :</strong> ${ev.lieu}</span>
+                                </span>
+                            </div>
+                            <div class="price-badge">${prixHTML}</div>
+                        </div>
+                        <div>${rightColumn}</div>
+                    </div>`;
+
+                const posterImage = container.querySelector(".poster-wrapper img");
+                if (posterImage) {
+                    posterImage.addEventListener("error", function() {
+                        const wrapper = this.closest(".poster-wrapper");
+                        if (wrapper) {
+                            wrapper.innerHTML = `<div class="poster-fallback">${ICONS.image}<p>Affiche non disponible</p></div>`;
+                        }
+                    });
+                }
+
+                // ── File input preview ──────────────────────────────────────────────
+                if (!ev.ventes_fermees) {
+                    const fileInput = document.getElementById("preuvePaiement");
+                    const filePreview = document.getElementById("fileNamePreview");
+
+                    fileInput.addEventListener("change", function() {
+                        if (this.files && this.files[0]) {
+                            const fichier = this.files[0];
+
+                            // Contrôle de taille immédiat : évite de laisser l'utilisateur
+                            // remplir tout le formulaire avant de découvrir, au clic sur
+                            // "Valider", que son fichier est trop volumineux.
+                            if (fichier.size > TAILLE_MAX_FICHIER) {
+                                alert("Ce fichier dépasse la taille maximale autorisée (10 Mo). Choisissez une image plus légère.");
+                                this.value = "";
+                                filePreview.style.display = "none";
+                                document.getElementById("fileWrapper").style.borderColor = "";
+                                document.getElementById("fileWrapper").style.background = "";
+                                return;
+                            }
+
+                            filePreview.textContent = fichier.name;
+                            filePreview.style.display = "block";
+                            document.getElementById("fileWrapper").style.borderColor = "var(--gold-2)";
+                            document.getElementById("fileWrapper").style.background = "#fffdf5";
+                        }
+                    });
+
+                    // ── Soumission — tout passe par POST /api/tickets ────────────────
+                    const btnValiderAchat = document.getElementById("btnValiderAchat");
+                    const btnHTMLOriginal = btnValiderAchat.innerHTML; // Sauvegarde le HTML d'origine une seule fois
+
+                    btnValiderAchat.onclick = async function() {
+                        const nom   = document.getElementById("nomParticipant").value.trim();
+                        const email = document.getElementById("emailParticipant").value.trim();
+                        const tel   = document.getElementById("telParticipant").value.trim();
+                        const fichierPreuve = document.getElementById("preuvePaiement").files[0];
+
+                        let typeBilletChoisi = "Standard";
+                        const selectCat = document.getElementById("selectCategorie");
+                        if (selectCat) {
+                            typeBilletChoisi = selectCat.value;
+                        } else if (typeof ev !== 'undefined' && ev.prix) {
+                            typeBilletChoisi = String(ev.prix);
+                        }
+
+                        if (!nom || !tel || !fichierPreuve) {
+                            alert("Vous devez obligatoirement entrer votre nom, numéro de téléphone et joindre la capture de paiement.");
+                            return;
+                        }
+
+                        // Contrôle de taille en dernier recours (au cas où le fichier
+                        // aurait été substitué après l'événement "change" initial).
+                        if (fichierPreuve.size > TAILLE_MAX_FICHIER) {
+                            alert("Le fichier de preuve de paiement dépasse 10 Mo. Choisissez une image plus légère.");
+                            return;
+                        }
+
+                        // Validation légère de l'email (champ optionnel) : on ne bloque
+                        // que si un email a été saisi et qu'il est manifestement invalide.
+                        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                            alert("L'adresse e-mail saisie ne semble pas valide. Vous pouvez aussi laisser ce champ vide.");
+                            return;
+                        }
+
+                        if (btnValiderAchat.disabled) return; // Anti-double clic
+                        btnValiderAchat.disabled = true;
+
+                        // FIX VISUEL : Remplace tout le contenu du bouton au lieu d'ajouter un child par-dessus
+                        btnValiderAchat.innerHTML = `<div class="spinner"></div> Validation et envoi sécurisé en cours...`;
+
+                        try {
+                            // Envoi direct du formulaire en UNE SEULE requête POST (suppression du GET de vérification inutile)
+                            const formData = new FormData();
+                            formData.append("event", ev.id);
+                            formData.append("nom_participant", nom);
+                            formData.append("email", email || "");
+                            formData.append("telephone", tel);
+                            formData.append("type_billet", typeBilletChoisi);
+                            formData.append("preuve", fichierPreuve);
+
+                            const reponseAchat = await fetchAvecTimeout(
+                                '/api/tickets',
+                                { method: 'POST', body: formData },
+                                30000
+                            );
+
+                            let resultatAchat;
+                            try {
+                                resultatAchat = await reponseAchat.json();
+                            } catch (e) {
+                                resultatAchat = null;
+                            }
+
+                            if (!reponseAchat.ok || !resultatAchat || !resultatAchat.success) {
+                                const messageErreur = (resultatAchat && resultatAchat.error)
+                                    ? resultatAchat.error
+                                    : "Erreur lors de l'enregistrement du billet.";
+                                alert(messageErreur);
+                                btnValiderAchat.disabled = false;
+                                btnValiderAchat.innerHTML = btnHTMLOriginal;
+                                return;
+                            }
+
+                            // Redirection immédiate
+                            window.location.href = `billet.html?id=${encodeURIComponent(resultatAchat.id)}`;
+
+                        } catch (err) {
+                            console.error("Erreur inattendue :", err);
+                            const messageErreur = (err && err.name === "AbortError")
+                                ? "La connexion met trop de temps à répondre. Vérifiez votre réseau puis réessayez."
+                                : "Une erreur inattendue est survenue lors du traitement.";
+                            alert(messageErreur);
+                            btnValiderAchat.disabled = false;
+                            btnValiderAchat.innerHTML = btnHTMLOriginal;
+                        }
+                    };
+                }
+
+                window.dispatchEvent(new Event('goldtix:donneesPretes'));
+
+            } catch (err) {
+                console.error("Erreur inattendue lors de l'affichage de l'événement :", err);
+                afficherErreurChargement(
+                    container,
+                    "Une erreur est survenue",
+                    "Impossible d'afficher les informations de l'événement. Réessayez."
+                );
+            } finally {
+                clearTimeout(watchdog);
+                chargementEnCours = false;
+            }
         }
-      } else {
-        const downloadLink = document.createElement('a');
-        downloadLink.href = blobURL;
-        downloadLink.download = filename;
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-      }
 
-      // Libère la mémoire un peu plus tard (laisse le temps au navigateur
-      // de charger le blob dans le nouvel onglet avant de le révoquer).
-      setTimeout(() => URL.revokeObjectURL(blobURL), 60000);
-
-      resetButton();
-    })
-    .catch((err) => {
-      if (document.body.contains(pdfContainer)) document.body.removeChild(pdfContainer);
-      if (pdfWindow) pdfWindow.close();
-      console.error("Erreur PDF:", err);
-      alert("Erreur lors de la génération du PDF. Veuillez réessayer.");
-      resetButton();
-    });
-}
-      function escHTML(str) {
-        if (!str) return '';
-        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-      }
-
-      const dlBtn = document.getElementById('downloadTicket');
-      if (dlBtn) dlBtn.addEventListener('click', telechargerPDF);
-
-      chargerBillet();
-    });
-</script>
+        document.addEventListener('DOMContentLoaded', function() {
+            chargerPageAchatUnique();
+        });
+    </script>
 </body>
 </html>

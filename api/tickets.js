@@ -54,7 +54,7 @@ async function handleGet(req, res, supabase) {
     const { data: ticket, error: errTicket } = await supabase
       .from("billets")
       .select("*")
-      .eq("id", ticketId)
+      .eq("code_public", ticketId)
       .single();
 
     if (errTicket || !ticket) {
