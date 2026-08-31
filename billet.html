@@ -735,7 +735,7 @@ btn.style.display = 'none';
       // ---------------------------------------------------------------
       async function recupererDonneesBillet() {
         // Récupération via l'API Vercel (same-origin, 100% réseau mobile)
-       const reponse = await fetch('/api/tickets.js?id=' + encodeURIComponent(billetId));
+       const reponse = await fetch('/api/tickets?id=' + encodeURIComponent(billetId));
         if (!reponse.ok) return null;
         return await reponse.json();
       }
@@ -1047,16 +1047,16 @@ ${ev.heure ? `<div class="event-meta-pill">
           if (qrSection) qrSection.style.display = '';
           if (qrFrame) qrFrame.style.display = '';
           const refEl = document.getElementById('billetRef');
-          if (refEl) refEl.textContent = billet.numero_billet || billet.id || '—';
+          if (refEl) refEl.textContent = billet.numero_billet || billet.code_public || '—';
 
-          if (qrContainerElement && qrContainerElement.dataset.genere !== String(billet.id)) {
+          if (qrContainerElement && qrContainerElement.dataset.genere !== String(billet.code_public)) {
             qrContainerElement.innerHTML = '';
             qrContainerElement.style.width = '150px';
             qrContainerElement.style.height = '150px';
             qrContainerElement.style.margin = '0 auto';
 
             new QRCode(qrContainerElement, {
-              text: String(billet.id),
+              text: String(billet.code_public),
               width: 150,
               height: 150,
               colorDark: '#000000',
@@ -1069,7 +1069,7 @@ ${ev.heure ? `<div class="event-meta-pill">
               Array.from(qrNodes).slice(1).forEach(node => node.remove());
             }
 
-            qrContainerElement.dataset.genere = String(billet.id);
+            qrContainerElement.dataset.genere = String(billet.code_public);
           }
         } else {
           if (qrSection) qrSection.style.display = 'none';
