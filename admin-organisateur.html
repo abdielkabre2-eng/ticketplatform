@@ -528,38 +528,6 @@
         .section-trust-note svg { width: 13px; height: 13px; flex-shrink: 0; }
 
         /* ============================================
-           BOUTON TÉLÉCHARGER PDF (nouveau)
-        ============================================ */
-        .btn-telecharger-pdf {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            margin-top: 8px;
-            margin-bottom: 4px;
-            padding: 7px 13px;
-            background: var(--ink-50);
-            border: 1px solid var(--ink-200);
-            border-radius: var(--radius-xs);
-            font-family: var(--font-display);
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--ink-700);
-            letter-spacing: 0.1px;
-            cursor: pointer;
-            transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
-        }
-        .btn-telecharger-pdf svg { width: 14px; height: 14px; flex-shrink: 0; color: var(--gold-600); }
-        .btn-telecharger-pdf:hover {
-            background: var(--gold-50);
-            border-color: var(--border-gold-strong);
-            color: var(--gold-700);
-            transform: translateY(-1px);
-        }
-        .btn-telecharger-pdf:active { transform: translateY(0); }
-        .btn-telecharger-pdf:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-        .btn-telecharger-pdf:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
-
-        /* ============================================
            SEARCH INPUT
         ============================================ */
         .search-container { margin-bottom: 18px; }
@@ -1575,58 +1543,6 @@
             color: var(--ink-500);
         }
         .quota-count-text strong { color: var(--ink-900); }
-
-        /* ============================================
-           GABARIT PDF (hors-écran, utilisé uniquement
-           pour la génération du PDF via html2pdf.js)
-        ============================================ */
-        #pdfListeParticipantsWrapper {
-            position: fixed;
-            left: -9999px;
-            top: 0;
-            width: 0;
-            height: 0;
-            overflow: hidden;
-        }
-        #pdfListeParticipants {
-            width: 190mm;
-            padding: 10mm 12mm;
-            background: #ffffff;
-            font-family: 'DM Sans', Arial, sans-serif;
-            color: #111827;
-        }
-        #pdfListeParticipants .pdf-titre {
-            text-align: center;
-            font-size: 18px;
-            font-weight: 800;
-            text-decoration: underline;
-            margin-bottom: 22px;
-        }
-        #pdfListeParticipants table.pdf-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 0 auto;
-        }
-        #pdfListeParticipants table.pdf-table td {
-            border: 1px solid #000000;
-            padding: 8px 14px;
-            text-align: center;
-            font-size: 13px;
-            font-weight: 600;
-            page-break-inside: avoid;
-        }
-        #pdfListeParticipants table.pdf-table tr {
-            page-break-inside: avoid;
-        }
-        #pdfListeParticipants .pdf-footer {
-            margin-top: 26px;
-            text-align: center;
-            font-size: 13px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            color: #92400e;
-            page-break-inside: avoid;
-        }
     </style>
 </head>
 <body>
@@ -2029,12 +1945,6 @@
                     <div id="section-validees" class="section-content">
                         <div class="section-header">
                             <h2 id="titreSectionValidees">Participants confirmés (0)</h2>
-                            <button type="button" class="btn-telecharger-pdf" id="btnTelechargerPdf" onclick="telechargerListePdf()">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/>
-                                </svg>
-                                Télécharger la liste PDF
-                            </button>
                             <p>Liste complète des participants valides. Vous pouvez retirer un participant en cas d'empêchement.</p>
                         </div>
                         <div class="search-container">
@@ -2120,19 +2030,8 @@
 
     </div><!-- /.page-wrapper -->
 
-    <!-- ==================== GABARIT PDF HORS-ÉCRAN (liste des participants confirmés) ==================== -->
-    <div id="pdfListeParticipantsWrapper">
-        <div id="pdfListeParticipants">
-            <div class="pdf-titre">Liste des participants confirmés</div>
-            <table class="pdf-table" id="pdfTableParticipants">
-                <tbody id="pdfTableParticipantsBody"></tbody>
-            </table>
-            <div class="pdf-footer">GoldTix</div>
-        </div>
-    </div>
-
+   
 <script src="https://unpkg.com/html5-qrcode"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <script>
     /* =============================================
@@ -2959,68 +2858,6 @@
         if (typeof nombreEnAttente === 'number') {
             let btnTabPaiements = document.getElementById("btnTabPaiements");
             if (btnTabPaiements) btnTabPaiements.textContent = `En attente (${nombreEnAttente})`;
-        }
-    }
-
-    /* =============================================
-       TÉLÉCHARGEMENT PDF — liste des participants confirmés
-       -> génère un gabarit hors-écran (titre souligné,
-          tableau à une colonne numéroté "1-Nom", pied
-          de page "GoldTix"), puis le convertit en PDF
-          via html2pdf.js, avec pagination automatique
-          et sans coupure de ligne entre deux pages.
-    ============================================= */
-    function echapperHtml(texte) {
-        const div = document.createElement('div');
-        div.textContent = texte == null ? '' : String(texte);
-        return div.innerHTML;
-    }
-
-    async function telechargerListePdf() {
-        const btn = document.getElementById("btnTelechargerPdf");
-        if (!btn) return;
-
-        if (!listeParticipantsValidesGlobal || listeParticipantsValidesGlobal.length === 0) {
-            alert("Aucun participant confirmé pour le moment.");
-            return;
-        }
-
-        const texteOriginal = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = "Génération du PDF...";
-
-        try {
-            // On trie la liste par nom pour un document propre et prévisible,
-            // sans modifier l'ordre affiché à l'écran dans l'onglet Confirmés.
-            const listeTriee = [...listeParticipantsValidesGlobal].sort((a, b) =>
-                (a.nom_participant || '').localeCompare(b.nom_participant || '', 'fr', { sensitivity: 'base' })
-            );
-
-            const corpsTableau = document.getElementById("pdfTableParticipantsBody");
-            corpsTableau.innerHTML = listeTriee.map((p, index) => {
-                const nom = echapperHtml(p.nom_participant || 'Non renseigné');
-                return `<tr><td>${index + 1}-${nom}</td></tr>`;
-            }).join("");
-
-            const element = document.getElementById("pdfListeParticipants");
-
-            const options = {
-                margin: [12, 10, 16, 10],
-                filename: 'liste-participants-confirmes.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-            };
-
-            await html2pdf().set(options).from(element).save();
-
-        } catch (err) {
-            console.error("Erreur génération PDF :", err);
-            alert("Une erreur est survenue lors de la génération du PDF.");
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = texteOriginal;
         }
     }
 

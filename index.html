@@ -851,6 +851,35 @@ img, svg, video, canvas {
                 animation-delay: 0s !important;
             }
         }
+
+        /* =============================================================
+           ===== SYSTÈME DE RÉVÉLATION PROGRESSIVE (ajout uniquement)
+           Fade-in + léger translateY, très subtil. Piloté par
+           IntersectionObserver en JS (voir script en bas de page).
+        ============================================================= */
+        .gx-reveal {
+            opacity: 0;
+            transform: translateY(16px);
+            transition: opacity 0.9s var(--ease), transform 0.9s var(--ease);
+            will-change: opacity, transform;
+        }
+        .gx-reveal.gx-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .gx-delay-1 { transition-delay: 0ms; }
+        .gx-delay-2 { transition-delay: 130ms; }
+        .gx-delay-3 { transition-delay: 260ms; }
+        .gx-delay-4 { transition-delay: 390ms; }
+        .gx-delay-5 { transition-delay: 520ms; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .gx-reveal {
+                opacity: 1 !important;
+                transform: none !important;
+                transition: none !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -923,6 +952,94 @@ img, svg, video, canvas {
     })();
     </script>
     <!-- ===== FIN DE L'AJOUT — tout ce qui suit est votre page d'achat ===== -->
+
+    <!-- =============================================================
+         ===== MOTEUR DE RÉVÉLATION PROGRESSIVE (ajout uniquement)
+         Ne touche pas à l'overlay d'introduction ci-dessus. Fournit
+         window.gxObserveReveal(root) : observe tous les éléments
+         .gx-reveal contenus dans "root" et leur ajoute .gx-visible
+         (via IntersectionObserver) dès qu'ils entrent dans l'écran.
+         Chaque élément n'est révélé qu'une seule fois (il reste
+         ensuite visible, y compris si on continue de scroller).
+    ============================================================= -->
+    <script>
+    (function() {
+        if (window.gxObserveReveal) return; // sécurité anti double-inclusion
+
+        var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var gxObserver = null;
+
+        // On attend que l'INTRODUCTION SOIT RÉELLEMENT TERMINÉE (overlay en
+        // train de disparaître) avant de laisser les .gx-reveal s'animer.
+        // Sans ça, le contenu chargé pendant l'intro (souvent plus rapide que
+        // sa durée minimale) finirait son fade-in pendant que l'overlay le
+        // cache encore, et apparaîtrait donc instantanément à l'ouverture —
+        // exactement ce qu'on veut éviter. On ne modifie pas le script de
+        // l'intro : on observe simplement les changements de classe de son
+        // overlay depuis ce script séparé.
+        var gxIntroDone = false;
+        var gxPendingRoots = [];
+        var introOverlayEl = document.getElementById('introOverlayGoldTix');
+
+        function gxEnsureObserver() {
+            if (gxObserver || prefersReducedMotion) return;
+            gxObserver = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('gx-visible');
+                        gxObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+        }
+
+        function gxObserveNow(root) {
+            var scope = root || document;
+            if (prefersReducedMotion) {
+                scope.querySelectorAll('.gx-reveal:not(.gx-visible)').forEach(function(el) {
+                    el.classList.add('gx-visible');
+                });
+                return;
+            }
+            gxEnsureObserver();
+            scope.querySelectorAll('.gx-reveal:not(.gx-visible)').forEach(function(el) {
+                gxObserver.observe(el);
+            });
+        }
+
+        function gxFlushPending() {
+            gxIntroDone = true;
+            gxPendingRoots.forEach(function(root) { gxObserveNow(root); });
+            gxPendingRoots = [];
+        }
+
+        if (!introOverlayEl || prefersReducedMotion) {
+            gxIntroDone = true;
+        } else {
+            var gxIntroWatcher = new MutationObserver(function() {
+                if (introOverlayEl.classList.contains('intro-exit') || introOverlayEl.classList.contains('intro-hidden')) {
+                    gxIntroWatcher.disconnect();
+                    gxFlushPending();
+                }
+            });
+            gxIntroWatcher.observe(introOverlayEl, { attributes: true, attributeFilter: ['class'] });
+        }
+
+        // root : élément (ou document) dans lequel chercher les .gx-reveal
+        // à observer. Appelable plusieurs fois (ex. après chaque
+        // remplacement du contenu par innerHTML) : les éléments déjà
+        // révélés ne sont jamais re-observés. Si l'intro n'est pas encore
+        // terminée, la demande est simplement mise en attente.
+        window.gxObserveReveal = function(root) {
+            if (gxIntroDone) {
+                gxObserveNow(root);
+            } else {
+                gxPendingRoots.push(root || document);
+            }
+        };
+    })();
+    </script>
+    <!-- ===== FIN DE L'AJOUT (moteur de révélation) ===== -->
 
     <!-- NAVBAR -->
     <nav class="navbar anim-1" style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 8px 12px; box-sizing: border-box;">
@@ -1121,7 +1238,7 @@ img, svg, video, canvas {
                 if (ev.ventes_fermees) {
                     rightColumn = `
                         <div class="card anim-3">
-                            <div class="closed-box">
+                            <div class="closed-box gx-reveal gx-delay-2">
                                 <div class="closed-box-icon">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                         <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
@@ -1142,7 +1259,7 @@ img, svg, video, canvas {
                             .map(cat => `<option value="${cat.nom} - ${cat.prix}">${cat.nom} (${cat.prix})</option>`)
                             .join("");
                         categorieHTML = `
-                            <div class="form-group">
+                            <div class="form-group gx-reveal gx-delay-5">
                                 <label for="selectCategorie">Catégorie de billet</label>
                                 <select id="selectCategorie">${options}</select>
                             </div>`;
@@ -1162,7 +1279,7 @@ img, svg, video, canvas {
                         <div class="card anim-3">
 
                             <!-- ETAPE 1 : PAIEMENT -->
-                            <div class="payment-box">
+                            <div class="payment-box gx-reveal gx-delay-4">
                                 <p class="payment-box-title">
                                     ${ICONS.mobile}
                                     Etape 1 — Effectuer le paiement
@@ -1181,29 +1298,29 @@ img, svg, video, canvas {
                             </div>
 
                             <!-- ETAPE 2 : FORMULAIRE -->
-                            <h3 class="section-title">
+                            <h3 class="section-title gx-reveal gx-delay-5">
                                 ${ICONS.mail}
                                 Etape 2 — Confirmez votre paiement
                             </h3>
 
                             ${categorieHTML}
 
-                            <div class="form-group">
+                            <div class="form-group gx-reveal gx-delay-5">
                                 <label for="nomParticipant">Nom et Prénom(s) <span style="color: red;">*</span></label>
                                 <input type="text" id="nomParticipant" placeholder="ex : KONATE Jean">
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group gx-reveal gx-delay-5">
                                 <label for="emailParticipant">Adresse e-mail (optionnelle - réception lien du billet)</label>
                                 <input type="email" id="emailParticipant" placeholder="ex : nom@gmail.com">
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group gx-reveal gx-delay-5">
                                 <label for="telParticipant">Contact WhatsApp <span style="color: red;">*</span></label>
                                 <input type="tel" id="telParticipant" placeholder="ex : +226 ... / +212 ...">
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group gx-reveal gx-delay-5">
                                 <label>Preuve de paiement (capture du reçu) <span style="color: red;">*</span></label>
                                 <div class="file-input-wrapper" id="fileWrapper">
                                     <input type="file" id="preuvePaiement" accept="image/*">
@@ -1216,7 +1333,7 @@ img, svg, video, canvas {
                                 </div>
                             </div>
 
-                            <button class="btn-submit" id="btnValiderAchat">
+                            <button class="btn-submit gx-reveal gx-delay-5" id="btnValiderAchat">
                                 <span class="btn-icon">${ICONS.check}</span>
                                 <div class="spinner"></div>
                                 Valider mon paiement et obtenir mon billet
@@ -1246,9 +1363,9 @@ img, svg, video, canvas {
                 container.innerHTML = `
                     <div class="grid">
                         <div class="card card--event">
-                            <div class="poster-wrapper">${posterHTML}</div>
-                            <h1 class="event-title">${ev.titre}</h1>
-                                                    <div class="meta-row">
+                            <div class="poster-wrapper gx-reveal gx-delay-1">${posterHTML}</div>
+                            <h1 class="event-title gx-reveal gx-delay-2">${ev.titre}</h1>
+                                                    <div class="meta-row gx-reveal gx-delay-2">
                                 <span class="meta-item">
                                     ${ICONS.calendar}
                                     <span class="meta-text"><strong>Date :</strong> ${ev.date}</span>
@@ -1259,16 +1376,25 @@ img, svg, video, canvas {
                                     <span class="meta-text"><strong>Heure :</strong> ${ev.heure}</span>
                                 </span>
                             </div>
-                            <div class="meta-row">
+                            <div class="meta-row gx-reveal gx-delay-2">
                                 <span class="meta-item">
                                     ${ICONS.pin}
                                     <span class="meta-text"><strong>Lieu :</strong> ${ev.lieu}</span>
                                 </span>
                             </div>
-                            <div class="price-badge">${prixHTML}</div>
+                            <div class="price-badge gx-reveal gx-delay-3">${prixHTML}</div>
                         </div>
                         <div>${rightColumn}</div>
                     </div>`;
+
+                // Démarre la révélation progressive (fade-in + translateY) des
+                // éléments qu'on vient d'injecter : affiche, titre/infos, badge
+                // de prix, puis bloc paiement, puis formulaire — chacun avec son
+                // propre petit délai (voir classes .gx-delay-1 à .gx-delay-5).
+                // Ceux déjà visibles à l'écran apparaissent tout de suite après
+                // l'intro ; ceux plus bas (sous le pli, mobile) n'apparaissent
+                // que lorsqu'on scrolle jusqu'à eux (IntersectionObserver).
+                if (window.gxObserveReveal) window.gxObserveReveal(container);
 
                 const posterImage = container.querySelector(".poster-wrapper img");
                 if (posterImage) {
