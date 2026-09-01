@@ -881,7 +881,7 @@ btn.style.display = 'none';
 ${ev.heure ? `<div class="event-meta-pill">
                 <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="${ts.dotClr}" stroke-width="2" stroke-linecap="round">
                   <circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 12"/>
-                </svg><span id="evHeureH">${escHTML(ev.heure)}</span></div>` : ''}
+                </svg><span id="evHeureH">${escHTML((ev.heure || '').slice(0, 5))}</span></div>` : ''}
             </div>`;
 
           const statut = (billet.statut || 'attente').trim().toLowerCase();
@@ -1034,7 +1034,7 @@ function appliquerMiseAJourEvenement(ev) {
         dateEl.textContent = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' }) : '—';
     }
     const heureEl = document.getElementById('evHeureH');
-    if (heureEl && ev.heure) heureEl.textContent = ev.heure;
+    if (heureEl && ev.heure) heureEl.textContent = (ev.heure || '').slice(0, 5);
     const lieuCell = document.getElementById('cellLieu');
     if (lieuCell) {
         const v = lieuCell.querySelector('.cell-value');

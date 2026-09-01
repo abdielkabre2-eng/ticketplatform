@@ -1705,6 +1705,163 @@ h1, h2, h3, p, span, div {
     padding: 0;
     background: transparent;
 }
+
+/* ============================================
+   HEADER FIXE
+============================================ */
+.top-navbar {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 32px);
+    max-width: 680px;
+    z-index: 500;
+    margin-bottom: 0;
+}
+
+body {
+    padding-top: 92px;
+}
+
+@media (max-width: 480px) {
+    .top-navbar { top: 12px; width: calc(100% - 24px); }
+    body { padding-top: 84px; }
+}
+
+/* ============================================
+   BOUTON HAMBURGER (remplace .btn-logout)
+============================================ */
+.btn-menu-hamburger {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: var(--ink-900);
+    color: #ffffff;
+    border: none;
+    border-radius: var(--radius-xs);
+    cursor: pointer;
+    transition: transform 0.15s, filter 0.15s, box-shadow 0.15s;
+    flex-shrink: 0;
+}
+
+.btn-menu-hamburger:hover { transform: translateY(-1px); filter: brightness(1.1); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.btn-menu-hamburger:active { transform: translateY(0); }
+.btn-menu-hamburger:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
+.btn-menu-hamburger svg { width: 20px; height: 20px; }
+
+/* ============================================
+   SIDEBAR / DRAWER
+============================================ */
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,6,2,0.55);
+    backdrop-filter: blur(2px);
+    z-index: 900;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.active { opacity: 1; pointer-events: auto; }
+
+.sidebar-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: min(300px, 84vw);
+    background: var(--grad-dark);
+    z-index: 901;
+    transform: translateX(100%);
+    transition: transform 0.35s cubic-bezier(0.22,1,0.36,1);
+    box-shadow: -10px 0 40px rgba(0,0,0,0.35);
+    border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.sidebar-drawer.active { transform: translateX(0); }
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 20px;
+    border-bottom: 1px solid rgba(245,158,11,0.15);
+    flex-shrink: 0;
+}
+
+.sidebar-header-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.2px;
+}
+
+.sidebar-header-title svg { width: 18px; height: 18px; color: var(--gold-400); }
+
+.sidebar-close-btn {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.14);
+    color: rgba(255,255,255,0.7);
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.sidebar-close-btn:hover { background: rgba(245,158,11,0.16); color: #fff; }
+.sidebar-close-btn:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
+.sidebar-close-btn svg { width: 16px; height: 16px; }
+
+.sidebar-nav {
+    padding: 14px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 14px;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.78);
+    font-family: var(--font-display);
+    font-size: 13.5px;
+    font-weight: 700;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    transition: background 0.18s, color 0.18s;
+}
+
+.sidebar-item svg { width: 18px; height: 18px; flex-shrink: 0; color: rgba(245,158,11,0.75); transition: color 0.18s; }
+.sidebar-item:hover { background: rgba(245,158,11,0.10); color: #fff; }
+.sidebar-item.active { background: rgba(245,158,11,0.16); color: #fff; }
+.sidebar-item.active svg { color: var(--gold-400); }
+.sidebar-item:focus-visible { outline: 2px solid var(--gold-500); outline-offset: -2px; }
+
+.sidebar-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 8px 12px; }
+
+.sidebar-item.sidebar-logout { color: #fca5a5; }
+.sidebar-item.sidebar-logout svg { color: #f87171; }
+.sidebar-item.sidebar-logout:hover { background: rgba(239,68,68,0.12); color: #fff; }
     </style>
 </head>
 <body>
@@ -1780,15 +1937,61 @@ h1, h2, h3, p, span, div {
                 </span>
             </div>
             <div class="navbar-right">
-                <span class="badge-espace">
-                    <span class="badge-dot"></span>
-                    Espace Organisateur
-                </span>
-                <button id="btnDeconnexion" class="btn-logout" onclick="deconnexion()">
-                    ⬅️Déconnexion
-                </button>
-            </div>
+    <span class="badge-espace">
+        <span class="badge-dot"></span>
+        Espace Organisateur
+    </span>
+    <button id="btnMenuHamburger" class="btn-menu-hamburger" onclick="ouvrirSidebar()" aria-label="Ouvrir le menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+    </button>
+</div>
         </nav>
+        </nav>
+
+    <!-- SIDEBAR / MENU LATÉRAL -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="fermerSidebar()"></div>
+    <aside class="sidebar-drawer" id="sidebarDrawer" aria-hidden="true">
+        <div class="sidebar-header">
+            <span class="sidebar-header-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+                Menu
+            </span>
+            <button class="sidebar-close-btn" onclick="fermerSidebar()" aria-label="Fermer le menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+        <nav class="sidebar-nav">
+            <button class="sidebar-item" data-onglet="gestion" onclick="sidebarNaviguer('gestion', this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 22V12h6v10"/></svg>
+                Gestion
+            </button>
+            <button class="sidebar-item" data-onglet="paiements" onclick="sidebarNaviguer('paiements', this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                Paiements en attente
+            </button>
+            <button class="sidebar-item" data-onglet="validees" onclick="sidebarNaviguer('validees', this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+                Paiements confirmés
+            </button>
+            <button class="sidebar-item" data-onglet="scanner" onclick="sidebarNaviguer('scanner', this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2"/><rect x="7" y="7" width="4" height="4" rx="0.5"/><rect x="13" y="7" width="4" height="4" rx="0.5"/><rect x="7" y="13" width="4" height="4" rx="0.5"/><path d="M13 13h2v2h-2zM17 13h2M13 17h2M17 17h2"/></svg>
+                Scanner
+            </button>
+            <div class="sidebar-divider"></div>
+            <button class="sidebar-item sidebar-logout" onclick="deconnexion()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Déconnexion
+            </button>
+        </nav>
+    </aside>
+
+    <!-- BANDEAU DE CONFIANCE -->
 
         <!-- ==================== BANDEAU DE CONFIANCE ==================== -->
         <div class="trust-strip" aria-hidden="true">
@@ -2516,7 +2719,7 @@ h1, h2, h3, p, span, div {
     function entrerDansEspaceProtege() {
         document.getElementById("blocAuthentification").style.display = "none";
         document.getElementById("espaceProtege").style.display = "block";
-        document.getElementById("btnDeconnexion").style.display = "inline-flex";
+        document.getElementById("btnMenuHamburger").style.display = "flex";
 
         chargerEspaceOrganisateur();
         demarrerPolling();
@@ -2727,7 +2930,8 @@ h1, h2, h3, p, span, div {
         if (containerValidees) containerValidees.innerHTML = `<div class="loading-dots"><span></span><span></span><span></span></div>`;
 
         document.getElementById("espaceProtege").style.display = "none";
-        document.getElementById("btnDeconnexion").style.display = "none";
+        document.getElementById("btnMenuHamburger").style.display = "none";
+          fermerSidebar();
         document.getElementById("blocAuthentification").style.display = "block";
         document.getElementById("loginPassword").value = "";
         afficherEcranAuth("authEcranLogin");
@@ -3438,6 +3642,53 @@ async function verifierMiseAJourEvenement() {
         traiterVerificationBillet(code);
         document.getElementById("codeBilletInput").value = "";
     }
+
+    function ouvrirSidebar() {
+    document.getElementById("sidebarOverlay").classList.add("active");
+    document.getElementById("sidebarDrawer").classList.add("active");
+    document.getElementById("sidebarDrawer").setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+    synchroniserSidebarActive();
+}
+
+function fermerSidebar() {
+    document.getElementById("sidebarOverlay").classList.remove("active");
+    document.getElementById("sidebarDrawer").classList.remove("active");
+    document.getElementById("sidebarDrawer").setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+}
+
+function sidebarNaviguer(nomOnglet, sidebarBtn) {
+    const idsBoutons = {
+        gestion: "btnTabGestion",
+        paiements: "btnTabPaiements",
+        validees: "btnTabValidees"
+    };
+    let boutonReel = nomOnglet === "scanner"
+        ? document.querySelector('.tab-icon-btn[onclick*="scanner"]')
+        : document.getElementById(idsBoutons[nomOnglet]);
+    
+    changerOnglet(nomOnglet, boutonReel);
+    document.querySelectorAll(".sidebar-item[data-onglet]").forEach(b => b.classList.remove("active"));
+    if (sidebarBtn) sidebarBtn.classList.add("active");
+    fermerSidebar();
+}
+
+function synchroniserSidebarActive() {
+    const ongletActifBtn = document.querySelector(".tab-icon-btn.active");
+    if (!ongletActifBtn) return;
+    let nomOngletActif = "scanner";
+    if (ongletActifBtn.id === "btnTabGestion") nomOngletActif = "gestion";
+    else if (ongletActifBtn.id === "btnTabPaiements") nomOngletActif = "paiements";
+    else if (ongletActifBtn.id === "btnTabValidees") nomOngletActif = "validees";
+    document.querySelectorAll(".sidebar-item[data-onglet]").forEach(b => {
+        b.classList.toggle("active", b.getAttribute("data-onglet") === nomOngletActif);
+    });
+}
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") fermerSidebar();
+});
 
     function changerOnglet(nomOnglet, buttonElement) {
     document.querySelectorAll('.tab-icon-btn').forEach(btn => btn.classList.remove('active'));
