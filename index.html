@@ -1373,7 +1373,7 @@ img, svg, video, canvas {
                                 <span class="meta-sep">—</span>
                                 <span class="meta-item">
                                     ${ICONS.clock}
-                                    <span class="meta-text"><strong>Heure :</strong> ${ev.heure}</span>
+                                   <span class="meta-text"><strong>Heure :</strong> ${(ev.heure || '').slice(0, 5)}</span>
                                 </span>
                             </div>
                             <div class="meta-row gx-reveal gx-delay-2">
