@@ -755,13 +755,15 @@
            SCANNER SECTION
         ============================================ */
         .scanner-frame {
-            position: relative;
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            border: 2px solid var(--border-gold-strong);
-            box-shadow: var(--shadow-gold-md), 0 0 0 4px rgba(245,158,11,0.08);
-            background: #000;
-        }
+    position: relative;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 2px solid var(--border-gold-strong);
+    box-shadow: var(--shadow-gold-md), 0 0 0 4px rgba(245,158,11,0.08);
+    background: #000;
+    aspect-ratio: 1 / 1;   /* Force un format carré parfait 1:1 */
+    width: 100%;
+    }
 
         .scanner-corner { position: absolute; width: 22px; height: 22px; z-index: 10; pointer-events: none; }
         .scanner-corner.tl { top: 10px; left: 10px; border-top: 3px solid var(--gold-400); border-left: 3px solid var(--gold-400); }
@@ -769,7 +771,22 @@
         .scanner-corner.bl { bottom: 10px; left: 10px; border-bottom: 3px solid var(--gold-400); border-left: 3px solid var(--gold-400); }
         .scanner-corner.br { bottom: 10px; right: 10px; border-bottom: 3px solid var(--gold-400); border-right: 3px solid var(--gold-400); }
 
-        #reader { width: 100%; }
+        #reader {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Force la caméra à remplir le cadre carré sans déformer le reste */
+#reader video,
+#reader canvas {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
 
         .scanner-input-group { display: flex; gap: 10px; margin-top: 16px; }
 
@@ -1707,7 +1724,13 @@ body { padding-top: 92px !important; }
         padding: 12px 14px !important; 
     }
     body { padding-top: 84px !important; }
-    .badge-espace { display: none !important; } /* fait de la place au hamburger */
+   .badge-espace {
+        padding: 8px !important;
+        gap: 0 !important;
+    }
+    .badge-espace .badge-espace-text {
+        display: none !important;
+    } 
 }
 /* ============================================
    BOUTON HAMBURGER
@@ -1882,8 +1905,8 @@ body { padding-top: 92px !important; }
         </div>
         <div class="navbar-right">
             <span class="badge-espace">
-                <span class="badge-dot"></span>
-                Espace Organisateur
+              <span class="badge-dot"></span>
+              <span class="badge-espace-text">Espace Organisateur</span>
             </span>
             <button id="btnMenuHamburger" class="btn-menu-hamburger" onclick="ouvrirSidebar()" aria-label="Ouvrir le menu">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -2914,6 +2937,15 @@ body { padding-top: 92px !important; }
     /* =============================================
        CHARGEMENT DE L'ESPACE ORGANISATEUR
     ============================================= */
+function formatHeureAffichage(heure) {
+    if (!heure) return heure;
+    const parties = String(heure).split(':');
+    if (parties.length >= 2) {
+        return `${parties[0].padStart(2, '0')}:${parties[1].padStart(2, '0')}`;
+    }
+    return heure;
+}
+
     async function chargerEspaceOrganisateur() {
         if (!eventId) {
             document.getElementById("titreEvenementOrg").textContent = "Erreur : aucun evenement specifie.";
@@ -2944,8 +2976,7 @@ async function verifierMiseAJourEvenement() {
         evenementActuelData = ev;
 
         document.getElementById("titreEvenementOrg").textContent = ev.titre;
-        document.getElementById("infosEvenementOrg").innerHTML =
-            `Date : ${ev.date} &nbsp;&middot;&nbsp; Heure : ${ev.heure} &nbsp;&middot;&nbsp; Lieu : ${ev.lieu}`;
+        document.getElementById("infosEvenementOrg").innerHTML = `Date : ${ev.date} &nbsp;&middot;&nbsp; Heure : ${formatHeureAffichage(ev.heure)} &nbsp;&middot;&nbsp; Lieu : ${ev.lieu}`;
 
         let headerContainer = document.getElementById("headerTopContainer");
         let eventImage = ev.affiche_url || ev.image_url || ev.affiche || ev.photo;
@@ -2983,7 +3014,7 @@ async function verifierMiseAJourEvenement() {
 
             document.getElementById("titreEvenementOrg").textContent = ev.titre;
             document.getElementById("infosEvenementOrg").innerHTML =
-                `Date : ${ev.date} &nbsp;&middot;&nbsp; Heure : ${ev.heure} &nbsp;&middot;&nbsp; Lieu : ${ev.lieu}`;
+                `Date : ${ev.date} &nbsp;&middot;&nbsp; Heure : ${formatHeureAffichage(ev.heure)} &nbsp;&middot;&nbsp; Lieu : ${ev.lieu}`;
 
             let headerContainer = document.getElementById("headerTopContainer");
             let eventImage = ev.affiche_url || ev.image_url || ev.affiche || ev.photo;
