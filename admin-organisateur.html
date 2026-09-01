@@ -3689,17 +3689,22 @@ function scrollVersSectionActive(nomOnglet) {
     }
 
     scrollOngletRafId = requestAnimationFrame(() => {
-        scrollOngletRafId = null;
+    scrollOngletRafId = null;
 
-        const section = document.getElementById(sectionId);
-        const navbar = document.querySelector(".top-navbar");
-        if (!section) return;
+    const section = document.getElementById(sectionId);
+    const navbar = document.querySelector(".top-navbar");
+    // On vise le haut de la barre d'onglets (.tabs-icon-nav) plutôt que
+    // le haut de la section elle-même, pour que Gestion / En attente /
+    // Confirmés / Scanner restent visibles au-dessus du titre de section.
+    const tabsNav = document.querySelector(".tabs-icon-nav");
+    if (!section) return;
 
-        const hauteurNavbar = navbar ? navbar.getBoundingClientRect().height : 0;
-        const margeAir = 16;
+    const hauteurNavbar = navbar ? navbar.getBoundingClientRect().height : 0;
+    const margeAir = 16;
 
-        const positionSection = section.getBoundingClientRect().top + window.scrollY;
-        let positionCible = positionSection - hauteurNavbar - margeAir;
+    const elementCible = tabsNav || section;
+    const positionSection = elementCible.getBoundingClientRect().top + window.scrollY;
+    let positionCible = positionSection - hauteurNavbar - margeAir;
 
         const scrollMax = Math.max(
             0,
