@@ -1863,31 +1863,34 @@ body { padding-top: 92px; }
         <button type="button" class="intro-skip-btn" id="introSkipBtn" onclick="passerIntroGoldTix()">Passer ⏭</button>
     </div>
 
-    <div class="page-wrapper">
+        <!-- ==================== NAVBAR ====================
+         IMPORTANT : ce bloc doit rester HORS de .page-wrapper.
+         .page-wrapper a une animation qui utilise "transform",
+         ce qui en fait un containing block pour tout descendant
+         en position:fixed — et casse alors le comportement fixe
+         du header et de la sidebar. On le place donc en enfant
+         direct de <body>. -->
+    <nav class="top-navbar">
+        <div class="logo-container">
+            <img src="images/logo.png" alt="GoldTix Logo" class="site-logo">
+            <span class="brand-title">
+                <span class="text-dark">Gold</span><span class="text-gold">Tix</span>
+            </span>
+        </div>
+        <div class="navbar-right">
+            <span class="badge-espace">
+                <span class="badge-dot"></span>
+                Espace Organisateur
+            </span>
+            <button id="btnMenuHamburger" class="btn-menu-hamburger" onclick="ouvrirSidebar()" aria-label="Ouvrir le menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+        </div>
+    </nav>
 
-        <!-- ==================== NAVBAR ==================== -->
-        <nav class="top-navbar">
-            <div class="logo-container">
-                <img src="images/logo.png" alt="GoldTix Logo" class="site-logo">
-                <span class="brand-title">
-                    <span class="text-dark">Gold</span><span class="text-gold">Tix</span>
-                </span>
-            </div>
-            <div class="navbar-right">
-    <span class="badge-espace">
-        <span class="badge-dot"></span>
-        Espace Organisateur
-    </span>
-    <button id="btnMenuHamburger" class="btn-menu-hamburger" onclick="ouvrirSidebar()" aria-label="Ouvrir le menu">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-            <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
-        </svg>
-    </button>
-</div>
-        
-        </nav>
-
-    <!-- SIDEBAR / MENU LATÉRAL -->
+    <!-- SIDEBAR / MENU LATÉRAL (idem : hors de .page-wrapper) -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="fermerSidebar()"></div>
     <aside class="sidebar-drawer" id="sidebarDrawer" aria-hidden="true">
         <div class="sidebar-header">
@@ -1928,7 +1931,7 @@ body { padding-top: 92px; }
         </nav>
     </aside>
 
-    <!-- BANDEAU DE CONFIANCE -->
+    <div class="page-wrapper">
 
         <!-- ==================== BANDEAU DE CONFIANCE ==================== -->
         <div class="trust-strip" aria-hidden="true">
