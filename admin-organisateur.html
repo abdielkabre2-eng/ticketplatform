@@ -1960,155 +1960,143 @@
                         <span class="header-label">Votre evenement</span>
                         <h1 id="titreEvenementOrg">Chargement...</h1>
                         <p id="infosEvenementOrg">Connexion en cours...</p>
-                        <div class="header-banner-glow"></div>
+                                                <div class="header-banner-glow"></div>
                     </div>
 
-                    <!-- STATUS BOX -->
-                    
-                        <button
-                            id="btnToggleVentes"
-                            class="btn-toggle-ventes"
-                            onclick="toggleVentes()"
-                            style="background: var(--ink-900); color: white;">
-                            Patientez...
+                    <!-- NAV PAR ONGLETS -->
+                    <div class="tabs-icon-nav">
+                        <button class="tab-icon-btn" id="btnTabGestion" onclick="changerOnglet('gestion', this)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 22V12h6v10"/></svg>
+                            <span>Gestion</span>
+                        </button>
+                        <button class="tab-icon-btn active" id="btnTabPaiements" onclick="changerOnglet('paiements', this)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                            <span>En attente (0)</span>
+                        </button>
+                        <button class="tab-icon-btn" id="btnTabValidees" onclick="changerOnglet('validees', this)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+                            <span>Confirmés (0)</span>
+                        </button>
+                        <button class="tab-icon-btn" onclick="changerOnglet('scanner', this)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2"/><rect x="7" y="7" width="4" height="4" rx="0.5"/><rect x="13" y="7" width="4" height="4" rx="0.5"/><rect x="7" y="13" width="4" height="4" rx="0.5"/><path d="M13 13h2v2h-2zM17 13h2M13 17h2M17 17h2"/></svg>
+                            <span>Scanner</span>
                         </button>
                     </div>
 
-                    <!-- JAUGE / LIMITE DE BILLETS (optionnelle) -->
-                    
-                            <div class="quota-input-group">
-                                <input
-                                    type="number"
-                                    id="inputLimiteBillets"
-                                    min="0"
-                                    step="1"
-                                    inputmode="numeric"
-                                    placeholder="Max 500"
-                                    onchange="onChangementLimiteBillets()">
-                                <span class="quota-save-status" id="quotaSaveStatus"></span>
+                    <!-- SECTION : GESTION -->
+                    <div id="section-gestion" class="section-content">
+                        <div class="section-header">
+                            <h2>Gestion de l'événement</h2>
+                            <p>Gérez les ventes, la limite de billets et les informations.</p>
+                        </div>
+
+                        <div class="gestion-block">
+                            <h3 class="gestion-block-title">Gestion des ventes</h3>
+                            <div class="status-box">
+                                <div class="status-box-left">
+                                    <span class="status-indicator" id="statusIndicator"></span>
+                                    <span id="labelStatutVentes">Statut : chargement...</span>
+                                </div>
+                                <button
+                                    id="btnToggleVentes"
+                                    class="btn-toggle-ventes"
+                                    onclick="toggleVentes()"
+                                    style="background: var(--ink-900); color: white;">
+                                    Patientez...
+                                </button>
                             </div>
                         </div>
-                        <div class="quota-progress-track" id="quotaProgressTrack" style="display:none;">
-                            <div class="quota-progress-fill" id="quotaProgressFill"></div>
+
+                        <div class="gestion-block">
+                            <h3 class="gestion-block-title">Nombre de billets disponibles</h3>
+                            <div class="quota-box">
+                                <div class="quota-box-top">
+                                    <div class="quota-label">
+                                        <span class="quota-title">Définir le nombre de billets disponibles pour votre événement</span>
+                                        <span class="quota-sub">Les ventes seront automatiquement fermées une fois le nombre de billets atteint.</span>
+                                        <span class="quota-sub">Laissez ce champ vide pour ne définir aucune limite.</span>
+                                    </div>
+                                    <div class="quota-input-group">
+                                        <input
+                                            type="number"
+                                            id="inputLimiteBillets"
+                                            min="0"
+                                            step="1"
+                                            inputmode="numeric"
+                                            placeholder="Max 500"
+                                            onchange="onChangementLimiteBillets()">
+                                        <span class="quota-save-status" id="quotaSaveStatus"></span>
+                                    </div>
+                                </div>
+                                <div class="quota-progress-track" id="quotaProgressTrack" style="display:none;">
+                                    <div class="quota-progress-fill" id="quotaProgressFill"></div>
+                                </div>
+                                <p class="quota-count-text" id="quotaCountText" style="display:none;"></p>
+                            </div>
                         </div>
-                        <p class="quota-count-text" id="quotaCountText" style="display:none;"></p>
+
+                        <div class="gestion-block">
+                            <h3 class="gestion-block-title">Informations de l'événement</h3>
+                            <div id="infosEvenementResume" style="font-size:13px;color:var(--ink-500);margin-bottom:14px;"></div>
+                            <button type="button" class="btn-auth-primary" style="width:auto;padding:11px 20px;" onclick="ouvrirFormulaireInfosEvenement()">
+                                Modifier les informations de l'événement
+                            </button>
+                            <div id="formulaireInfosEvenement" style="display:none;margin-top:18px;">
+                                <div class="auth-form-group">
+                                    <label>Titre de l'événement</label>
+                                    <input type="text" id="editTitre" class="search-input">
+                                </div>
+                                <div class="auth-form-group">
+                                    <label>Date</label>
+                                    <input type="date" id="editDate" class="search-input">
+                                </div>
+                                <div class="auth-form-group">
+                                    <label>Heure</label>
+                                    <input type="time" id="editHeure" class="search-input">
+                                </div>
+                                <div class="auth-form-group">
+                                    <label>Lieu</label>
+                                    <input type="text" id="editLieu" class="search-input">
+                                </div>
+                                <div class="auth-form-group">
+                                    <label>Bénéficiaire (nom)</label>
+                                    <input type="text" id="editBeneficiaireNom" class="search-input">
+                                </div>
+                                <div class="auth-form-group">
+                                    <label>Bénéficiaire (coordonnées / téléphone)</label>
+                                    <input type="text" id="editBeneficiaireInfos" class="search-input">
+                                </div>
+                                <div class="auth-form-group">
+                                    <label>Catégories de billets (nom / prix)</label>
+                                    <div id="editCategoriesContainer"></div>
+                                </div>
+                                <div style="display:flex;gap:10px;margin-top:16px;">
+                                    <button type="button" class="btn-auth-primary" style="width:auto;padding:11px 20px;" onclick="enregistrerInfosEvenement()" id="btnEnregistrerInfos">
+                                        Enregistrer les modifications
+                                    </button>
+                                    <button type="button" onclick="document.getElementById('formulaireInfosEvenement').style.display='none';" style="padding:11px 20px;background:var(--ink-100);border:none;border-radius:var(--radius-sm);font-family:var(--font-display);font-weight:700;cursor:pointer;">
+                                        Annuler
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="gestion-block">
+                            <h3 class="gestion-block-title">Affiche de l'événement</h3>
+                            <img id="afficheActuellePreview" src="" alt="Affiche actuelle" style="max-width:100%;max-height:220px;border-radius:var(--radius-sm);border:1px solid var(--ink-200);display:block;margin-bottom:14px;">
+                            <input type="file" id="inputNouvelleAffiche" accept="image/*" style="display:none;" onchange="previewNouvelleAffiche(event)">
+                            <button type="button" class="btn-auth-primary" style="width:auto;padding:11px 20px;" onclick="document.getElementById('inputNouvelleAffiche').click()">
+                                Modifier l'affiche
+                            </button>
+                            <div id="nouvelleAfficheBlock" style="display:none;margin-top:14px;">
+                                <p style="font-size:12px;color:var(--ink-500);margin-bottom:8px;">Aperçu de la nouvelle affiche :</p>
+                                <img id="previewNouvelleAfficheImg" src="" style="max-width:100%;max-height:220px;border-radius:var(--radius-sm);border:1px solid var(--border-gold-strong);display:block;margin-bottom:10px;">
+                                <button type="button" class="btn-auth-primary" style="width:auto;padding:11px 20px;" id="btnEnregistrerAffiche" onclick="enregistrerNouvelleAffiche()">
+                                    Enregistrer la nouvelle affiche
+                                </button>
+                            </div>
+                        </div>
                     </div>
-
-                    <!-- TABS -->
-                    <!-- NAV PAR ONGLETS -->
-<div class="tabs-icon-nav">
-    <button class="tab-icon-btn" id="btnTabGestion" onclick="changerOnglet('gestion', this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 22V12h6v10"/></svg>
-        <span>Gestion</span>
-    </button>
-    <button class="tab-icon-btn active" id="btnTabPaiements" onclick="changerOnglet('paiements', this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-        <span>En attente (0)</span>
-    </button>
-    <button class="tab-icon-btn" id="btnTabValidees" onclick="changerOnglet('validees', this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
-        <span>Confirmés (0)</span>
-    </button>
-    <button class="tab-icon-btn" onclick="changerOnglet('scanner', this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2"/><rect x="7" y="7" width="4" height="4" rx="0.5"/><rect x="13" y="7" width="4" height="4" rx="0.5"/><rect x="7" y="13" width="4" height="4" rx="0.5"/><path d="M13 13h2v2h-2zM17 13h2M13 17h2M17 17h2"/></svg>
-        <span>Scanner</span>
-    </button>
-</div>
-
-<!-- SECTION : GESTION -->
-<div id="section-gestion" class="section-content" style="display:none;">
-    <div class="section-header">
-        <h2>Gestion de l'événement</h2>
-        <p>Gérez les ventes, la limite de billets et les informations.</p>
-    </div>
-
-    <div class="gestion-block">
-        <h3 class="gestion-block-title">Gestion des ventes</h3>
-        <div class="status-box">
-            <div class="status-box-left">
-                <span class="status-indicator" id="statusIndicator"></span>
-                <span id="labelStatutVentes">Statut : chargement...</span>
-            </div>
-        </div>
-    </div>
-
-         <div class="gestion-block">
-        <h3 class="gestion-block-title">Nombre de billets disponibles</h3>
-        <div class="quota-box">
-            <div class="quota-box-top">
-                <div class="quota-label">
-                    <span class="quota-title">Définir le nombre de billets disponibles pour votre événement</span>
-                    <span class="quota-sub">Les ventes seront automatiquement fermées une fois le nombre de billets atteint.</span>
-                    <span class="quota-sub">Laissez ce champ vide pour ne définir aucune limite.</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- NOUVEAU BLOC : INFORMATIONS -->
-    <div class="gestion-block">
-        <h3 class="gestion-block-title">Informations de l'événement</h3>
-        <div id="infosEvenementResume" style="font-size:13px;color:var(--ink-500);margin-bottom:14px;"></div>
-        <button type="button" class="btn-auth-primary" style="width:auto;padding:11px 20px;" onclick="ouvrirFormulaireInfosEvenement()">
-            Modifier les informations de l'événement
-        </button>
-        <div id="formulaireInfosEvenement" style="display:none;margin-top:18px;">
-            <div class="auth-form-group">
-                <label>Titre de l'événement</label>
-                <input type="text" id="editTitre" class="search-input">
-            </div>
-            <div class="auth-form-group">
-                <label>Date</label>
-                <input type="date" id="editDate" class="search-input">
-            </div>
-            <div class="auth-form-group">
-                <label>Heure</label>
-                <input type="time" id="editHeure" class="search-input">
-            </div>
-            <div class="auth-form-group">
-                <label>Lieu</label>
-                <input type="text" id="editLieu" class="search-input">
-            </div>
-            <div class="auth-form-group">
-                <label>Bénéficiaire (nom)</label>
-                <input type="text" id="editBeneficiaireNom" class="search-input">
-            </div>
-            <div class="auth-form-group">
-                <label>Bénéficiaire (coordonnées / téléphone)</label>
-                <input type="text" id="editBeneficiaireInfos" class="search-input">
-            </div>
-            <div class="auth-form-group">
-                <label>Catégories de billets (nom / prix)</label>
-                <div id="editCategoriesContainer"></div>
-            </div>
-            <div style="display:flex;gap:10px;margin-top:16px;">
-                <button type="button" class="btn-auth-primary" style="width:auto;padding:11px 20px;" onclick="enregistrerInfosEvenement()" id="btnEnregistrerInfos">
-                    Enregistrer les modifications
-                </button>
-                <button type="button" onclick="document.getElementById('formulaireInfosEvenement').style.display='none';" style="padding:11px 20px;background:var(--ink-100);border:none;border-radius:var(--radius-sm);font-family:var(--font-display);font-weight:700;cursor:pointer;">
-                    Annuler
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- NOUVEAU BLOC : AFFICHE -->
-    <div class="gestion-block">
-        <h3 class="gestion-block-title">Affiche de l'événement</h3>
-        <img id="afficheActuellePreview" src="" alt="Affiche actuelle" style="max-width:100%;max-height:220px;border-radius:var(--radius-sm);border:1px solid var(--ink-200);display:block;margin-bottom:14px;">
-        <input type="file" id="inputNouvelleAffiche" accept="image/*" style="display:none;" onchange="previewNouvelleAffiche(event)">
-        <button type="button" class="btn-auth-primary" style="width:auto;padding:11px 20px;" onclick="document.getElementById('inputNouvelleAffiche').click()">
-            Modifier l'affiche
-        </button>
-        <div id="nouvelleAfficheBlock" style="display:none;margin-top:14px;">
-            <p style="font-size:12px;color:var(--ink-500);margin-bottom:8px;">Aperçu de la nouvelle affiche :</p>
-            <img id="previewNouvelleAfficheImg" src="" style="max-width:100%;max-height:220px;border-radius:var(--radius-sm);border:1px solid var(--border-gold-strong);display:block;margin-bottom:10px;">
-            <button type="button" class="btn-auth-primary" style="width:auto;padding:11px 20px;" id="btnEnregistrerAffiche" onclick="enregistrerNouvelleAffiche()">
-                Enregistrer la nouvelle affiche
-            </button>
-        </div>
-    </div>
-</div>
 
                     <!-- ========== SECTION : PAIEMENTS ========== -->
                     <div id="section-paiements" class="section-content active">
@@ -3481,7 +3469,7 @@
 
         planifier(fermerIntro, 8200);
     })();
-    
+
     function fileToBase64(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
