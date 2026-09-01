@@ -2741,15 +2741,16 @@ h1, h2, h3, p, span, div {
        - réutilise systématiquement l'action "charger_billets"
          déjà existante de l'API organisateur
     ============================================= */
-    function demarrerPolling() {
-        if (pollingActif) return;
-        pollingActif = true;
-        if (pollingIntervalId) clearInterval(pollingIntervalId);
-        pollingIntervalId = setInterval(() => {
-            if (document.hidden) return;
-            chargerToutesLesDemandes();
-        }, POLLING_INTERVAL_MS);
-    }
+   function demarrerPolling() {
+    if (pollingActif) return;
+    pollingActif = true;
+    if (pollingIntervalId) clearInterval(pollingIntervalId);
+    pollingIntervalId = setInterval(() => {
+        if (document.hidden) return;
+        chargerToutesLesDemandes();
+        verifierMiseAJourEvenement();
+    }, POLLING_INTERVAL_MS);
+}
 
     function arreterPolling() {
         pollingActif = false;
@@ -2769,6 +2770,53 @@ h1, h2, h3, p, span, div {
             return;
         }
 
+        function signatureEvenement(ev) {
+    if (!ev) return "";
+    return [
+        ev.titre || "", ev.date || "", ev.heure || "", ev.lieu || "",
+        ev.affiche_url || ev.image_url || ev.affiche || ev.photo || "",
+        ev.beneficiaire_nom || "", ev.beneficiaire_infos || "",
+        JSON.stringify(ev.categories_data || [])
+    ].join("|");
+}
+
+let derniereSignatureEvenement = "";
+
+async function verifierMiseAJourEvenement() {
+    try {
+        const data = await callOrganisateurAPI('charger_evenement', { evenementId: eventId, token: sessionToken });
+        const ev = data.event;
+        if (!ev) return;
+        const nouvelleSignature = signatureEvenement(ev);
+        if (nouvelleSignature === derniereSignatureEvenement) return;
+        derniereSignatureEvenement = nouvelleSignature;
+        evenementActuelData = ev;
+
+        document.getElementById("titreEvenementOrg").textContent = ev.titre;
+        document.getElementById("infosEvenementOrg").innerHTML =
+            `Date : ${ev.date} &nbsp;&middot;&nbsp; Heure : ${ev.heure} &nbsp;&middot;&nbsp; Lieu : ${ev.lieu}`;
+
+        let headerContainer = document.getElementById("headerTopContainer");
+        let eventImage = ev.affiche_url || ev.image_url || ev.affiche || ev.photo;
+        if (headerContainer && eventImage) {
+            let imgElement = headerContainer.querySelector(".event-bg-img");
+            if (!imgElement) {
+                imgElement = document.createElement("img");
+                imgElement.className = "event-bg-img";
+                headerContainer.insertBefore(imgElement, headerContainer.firstChild);
+            }
+            if (imgElement.src !== eventImage) imgElement.src = eventImage;
+        }
+
+        const previewGestion = document.getElementById("afficheActuellePreview");
+        if (previewGestion && eventImage && previewGestion.src !== eventImage) {
+            previewGestion.src = eventImage;
+        }
+    } catch (err) {
+        console.error("Erreur vérification mise à jour événement :", err);
+    }
+}
+
         try {
             const data = await callOrganisateurAPI('charger_evenement', {
                 evenementId: eventId,
@@ -2776,6 +2824,7 @@ h1, h2, h3, p, span, div {
             });
             const ev = data.event;
             evenementActuelData = ev;
+            derniereSignatureEvenement = signatureEvenement(ev);
             if (!ev) {
                 document.getElementById("infosEvenementOrg").textContent = "Evenement introuvable.";
                 return;
@@ -3684,7 +3733,11 @@ async function enregistrerNouvelleAffiche() {
             }
         });
         document.getElementById("afficheActuellePreview").src = data.affiche_url;
-        document.getElementById("nouvelleAfficheBlock").style.display = "none";
+const headerImg = document.querySelector("#headerTopContainer .event-bg-img");
+if (headerImg) headerImg.src = data.affiche_url;
+if (evenementActuelData) evenementActuelData.affiche_url = data.affiche_url;
+derniereSignatureEvenement = signatureEvenement(evenementActuelData);
+document.getElementById("nouvelleAfficheBlock").style.display = "none";
         fichierNouvelleAffiche = null;
         alert("Affiche mise à jour avec succès.");
     } catch (err) {

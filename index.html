@@ -1287,11 +1287,11 @@ img, svg, video, canvas {
                                 <div class="info-rows">
                                     <div class="info-row">
                                         <span class="info-row-label">${ICONS.user} Bénéficiaire des paiements</span>
-                                        <span class="info-row-value">${ev.beneficiaire_nom || 'Non renseigne'}</span>
-                                    </div>
-                                    <div class="info-row">
-                                        <span class="info-row-label">${ICONS.phone} Contact</span>
-                                        <span class="info-row-value">${infosCoordonnees}</span>
+                                      <span class="info-row-value" id="evBeneficiaireNomEl">${ev.beneficiaire_nom || 'Non renseigne'}</span>
+</div>
+<div class="info-row">
+    <span class="info-row-label">${ICONS.phone} Contact</span>
+    <span class="info-row-value" id="evBeneficiaireContactEl">${infosCoordonnees}</span>
                                     </div>
                                 </div>
                                 ${qrSection}
@@ -1356,32 +1356,31 @@ img, svg, video, canvas {
 
                 // ── Affiche HTML ────────────────────────────────────────────────────
                 const posterHTML = ev.affiche_url
-                    ? `<img src="${ev.affiche_url}" alt="Affiche de l'événement">`
-                    : `<div class="poster-fallback">${ICONS.image}<p>Affiche non disponible</p></div>`;
-
+                  ? `<img id="posterImgEl" src="${ev.affiche_url}" alt="Affiche de l'événement">`
+                  : `<div class="poster-fallback">${ICONS.image}<p>Affiche non disponible</p></div>`;
                 // ── Injection ───────────────────────────────────────────────────────
                 container.innerHTML = `
                     <div class="grid">
                         <div class="card card--event">
                             <div class="poster-wrapper gx-reveal gx-delay-1">${posterHTML}</div>
-                            <h1 class="event-title gx-reveal gx-delay-2">${ev.titre}</h1>
-                                                    <div class="meta-row gx-reveal gx-delay-2">
-                                <span class="meta-item">
-                                    ${ICONS.calendar}
-                                    <span class="meta-text"><strong>Date :</strong> ${ev.date}</span>
-                                </span>
-                                <span class="meta-sep">—</span>
-                                <span class="meta-item">
-                                    ${ICONS.clock}
-                                   <span class="meta-text"><strong>Heure :</strong> ${(ev.heure || '').slice(0, 5)}</span>
-                                </span>
-                            </div>
-                            <div class="meta-row gx-reveal gx-delay-2">
-                                <span class="meta-item">
-                                    ${ICONS.pin}
-                                    <span class="meta-text"><strong>Lieu :</strong> ${ev.lieu}</span>
-                                </span>
-                            </div>
+                            <h1 class="event-title gx-reveal gx-delay-2" id="evTitreEl">${ev.titre}</h1>
+<div class="meta-row gx-reveal gx-delay-2">
+    <span class="meta-item">
+        ${ICONS.calendar}
+        <span class="meta-text"><strong>Date :</strong> <span id="evDateEl">${ev.date}</span></span>
+    </span>
+    <span class="meta-sep">—</span>
+    <span class="meta-item">
+        ${ICONS.clock}
+        <span class="meta-text"><strong>Heure :</strong> <span id="evHeureEl">${(ev.heure || '').slice(0, 5)}</span></span>
+    </span>
+</div>
+<div class="meta-row gx-reveal gx-delay-2">
+    <span class="meta-item">
+        ${ICONS.pin}
+        <span class="meta-text"><strong>Lieu :</strong> <span id="evLieuEl">${ev.lieu}</span></span>
+    </span>
+</div>
                             <div class="price-badge gx-reveal gx-delay-3">${prixHTML}</div>
                         </div>
                         <div>${rightColumn}</div>
@@ -1524,7 +1523,8 @@ img, svg, video, canvas {
                         }
                     };
                 }
-
+                derniereSignatureAchat = signatureEvenementAchat(ev);
+                demarrerVerificationPeriodiqueAchat();
                 window.dispatchEvent(new Event('goldtix:donneesPretes'));
 
             } catch (err) {
@@ -1539,6 +1539,72 @@ img, svg, video, canvas {
                 chargementEnCours = false;
             }
         }
+
+        let derniereSignatureAchat = "";
+let intervalMiseAJourAchatDemarre = false;
+
+function signatureEvenementAchat(ev) {
+    if (!ev) return "";
+    return [
+        ev.titre || "", ev.date || "", ev.heure || "", ev.lieu || "",
+        ev.affiche_url || "", ev.beneficiaire_nom || "", ev.beneficiaire_infos || "",
+        JSON.stringify(ev.categories_data || []), ev.prix || "",
+        ev.ventes_fermees ? "1" : "0"
+    ].join("|");
+}
+
+async function verifierMiseAJourAchat() {
+    const eventIdCourant = new URLSearchParams(window.location.search).get("event");
+    if (!eventIdCourant) return;
+    try {
+        const reponse = await fetchAvecTimeout('/api/tickets?event=' + encodeURIComponent(eventIdCourant), { method: 'GET' }, 15000);
+        if (!reponse.ok) return;
+        const data = await reponse.json();
+        const ev = data.event;
+        if (!ev) return;
+        const nouvelleSignature = signatureEvenementAchat(ev);
+        if (nouvelleSignature === derniereSignatureAchat) return;
+        derniereSignatureAchat = nouvelleSignature;
+
+        const btnValider = document.getElementById("btnValiderAchat");
+        if (ev.ventes_fermees && btnValider && !document.getElementById("ventesFermeesAlerte")) {
+            const alerteEl = document.createElement("p");
+            alerteEl.id = "ventesFermeesAlerte";
+            alerteEl.style.cssText = "color:#dc2626;font-weight:700;font-size:13px;margin-top:10px;text-align:center;";
+            alerteEl.textContent = "Les ventes viennent d'être fermées par l'organisateur. Votre inscription ne peut plus être validée.";
+            btnValider.insertAdjacentElement("beforebegin", alerteEl);
+            btnValider.disabled = true;
+            btnValider.style.opacity = "0.6";
+        }
+
+        const titreEl = document.getElementById("evTitreEl");
+        if (titreEl) titreEl.textContent = ev.titre;
+        const dateEl = document.getElementById("evDateEl");
+        if (dateEl) dateEl.textContent = ev.date;
+        const heureEl = document.getElementById("evHeureEl");
+        if (heureEl) heureEl.textContent = (ev.heure || '').slice(0, 5);
+        const lieuEl = document.getElementById("evLieuEl");
+        if (lieuEl) lieuEl.textContent = ev.lieu;
+        const posterImgEl = document.getElementById("posterImgEl");
+        if (posterImgEl && ev.affiche_url && posterImgEl.src !== ev.affiche_url) {
+            posterImgEl.src = ev.affiche_url;
+        }
+        const beneficiaireNomEl = document.getElementById("evBeneficiaireNomEl");
+        if (beneficiaireNomEl) beneficiaireNomEl.textContent = ev.beneficiaire_nom || 'Non renseigne';
+        const beneficiaireContactEl = document.getElementById("evBeneficiaireContactEl");
+        if (beneficiaireContactEl) beneficiaireContactEl.textContent = ev.beneficiaire_infos || 'Non renseigne';
+    } catch (err) {
+        console.error("Erreur vérification mise à jour (achat) :", err);
+    }
+}
+
+function demarrerVerificationPeriodiqueAchat() {
+    if (intervalMiseAJourAchatDemarre) return;
+    intervalMiseAJourAchatDemarre = true;
+    setInterval(() => {
+        if (!document.hidden) verifierMiseAJourAchat();
+    }, 9000);
+}
 
         document.addEventListener('DOMContentLoaded', function() {
             chargerPageAchatUnique();

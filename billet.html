@@ -865,9 +865,9 @@ btn.style.display = 'none';
           headerEl.innerHTML = `
             <div class="category-badge" style="${badgeBgStyle}">
               <span class="badge-dot" style="background:${ts.dotClr}; box-shadow:0 0 6px ${ts.dotClr};"></span>
-${escHTML(nomCategorie)}
+               ${escHTML(nomCategorie)}
             </div>
-            <h1 class="event-title-h">${escHTML(ev.titre || 'Événement')}</h1>
+            <h1 class="event-title-h" id="evTitreH">${escHTML(ev.titre || 'Événement')}</h1>
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
               <div class="event-meta-pill">
                 <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="${ts.dotClr}" stroke-width="2" stroke-linecap="round">
@@ -876,12 +876,12 @@ ${escHTML(nomCategorie)}
                   <line x1="8"  y1="2" x2="8"  y2="6"/>
                   <line x1="3"  y1="10" x2="21" y2="10"/>
                 </svg>
-${escHTML(dateStr)}
+<span id="evDateH">${escHTML(dateStr)}</span>
               </div>
 ${ev.heure ? `<div class="event-meta-pill">
                 <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="${ts.dotClr}" stroke-width="2" stroke-linecap="round">
                   <circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 12"/>
-                </svg>${escHTML(ev.heure)}</div>` : ''}
+                </svg><span id="evHeureH">${escHTML(ev.heure)}</span></div>` : ''}
             </div>`;
 
           const statut = (billet.statut || 'attente').trim().toLowerCase();
@@ -911,6 +911,7 @@ ${ev.heure ? `<div class="event-meta-pill">
             const div = document.createElement('div');
             div.className = 'info-cell' + (cell.full ? ' full' : '');
             if (cell.label === 'ID-billet') div.id = 'cellIdBillet';
+            if (cell.label === 'Lieu') div.id = 'cellLieu';
             if (cell.label === 'Bénéficiaire_paiements') div.id = 'cellBeneficiaire';
             div.style.animationDelay = (0.25 + i * 0.055) + 's';
             const valueStyle = cell.accent ? `color:${ts.badgeClr}; font-weight:800;` : '';
@@ -956,6 +957,7 @@ ${ev.heure ? `<div class="event-meta-pill">
           // Empreinte de l'état actuellement affiché : sert de référence pour
           // que le polling ne touche au DOM que si quelque chose a réellement changé.
           dernierSignatureAffichee = `${statut}|${billet.numero_billet || ''}|${billet.id || ''}`;
+          dernierSignatureEvenementAffiche = `${ev.titre||''}|${ev.date||''}|${ev.heure||''}|${ev.lieu||''}|${ev.affiche_url||ev.image_url||ev.affiche||''}`;
 
           showTicket();
           demarrerPollingBillet();
@@ -986,13 +988,25 @@ ${ev.heure ? `<div class="event-meta-pill">
           if (!billet) { if (forcerErreur) showError('Billet introuvable.'); return; }
           if (!ev)     { if (forcerErreur) showError("Événement introuvable."); return; }
 
-          const statut = (billet.statut || 'attente').trim().toLowerCase();
-          const signature = `${statut}|${billet.numero_billet || ''}|${billet.id || ''}`;
+         const statut = (billet.statut || 'attente').trim().toLowerCase();
+const signature = `${statut}|${billet.numero_billet || ''}|${billet.id || ''}`;
+const signatureEv = `${ev.titre||''}|${ev.date||''}|${ev.heure||''}|${ev.lieu||''}|${ev.affiche_url||ev.image_url||ev.affiche||''}`;
 
-          if (signature === dernierSignatureAffichee) return; // rien de nouveau
+let quelqueChoseAChange = false;
 
-          dernierSignatureAffichee = signature;
-          mettreAJourStatutAffiche(billet, statut, ev);
+if (signature !== dernierSignatureAffichee) {
+    dernierSignatureAffichee = signature;
+    mettreAJourStatutAffiche(billet, statut, ev);
+    quelqueChoseAChange = true;
+}
+
+if (signatureEv !== dernierSignatureEvenementAffiche) {
+    dernierSignatureEvenementAffiche = signatureEv;
+    appliquerMiseAJourEvenement(ev);
+    quelqueChoseAChange = true;
+}
+
+if (!quelqueChoseAChange) return;
 
         } catch (err) {
           console.error('Erreur verifierMiseAJour:', err);
@@ -1010,6 +1024,31 @@ ${ev.heure ? `<div class="event-meta-pill">
       // Le reste (titre, image, date, lieu, catégorie...) ne change
       // jamais pour un même billet et n'est donc pas retouché ici.
       // ---------------------------------------------------------------
+let dernierSignatureEvenementAffiche = null;
+
+function appliquerMiseAJourEvenement(ev) {
+    const titreEl = document.getElementById('evTitreH');
+    if (titreEl) titreEl.textContent = ev.titre || 'Événement';
+    const dateEl = document.getElementById('evDateH');
+    if (dateEl) {
+        dateEl.textContent = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' }) : '—';
+    }
+    const heureEl = document.getElementById('evHeureH');
+    if (heureEl && ev.heure) heureEl.textContent = ev.heure;
+    const lieuCell = document.getElementById('cellLieu');
+    if (lieuCell) {
+        const v = lieuCell.querySelector('.cell-value');
+        if (v) v.textContent = ev.lieu || '—';
+    }
+    const bgImg = document.getElementById('event-bg-img');
+    const imgUrl = ev.affiche_url || ev.image_url || ev.affiche || null;
+    if (bgImg && imgUrl && bgImg.src !== imgUrl) {
+        bgImg.crossOrigin = 'anonymous';
+        bgImg.src = imgUrl;
+        bgImg.style.display = 'block';
+    }
+}
+
       function mettreAJourStatutAffiche(billet, statut, ev) {
         const isConfirmed = (statut === 'confirme' || statut === 'valide');
 
