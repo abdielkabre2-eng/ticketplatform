@@ -166,22 +166,6 @@
         /* ============================================
            NAVBAR
         ============================================ */
-        .top-navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding: 14px 20px;
-            background: rgba(255,255,255,0.88);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border-gold);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-gold-sm), 0 1px 0 rgba(255,255,255,0.9) inset, 0 0 0 1px rgba(255,255,255,0.4) inset;
-            animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
 
         .logo-container { display: flex; align-items: center; gap: 12px; }
 
@@ -244,29 +228,6 @@
         }
 
         .navbar-right { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-
-        .btn-logout {
-    display: none;
-    align-items: center;
-    gap: 6px;
-    background: linear-gradient(135deg, #ef4444, #dc2626);
-    color: #ffffff;
-    border: none;
-    padding: 8px 14px;
-    border-radius: var(--radius-xs);
-    font-family: var(--font-display);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.4px;
-    cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
-}
-.btn-logout:hover {
-    transform: translateY(-1px);
-    filter: brightness(1.05);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-        .btn-logout:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
 
         /* ============================================
            BANDEAU DE CONFIANCE (nouveau)
@@ -1707,7 +1668,8 @@ h1, h2, h3, p, span, div {
 }
 
 /* ============================================
-   HEADER FIXE
+ /* ============================================
+   NAVBAR — bloc unique et propre
 ============================================ */
 .top-navbar {
     position: fixed;
@@ -1717,23 +1679,38 @@ h1, h2, h3, p, span, div {
     width: calc(100% - 32px);
     max-width: 680px;
     z-index: 500;
-    margin-bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: nowrap;
+    padding: 14px 20px;
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-gold);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-gold-sm), 0 1px 0 rgba(255,255,255,0.9) inset, 0 0 0 1px rgba(255,255,255,0.4) inset;
+    animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
 }
 
-body {
-    padding-top: 92px;
-}
+.logo-container { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.navbar-right { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
+
+/* Seule source de vérité pour l'espace sous le header fixe */
+body { padding-top: 92px; }
 
 @media (max-width: 480px) {
-    .top-navbar { top: 12px; width: calc(100% - 24px); }
+    .top-navbar { top: 12px; width: calc(100% - 24px); padding: 12px 14px; }
     body { padding-top: 84px; }
+    .badge-espace { display: none; } /* fait de la place au hamburger */
 }
 
 /* ============================================
-   BOUTON HAMBURGER (remplace .btn-logout)
+   BOUTON HAMBURGER
 ============================================ */
 .btn-menu-hamburger {
-    display: none;
+    display: none; /* passé à flex uniquement par entrerDansEspaceProtege() */
     align-items: center;
     justify-content: center;
     width: 40px;
@@ -1743,10 +1720,9 @@ body {
     border: none;
     border-radius: var(--radius-xs);
     cursor: pointer;
-    transition: transform 0.15s, filter 0.15s, box-shadow 0.15s;
     flex-shrink: 0;
+    transition: transform 0.15s, filter 0.15s, box-shadow 0.15s;
 }
-
 .btn-menu-hamburger:hover { transform: translateY(-1px); filter: brightness(1.1); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
 .btn-menu-hamburger:active { transform: translateY(0); }
 .btn-menu-hamburger:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
@@ -1765,25 +1741,7 @@ body {
     pointer-events: none;
     transition: opacity 0.3s ease;
 }
-
 .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
-
-.top-navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding: 14px 20px;
-    background: rgba(255,255,255,0.88);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--border-gold);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-gold-sm), 0 1px 0 rgba(255,255,255,0.9) inset, 0 0 0 1px rgba(255,255,255,0.4) inset;
-    animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
-    gap: 10px;
-    flex-wrap: nowrap !important; /* EMPÊCHE de passer à la ligne sur mobile */
-}
 
 .sidebar-drawer {
     position: fixed;
@@ -1793,108 +1751,54 @@ body {
     width: min(300px, 84vw);
     background: var(--grad-dark);
     z-index: 901;
-    transform: translateX(100%) !important; /* FORCE le menu à se cacher à droite */
-    visibility: hidden; /* Empêche tout affichage par défaut */
-    transition: transform 0.35s cubic-bezier(0.22,1,0.36,1), visibility 0.35s;
+    transform: translateX(100%);
+    visibility: hidden;
+    transition: transform 0.35s cubic-bezier(0.22,1,0.36,1), visibility 0s linear 0.35s;
     box-shadow: -10px 0 40px rgba(0,0,0,0.35);
     border-radius: var(--radius-lg) 0 0 var(--radius-lg);
     display: flex;
     flex-direction: column;
     overflow: hidden;
 }
-
-/* Règle pour afficher le menu uniquement à l'ouverture */
 .sidebar-drawer.active {
-    transform: translateX(0) !important;
+    transform: translateX(0);
     visibility: visible;
-}
-
-/* Ajustement spécifique mobile */
-@media (max-width: 500px) {
-    .badge-espace {
-        display: none !important; /* Masque "ESPACE ORGANISATEUR" sur mobile pour faire de la place */
-    }
+    transition: transform 0.35s cubic-bezier(0.22,1,0.36,1), visibility 0s linear 0s;
 }
 
 .sidebar-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 22px 20px;
-    border-bottom: 1px solid rgba(245,158,11,0.15);
-    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 20px; border-bottom: 1px solid rgba(245,158,11,0.15); flex-shrink: 0;
 }
-
-.sidebar-header-title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-family: var(--font-display);
-    font-size: 15px;
-    font-weight: 800;
-    color: #ffffff;
-    letter-spacing: 0.2px;
-}
-
+.sidebar-header-title { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-size: 15px; font-weight: 800; color: #ffffff; letter-spacing: 0.2px; }
 .sidebar-header-title svg { width: 18px; height: 18px; color: var(--gold-400); }
-
 .sidebar-close-btn {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.14);
-    color: rgba(255,255,255,0.7);
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14);
+    color: rgba(255,255,255,0.7); width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
     transition: background 0.2s, color 0.2s;
 }
-
 .sidebar-close-btn:hover { background: rgba(245,158,11,0.16); color: #fff; }
 .sidebar-close-btn:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
 .sidebar-close-btn svg { width: 16px; height: 16px; }
 
-.sidebar-nav {
-    padding: 14px 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    flex: 1;
-    overflow-y: auto;
-}
-
+.sidebar-nav { padding: 14px 12px; display: flex; flex-direction: column; gap: 4px; flex: 1; overflow-y: auto; }
 .sidebar-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 13px 14px;
-    border: none;
-    background: transparent;
-    color: rgba(255,255,255,0.78);
-    font-family: var(--font-display);
-    font-size: 13.5px;
-    font-weight: 700;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    text-align: left;
-    width: 100%;
+    display: flex; align-items: center; gap: 12px; padding: 13px 14px;
+    border: none; background: transparent; color: rgba(255,255,255,0.78);
+    font-family: var(--font-display); font-size: 13.5px; font-weight: 700;
+    border-radius: var(--radius-sm); cursor: pointer; text-align: left; width: 100%;
     transition: background 0.18s, color 0.18s;
 }
-
 .sidebar-item svg { width: 18px; height: 18px; flex-shrink: 0; color: rgba(245,158,11,0.75); transition: color 0.18s; }
 .sidebar-item:hover { background: rgba(245,158,11,0.10); color: #fff; }
 .sidebar-item.active { background: rgba(245,158,11,0.16); color: #fff; }
 .sidebar-item.active svg { color: var(--gold-400); }
 .sidebar-item:focus-visible { outline: 2px solid var(--gold-500); outline-offset: -2px; }
-
 .sidebar-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 8px 12px; }
-
 .sidebar-item.sidebar-logout { color: #fca5a5; }
 .sidebar-item.sidebar-logout svg { color: #f87171; }
 .sidebar-item.sidebar-logout:hover { background: rgba(239,68,68,0.12); color: #fff; }
-
-.page-wrapper {
-    padding-top: 85px !important;
-}
     </style>
 </head>
 <body>
@@ -1980,7 +1884,7 @@ body {
         </svg>
     </button>
 </div>
-        </nav>
+        
         </nav>
 
     <!-- SIDEBAR / MENU LATÉRAL -->
@@ -2696,6 +2600,10 @@ body {
        AUTHENTIFICATION
     ============================================= */
     async function initialiserAuthentification() {
+         document.getElementById("blocAuthentification").style.display = "block";
+         document.getElementById("espaceProtege").style.display = "none";
+         document.getElementById("btnMenuHamburger").style.display = "none";
+
         if (!eventId) {
             document.getElementById("authEcranChargement").innerHTML =
                 '<div class="auth-card"><div class="auth-card-inner"><p class="auth-subtitle">Aucun événement spécifié. Ajoutez ?event=ID dans l\'URL.</p></div></div>';
