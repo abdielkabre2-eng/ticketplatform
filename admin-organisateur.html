@@ -1945,9 +1945,13 @@ body { padding-top: 92px !important; }
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
                 Paiements confirmés
             </button>
-            <button class="sidebar-item" data-onglet="scanner" onclick="sidebarNaviguer('scanner', this)">
+                        <button class="sidebar-item" data-onglet="scanner" onclick="sidebarNaviguer('scanner', this)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2"/><rect x="7" y="7" width="4" height="4" rx="0.5"/><rect x="13" y="7" width="4" height="4" rx="0.5"/><rect x="7" y="13" width="4" height="4" rx="0.5"/><path d="M13 13h2v2h-2zM17 13h2M13 17h2M17 17h2"/></svg>
                 Scanner
+            </button>
+            <button class="sidebar-item" data-onglet="suggestion" onclick="sidebarNaviguer('suggestion', this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                Suggestion
             </button>
             <div class="sidebar-divider"></div>
             <button class="sidebar-item sidebar-logout" onclick="deconnexion()">
@@ -2224,6 +2228,10 @@ body { padding-top: 92px !important; }
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2"/><rect x="7" y="7" width="4" height="4" rx="0.5"/><rect x="13" y="7" width="4" height="4" rx="0.5"/><rect x="7" y="13" width="4" height="4" rx="0.5"/><path d="M13 13h2v2h-2zM17 13h2M13 17h2M17 17h2"/></svg>
                             <span>Scanner</span>
                         </button>
+                        <button class="tab-icon-btn" onclick="changerOnglet('suggestion', this)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                            <span>Suggestion</span>
+                        </button>
                     </div>
 
                     <!-- SECTION : GESTION -->
@@ -2422,7 +2430,36 @@ body { padding-top: 92px !important; }
                             <button class="btn-scan-manual" onclick="verifierBilletManuel()">Vérifier</button>
                         </div>
 
-                        <div id="resultatScan">En attente de vérification...</div>
+                                               <div id="resultatScan">En attente de vérification...</div>
+                    </div>
+
+                    <!-- ========== SECTION : SUGGESTION ========== -->
+                    <div id="section-suggestion" class="section-content">
+                        <div class="section-header">
+                            <h2>Suggestion / Remarque</h2>
+                            <p>Une idée pour améliorer la plateforme, un bug à signaler, une remarque ? Écrivez-la ici, elle nous sera envoyée directement.</p>
+                        </div>
+
+                        <div class="gestion-block">
+                            <textarea
+                                id="inputSuggestion"
+                                class="search-input"
+                                rows="6"
+                                maxlength="1000"
+                                style="resize:vertical;min-height:140px;"
+                                placeholder="Décrivez votre suggestion ou remarque..."></textarea>
+
+                            <div id="suggestionStatus" style="font-size:12.5px;margin-top:10px;min-height:18px;"></div>
+
+                            <button
+                                type="button"
+                                class="btn-auth-primary"
+                                style="margin-top:8px;"
+                                id="btnEnvoyerSuggestion"
+                                onclick="envoyerSuggestion()">
+                                Envoyer
+                            </button>
+                        </div>
                     </div>
 
                 </div><!-- /.main-card-inner -->
@@ -3621,6 +3658,46 @@ async function verifierMiseAJourEvenement() {
         document.getElementById("codeBilletInput").value = "";
     }
 
+/* =============================================
+   ENVOI D'UNE SUGGESTION (EmailJS, même mécanisme
+   que l'envoi du billet — aucun appel serveur ajouté)
+============================================= */
+async function envoyerSuggestion() {
+    const textarea = document.getElementById("inputSuggestion");
+    const statutEl = document.getElementById("suggestionStatus");
+    const btn = document.getElementById("btnEnvoyerSuggestion");
+
+    const message = textarea.value.trim();
+    if (!message) {
+        statutEl.textContent = "Veuillez écrire un message avant d'envoyer.";
+        statutEl.style.color = "var(--red-500)";
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Envoi en cours...";
+    statutEl.textContent = "";
+
+    try {
+        await emailjs.send('service_p8rnipf', 'template_sb3q713', {
+            message: message,
+            nom_evenement: nomEvenementCourant || "Événement",
+            event_id: eventId || "N/A"
+        });
+
+        textarea.value = "";
+        statutEl.textContent = "✓ Message envoyé, merci pour votre retour !";
+        statutEl.style.color = "var(--green-600)";
+    } catch (err) {
+        console.error("Erreur envoi suggestion :", err);
+        statutEl.textContent = "Erreur lors de l'envoi. Réessayez, ou contactez-nous sur WhatsApp.";
+        statutEl.style.color = "var(--red-500)";
+    } finally {
+        btn.disabled = false;
+        btn.textContent = "Envoyer";
+    }
+}
+
     function ouvrirSidebar() {
     document.getElementById("sidebarOverlay").classList.add("active");
     document.getElementById("sidebarDrawer").classList.add("active");
@@ -3637,13 +3714,13 @@ function fermerSidebar() {
 }
 
 function sidebarNaviguer(nomOnglet, sidebarBtn) {
-    const idsBoutons = {
+        const idsBoutons = {
         gestion: "btnTabGestion",
         paiements: "btnTabPaiements",
         validees: "btnTabValidees"
     };
-    let boutonReel = nomOnglet === "scanner"
-        ? document.querySelector('.tab-icon-btn[onclick*="scanner"]')
+    let boutonReel = (nomOnglet === "scanner" || nomOnglet === "suggestion")
+        ? document.querySelector('.tab-icon-btn[onclick*="' + nomOnglet + '"]')
         : document.getElementById(idsBoutons[nomOnglet]);
     
     changerOnglet(nomOnglet, boutonReel);
@@ -3674,11 +3751,12 @@ document.addEventListener("keydown", (e) => {
 let scrollOngletRafId = null;
 
 function scrollVersSectionActive(nomOnglet) {
-    const idsSections = {
+       const idsSections = {
         gestion: "section-gestion",
         paiements: "section-paiements",
         validees: "section-validees",
-        scanner: "section-scanner"
+        scanner: "section-scanner",
+        suggestion: "section-suggestion"
     };
     const sectionId = idsSections[nomOnglet];
     if (!sectionId) return;
@@ -3737,9 +3815,12 @@ function scrollVersSectionActive(nomOnglet) {
     } else if (nomOnglet === 'validees') {
         document.getElementById('section-validees').classList.add('active');
         arreterScanner();
-    } else {
+       } else if (nomOnglet === 'scanner') {
         document.getElementById('section-scanner').classList.add('active');
         demarrerScanner();
+    } else {
+        document.getElementById('section-suggestion').classList.add('active');
+        arreterScanner();
     }
 
     scrollVersSectionActive(nomOnglet);

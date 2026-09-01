@@ -166,22 +166,6 @@
         /* ============================================
            NAVBAR
         ============================================ */
-        .top-navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding: 14px 20px;
-            background: rgba(255,255,255,0.88);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border-gold);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-gold-sm), 0 1px 0 rgba(255,255,255,0.9) inset, 0 0 0 1px rgba(255,255,255,0.4) inset;
-            animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
 
         .logo-container { display: flex; align-items: center; gap: 12px; }
 
@@ -244,29 +228,6 @@
         }
 
         .navbar-right { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-
-        .btn-logout {
-    display: none;
-    align-items: center;
-    gap: 6px;
-    background: linear-gradient(135deg, #ef4444, #dc2626);
-    color: #ffffff;
-    border: none;
-    padding: 8px 14px;
-    border-radius: var(--radius-xs);
-    font-family: var(--font-display);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.4px;
-    cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
-}
-.btn-logout:hover {
-    transform: translateY(-1px);
-    filter: brightness(1.05);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-        .btn-logout:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
 
         /* ============================================
            BANDEAU DE CONFIANCE (nouveau)
@@ -794,13 +755,15 @@
            SCANNER SECTION
         ============================================ */
         .scanner-frame {
-            position: relative;
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            border: 2px solid var(--border-gold-strong);
-            box-shadow: var(--shadow-gold-md), 0 0 0 4px rgba(245,158,11,0.08);
-            background: #000;
-        }
+    position: relative;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 2px solid var(--border-gold-strong);
+    box-shadow: var(--shadow-gold-md), 0 0 0 4px rgba(245,158,11,0.08);
+    background: #000;
+    aspect-ratio: 1 / 1;   /* Force un format carré parfait 1:1 */
+    width: 100%;
+    }
 
         .scanner-corner { position: absolute; width: 22px; height: 22px; z-index: 10; pointer-events: none; }
         .scanner-corner.tl { top: 10px; left: 10px; border-top: 3px solid var(--gold-400); border-left: 3px solid var(--gold-400); }
@@ -808,7 +771,22 @@
         .scanner-corner.bl { bottom: 10px; left: 10px; border-bottom: 3px solid var(--gold-400); border-left: 3px solid var(--gold-400); }
         .scanner-corner.br { bottom: 10px; right: 10px; border-bottom: 3px solid var(--gold-400); border-right: 3px solid var(--gold-400); }
 
-        #reader { width: 100%; }
+        #reader {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Force la caméra à remplir le cadre carré sans déformer le reste */
+#reader video,
+#reader canvas {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
 
         .scanner-input-group { display: flex; gap: 10px; margin-top: 16px; }
 
@@ -1028,6 +1006,10 @@
             letter-spacing: 0.6px;
             margin-bottom: 7px;
         }
+        #formulaireInfosEvenement .auth-form-group label {
+    text-transform: none;
+    letter-spacing: 0;
+}
 
         .password-field-wrapper { position: relative; display: flex; align-items: center; }
 
@@ -1543,6 +1525,306 @@
             color: var(--ink-500);
         }
         .quota-count-text strong { color: var(--ink-900); }
+        /* ============================================
+   NAVIGATION ICÔNE + TEXTE (nouvel onglet Gestion)
+============================================ */
+.tabs-icon-nav {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 28px;
+    background: var(--ink-100);
+    padding: 6px;
+    border-radius: var(--radius-lg);
+}
+
+.tab-icon-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 10px 4px 9px;
+    border: none;
+    background: transparent;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    color: var(--ink-500);
+    transition: all 0.22s cubic-bezier(0.22,1,0.36,1);
+}
+
+.tab-icon-btn svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    transition: transform 0.2s;
+}
+
+.tab-icon-btn span {
+    font-family: var(--font-display);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+.tab-icon-btn:hover:not(.active) {
+    color: var(--gold-700);
+    background: rgba(217,119,6,0.06);
+}
+
+.tab-icon-btn.active {
+    background: #ffffff;
+    color: var(--gold-700);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.tab-icon-btn.active svg { transform: scale(1.05); }
+
+.tab-icon-btn:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
+
+@media (max-width: 480px) {
+    .tab-icon-btn span { font-size: 9px; }
+    .tab-icon-btn svg { width: 18px; height: 18px; }
+    .tab-icon-btn { padding: 8px 2px 7px; gap: 4px; }
+    .tabs-icon-nav { gap: 3px; padding: 5px; }
+}
+
+/* Sous-sections dans l'onglet Gestion */
+.gestion-block {
+    background: #ffffff;
+    border: 1px solid var(--ink-200);
+    border-radius: var(--radius-md);
+    padding: 18px;
+    margin-bottom: 16px;
+}
+/* ============================================
+   ANTI-DÉBORDEMENT GLOBAL — tous écrans
+============================================ */
+input, select, textarea, button {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+input[type="date"],
+input[type="time"] {
+    width: 100%;
+    min-width: 0;
+    -webkit-appearance: none;
+    appearance: none;
+}
+.gestion-block, .auth-form-group, .status-box, .quota-box,
+.quota-box-top, .quota-input-group, #editCategoriesContainer {
+    min-width: 0;
+    max-width: 100%;
+}
+.gestion-block * , .auth-form-group * {
+    min-width: 0;
+}
+#editCategoriesContainer > div {
+    flex-wrap: wrap;
+}
+.btn-auth-primary {
+    white-space: normal;
+    word-break: break-word;
+}
+h1, h2, h3, p, span, div {
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+@media (max-width: 380px) {
+    #editCategoriesContainer > div {
+        flex-direction: column;
+    }
+}
+.categorie-edit-box {
+    background: #fafaf9;
+    border: 1px solid rgba(217,119,6,0.2);
+    border-radius: var(--radius-md);
+    padding: 14px;
+    margin-bottom: 10px;
+}
+.categorie-edit-box .categorie-edit-title {
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gold-600);
+    margin-bottom: 10px;
+}
+.categorie-edit-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.categorie-edit-field {
+    flex: 1;
+    min-width: 120px;
+}
+.categorie-edit-field label {
+    display: block;
+    font-size: 10.5px;
+    color: var(--ink-500);
+    margin-bottom: 5px;
+}
+.categorie-edit-field input {
+    width: 100%;
+}
+.gestion-block-title {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--ink-900);
+    margin-bottom: 14px;
+    letter-spacing: -0.1px;
+}
+.gestion-block .status-box,
+.gestion-block .quota-box {
+    margin-bottom: 0;
+    border: none;
+    padding: 0;
+    background: transparent;
+}
+
+/* ============================================
+ /* ============================================
+   NAVBAR — bloc unique et propre
+============================================ */
+.top-navbar {
+    position: fixed !important;
+    top: 16px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: calc(100% - 32px) !important;
+    max-width: 680px !important;
+    z-index: 500 !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 10px !important;
+    flex-wrap: nowrap !important;
+    padding: 14px 20px !important;
+    background: rgba(255,255,255,0.88) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid var(--border-gold) !important;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: var(--shadow-gold-sm), 0 1px 0 rgba(255,255,255,0.9) inset, 0 0 0 1px rgba(255,255,255,0.4) inset !important;
+    animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both !important;
+}
+
+.logo-container { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.navbar-right { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
+
+/* Seule source de vérité pour l'espace sous le header fixe */
+body { padding-top: 92px !important; }
+
+@media (max-width: 480px) {
+    .top-navbar { 
+        top: 12px !important; 
+        width: calc(100% - 24px) !important; 
+        padding: 12px 14px !important; 
+    }
+    body { padding-top: 84px !important; }
+   .badge-espace {
+        padding: 8px !important;
+        gap: 0 !important;
+    }
+    .badge-espace .badge-espace-text {
+        display: none !important;
+    } 
+}
+/* ============================================
+   BOUTON HAMBURGER
+============================================ */
+.btn-menu-hamburger {
+    display: none; /* passé à flex uniquement par entrerDansEspaceProtege() */
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: var(--ink-900);
+    color: #ffffff;
+    border: none;
+    border-radius: var(--radius-xs);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform 0.15s, filter 0.15s, box-shadow 0.15s;
+}
+.btn-menu-hamburger:hover { transform: translateY(-1px); filter: brightness(1.1); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.btn-menu-hamburger:active { transform: translateY(0); }
+.btn-menu-hamburger:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
+.btn-menu-hamburger svg { width: 20px; height: 20px; }
+
+/* ============================================
+   SIDEBAR / DRAWER
+============================================ */
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,6,2,0.55);
+    backdrop-filter: blur(2px);
+    z-index: 900;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+.sidebar-overlay.active { opacity: 1; pointer-events: auto; }
+
+.sidebar-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: min(300px, 84vw);
+    background: var(--grad-dark);
+    z-index: 901;
+    transform: translateX(100%);
+    visibility: hidden;
+    transition: transform 0.35s cubic-bezier(0.22,1,0.36,1), visibility 0s linear 0.35s;
+    box-shadow: -10px 0 40px rgba(0,0,0,0.35);
+    border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.sidebar-drawer.active {
+    transform: translateX(0);
+    visibility: visible;
+    transition: transform 0.35s cubic-bezier(0.22,1,0.36,1), visibility 0s linear 0s;
+}
+
+.sidebar-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 20px; border-bottom: 1px solid rgba(245,158,11,0.15); flex-shrink: 0;
+}
+.sidebar-header-title { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-size: 15px; font-weight: 800; color: #ffffff; letter-spacing: 0.2px; }
+.sidebar-header-title svg { width: 18px; height: 18px; color: var(--gold-400); }
+.sidebar-close-btn {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14);
+    color: rgba(255,255,255,0.7); width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+.sidebar-close-btn:hover { background: rgba(245,158,11,0.16); color: #fff; }
+.sidebar-close-btn:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
+.sidebar-close-btn svg { width: 16px; height: 16px; }
+
+.sidebar-nav { padding: 14px 12px; display: flex; flex-direction: column; gap: 4px; flex: 1; overflow-y: auto; }
+.sidebar-item {
+    display: flex; align-items: center; gap: 12px; padding: 13px 14px;
+    border: none; background: transparent; color: rgba(255,255,255,0.78);
+    font-family: var(--font-display); font-size: 13.5px; font-weight: 700;
+    border-radius: var(--radius-sm); cursor: pointer; text-align: left; width: 100%;
+    transition: background 0.18s, color 0.18s;
+}
+.sidebar-item svg { width: 18px; height: 18px; flex-shrink: 0; color: rgba(245,158,11,0.75); transition: color 0.18s; }
+.sidebar-item:hover { background: rgba(245,158,11,0.10); color: #fff; }
+.sidebar-item.active { background: rgba(245,158,11,0.16); color: #fff; }
+.sidebar-item.active svg { color: var(--gold-400); }
+.sidebar-item:focus-visible { outline: 2px solid var(--gold-500); outline-offset: -2px; }
+.sidebar-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 8px 12px; }
+.sidebar-item.sidebar-logout { color: #fca5a5; }
+.sidebar-item.sidebar-logout svg { color: #f87171; }
+.sidebar-item.sidebar-logout:hover { background: rgba(239,68,68,0.12); color: #fff; }
     </style>
 </head>
 <body>
@@ -1607,26 +1889,75 @@
         <button type="button" class="intro-skip-btn" id="introSkipBtn" onclick="passerIntroGoldTix()">Passer ⏭</button>
     </div>
 
-    <div class="page-wrapper">
+        <!-- ==================== NAVBAR ====================
+         IMPORTANT : ce bloc doit rester HORS de .page-wrapper.
+         .page-wrapper a une animation qui utilise "transform",
+         ce qui en fait un containing block pour tout descendant
+         en position:fixed — et casse alors le comportement fixe
+         du header et de la sidebar. On le place donc en enfant
+         direct de <body>. -->
+    <nav class="top-navbar">
+        <div class="logo-container">
+            <img src="images/logo.png" alt="GoldTix Logo" class="site-logo">
+            <span class="brand-title">
+                <span class="text-dark">Gold</span><span class="text-gold">Tix</span>
+            </span>
+        </div>
+        <div class="navbar-right">
+            <span class="badge-espace">
+              <span class="badge-dot"></span>
+              <span class="badge-espace-text">Espace Organisateur</span>
+            </span>
+            <button id="btnMenuHamburger" class="btn-menu-hamburger" onclick="ouvrirSidebar()" aria-label="Ouvrir le menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+        </div>
+    </nav>
 
-        <!-- ==================== NAVBAR ==================== -->
-        <nav class="top-navbar">
-            <div class="logo-container">
-                <img src="images/logo.png" alt="GoldTix Logo" class="site-logo">
-                <span class="brand-title">
-                    <span class="text-dark">Gold</span><span class="text-gold">Tix</span>
-                </span>
-            </div>
-            <div class="navbar-right">
-                <span class="badge-espace">
-                    <span class="badge-dot"></span>
-                    Espace Organisateur
-                </span>
-                <button id="btnDeconnexion" class="btn-logout" onclick="deconnexion()">
-                    ⬅️Déconnexion
-                </button>
-            </div>
+    <!-- SIDEBAR / MENU LATÉRAL (idem : hors de .page-wrapper) -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="fermerSidebar()"></div>
+    <aside class="sidebar-drawer" id="sidebarDrawer" aria-hidden="true">
+        <div class="sidebar-header">
+            <span class="sidebar-header-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+                Menu
+            </span>
+            <button class="sidebar-close-btn" onclick="fermerSidebar()" aria-label="Fermer le menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+        <nav class="sidebar-nav">
+            <button class="sidebar-item" data-onglet="gestion" onclick="sidebarNaviguer('gestion', this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 22V12h6v10"/></svg>
+                Gestion
+            </button>
+            <button class="sidebar-item" data-onglet="paiements" onclick="sidebarNaviguer('paiements', this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                Paiements en attente
+            </button>
+            <button class="sidebar-item" data-onglet="validees" onclick="sidebarNaviguer('validees', this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+                Paiements confirmés
+            </button>
+            <button class="sidebar-item" data-onglet="scanner" onclick="sidebarNaviguer('scanner', this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2"/><rect x="7" y="7" width="4" height="4" rx="0.5"/><rect x="13" y="7" width="4" height="4" rx="0.5"/><rect x="7" y="13" width="4" height="4" rx="0.5"/><path d="M13 13h2v2h-2zM17 13h2M13 17h2M17 17h2"/></svg>
+                Scanner
+            </button>
+            <div class="sidebar-divider"></div>
+            <button class="sidebar-item sidebar-logout" onclick="deconnexion()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Déconnexion
+            </button>
         </nav>
+    </aside>
+
+    <div class="page-wrapper">
 
         <!-- ==================== BANDEAU DE CONFIANCE ==================== -->
         <div class="trust-strip" aria-hidden="true">
@@ -1872,55 +2203,158 @@
                         <span class="header-label">Votre evenement</span>
                         <h1 id="titreEvenementOrg">Chargement...</h1>
                         <p id="infosEvenementOrg">Connexion en cours...</p>
-                        <div class="header-banner-glow"></div>
+                                                <div class="header-banner-glow"></div>
                     </div>
 
-                    <!-- STATUS BOX -->
-                    <div class="status-box">
-                        <div class="status-box-left">
-                            <span class="status-indicator" id="statusIndicator"></span>
-                            <span id="labelStatutVentes">Statut : chargement...</span>
-                        </div>
-                        <button
-                            id="btnToggleVentes"
-                            class="btn-toggle-ventes"
-                            onclick="toggleVentes()"
-                            style="background: var(--ink-900); color: white;">
-                            Patientez...
+                    <!-- NAV PAR ONGLETS -->
+                    <div class="tabs-icon-nav">
+                        <button class="tab-icon-btn" id="btnTabGestion" onclick="changerOnglet('gestion', this)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 22V12h6v10"/></svg>
+                            <span>Gestion</span>
+                        </button>
+                        <button class="tab-icon-btn active" id="btnTabPaiements" onclick="changerOnglet('paiements', this)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                            <span>En attente (0)</span>
+                        </button>
+                        <button class="tab-icon-btn" id="btnTabValidees" onclick="changerOnglet('validees', this)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+                            <span>Confirmés (0)</span>
+                        </button>
+                        <button class="tab-icon-btn" onclick="changerOnglet('scanner', this)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2"/><rect x="7" y="7" width="4" height="4" rx="0.5"/><rect x="13" y="7" width="4" height="4" rx="0.5"/><rect x="7" y="13" width="4" height="4" rx="0.5"/><path d="M13 13h2v2h-2zM17 13h2M13 17h2M17 17h2"/></svg>
+                            <span>Scanner</span>
                         </button>
                     </div>
 
-                    <!-- JAUGE / LIMITE DE BILLETS (optionnelle) -->
-                    <div class="quota-box">
-                        <div class="quota-box-top">
-                            <div class="quota-label">
-                                <span class="quota-title">Définir le nombre de billets disponibles pour votre événement</span>
-                                <span class="quota-sub">Les ventes seront automatiquement fermées une fois le nombre de billets atteint.</span>
-                                <span class="quota-sub">Laissez ce champ vide pour ne définir aucune limite.</span>
-                            </div>
-                            <div class="quota-input-group">
-                                <input
-                                    type="number"
-                                    id="inputLimiteBillets"
-                                    min="0"
-                                    step="1"
-                                    inputmode="numeric"
-                                    placeholder="Max 500"
-                                    onchange="onChangementLimiteBillets()">
-                                <span class="quota-save-status" id="quotaSaveStatus"></span>
-                            </div>
+                    <!-- SECTION : GESTION -->
+                    <div id="section-gestion" class="section-content">
+                        <div class="section-header">
+                            <h2>Gestion de l'événement</h2>
+                            <p>Gérez les ventes, la limite de billets et modifiez les informations de votre événement.</p>
                         </div>
-                        <div class="quota-progress-track" id="quotaProgressTrack" style="display:none;">
-                            <div class="quota-progress-fill" id="quotaProgressFill"></div>
-                        </div>
-                        <p class="quota-count-text" id="quotaCountText" style="display:none;"></p>
-                    </div>
 
-                    <!-- TABS -->
-                    <div class="tabs">
-                        <button class="tab-btn active" id="btnTabPaiements" onclick="changerOnglet('paiements', this)">En attente (0)</button>
-                        <button class="tab-btn" id="btnTabValidees" onclick="changerOnglet('validees', this)">Confirmés (0)</button>
-                        <button class="tab-btn" onclick="changerOnglet('scanner', this)">Scanner QR</button>
+                        <div class="gestion-block">
+                            <h3 class="gestion-block-title">Gestion des ventes</h3>
+                            <div class="status-box">
+                                <div class="status-box-left">
+                                    <span class="status-indicator" id="statusIndicator"></span>
+                                    <span id="labelStatutVentes">Statut : chargement...</span>
+                                </div>
+                                <button
+                                    id="btnToggleVentes"
+                                    class="btn-toggle-ventes"
+                                    onclick="toggleVentes()"
+                                    style="background: var(--ink-900); color: white;">
+                                    Patientez...
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="gestion-block">
+                            <h3 class="gestion-block-title">Nombre de billets disponibles</h3>
+                            <div class="quota-box">
+                                <div class="quota-box-top">
+                                    <div class="quota-label">
+                                        <span class="quota-title">Définir le nombre de billets disponibles pour votre événement</span>
+                                        <span class="quota-sub">Les ventes seront automatiquement fermées une fois le nombre de billets atteint.</span>
+                                        <span class="quota-sub">Laissez ce champ vide pour ne définir aucune limite.</span>
+                                    </div>
+                                    <div class="quota-input-group">
+                                        <input
+                                            type="number"
+                                            id="inputLimiteBillets"
+                                            min="0"
+                                            step="1"
+                                            inputmode="numeric"
+                                            placeholder="Max 500"
+                                            onchange="onChangementLimiteBillets()">
+                                        <span class="quota-save-status" id="quotaSaveStatus"></span>
+                                    </div>
+                                </div>
+                                <div class="quota-progress-track" id="quotaProgressTrack" style="display:none;">
+                                    <div class="quota-progress-fill" id="quotaProgressFill"></div>
+                                </div>
+                                <p class="quota-count-text" id="quotaCountText" style="display:none;"></p>
+                            </div>
+                        </div>
+
+                            <div class="gestion-block">
+    <h3 class="gestion-block-title">Informations de l'événement</h3>
+    <div id="infosEvenementResume" style="font-size:13px;color:var(--ink-500);margin-bottom:14px;"></div>
+    <button type="button" class="btn-auth-primary" style="width:auto;padding:11px 20px;" onclick="ouvrirFormulaireInfosEvenement()">
+        Modifier les informations de votre événement
+    </button>
+    <div id="formulaireInfosEvenement" style="display:none;margin-top:18px;">
+        <div class="auth-form-group">
+            <label>Nom de l'événement</label>
+            <input type="text" id="editTitre" class="search-input">
+        </div>
+        <div class="auth-form-group">
+            <label>Date</label>
+            <input type="date" id="editDate" class="search-input">
+        </div>
+        <div class="auth-form-group">
+            <label>Heure</label>
+            <input type="time" id="editHeure" class="search-input">
+        </div>
+        <div class="auth-form-group">
+            <label>Lieu</label>
+            <input type="text" id="editLieu" class="search-input">
+        </div>
+        <div class="auth-form-group">
+            <label>Bénéficiaire (Nom & prénom)</label>
+            <input type="text" id="editBeneficiaireNom" class="search-input">
+        </div>
+        <div class="auth-form-group">
+            <label>Contact du bénéficiaire (whatsapp)</label>
+            <span style="display:block;font-size:12px;color:var(--ink-500);margin-top:-2px;margin-bottom:6px;">
+                ex: +212 770967646 - +226 53107345
+            </span>
+            <input type="text" id="editBeneficiaireInfos" class="search-input">
+        </div>
+        <div class="auth-form-group">
+            <label>Catégorie(s) de billets</label>
+            <div id="editCategoriesContainer"></div>
+        </div>
+
+        <!-- Boutons d'informations responsives -->
+        <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
+            <button type="button" class="btn-auth-primary" style="flex:1;min-width:140px;padding:10px 14px;font-size:13px;" onclick="enregistrerInfosEvenement()" id="btnEnregistrerInfos">
+                Enregistrer
+            </button>
+            <button type="button" onclick="document.getElementById('formulaireInfosEvenement').style.display='none';" style="padding:10px 14px;font-size:13px;background:var(--ink-100);border:none;border-radius:var(--radius-sm);font-family:var(--font-display);font-weight:700;cursor:pointer;white-space:nowrap;">
+                Annuler
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="gestion-block" style="text-align:center;">
+    <h3 class="gestion-block-title">Affiche de l'événement</h3>
+    <img id="afficheActuellePreview" src="" alt="Affiche actuelle" style="max-width:100%;max-height:220px;border-radius:var(--radius-sm);border:1px solid var(--ink-200);display:block;margin:0 auto 14px;">
+    <input type="file" id="inputNouvelleAffiche" accept="image/*" style="display:none;" onchange="previewNouvelleAffiche(event)">
+    <button type="button" class="btn-auth-primary" style="width:auto;padding:11px 20px;" onclick="document.getElementById('inputNouvelleAffiche').click()">
+        Modifier l'affiche
+    </button>
+    <p style="font-size:11.5px;color:var(--ink-400);margin-top:8px;">Formats JPG/PNG, 2 Mo maximum.</p>
+    
+    <div id="nouvelleAfficheBlock" style="display:none;margin-top:14px;">
+        <p style="font-size:12px;color:var(--ink-500);margin-bottom:8px;">Aperçu de la nouvelle affiche :</p>
+        <img id="previewNouvelleAfficheImg" src="" style="max-width:100%;max-height:220px;border-radius:var(--radius-sm);border:1px solid var(--border-gold-strong);display:block;margin:0 auto 10px;">
+
+        <!-- Boutons d'affiche responsives -->
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:12px;flex-wrap:wrap;">
+            <button type="button" class="btn-auth-primary" style="flex:1;min-width:140px;padding:10px 14px;font-size:13px;" id="btnEnregistrerAffiche" onclick="enregistrerNouvelleAffiche()">
+                Enregistrer l'affiche
+            </button>
+            <button type="button" onclick="annulerNouvelleAffiche()" style="padding:10px 14px;font-size:13px;background:var(--ink-100);border:none;border-radius:var(--radius-sm);font-family:var(--font-display);font-weight:700;cursor:pointer;white-space:nowrap;">
+                Annuler
+            </button>
+        </div>
+    </div>
+</div>
+
+                        
                     </div>
 
                     <!-- ========== SECTION : PAIEMENTS ========== -->
@@ -2048,7 +2482,7 @@
     const AUTH_STORAGE_KEY = "goldtix_session_" + eventId;
     let codeRecuperationValideTemporaire = null;
     let sessionToken = null;
-
+    let evenementActuelData = null;
     let chargementDemandesEnCours = false;
     let debounceRecherche = null;
 
@@ -2195,6 +2629,10 @@
        AUTHENTIFICATION
     ============================================= */
     async function initialiserAuthentification() {
+         document.getElementById("blocAuthentification").style.display = "block";
+         document.getElementById("espaceProtege").style.display = "none";
+         document.getElementById("btnMenuHamburger").style.display = "none";
+
         if (!eventId) {
             document.getElementById("authEcranChargement").innerHTML =
                 '<div class="auth-card"><div class="auth-card-inner"><p class="auth-subtitle">Aucun événement spécifié. Ajoutez ?event=ID dans l\'URL.</p></div></div>';
@@ -2251,7 +2689,7 @@
     function entrerDansEspaceProtege() {
         document.getElementById("blocAuthentification").style.display = "none";
         document.getElementById("espaceProtege").style.display = "block";
-        document.getElementById("btnDeconnexion").style.display = "inline-flex";
+        document.getElementById("btnMenuHamburger").style.display = "flex";
 
         chargerEspaceOrganisateur();
         demarrerPolling();
@@ -2462,7 +2900,8 @@
         if (containerValidees) containerValidees.innerHTML = `<div class="loading-dots"><span></span><span></span><span></span></div>`;
 
         document.getElementById("espaceProtege").style.display = "none";
-        document.getElementById("btnDeconnexion").style.display = "none";
+        document.getElementById("btnMenuHamburger").style.display = "none";
+          fermerSidebar();
         document.getElementById("blocAuthentification").style.display = "block";
         document.getElementById("loginPassword").value = "";
         afficherEcranAuth("authEcranLogin");
@@ -2476,15 +2915,16 @@
        - réutilise systématiquement l'action "charger_billets"
          déjà existante de l'API organisateur
     ============================================= */
-    function demarrerPolling() {
-        if (pollingActif) return;
-        pollingActif = true;
-        if (pollingIntervalId) clearInterval(pollingIntervalId);
-        pollingIntervalId = setInterval(() => {
-            if (document.hidden) return;
-            chargerToutesLesDemandes();
-        }, POLLING_INTERVAL_MS);
-    }
+   function demarrerPolling() {
+    if (pollingActif) return;
+    pollingActif = true;
+    if (pollingIntervalId) clearInterval(pollingIntervalId);
+    pollingIntervalId = setInterval(() => {
+        if (document.hidden) return;
+        chargerToutesLesDemandes();
+        verifierMiseAJourEvenement();
+    }, POLLING_INTERVAL_MS);
+}
 
     function arreterPolling() {
         pollingActif = false;
@@ -2497,6 +2937,15 @@
     /* =============================================
        CHARGEMENT DE L'ESPACE ORGANISATEUR
     ============================================= */
+function formatHeureAffichage(heure) {
+    if (!heure) return heure;
+    const parties = String(heure).split(':');
+    if (parties.length >= 2) {
+        return `${parties[0].padStart(2, '0')}:${parties[1].padStart(2, '0')}`;
+    }
+    return heure;
+}
+
     async function chargerEspaceOrganisateur() {
         if (!eventId) {
             document.getElementById("titreEvenementOrg").textContent = "Erreur : aucun evenement specifie.";
@@ -2504,13 +2953,60 @@
             return;
         }
 
+        function signatureEvenement(ev) {
+    if (!ev) return "";
+    return [
+        ev.titre || "", ev.date || "", ev.heure || "", ev.lieu || "",
+        ev.affiche_url || ev.image_url || ev.affiche || ev.photo || "",
+        ev.beneficiaire_nom || "", ev.beneficiaire_infos || "",
+        JSON.stringify(ev.categories_data || [])
+    ].join("|");
+}
+
+let derniereSignatureEvenement = "";
+
+async function verifierMiseAJourEvenement() {
+    try {
+        const data = await callOrganisateurAPI('charger_evenement', { evenementId: eventId, token: sessionToken });
+        const ev = data.event;
+        if (!ev) return;
+        const nouvelleSignature = JSON.stringify(ev);
+        if (nouvelleSignature === derniereSignatureEvenement) return;
+        derniereSignatureEvenement = nouvelleSignature;
+        evenementActuelData = ev;
+
+        document.getElementById("titreEvenementOrg").textContent = ev.titre;
+        document.getElementById("infosEvenementOrg").innerHTML = `Date : ${ev.date} &nbsp;&middot;&nbsp; Heure : ${formatHeureAffichage(ev.heure)} &nbsp;&middot;&nbsp; Lieu : ${ev.lieu}`;
+
+        let headerContainer = document.getElementById("headerTopContainer");
+        let eventImage = ev.affiche_url || ev.image_url || ev.affiche || ev.photo;
+        if (headerContainer && eventImage) {
+            let imgElement = headerContainer.querySelector(".event-bg-img");
+            if (!imgElement) {
+                imgElement = document.createElement("img");
+                imgElement.className = "event-bg-img";
+                headerContainer.insertBefore(imgElement, headerContainer.firstChild);
+            }
+            if (imgElement.src !== eventImage) imgElement.src = eventImage;
+        }
+
+        const previewGestion = document.getElementById("afficheActuellePreview");
+        if (previewGestion && eventImage && previewGestion.src !== eventImage) {
+            previewGestion.src = eventImage;
+        }
+    } catch (err) {
+        console.error("Erreur vérification mise à jour événement :", err);
+    }
+}
+
         try {
             const data = await callOrganisateurAPI('charger_evenement', {
                 evenementId: eventId,
                 token: sessionToken
             });
             const ev = data.event;
-
+            evenementActuelData = ev;
+            derniereSignatureEvenement = signatureEvenement(ev);
             if (!ev) {
                 document.getElementById("infosEvenementOrg").textContent = "Evenement introuvable.";
                 return;
@@ -2518,7 +3014,7 @@
 
             document.getElementById("titreEvenementOrg").textContent = ev.titre;
             document.getElementById("infosEvenementOrg").innerHTML =
-                `Date : ${ev.date} &nbsp;&middot;&nbsp; Heure : ${ev.heure} &nbsp;&middot;&nbsp; Lieu : ${ev.lieu}`;
+                `Date : ${ev.date} &nbsp;&middot;&nbsp; Heure : ${formatHeureAffichage(ev.heure)} &nbsp;&middot;&nbsp; Lieu : ${ev.lieu}`;
 
             let headerContainer = document.getElementById("headerTopContainer");
             let eventImage = ev.affiche_url || ev.image_url || ev.affiche || ev.photo;
@@ -2532,7 +3028,8 @@
                 }
                 imgElement.src = eventImage;
             }
-
+            const previewGestion = document.getElementById("afficheActuellePreview");
+            if (previewGestion && eventImage) previewGestion.src = eventImage;
             statutVentesFermees = ev.ventes_fermees || false;
             mettreAJourBoutonVentes();
 
@@ -2850,17 +3347,23 @@
     }
 
     function mettreAJourCompteurs(nombreConfirmes, nombreEnAttente) {
-        let btnTabValidees = document.getElementById("btnTabValidees");
-        let titreValidees = document.getElementById("titreSectionValidees");
-        if (btnTabValidees) btnTabValidees.textContent = `Confirmés (${nombreConfirmes})`;
-        if (titreValidees) titreValidees.textContent = `Participants confirmés (${nombreConfirmes})`;
+    let btnTabValidees = document.getElementById("btnTabValidees");
+    let titreValidees = document.getElementById("titreSectionValidees");
+    
+    if (btnTabValidees) {
+        const spanValidees = btnTabValidees.querySelector('span');
+        if (spanValidees) spanValidees.textContent = `Confirmés (${nombreConfirmes})`;
+    }
+    if (titreValidees) titreValidees.textContent = `Participants confirmés (${nombreConfirmes})`;
 
-        if (typeof nombreEnAttente === 'number') {
-            let btnTabPaiements = document.getElementById("btnTabPaiements");
-            if (btnTabPaiements) btnTabPaiements.textContent = `En attente (${nombreEnAttente})`;
+    if (typeof nombreEnAttente === 'number') {
+        let btnTabPaiements = document.getElementById("btnTabPaiements");
+        if (btnTabPaiements) {
+            const spanPaiements = btnTabPaiements.querySelector('span');
+            if (spanPaiements) spanPaiements.textContent = `En attente (${nombreEnAttente})`;
         }
     }
-
+}
     /* =============================================
        CHANGEMENT DE STATUT + ENVOI D'EMAIL (EmailJS,
        inchangé — ce n'est pas un appel Supabase)
@@ -2885,7 +3388,7 @@
                 // du billet concerné (plus besoin d'un second appel Supabase).
                 const billetContact = data.billet;
                 if (billetContact && billetContact.email) {
-                    let lienBillet = `${window.location.origin}/billet.html?id=${billetId}`;
+                    let lienBillet = `${window.location.origin}/billet.html?id=${billetContact.code_public}`;
                     const templateParams = {
                         email: billetContact.email,
                         nom_participant: billetContact.nom_participant,
@@ -3118,23 +3621,129 @@
         document.getElementById("codeBilletInput").value = "";
     }
 
-    function changerOnglet(nomOnglet, buttonElement) {
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
+    function ouvrirSidebar() {
+    document.getElementById("sidebarOverlay").classList.add("active");
+    document.getElementById("sidebarDrawer").classList.add("active");
+    document.getElementById("sidebarDrawer").setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+    synchroniserSidebarActive();
+}
 
-        if (buttonElement) buttonElement.classList.add('active');
+function fermerSidebar() {
+    document.getElementById("sidebarOverlay").classList.remove("active");
+    document.getElementById("sidebarDrawer").classList.remove("active");
+    document.getElementById("sidebarDrawer").setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+}
 
-        if (nomOnglet === 'paiements') {
-            document.getElementById('section-paiements').classList.add('active');
-            arreterScanner();
-        } else if (nomOnglet === 'validees') {
-            document.getElementById('section-validees').classList.add('active');
-            arreterScanner();
-        } else {
-            document.getElementById('section-scanner').classList.add('active');
-            demarrerScanner();
-        }
+function sidebarNaviguer(nomOnglet, sidebarBtn) {
+    const idsBoutons = {
+        gestion: "btnTabGestion",
+        paiements: "btnTabPaiements",
+        validees: "btnTabValidees"
+    };
+    let boutonReel = nomOnglet === "scanner"
+        ? document.querySelector('.tab-icon-btn[onclick*="scanner"]')
+        : document.getElementById(idsBoutons[nomOnglet]);
+    
+    changerOnglet(nomOnglet, boutonReel);
+    document.querySelectorAll(".sidebar-item[data-onglet]").forEach(b => b.classList.remove("active"));
+    if (sidebarBtn) sidebarBtn.classList.add("active");
+    fermerSidebar();
+}
+
+function synchroniserSidebarActive() {
+    const ongletActifBtn = document.querySelector(".tab-icon-btn.active");
+    if (!ongletActifBtn) return;
+    let nomOngletActif = "scanner";
+    if (ongletActifBtn.id === "btnTabGestion") nomOngletActif = "gestion";
+    else if (ongletActifBtn.id === "btnTabPaiements") nomOngletActif = "paiements";
+    else if (ongletActifBtn.id === "btnTabValidees") nomOngletActif = "validees";
+    document.querySelectorAll(".sidebar-item[data-onglet]").forEach(b => {
+        b.classList.toggle("active", b.getAttribute("data-onglet") === nomOngletActif);
+    });
+}
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") fermerSidebar();
+});
+
+/* =============================================
+   SCROLL FLUIDE VERS LA SECTION ACTIVE
+============================================= */
+let scrollOngletRafId = null;
+
+function scrollVersSectionActive(nomOnglet) {
+    const idsSections = {
+        gestion: "section-gestion",
+        paiements: "section-paiements",
+        validees: "section-validees",
+        scanner: "section-scanner"
+    };
+    const sectionId = idsSections[nomOnglet];
+    if (!sectionId) return;
+
+    if (scrollOngletRafId) {
+        cancelAnimationFrame(scrollOngletRafId);
+        scrollOngletRafId = null;
     }
+
+    scrollOngletRafId = requestAnimationFrame(() => {
+    scrollOngletRafId = null;
+
+    const section = document.getElementById(sectionId);
+    const navbar = document.querySelector(".top-navbar");
+    // On vise le haut de la barre d'onglets (.tabs-icon-nav) plutôt que
+    // le haut de la section elle-même, pour que Gestion / En attente /
+    // Confirmés / Scanner restent visibles au-dessus du titre de section.
+    const tabsNav = document.querySelector(".tabs-icon-nav");
+    if (!section) return;
+
+    const hauteurNavbar = navbar ? navbar.getBoundingClientRect().height : 0;
+    const margeAir = 16;
+
+    const elementCible = tabsNav || section;
+    const positionSection = elementCible.getBoundingClientRect().top + window.scrollY;
+    let positionCible = positionSection - hauteurNavbar - margeAir;
+
+        const scrollMax = Math.max(
+            0,
+            document.documentElement.scrollHeight - window.innerHeight
+        );
+        positionCible = Math.min(Math.max(positionCible, 0), scrollMax);
+
+        const reduitMouvement = window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        window.scrollTo({
+            top: positionCible,
+            behavior: reduitMouvement ? "auto" : "smooth"
+        });
+    });
+}
+
+       function changerOnglet(nomOnglet, buttonElement) {
+    document.querySelectorAll('.tab-icon-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
+
+    if (buttonElement) buttonElement.classList.add('active');
+
+    if (nomOnglet === 'gestion') {
+        document.getElementById('section-gestion').classList.add('active');
+        arreterScanner();
+    } else if (nomOnglet === 'paiements') {
+        document.getElementById('section-paiements').classList.add('active');
+        arreterScanner();
+    } else if (nomOnglet === 'validees') {
+        document.getElementById('section-validees').classList.add('active');
+        arreterScanner();
+    } else {
+        document.getElementById('section-scanner').classList.add('active');
+        demarrerScanner();
+    }
+
+    scrollVersSectionActive(nomOnglet);
+}
 
     function arreterScanner() {
         if (html5QrCode && html5QrCode.isScanning) {
@@ -3284,6 +3893,150 @@
 
         planifier(fermerIntro, 8200);
     })();
+
+    function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+function genererChampsCategoriesEdition(categoriesData) {
+    const container = document.getElementById("editCategoriesContainer");
+    container.innerHTML = "";
+    const categories = Array.isArray(categoriesData) && categoriesData.length > 0
+        ? categoriesData
+        : [{ type: "1", nom: "", prix: "" }];
+
+    categories.forEach((cat, index) => {
+        const i = index + 1;
+        container.innerHTML += `
+            <div class="categorie-edit-box">
+                <p class="categorie-edit-title">Type ${i}</p>
+                <div class="categorie-edit-row">
+                    <div class="categorie-edit-field">
+                        <label>Nom de catégorie (ex: Standard, VIP)</label>
+                        <input type="text" class="search-input edit-cat-nom" data-type="${cat.type || i}" placeholder="Nom ${i}" value="${cat.nom || ''}">
+                    </div>
+                    <div class="categorie-edit-field">
+                        <label>Prix (ex: 20dhs ou 2000 FCFA)</label>
+                        <input type="text" class="search-input edit-cat-prix" data-type="${cat.type || i}" placeholder="Prix ${i}" value="${cat.prix || ''}">
+                    </div>
+                </div>
+            </div>`;
+    });
+}
+
+function ouvrirFormulaireInfosEvenement() {
+    if (!evenementActuelData) return;
+    const ev = evenementActuelData;
+    document.getElementById("editTitre").value = ev.titre || "";
+    document.getElementById("editDate").value = ev.date || "";
+    document.getElementById("editHeure").value = ev.heure || "";
+    document.getElementById("editLieu").value = ev.lieu || "";
+    document.getElementById("editBeneficiaireNom").value = ev.beneficiaire_nom || "";
+    document.getElementById("editBeneficiaireInfos").value = ev.beneficiaire_infos || "";
+    genererChampsCategoriesEdition(ev.categories_data);
+    document.getElementById("formulaireInfosEvenement").style.display = "block";
+}
+
+async function enregistrerInfosEvenement() {
+    const btn = document.getElementById("btnEnregistrerInfos");
+    btn.disabled = true;
+    btn.textContent = "Enregistrement...";
+    try {
+        const noms = document.querySelectorAll(".edit-cat-nom");
+        const prix = document.querySelectorAll(".edit-cat-prix");
+        const categoriesData = [];
+        noms.forEach((el, idx) => {
+            categoriesData.push({
+                type: el.getAttribute("data-type"),
+                nom: el.value,
+                prix: prix[idx] ? prix[idx].value : ""
+            });
+        });
+        await callOrganisateurAPI('modifier_evenement', {
+            evenementId: eventId,
+            token: sessionToken,
+            titre: document.getElementById("editTitre").value,
+            date: document.getElementById("editDate").value,
+            heure: document.getElementById("editHeure").value,
+            lieu: document.getElementById("editLieu").value,
+            beneficiaireNom: document.getElementById("editBeneficiaireNom").value,
+            beneficiaireInfos: document.getElementById("editBeneficiaireInfos").value,
+            categoriesData: categoriesData
+        });
+        document.getElementById("formulaireInfosEvenement").style.display = "none";
+        await chargerEspaceOrganisateur();
+        alert("Informations mises à jour avec succès.");
+    } catch (err) {
+        alert("Erreur : " + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = "Enregistrer les modifications";
+    }
+}
+
+let fichierNouvelleAffiche = null;
+
+function previewNouvelleAffiche(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const TAILLE_MAX = 2 * 1024 * 1024; // 2 Mo
+    if (file.size > TAILLE_MAX) {
+        alert("L'image dépasse 2 Mo. Merci de choisir un fichier plus léger.");
+        event.target.value = "";
+        return;
+    }
+
+    fichierNouvelleAffiche = file;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        document.getElementById("previewNouvelleAfficheImg").src = e.target.result;
+        document.getElementById("nouvelleAfficheBlock").style.display = "block";
+    };
+    reader.readAsDataURL(file);
+}
+
+async function enregistrerNouvelleAffiche() {
+    if (!fichierNouvelleAffiche) return;
+    const btn = document.getElementById("btnEnregistrerAffiche");
+    btn.disabled = true;
+    btn.textContent = "Enregistrement...";
+    try {
+        const base64Data = await fileToBase64(fichierNouvelleAffiche);
+        const data = await callOrganisateurAPI('modifier_affiche', {
+            evenementId: eventId,
+            token: sessionToken,
+            fileAffiche: {
+                nom: fichierNouvelleAffiche.name,
+                type: fichierNouvelleAffiche.type,
+                data: base64Data
+            }
+        });
+        document.getElementById("afficheActuellePreview").src = data.affiche_url;
+const headerImg = document.querySelector("#headerTopContainer .event-bg-img");
+if (headerImg) headerImg.src = data.affiche_url;
+if (evenementActuelData) evenementActuelData.affiche_url = data.affiche_url;
+derniereSignatureEvenement = signatureEvenement(evenementActuelData);
+document.getElementById("nouvelleAfficheBlock").style.display = "none";
+        fichierNouvelleAffiche = null;
+        alert("Affiche mise à jour avec succès.");
+    } catch (err) {
+        alert("Erreur : " + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = "Enregistrer la nouvelle affiche";
+    }
+}
+function annulerNouvelleAffiche() {
+    fichierNouvelleAffiche = null;
+    document.getElementById("nouvelleAfficheBlock").style.display = "none";
+    document.getElementById("inputNouvelleAffiche").value = "";
+}
 </script>
 
 </body>
