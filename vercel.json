@@ -1,3 +1,7 @@
 {
-  "cleanUrls": true
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/api/tickets", "destination": "/api/tickets.js" },
+    { "source": "/api/organisateur", "destination": "/api/organisateur.js" }
+  ]
 }
