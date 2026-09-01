@@ -1028,6 +1028,10 @@
             letter-spacing: 0.6px;
             margin-bottom: 7px;
         }
+        #formulaireInfosEvenement .auth-form-group label {
+    text-transform: none;
+    letter-spacing: 0;
+}
 
         .password-field-wrapper { position: relative; display: flex; align-items: center; }
 
@@ -1616,6 +1620,44 @@
     padding: 18px;
     margin-bottom: 16px;
 }
+/* ============================================
+   ANTI-DÉBORDEMENT GLOBAL — tous écrans
+============================================ */
+input, select, textarea, button {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+input[type="date"],
+input[type="time"] {
+    width: 100%;
+    min-width: 0;
+    -webkit-appearance: none;
+    appearance: none;
+}
+.gestion-block, .auth-form-group, .status-box, .quota-box,
+.quota-box-top, .quota-input-group, #editCategoriesContainer {
+    min-width: 0;
+    max-width: 100%;
+}
+.gestion-block * , .auth-form-group * {
+    min-width: 0;
+}
+#editCategoriesContainer > div {
+    flex-wrap: wrap;
+}
+.btn-auth-primary {
+    white-space: normal;
+    word-break: break-word;
+}
+h1, h2, h3, p, span, div {
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+@media (max-width: 380px) {
+    #editCategoriesContainer > div {
+        flex-direction: column;
+    }
+}
 .gestion-block-title {
     font-family: var(--font-display);
     font-size: 13px;
@@ -2080,22 +2122,24 @@
                                 </div>
                             </div>
                         </div>
-
-                        <div class="gestion-block">
-                            <h3 class="gestion-block-title">Affiche de l'événement</h3>
-                            <img id="afficheActuellePreview" src="" alt="Affiche actuelle" style="max-width:100%;max-height:220px;border-radius:var(--radius-sm);border:1px solid var(--ink-200);display:block;margin-bottom:14px;">
-                            <input type="file" id="inputNouvelleAffiche" accept="image/*" style="display:none;" onchange="previewNouvelleAffiche(event)">
-                            <button type="button" class="btn-auth-primary" style="width:auto;padding:11px 20px;" onclick="document.getElementById('inputNouvelleAffiche').click()">
-                                Modifier l'affiche
-                            </button>
+                        <div class="gestion-block" style="text-align:center;">
+                           <h3 class="gestion-block-title">Affiche de l'événement</h3>
+                           <img id="afficheActuellePreview" src="" alt="Affiche actuelle" style="max-width:100%;max-height:220px;border-radius:var(--radius-sm);border:1px solid var(--ink-200);display:block;margin:0 auto 14px;">
+                           <input type="file" id="inputNouvelleAffiche" accept="image/*" style="display:none;" onchange="previewNouvelleAffiche(event)">
+                           <button type="button" class="btn-auth-primary" style="width:auto;padding:11px 20px;" onclick="document.getElementById('inputNouvelleAffiche').click()">
+                            Modifier l'affiche
+                           </button>
+                           <p style="font-size:11.5px;color:var(--ink-400);margin-top:8px;">Formats JPG/PNG, 2 Mo maximum.</p>
                             <div id="nouvelleAfficheBlock" style="display:none;margin-top:14px;">
-                                <p style="font-size:12px;color:var(--ink-500);margin-bottom:8px;">Aperçu de la nouvelle affiche :</p>
-                                <img id="previewNouvelleAfficheImg" src="" style="max-width:100%;max-height:220px;border-radius:var(--radius-sm);border:1px solid var(--border-gold-strong);display:block;margin-bottom:10px;">
-                                <button type="button" class="btn-auth-primary" style="width:auto;padding:11px 20px;" id="btnEnregistrerAffiche" onclick="enregistrerNouvelleAffiche()">
-                                    Enregistrer la nouvelle affiche
-                                </button>
+                              <p style="font-size:12px;color:var(--ink-500);margin-bottom:8px;">Aperçu de la nouvelle affiche :</p>
+                              <img id="previewNouvelleAfficheImg" src="" style="max-width:100%;max-height:220px;border-radius:var(--radius-sm);border:1px solid var(--border-gold-strong);display:block;margin:0 auto 10px;">
+                              <button type="button" class="btn-auth-primary" style="width:auto;padding:11px 20px;" id="btnEnregistrerAffiche" onclick="enregistrerNouvelleAffiche()">
+                                 Enregistrer la nouvelle affiche
+                              </button>
                             </div>
-                        </div>
+                       </div>
+
+                        
                     </div>
 
                     <!-- ========== SECTION : PAIEMENTS ========== -->
@@ -3550,6 +3594,14 @@ let fichierNouvelleAffiche = null;
 function previewNouvelleAffiche(event) {
     const file = event.target.files[0];
     if (!file) return;
+
+    const TAILLE_MAX = 2 * 1024 * 1024; // 2 Mo
+    if (file.size > TAILLE_MAX) {
+        alert("L'image dépasse 2 Mo. Merci de choisir un fichier plus léger.");
+        event.target.value = "";
+        return;
+    }
+
     fichierNouvelleAffiche = file;
     const reader = new FileReader();
     reader.onload = (e) => {
