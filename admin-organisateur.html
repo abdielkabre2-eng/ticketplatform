@@ -1658,6 +1658,38 @@ h1, h2, h3, p, span, div {
         flex-direction: column;
     }
 }
+.categorie-edit-box {
+    background: #fafaf9;
+    border: 1px solid rgba(217,119,6,0.2);
+    border-radius: var(--radius-md);
+    padding: 14px;
+    margin-bottom: 10px;
+}
+.categorie-edit-box .categorie-edit-title {
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gold-600);
+    margin-bottom: 10px;
+}
+.categorie-edit-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.categorie-edit-field {
+    flex: 1;
+    min-width: 120px;
+}
+.categorie-edit-field label {
+    display: block;
+    font-size: 10.5px;
+    color: var(--ink-500);
+    margin-bottom: 5px;
+}
+.categorie-edit-field input {
+    width: 100%;
+}
 .gestion-block-title {
     font-family: var(--font-display);
     font-size: 13px;
@@ -3529,12 +3561,22 @@ function genererChampsCategoriesEdition(categoriesData) {
     const categories = Array.isArray(categoriesData) && categoriesData.length > 0
         ? categoriesData
         : [{ type: "1", nom: "", prix: "" }];
+
     categories.forEach((cat, index) => {
         const i = index + 1;
         container.innerHTML += `
-            <div style="display:flex;gap:8px;margin-bottom:8px;">
-                <input type="text" class="search-input edit-cat-nom" data-type="${cat.type || i}" placeholder="Nom catégorie ${i}" value="${cat.nom || ''}">
-                <input type="text" class="search-input edit-cat-prix" data-type="${cat.type || i}" placeholder="Prix ${i}" value="${cat.prix || ''}">
+            <div class="categorie-edit-box">
+                <p class="categorie-edit-title">Type ${i}</p>
+                <div class="categorie-edit-row">
+                    <div class="categorie-edit-field">
+                        <label>Nom de catégorie (ex: Standard, VIP)</label>
+                        <input type="text" class="search-input edit-cat-nom" data-type="${cat.type || i}" placeholder="Nom ${i}" value="${cat.nom || ''}">
+                    </div>
+                    <div class="categorie-edit-field">
+                        <label>Prix (ex: 20dhs ou 2000 FCFA)</label>
+                        <input type="text" class="search-input edit-cat-prix" data-type="${cat.type || i}" placeholder="Prix ${i}" value="${cat.prix || ''}">
+                    </div>
+                </div>
             </div>`;
     });
 }
