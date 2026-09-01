@@ -157,7 +157,7 @@ async function handlePost(req, res, supabase) {
       return res.status(500).json({ success: false, error: "Erreur lors de l'enregistrement du billet." });
     }
 
-    return res.status(200).json({ success: true, id: billetInsere[0].id });
+    return res.status(200).json({ success: true, id: billetInsere[0].id, code_public: billetInsere[0].code_public });
 
   } catch (err) {
     console.error("Erreur /api/tickets POST :", err);
