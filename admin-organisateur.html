@@ -2109,70 +2109,81 @@ h1, h2, h3, p, span, div {
                             </div>
                         </div>
 
-                        <div class="gestion-block">
-                            <h3 class="gestion-block-title">Informations de l'événement</h3>
-                            <div id="infosEvenementResume" style="font-size:13px;color:var(--ink-500);margin-bottom:14px;"></div>
-                            <button type="button" class="btn-auth-primary" style="width:auto;padding:11px 20px;" onclick="ouvrirFormulaireInfosEvenement()">
-                                Modifier les informations de votre événement
-                            </button>
-                            <div id="formulaireInfosEvenement" style="display:none;margin-top:18px;">
-                                <div class="auth-form-group">
-                                    <label>Nom de l'événement</label>
-                                    <input type="text" id="editTitre" class="search-input">
-                                </div>
-                                <div class="auth-form-group">
-                                    <label>Date</label>
-                                    <input type="date" id="editDate" class="search-input">
-                                </div>
-                                <div class="auth-form-group">
-                                    <label>Heure</label>
-                                    <input type="time" id="editHeure" class="search-input">
-                                </div>
-                                <div class="auth-form-group">
-                                    <label>Lieu</label>
-                                    <input type="text" id="editLieu" class="search-input">
-                                </div>
-                                <div class="auth-form-group">
-                                    <label>Bénéficiaire (Nom & prénom)</label>
-                                    <input type="text" id="editBeneficiaireNom" class="search-input">
-                                </div>
-                                <div class="auth-form-group">
-                                    <label>Contact du bénéficiaire (whatsapp)</label>
-                                     <span style="display:block;font-size:12px;color:var(--ink-500);margin-top:-2px;margin-bottom:6px;">
-                                        ex: +212 770967646 - +226 53107345
-                                    </span>
-                                    <input type="text" id="editBeneficiaireInfos" class="search-input">
-                                </div>
-                                <div class="auth-form-group">
-                                    <label>Catégorie(s) de billets</label>
-                                    <div id="editCategoriesContainer"></div>
-                                </div>
-                                <div style="display:flex;gap:10px;margin-top:16px;">
-                                    <button type="button" class="btn-auth-primary" style="width:auto;padding:11px 20px;" onclick="enregistrerInfosEvenement()" id="btnEnregistrerInfos">
-                                        Enregistrer les modifications
-                                    </button>
-                                    <button type="button" onclick="document.getElementById('formulaireInfosEvenement').style.display='none';" style="padding:11px 20px;background:var(--ink-100);border:none;border-radius:var(--radius-sm);font-family:var(--font-display);font-weight:700;cursor:pointer;">
-                                        Annuler
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="gestion-block" style="text-align:center;">
-                           <h3 class="gestion-block-title">Affiche de l'événement</h3>
-                           <img id="afficheActuellePreview" src="" alt="Affiche actuelle" style="max-width:100%;max-height:220px;border-radius:var(--radius-sm);border:1px solid var(--ink-200);display:block;margin:0 auto 14px;">
-                           <input type="file" id="inputNouvelleAffiche" accept="image/*" style="display:none;" onchange="previewNouvelleAffiche(event)">
-                           <button type="button" class="btn-auth-primary" style="width:auto;padding:11px 20px;" onclick="document.getElementById('inputNouvelleAffiche').click()">
-                            Modifier l'affiche
-                           </button>
-                           <p style="font-size:11.5px;color:var(--ink-400);margin-top:8px;">Formats JPG/PNG, 2 Mo maximum.</p>
-                            <div id="nouvelleAfficheBlock" style="display:none;margin-top:14px;">
-                              <p style="font-size:12px;color:var(--ink-500);margin-bottom:8px;">Aperçu de la nouvelle affiche :</p>
-                              <img id="previewNouvelleAfficheImg" src="" style="max-width:100%;max-height:220px;border-radius:var(--radius-sm);border:1px solid var(--border-gold-strong);display:block;margin:0 auto 10px;">
-                              <button type="button" class="btn-auth-primary" style="width:auto;padding:11px 20px;" id="btnEnregistrerAffiche" onclick="enregistrerNouvelleAffiche()">
-                                 Enregistrer la nouvelle affiche
-                              </button>
-                            </div>
-                       </div>
+                            <div class="gestion-block">
+    <h3 class="gestion-block-title">Informations de l'événement</h3>
+    <div id="infosEvenementResume" style="font-size:13px;color:var(--ink-500);margin-bottom:14px;"></div>
+    <button type="button" class="btn-auth-primary" style="width:auto;padding:11px 20px;" onclick="ouvrirFormulaireInfosEvenement()">
+        Modifier les informations de votre événement
+    </button>
+    <div id="formulaireInfosEvenement" style="display:none;margin-top:18px;">
+        <div class="auth-form-group">
+            <label>Nom de l'événement</label>
+            <input type="text" id="editTitre" class="search-input">
+        </div>
+        <div class="auth-form-group">
+            <label>Date</label>
+            <input type="date" id="editDate" class="search-input">
+        </div>
+        <div class="auth-form-group">
+            <label>Heure</label>
+            <input type="time" id="editHeure" class="search-input">
+        </div>
+        <div class="auth-form-group">
+            <label>Lieu</label>
+            <input type="text" id="editLieu" class="search-input">
+        </div>
+        <div class="auth-form-group">
+            <label>Bénéficiaire (Nom & prénom)</label>
+            <input type="text" id="editBeneficiaireNom" class="search-input">
+        </div>
+        <div class="auth-form-group">
+            <label>Contact du bénéficiaire (whatsapp)</label>
+            <span style="display:block;font-size:12px;color:var(--ink-500);margin-top:-2px;margin-bottom:6px;">
+                ex: +212 770967646 - +226 53107345
+            </span>
+            <input type="text" id="editBeneficiaireInfos" class="search-input">
+        </div>
+        <div class="auth-form-group">
+            <label>Catégorie(s) de billets</label>
+            <div id="editCategoriesContainer"></div>
+        </div>
+
+        <!-- Boutons d'informations responsives -->
+        <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
+            <button type="button" class="btn-auth-primary" style="flex:1;min-width:140px;padding:10px 14px;font-size:13px;" onclick="enregistrerInfosEvenement()" id="btnEnregistrerInfos">
+                Enregistrer
+            </button>
+            <button type="button" onclick="document.getElementById('formulaireInfosEvenement').style.display='none';" style="padding:10px 14px;font-size:13px;background:var(--ink-100);border:none;border-radius:var(--radius-sm);font-family:var(--font-display);font-weight:700;cursor:pointer;white-space:nowrap;">
+                Annuler
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="gestion-block" style="text-align:center;">
+    <h3 class="gestion-block-title">Affiche de l'événement</h3>
+    <img id="afficheActuellePreview" src="" alt="Affiche actuelle" style="max-width:100%;max-height:220px;border-radius:var(--radius-sm);border:1px solid var(--ink-200);display:block;margin:0 auto 14px;">
+    <input type="file" id="inputNouvelleAffiche" accept="image/*" style="display:none;" onchange="previewNouvelleAffiche(event)">
+    <button type="button" class="btn-auth-primary" style="width:auto;padding:11px 20px;" onclick="document.getElementById('inputNouvelleAffiche').click()">
+        Modifier l'affiche
+    </button>
+    <p style="font-size:11.5px;color:var(--ink-400);margin-top:8px;">Formats JPG/PNG, 2 Mo maximum.</p>
+    
+    <div id="nouvelleAfficheBlock" style="display:none;margin-top:14px;">
+        <p style="font-size:12px;color:var(--ink-500);margin-bottom:8px;">Aperçu de la nouvelle affiche :</p>
+        <img id="previewNouvelleAfficheImg" src="" style="max-width:100%;max-height:220px;border-radius:var(--radius-sm);border:1px solid var(--border-gold-strong);display:block;margin:0 auto 10px;">
+
+        <!-- Boutons d'affiche responsives -->
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:12px;flex-wrap:wrap;">
+            <button type="button" class="btn-auth-primary" style="flex:1;min-width:140px;padding:10px 14px;font-size:13px;" id="btnEnregistrerAffiche" onclick="enregistrerNouvelleAffiche()">
+                Enregistrer l'affiche
+            </button>
+            <button type="button" onclick="annulerNouvelleAffiche()" style="padding:10px 14px;font-size:13px;background:var(--ink-100);border:none;border-radius:var(--radius-sm);font-family:var(--font-display);font-weight:700;cursor:pointer;white-space:nowrap;">
+                Annuler
+            </button>
+        </div>
+    </div>
+</div>
 
                         
                     </div>
@@ -3682,6 +3693,11 @@ async function enregistrerNouvelleAffiche() {
         btn.disabled = false;
         btn.textContent = "Enregistrer la nouvelle affiche";
     }
+}
+function annulerNouvelleAffiche() {
+    fichierNouvelleAffiche = null;
+    document.getElementById("nouvelleAfficheBlock").style.display = "none";
+    document.getElementById("inputNouvelleAffiche").value = "";
 }
 </script>
 
