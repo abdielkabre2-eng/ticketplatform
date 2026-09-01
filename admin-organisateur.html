@@ -1672,40 +1672,43 @@ h1, h2, h3, p, span, div {
    NAVBAR — bloc unique et propre
 ============================================ */
 .top-navbar {
-    position: fixed;
-    top: 16px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: calc(100% - 32px);
-    max-width: 680px;
-    z-index: 500;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: nowrap;
-    padding: 14px 20px;
-    background: rgba(255,255,255,0.88);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--border-gold);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-gold-sm), 0 1px 0 rgba(255,255,255,0.9) inset, 0 0 0 1px rgba(255,255,255,0.4) inset;
-    animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
+    position: fixed !important;
+    top: 16px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: calc(100% - 32px) !important;
+    max-width: 680px !important;
+    z-index: 500 !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 10px !important;
+    flex-wrap: nowrap !important;
+    padding: 14px 20px !important;
+    background: rgba(255,255,255,0.88) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid var(--border-gold) !important;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: var(--shadow-gold-sm), 0 1px 0 rgba(255,255,255,0.9) inset, 0 0 0 1px rgba(255,255,255,0.4) inset !important;
+    animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both !important;
 }
 
 .logo-container { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
 .navbar-right { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
 
 /* Seule source de vérité pour l'espace sous le header fixe */
-body { padding-top: 92px; }
+body { padding-top: 92px !important; }
 
 @media (max-width: 480px) {
-    .top-navbar { top: 12px; width: calc(100% - 24px); padding: 12px 14px; }
-    body { padding-top: 84px; }
-    .badge-espace { display: none; } /* fait de la place au hamburger */
+    .top-navbar { 
+        top: 12px !important; 
+        width: calc(100% - 24px) !important; 
+        padding: 12px 14px !important; 
+    }
+    body { padding-top: 84px !important; }
+    .badge-espace { display: none !important; } /* fait de la place au hamburger */
 }
-
 /* ============================================
    BOUTON HAMBURGER
 ============================================ */
