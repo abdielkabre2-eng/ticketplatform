@@ -1862,6 +1862,23 @@ body {
 .sidebar-item.sidebar-logout { color: #fca5a5; }
 .sidebar-item.sidebar-logout svg { color: #f87171; }
 .sidebar-item.sidebar-logout:hover { background: rgba(239,68,68,0.12); color: #fff; }
+
+.top-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    z-index: 500;
+    background: #ffffff;
+    padding: 12px 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.page-wrapper {
+    padding-top: 85px !important;
+}
     </style>
 </head>
 <body>
@@ -2991,7 +3008,7 @@ async function verifierMiseAJourEvenement() {
         const data = await callOrganisateurAPI('charger_evenement', { evenementId: eventId, token: sessionToken });
         const ev = data.event;
         if (!ev) return;
-        const nouvelleSignature = signatureEvenement(ev);
+        const nouvelleSignature = JSON.stringify(ev);
         if (nouvelleSignature === derniereSignatureEvenement) return;
         derniereSignatureEvenement = nouvelleSignature;
         evenementActuelData = ev;
