@@ -1543,6 +1543,94 @@
             color: var(--ink-500);
         }
         .quota-count-text strong { color: var(--ink-900); }
+        /* ============================================
+   NAVIGATION ICÔNE + TEXTE (nouvel onglet Gestion)
+============================================ */
+.tabs-icon-nav {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 28px;
+    background: var(--ink-100);
+    padding: 6px;
+    border-radius: var(--radius-lg);
+}
+
+.tab-icon-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 10px 4px 9px;
+    border: none;
+    background: transparent;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    color: var(--ink-500);
+    transition: all 0.22s cubic-bezier(0.22,1,0.36,1);
+}
+
+.tab-icon-btn svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    transition: transform 0.2s;
+}
+
+.tab-icon-btn span {
+    font-family: var(--font-display);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+.tab-icon-btn:hover:not(.active) {
+    color: var(--gold-700);
+    background: rgba(217,119,6,0.06);
+}
+
+.tab-icon-btn.active {
+    background: #ffffff;
+    color: var(--gold-700);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.tab-icon-btn.active svg { transform: scale(1.05); }
+
+.tab-icon-btn:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
+
+@media (max-width: 480px) {
+    .tab-icon-btn span { font-size: 9px; }
+    .tab-icon-btn svg { width: 18px; height: 18px; }
+    .tab-icon-btn { padding: 8px 2px 7px; gap: 4px; }
+    .tabs-icon-nav { gap: 3px; padding: 5px; }
+}
+
+/* Sous-sections dans l'onglet Gestion */
+.gestion-block {
+    background: #ffffff;
+    border: 1px solid var(--ink-200);
+    border-radius: var(--radius-md);
+    padding: 18px;
+    margin-bottom: 16px;
+}
+.gestion-block-title {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--ink-900);
+    margin-bottom: 14px;
+    letter-spacing: -0.1px;
+}
+.gestion-block .status-box,
+.gestion-block .quota-box {
+    margin-bottom: 0;
+    border: none;
+    padding: 0;
+    background: transparent;
+}
     </style>
 </head>
 <body>
@@ -1876,11 +1964,7 @@
                     </div>
 
                     <!-- STATUS BOX -->
-                    <div class="status-box">
-                        <div class="status-box-left">
-                            <span class="status-indicator" id="statusIndicator"></span>
-                            <span id="labelStatutVentes">Statut : chargement...</span>
-                        </div>
+                    
                         <button
                             id="btnToggleVentes"
                             class="btn-toggle-ventes"
@@ -1891,13 +1975,7 @@
                     </div>
 
                     <!-- JAUGE / LIMITE DE BILLETS (optionnelle) -->
-                    <div class="quota-box">
-                        <div class="quota-box-top">
-                            <div class="quota-label">
-                                <span class="quota-title">Définir le nombre de billets disponibles pour votre événement</span>
-                                <span class="quota-sub">Les ventes seront automatiquement fermées une fois le nombre de billets atteint.</span>
-                                <span class="quota-sub">Laissez ce champ vide pour ne définir aucune limite.</span>
-                            </div>
+                    
                             <div class="quota-input-group">
                                 <input
                                     type="number"
@@ -1917,11 +1995,120 @@
                     </div>
 
                     <!-- TABS -->
-                    <div class="tabs">
-                        <button class="tab-btn active" id="btnTabPaiements" onclick="changerOnglet('paiements', this)">En attente (0)</button>
-                        <button class="tab-btn" id="btnTabValidees" onclick="changerOnglet('validees', this)">Confirmés (0)</button>
-                        <button class="tab-btn" onclick="changerOnglet('scanner', this)">Scanner QR</button>
-                    </div>
+                    <!-- NAV PAR ONGLETS -->
+<div class="tabs-icon-nav">
+    <button class="tab-icon-btn" id="btnTabGestion" onclick="changerOnglet('gestion', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 22V12h6v10"/></svg>
+        <span>Gestion</span>
+    </button>
+    <button class="tab-icon-btn active" id="btnTabPaiements" onclick="changerOnglet('paiements', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        <span>En attente (0)</span>
+    </button>
+    <button class="tab-icon-btn" id="btnTabValidees" onclick="changerOnglet('validees', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+        <span>Confirmés (0)</span>
+    </button>
+    <button class="tab-icon-btn" onclick="changerOnglet('scanner', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2"/><rect x="7" y="7" width="4" height="4" rx="0.5"/><rect x="13" y="7" width="4" height="4" rx="0.5"/><rect x="7" y="13" width="4" height="4" rx="0.5"/><path d="M13 13h2v2h-2zM17 13h2M13 17h2M17 17h2"/></svg>
+        <span>Scanner</span>
+    </button>
+</div>
+
+<!-- SECTION : GESTION -->
+<div id="section-gestion" class="section-content" style="display:none;">
+    <div class="section-header">
+        <h2>Gestion de l'événement</h2>
+        <p>Gérez les ventes, la limite de billets et les informations.</p>
+    </div>
+
+    <div class="gestion-block">
+        <h3 class="gestion-block-title">Gestion des ventes</h3>
+        <div class="status-box">
+            <div class="status-box-left">
+                <span class="status-indicator" id="statusIndicator"></span>
+                <span id="labelStatutVentes">Statut : chargement...</span>
+            </div>
+        </div>
+    </div>
+
+         <div class="gestion-block">
+        <h3 class="gestion-block-title">Nombre de billets disponibles</h3>
+        <div class="quota-box">
+            <div class="quota-box-top">
+                <div class="quota-label">
+                    <span class="quota-title">Définir le nombre de billets disponibles pour votre événement</span>
+                    <span class="quota-sub">Les ventes seront automatiquement fermées une fois le nombre de billets atteint.</span>
+                    <span class="quota-sub">Laissez ce champ vide pour ne définir aucune limite.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOUVEAU BLOC : INFORMATIONS -->
+    <div class="gestion-block">
+        <h3 class="gestion-block-title">Informations de l'événement</h3>
+        <div id="infosEvenementResume" style="font-size:13px;color:var(--ink-500);margin-bottom:14px;"></div>
+        <button type="button" class="btn-auth-primary" style="width:auto;padding:11px 20px;" onclick="ouvrirFormulaireInfosEvenement()">
+            Modifier les informations de l'événement
+        </button>
+        <div id="formulaireInfosEvenement" style="display:none;margin-top:18px;">
+            <div class="auth-form-group">
+                <label>Titre de l'événement</label>
+                <input type="text" id="editTitre" class="search-input">
+            </div>
+            <div class="auth-form-group">
+                <label>Date</label>
+                <input type="date" id="editDate" class="search-input">
+            </div>
+            <div class="auth-form-group">
+                <label>Heure</label>
+                <input type="time" id="editHeure" class="search-input">
+            </div>
+            <div class="auth-form-group">
+                <label>Lieu</label>
+                <input type="text" id="editLieu" class="search-input">
+            </div>
+            <div class="auth-form-group">
+                <label>Bénéficiaire (nom)</label>
+                <input type="text" id="editBeneficiaireNom" class="search-input">
+            </div>
+            <div class="auth-form-group">
+                <label>Bénéficiaire (coordonnées / téléphone)</label>
+                <input type="text" id="editBeneficiaireInfos" class="search-input">
+            </div>
+            <div class="auth-form-group">
+                <label>Catégories de billets (nom / prix)</label>
+                <div id="editCategoriesContainer"></div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:16px;">
+                <button type="button" class="btn-auth-primary" style="width:auto;padding:11px 20px;" onclick="enregistrerInfosEvenement()" id="btnEnregistrerInfos">
+                    Enregistrer les modifications
+                </button>
+                <button type="button" onclick="document.getElementById('formulaireInfosEvenement').style.display='none';" style="padding:11px 20px;background:var(--ink-100);border:none;border-radius:var(--radius-sm);font-family:var(--font-display);font-weight:700;cursor:pointer;">
+                    Annuler
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOUVEAU BLOC : AFFICHE -->
+    <div class="gestion-block">
+        <h3 class="gestion-block-title">Affiche de l'événement</h3>
+        <img id="afficheActuellePreview" src="" alt="Affiche actuelle" style="max-width:100%;max-height:220px;border-radius:var(--radius-sm);border:1px solid var(--ink-200);display:block;margin-bottom:14px;">
+        <input type="file" id="inputNouvelleAffiche" accept="image/*" style="display:none;" onchange="previewNouvelleAffiche(event)">
+        <button type="button" class="btn-auth-primary" style="width:auto;padding:11px 20px;" onclick="document.getElementById('inputNouvelleAffiche').click()">
+            Modifier l'affiche
+        </button>
+        <div id="nouvelleAfficheBlock" style="display:none;margin-top:14px;">
+            <p style="font-size:12px;color:var(--ink-500);margin-bottom:8px;">Aperçu de la nouvelle affiche :</p>
+            <img id="previewNouvelleAfficheImg" src="" style="max-width:100%;max-height:220px;border-radius:var(--radius-sm);border:1px solid var(--border-gold-strong);display:block;margin-bottom:10px;">
+            <button type="button" class="btn-auth-primary" style="width:auto;padding:11px 20px;" id="btnEnregistrerAffiche" onclick="enregistrerNouvelleAffiche()">
+                Enregistrer la nouvelle affiche
+            </button>
+        </div>
+    </div>
+</div>
 
                     <!-- ========== SECTION : PAIEMENTS ========== -->
                     <div id="section-paiements" class="section-content active">
@@ -2048,7 +2235,7 @@
     const AUTH_STORAGE_KEY = "goldtix_session_" + eventId;
     let codeRecuperationValideTemporaire = null;
     let sessionToken = null;
-
+    let evenementActuelData = null;
     let chargementDemandesEnCours = false;
     let debounceRecherche = null;
 
@@ -2510,7 +2697,7 @@
                 token: sessionToken
             });
             const ev = data.event;
-
+            evenementActuelData = ev;
             if (!ev) {
                 document.getElementById("infosEvenementOrg").textContent = "Evenement introuvable.";
                 return;
@@ -2532,7 +2719,8 @@
                 }
                 imgElement.src = eventImage;
             }
-
+            const previewGestion = document.getElementById("afficheActuellePreview");
+            if (previewGestion && eventImage) previewGestion.src = eventImage;
             statutVentesFermees = ev.ventes_fermees || false;
             mettreAJourBoutonVentes();
 
@@ -2850,17 +3038,23 @@
     }
 
     function mettreAJourCompteurs(nombreConfirmes, nombreEnAttente) {
-        let btnTabValidees = document.getElementById("btnTabValidees");
-        let titreValidees = document.getElementById("titreSectionValidees");
-        if (btnTabValidees) btnTabValidees.textContent = `Confirmés (${nombreConfirmes})`;
-        if (titreValidees) titreValidees.textContent = `Participants confirmés (${nombreConfirmes})`;
+    let btnTabValidees = document.getElementById("btnTabValidees");
+    let titreValidees = document.getElementById("titreSectionValidees");
+    
+    if (btnTabValidees) {
+        const spanValidees = btnTabValidees.querySelector('span');
+        if (spanValidees) spanValidees.textContent = `Confirmés (${nombreConfirmes})`;
+    }
+    if (titreValidees) titreValidees.textContent = `Participants confirmés (${nombreConfirmes})`;
 
-        if (typeof nombreEnAttente === 'number') {
-            let btnTabPaiements = document.getElementById("btnTabPaiements");
-            if (btnTabPaiements) btnTabPaiements.textContent = `En attente (${nombreEnAttente})`;
+    if (typeof nombreEnAttente === 'number') {
+        let btnTabPaiements = document.getElementById("btnTabPaiements");
+        if (btnTabPaiements) {
+            const spanPaiements = btnTabPaiements.querySelector('span');
+            if (spanPaiements) spanPaiements.textContent = `En attente (${nombreEnAttente})`;
         }
     }
-
+}
     /* =============================================
        CHANGEMENT DE STATUT + ENVOI D'EMAIL (EmailJS,
        inchangé — ce n'est pas un appel Supabase)
@@ -3119,22 +3313,25 @@
     }
 
     function changerOnglet(nomOnglet, buttonElement) {
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
+    document.querySelectorAll('.tab-icon-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
 
-        if (buttonElement) buttonElement.classList.add('active');
+    if (buttonElement) buttonElement.classList.add('active');
 
-        if (nomOnglet === 'paiements') {
-            document.getElementById('section-paiements').classList.add('active');
-            arreterScanner();
-        } else if (nomOnglet === 'validees') {
-            document.getElementById('section-validees').classList.add('active');
-            arreterScanner();
-        } else {
-            document.getElementById('section-scanner').classList.add('active');
-            demarrerScanner();
-        }
+    if (nomOnglet === 'gestion') {
+        document.getElementById('section-gestion').classList.add('active');
+        arreterScanner();
+    } else if (nomOnglet === 'paiements') {
+        document.getElementById('section-paiements').classList.add('active');
+        arreterScanner();
+    } else if (nomOnglet === 'validees') {
+        document.getElementById('section-validees').classList.add('active');
+        arreterScanner();
+    } else {
+        document.getElementById('section-scanner').classList.add('active');
+        demarrerScanner();
     }
+}
 
     function arreterScanner() {
         if (html5QrCode && html5QrCode.isScanning) {
@@ -3284,6 +3481,123 @@
 
         planifier(fermerIntro, 8200);
     })();
+    
+    function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+function genererChampsCategoriesEdition(categoriesData) {
+    const container = document.getElementById("editCategoriesContainer");
+    container.innerHTML = "";
+    const categories = Array.isArray(categoriesData) && categoriesData.length > 0
+        ? categoriesData
+        : [{ type: "1", nom: "", prix: "" }];
+    categories.forEach((cat, index) => {
+        const i = index + 1;
+        container.innerHTML += `
+            <div style="display:flex;gap:8px;margin-bottom:8px;">
+                <input type="text" class="search-input edit-cat-nom" data-type="${cat.type || i}" placeholder="Nom catégorie ${i}" value="${cat.nom || ''}">
+                <input type="text" class="search-input edit-cat-prix" data-type="${cat.type || i}" placeholder="Prix ${i}" value="${cat.prix || ''}">
+            </div>`;
+    });
+}
+
+function ouvrirFormulaireInfosEvenement() {
+    if (!evenementActuelData) return;
+    const ev = evenementActuelData;
+    document.getElementById("editTitre").value = ev.titre || "";
+    document.getElementById("editDate").value = ev.date || "";
+    document.getElementById("editHeure").value = ev.heure || "";
+    document.getElementById("editLieu").value = ev.lieu || "";
+    document.getElementById("editBeneficiaireNom").value = ev.beneficiaire_nom || "";
+    document.getElementById("editBeneficiaireInfos").value = ev.beneficiaire_infos || "";
+    genererChampsCategoriesEdition(ev.categories_data);
+    document.getElementById("formulaireInfosEvenement").style.display = "block";
+}
+
+async function enregistrerInfosEvenement() {
+    const btn = document.getElementById("btnEnregistrerInfos");
+    btn.disabled = true;
+    btn.textContent = "Enregistrement...";
+    try {
+        const noms = document.querySelectorAll(".edit-cat-nom");
+        const prix = document.querySelectorAll(".edit-cat-prix");
+        const categoriesData = [];
+        noms.forEach((el, idx) => {
+            categoriesData.push({
+                type: el.getAttribute("data-type"),
+                nom: el.value,
+                prix: prix[idx] ? prix[idx].value : ""
+            });
+        });
+        await callOrganisateurAPI('modifier_evenement', {
+            evenementId: eventId,
+            token: sessionToken,
+            titre: document.getElementById("editTitre").value,
+            date: document.getElementById("editDate").value,
+            heure: document.getElementById("editHeure").value,
+            lieu: document.getElementById("editLieu").value,
+            beneficiaireNom: document.getElementById("editBeneficiaireNom").value,
+            beneficiaireInfos: document.getElementById("editBeneficiaireInfos").value,
+            categoriesData: categoriesData
+        });
+        document.getElementById("formulaireInfosEvenement").style.display = "none";
+        await chargerEspaceOrganisateur();
+        alert("Informations mises à jour avec succès.");
+    } catch (err) {
+        alert("Erreur : " + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = "Enregistrer les modifications";
+    }
+}
+
+let fichierNouvelleAffiche = null;
+
+function previewNouvelleAffiche(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    fichierNouvelleAffiche = file;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        document.getElementById("previewNouvelleAfficheImg").src = e.target.result;
+        document.getElementById("nouvelleAfficheBlock").style.display = "block";
+    };
+    reader.readAsDataURL(file);
+}
+
+async function enregistrerNouvelleAffiche() {
+    if (!fichierNouvelleAffiche) return;
+    const btn = document.getElementById("btnEnregistrerAffiche");
+    btn.disabled = true;
+    btn.textContent = "Enregistrement...";
+    try {
+        const base64Data = await fileToBase64(fichierNouvelleAffiche);
+        const data = await callOrganisateurAPI('modifier_affiche', {
+            evenementId: eventId,
+            token: sessionToken,
+            fileAffiche: {
+                nom: fichierNouvelleAffiche.name,
+                type: fichierNouvelleAffiche.type,
+                data: base64Data
+            }
+        });
+        document.getElementById("afficheActuellePreview").src = data.affiche_url;
+        document.getElementById("nouvelleAfficheBlock").style.display = "none";
+        fichierNouvelleAffiche = null;
+        alert("Affiche mise à jour avec succès.");
+    } catch (err) {
+        alert("Erreur : " + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = "Enregistrer la nouvelle affiche";
+    }
+}
 </script>
 
 </body>

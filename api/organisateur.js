@@ -2,6 +2,35 @@ import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
+const BUCKET = 'preuves';
+
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '10mb',
+    },
+  },
+};
+
+/* =============================================
+   FONCTION UPLOAD STORAGE
+============================================= */
+async function uploaderFichier(supabase, fichier, dossier) {
+  const { nom, type, data } = fichier;
+  const extension = (nom.split('.').pop() || 'bin').toLowerCase();
+  const randomString = Math.random().toString(36).substring(2, 8);
+  const cheminFichier = `${dossier}/${Date.now()}_${randomString}.${extension}`;
+  const buffer = Buffer.from(data, 'base64');
+  const { error } = await supabase.storage
+    .from(BUCKET)
+    .upload(cheminFichier, buffer, {
+      contentType: type || 'application/octet-stream',
+      upsert: false,
+    });
+  if (error) throw new Error("Erreur d'upload : " + error.message);
+  const { data: publicUrlData } = supabase.storage.from(BUCKET).getPublicUrl(cheminFichier);
+  return publicUrlData.publicUrl;
+}
 
 export default async function handler(req, res) {
   // Sécurité : éviter l'erreur 500 si les variables d'environnement sont absentes
@@ -15,12 +44,10 @@ export default async function handler(req, res) {
   }
 
   const supabase = createClient(supabaseUrl, supabaseKey);
-
   const { action, ...payload } = req.body || {};
 
   try {
     switch (action) {
-
       case "verifier_existence_evenement":
         return await verifierExistenceEvenement(supabase, payload, res);
 
@@ -65,6 +92,13 @@ export default async function handler(req, res) {
         
       case "definir_limite_billets":
         return await definirLimiteBillets(supabase, payload, res);
+
+      case "modifier_evenement":
+        return await modifierEvenement(supabase, payload, res);
+
+      case "modifier_affiche":
+        return await modifierAffiche(supabase, payload, res);
+
       default:
         return res.status(400).json({ success: false, error: "Action inconnue." });
     }
@@ -218,7 +252,6 @@ async function logout(supabase, payload, res) {
   });
 
   if (error) {
-    // Non bloquant côté client, mais on remonte quand même l'info
     return res.status(200).json({ success: true, warning: error.message });
   }
   return res.status(200).json({ success: true });
@@ -280,8 +313,6 @@ async function changerStatut(supabase, payload, res) {
     return res.status(500).json({ success: false, error: error.message });
   }
 
-  // On renvoie directement le contact du billet quand il est confirmé,
-  // pour éviter un second aller-retour depuis le navigateur (email).
   let billetContact = null;
   if (nouveauStatut === "confirme") {
     const { data: unBillet } = await supabase
@@ -337,7 +368,7 @@ async function verifierBillet(supabase, payload, res) {
 }
 
 /* =============================================
-   OUVERTURE / FERMETURE DES VENTES
+   GESTION ÉVÉNEMENT & VENTES
 ============================================= */
 async function toggleVentes(supabase, payload, res) {
   const { evenementId, token, nouveauStatut } = payload;
@@ -356,6 +387,7 @@ async function toggleVentes(supabase, payload, res) {
   }
   return res.status(200).json({ success: true });
 }
+
 async function definirLimiteBillets(supabase, payload, res) {
   const { evenementId, token, limiteBillets } = payload;
   const limiteValide =
@@ -376,4 +408,53 @@ async function definirLimiteBillets(supabase, payload, res) {
     return res.status(500).json({ success: false, error: error.message });
   }
   return res.status(200).json({ success: true });
+}
+
+async function modifierEvenement(supabase, payload, res) {
+  const { evenementId, token, titre, date, heure, lieu, categoriesData, beneficiaireNom, beneficiaireInfos } = payload;
+  if (!evenementId || !token || !titre || !date || !heure || !lieu) {
+    return res.status(400).json({ success: false, error: "Paramètres manquants." });
+  }
+
+  const { error } = await supabase.rpc("organisateur_modifier_evenement", {
+    p_evenement_id: evenementId,
+    p_token: token,
+    p_titre: titre,
+    p_date: date,
+    p_heure: heure,
+    p_lieu: lieu,
+    p_categories_data: categoriesData || null,
+    p_beneficiaire_nom: beneficiaireNom || null,
+    p_beneficiaire_infos: beneficiaireInfos || null,
+  });
+
+  if (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+  return res.status(200).json({ success: true });
+}
+
+async function modifierAffiche(supabase, payload, res) {
+  const { evenementId, token, fileAffiche } = payload;
+  if (!evenementId || !token || !fileAffiche) {
+    return res.status(400).json({ success: false, error: "Paramètres manquants." });
+  }
+
+  let afficheUrl;
+  try {
+    afficheUrl = await uploaderFichier(supabase, fileAffiche, 'affiches');
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+
+  const { error } = await supabase.rpc("organisateur_modifier_affiche", {
+    p_evenement_id: evenementId,
+    p_token: token,
+    p_affiche_url: afficheUrl,
+  });
+
+  if (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+  return res.status(200).json({ success: true, affiche_url: afficheUrl });
 }
