@@ -3668,7 +3668,56 @@ document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") fermerSidebar();
 });
 
-    function changerOnglet(nomOnglet, buttonElement) {
+/* =============================================
+   SCROLL FLUIDE VERS LA SECTION ACTIVE
+============================================= */
+let scrollOngletRafId = null;
+
+function scrollVersSectionActive(nomOnglet) {
+    const idsSections = {
+        gestion: "section-gestion",
+        paiements: "section-paiements",
+        validees: "section-validees",
+        scanner: "section-scanner"
+    };
+    const sectionId = idsSections[nomOnglet];
+    if (!sectionId) return;
+
+    if (scrollOngletRafId) {
+        cancelAnimationFrame(scrollOngletRafId);
+        scrollOngletRafId = null;
+    }
+
+    scrollOngletRafId = requestAnimationFrame(() => {
+        scrollOngletRafId = null;
+
+        const section = document.getElementById(sectionId);
+        const navbar = document.querySelector(".top-navbar");
+        if (!section) return;
+
+        const hauteurNavbar = navbar ? navbar.getBoundingClientRect().height : 0;
+        const margeAir = 16;
+
+        const positionSection = section.getBoundingClientRect().top + window.scrollY;
+        let positionCible = positionSection - hauteurNavbar - margeAir;
+
+        const scrollMax = Math.max(
+            0,
+            document.documentElement.scrollHeight - window.innerHeight
+        );
+        positionCible = Math.min(Math.max(positionCible, 0), scrollMax);
+
+        const reduitMouvement = window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        window.scrollTo({
+            top: positionCible,
+            behavior: reduitMouvement ? "auto" : "smooth"
+        });
+    });
+}
+
+       function changerOnglet(nomOnglet, buttonElement) {
     document.querySelectorAll('.tab-icon-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
 
@@ -3687,6 +3736,8 @@ document.addEventListener("keydown", (e) => {
         document.getElementById('section-scanner').classList.add('active');
         demarrerScanner();
     }
+
+    scrollVersSectionActive(nomOnglet);
 }
 
     function arreterScanner() {
