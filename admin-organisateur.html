@@ -2500,10 +2500,8 @@ body { padding-top: 92px !important; }
                     Email : <a href="mailto:abdielkabre2@gmail.com">abdielkabre2@gmail.com</a>
                 </p>
                 <p>
-                    WhatsApp :
+                    Contact whatsApp :
                     <a href="https://wa.me/22653107345" target="_blank">+226 53 10 73 45</a>
-                    &nbsp;&middot;&nbsp;
-                    <a href="https://wa.me/212770967646" target="_blank">+212 770 967 646</a>
                 </p>
             </div>
         </footer>
@@ -3141,8 +3139,8 @@ async function verifierMiseAJourEvenement() {
                 if (b.updated_at) {
                     const tempsMaj = new Date(b.updated_at).getTime();
                     const tempsEcoule = maintenant - tempsMaj;
-                    if (tempsEcoule < 10000) {
-                        const secondesRestantes = Math.ceil((10000 - tempsEcoule) / 1000);
+                    if (tempsEcoule < 5000) {
+                        const secondesRestantes = Math.ceil((5000 - tempsEcoule) / 1000);
                         const statutTemporaire = renderBadge("confirme", `Disparait dans ${secondesRestantes}s`);
                         cibleAttente.set(idStr, {
                             billet: b,
