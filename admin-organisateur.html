@@ -884,6 +884,8 @@
             color: var(--ink-700);
         }
         .footer-guarantee-pill svg { width: 14px; height: 14px; color: var(--green-600); flex-shrink: 0; }
+        .footer-guarantee-pill { align-items: flex-start; text-align: left; }
+        .footer-guarantee-icons { display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; margin-top: 1px; }
 
         .footer-brand { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 12px; }
         .footer-brand-line { height: 1px; width: 40px; background: linear-gradient(90deg, transparent, var(--gold-500)); }
@@ -2471,14 +2473,17 @@ body { padding-top: 92px !important; }
         <footer class="creator-footer">
             <div class="footer-guarantees">
                 <span class="footer-guarantee-pill">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                     stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M3 14v-3a9 9 0 0 1 18 0v3"/>
-                  <path d="M3 14a2 2 0 0 1 2-2h1v6H5a2 2 0 0 1-2-2v-2z"/>
-                  <path d="M21 14a2 2 0 0 0-2-2h-1v6h1a2 2 0 0 0 2-2v-2z"/>
-                  <path d="M18 18c0 1.1-.9 2-2 2h-2"/>
-                </svg>
-                      💬 Besoin d’assistance ? Contactez-nous au numéro indiqué ci-dessous.
+                    <span class="footer-guarantee-icons">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                             stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M3 14v-3a9 9 0 0 1 18 0v3"/>
+                          <path d="M3 14a2 2 0 0 1 2-2h1v6H5a2 2 0 0 1-2-2v-2z"/>
+                          <path d="M21 14a2 2 0 0 0-2-2h-1v6h1a2 2 0 0 0 2-2v-2z"/>
+                          <path d="M18 18c0 1.1-.9 2-2 2h-2"/>
+                        </svg>
+                        <span>💬</span>
+                    </span>
+                    <span>Besoin d’assistance ? Contactez-nous au numéro indiqué ci-dessous.</span>
                 </span>
             </div>
             <div class="footer-brand">
