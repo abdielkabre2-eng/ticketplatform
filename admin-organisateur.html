@@ -2983,14 +2983,7 @@ function formatHeureAffichage(heure) {
     return heure;
 }
 
-    async function chargerEspaceOrganisateur() {
-        if (!eventId) {
-            document.getElementById("titreEvenementOrg").textContent = "Erreur : aucun evenement specifie.";
-            document.getElementById("infosEvenementOrg").textContent = "Ajoutez ?event=ID dans l'URL.";
-            return;
-        }
-
-        function signatureEvenement(ev) {
+function signatureEvenement(ev) {
     if (!ev) return "";
     return [
         ev.titre || "", ev.date || "", ev.heure || "", ev.lieu || "",
@@ -3035,6 +3028,13 @@ async function verifierMiseAJourEvenement() {
         console.error("Erreur vérification mise à jour événement :", err);
     }
 }
+
+    async function chargerEspaceOrganisateur() {
+        if (!eventId) {
+            document.getElementById("titreEvenementOrg").textContent = "Erreur : aucun evenement specifie.";
+            document.getElementById("infosEvenementOrg").textContent = "Ajoutez ?event=ID dans l'URL.";
+            return;
+        }
 
         try {
             const data = await callOrganisateurAPI('charger_evenement', {
