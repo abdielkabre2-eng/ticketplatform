@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guide — Comment fonctionne GoldTix ?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+    --gold-500: #f59e0b; --gold-600: #d97706; --gold-700: #b45309;
+    --ink-50: #f8fafc; --ink-100: #f1f5f9; --ink-200: #e2e8f0;
+    --ink-400: #94a3b8; --ink-500: #64748b; --ink-700: #334155; --ink-900: #0f172a;
+    --grad-gold: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+    --grad-page: linear-gradient(160deg, #fffdf7 0%, #fef9ee 50%, #fffbf0 100%);
+    --radius-md: 16px; --radius-sm: 12px; --radius-xl: 32px;
+    --shadow-gold-lg: 0 6px 18px rgba(217,119,6,0.10), 0 20px 60px rgba(217,119,6,0.16);
+    --shadow-gold-sm: 0 2px 6px rgba(217,119,6,0.10), 0 4px 14px rgba(217,119,6,0.15);
+    --border-gold: rgba(217,119,6,0.20); --border-gold-strong: rgba(217,119,6,0.40);
+    --font-display: 'Sora', sans-serif; --font-body: 'DM Sans', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: var(--font-body);
+    background: var(--grad-page);
+    background-attachment: fixed;
+    color: var(--ink-900);
+    line-height: 1.6;
+    padding: 24px 16px 60px;
+}
+.wrap { max-width: 720px; margin: 0 auto; }
+.back-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--font-display); font-weight: 700; font-size: 13px;
+    color: var(--gold-700); text-decoration: none; margin-bottom: 20px;
+}
+.card {
+    background: rgba(255,255,255,0.95);
+    border: 1px solid var(--border-gold);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-gold-lg);
+    overflow: hidden;
+}
+.card::before { content:''; display:block; height:3px; background: var(--grad-gold); }
+.card-inner { padding: 32px 28px 40px; }
+@media (max-width: 520px) { .card-inner { padding: 22px 16px 30px; } }
+
+.eyebrow {
+    display: inline-block;
+    font-family: var(--font-display); font-size: 10px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase; color: var(--gold-600);
+    margin-bottom: 10px;
+}
+h1 { font-family: var(--font-display); font-size: 24px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 8px; }
+.intro { font-size: 13.5px; color: var(--ink-500); margin-bottom: 32px; max-width: 520px; }
+
+.group { margin-bottom: 36px; }
+.group:last-of-type { margin-bottom: 0; }
+.group-title {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--font-display); font-size: 16px; font-weight: 800;
+    margin-bottom: 18px;
+}
+.group-title .emoji { font-size: 20px; }
+
+.steps { display: flex; flex-direction: column; gap: 10px; }
+.step {
+    display: flex; align-items: flex-start; gap: 14px;
+    background: var(--ink-50); border: 1px solid var(--ink-200);
+    border-radius: var(--radius-sm); padding: 14px 16px;
+}
+.step-num {
+    flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--grad-gold); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 12px; font-weight: 800;
+}
+.step-body h3 { font-family: var(--font-display); font-size: 13.5px; font-weight: 700; margin-bottom: 3px; color: var(--ink-900); }
+.step-body p { font-size: 12.5px; color: var(--ink-500); }
+
+.cta-block {
+    margin-top: 36px; padding-top: 24px; border-top: 1px solid var(--ink-100);
+    text-align: center;
+}
+.cta-block p { font-size: 13.5px; color: var(--ink-700); margin-bottom: 14px; }
+.btn-cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--grad-gold); color: #fff; text-decoration: none;
+    padding: 12px 24px; border-radius: var(--radius-sm);
+    font-family: var(--font-display); font-weight: 800; font-size: 13.5px;
+    box-shadow: var(--shadow-gold-sm);
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+    <a class="back-link" href="javascript:history.back()">← Retour</a>
+    <div class="card">
+        <div class="card-inner">
+            <span class="eyebrow">Guide</span>
+            <h1>Comment fonctionne GoldTix ?</h1>
+            <p class="intro">Ce guide vous permet de comprendre facilement le fonctionnement de la plateforme, que vous soyez acheteur d'un billet ou organisateur d'un événement.</p>
+
+            <div class="group">
+                <div class="group-title"><span class="emoji">🎟️</span> Pour les acheteurs</div>
+                <div class="steps">
+                    <div class="step">
+                        <span class="step-num">1</span>
+                        <div class="step-body"><h3>Accéder à l'événement</h3><p>Ouvrez le lien de l'événement qui vous a été communiqué.</p></div>
+                    </div>
+                    <div class="step">
+                        <span class="step-num">2</span>
+                        <div class="step-body"><h3>Choisir son billet</h3><p>Sélectionnez la catégorie de billet souhaitée et indiquez la quantité.</p></div>
+                    </div>
+                    <div class="step">
+                        <span class="step-num">3</span>
+                        <div class="step-body"><h3>Renseigner ses informations</h3><p>Complétez les informations demandées pour votre réservation.</p></div>
+                    </div>
+                    <div class="step">
+                        <span class="step-num">4</span>
+                        <div class="step-body"><h3>Effectuer le paiement</h3><p>Suivez les instructions de paiement affichées sur la plateforme.</p></div>
+                    </div>
+                    <div class="step">
+                        <span class="step-num">5</span>
+                        <div class="step-body"><h3>Envoyer la preuve de paiement</h3><p>Transmettez la preuve ou la référence du paiement, conformément aux instructions.</p></div>
+                    </div>
+                    <div class="step">
+                        <span class="step-num">6</span>
+                        <div class="step-body"><h3>Attendre la validation</h3><p>L'organisateur vérifie votre paiement.</p></div>
+                    </div>
+                    <div class="step">
+                        <span class="step-num">7</span>
+                        <div class="step-body"><h3>Recevoir son billet</h3><p>Une fois le paiement confirmé, votre billet est généré avec son QR Code.</p></div>
+                    </div>
+                    <div class="step">
+                        <span class="step-num">8</span>
+                        <div class="step-body"><h3>Présenter le billet à l'entrée</h3><p>Le jour de l'événement, présentez votre billet : le QR Code est scanné pour vérifier votre accès.</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group">
+                <div class="group-title"><span class="emoji">🏢</span> Pour les organisateurs</div>
+                <div class="steps">
+                    <div class="step">
+                        <span class="step-num">1</span>
+                        <div class="step-body"><h3>Contacter GoldTix</h3><p>Prenez contact avec GoldTix pour mettre votre événement en place.</p></div>
+                    </div>
+                    <div class="step">
+                        <span class="step-num">2</span>
+                        <div class="step-body"><h3>Création de l'événement</h3><p>GoldTix crée et configure votre événement, puis met en place les liens.</p></div>
+                    </div>
+                    <div class="step">
+                        <span class="step-num">3</span>
+                        <div class="step-body"><h3>Recevoir vos liens</h3><p>Un lien unique est généré pour l'événement (à partager au public), et un second pour votre espace organisateur.</p></div>
+                    </div>
+                    <div class="step">
+                        <span class="step-num">4</span>
+                        <div class="step-body"><h3>Configurer les billets</h3><p>Depuis votre espace organisateur, définissez les catégories, les prix et le nombre de billets disponibles.</p></div>
+                    </div>
+                    <div class="step">
+                        <span class="step-num">5</span>
+                        <div class="step-body"><h3>Suivre les ventes</h3><p>Consultez les paiements en attente et les billets confirmés en temps réel.</p></div>
+                    </div>
+                    <div class="step">
+                        <span class="step-num">6</span>
+                        <div class="step-body"><h3>Valider les paiements</h3><p>Vérifiez les preuves de paiement et confirmez les réservations.</p></div>
+                    </div>
+                    <div class="step">
+                        <span class="step-num">7</span>
+                        <div class="step-body"><h3>Contrôler les accès</h3><p>Utilisez le scanner GoldTix pour vérifier les billets à l'entrée.</p></div>
+                    </div>
+                    <div class="step">
+                        <span class="step-num">8</span>
+                        <div class="step-body"><h3>Suivre et gérer son événement</h3><p>Gardez le contrôle sur les ventes, les participants et les billets jusqu'au jour J.</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cta-block">
+                <p>Une question ou besoin d'accompagnement pour votre événement ? Notre équipe est à votre disposition.</p>
+                <a class="btn-cta" href="contact.html">Contacter GoldTix</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
