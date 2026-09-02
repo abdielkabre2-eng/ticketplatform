@@ -204,7 +204,7 @@
             padding: 8px 16px;
             border-radius: 50px;
             font-family: var(--font-display);
-            font-size: clamp(7px, 2.2vw, 11px);
+            font-size: 11px;
             font-weight: 700;
             letter-spacing: 0.8px;
             text-transform: uppercase;
@@ -1725,9 +1725,12 @@ body { padding-top: 92px !important; }
     }
     body { padding-top: 84px !important; }
    .badge-espace {
-        padding: 6px 10px !important;
-        gap: 5px !important;
+        padding: 8px !important;
+        gap: 0 !important;
     }
+    .badge-espace .badge-espace-text {
+        display: none !important;
+    } 
 }
 /* ============================================
    BOUTON HAMBURGER
