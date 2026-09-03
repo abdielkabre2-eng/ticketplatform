@@ -1197,8 +1197,8 @@ function appliquerMiseAJourEvenement(ev) {
       <div style="border-radius:20px; overflow:hidden; box-shadow:0 0 0 1px #e7e5e4; background:#ffffff;">
 
         ${posterDataUrl ? `
-          <div style="width:100%; line-height:0;">
-            <img src="${posterDataUrl}" style="width:100%; height:auto; display:block;" />
+          <div style="width:100%; height:170px; overflow:hidden; line-height:0;">
+            <img src="${posterDataUrl}" style="width:100%; height:100%; object-fit:cover; display:block;" />
           </div>
         ` : `
           <div style="width:100%; padding:34px 20px; background:linear-gradient(120deg, ${accentColorA}, ${accentColorB}); text-align:center;">
