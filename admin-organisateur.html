@@ -1701,6 +1701,54 @@ h1, h2, h3, p, span, div {
 .categorie-edit-field input {
     width: 100%;
 }
+.categorie-edit-box-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.categorie-edit-box-header .categorie-edit-title {
+    margin-bottom: 0;
+}
+.btn-supprimer-categorie {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(239,68,68,0.08);
+    color: #dc2626;
+    border: 1px solid rgba(239,68,68,0.25);
+    font-family: var(--font-display);
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: var(--radius-xs);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, transform 0.15s;
+}
+.btn-supprimer-categorie:hover { background: rgba(239,68,68,0.16); transform: translateY(-1px); }
+.btn-supprimer-categorie:focus-visible { outline: 2px solid var(--red-500); outline-offset: 2px; }
+.btn-ajouter-categorie {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    justify-content: center;
+    background: rgba(217,119,6,0.08);
+    color: var(--gold-700);
+    border: 1.5px dashed var(--border-gold-strong);
+    font-family: var(--font-display);
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 11px 14px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    margin-top: 4px;
+    transition: background 0.15s, transform 0.15s;
+}
+.btn-ajouter-categorie:hover { background: rgba(217,119,6,0.14); transform: translateY(-1px); }
+.btn-ajouter-categorie:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
 .gestion-block-title {
     font-family: var(--font-display);
     font-size: 13px;
@@ -2356,6 +2404,7 @@ body { padding-top: 92px !important; }
         <div class="auth-form-group">
             <label>Catégorie(s) de billets</label>
             <div id="editCategoriesContainer"></div>
+            <button type="button" class="btn-ajouter-categorie" onclick="ajouterCategorieEdition()">+ Ajouter une catégorie</button>
         </div>
 
         <!-- Boutons d'informations responsives -->
