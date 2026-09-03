@@ -1595,15 +1595,25 @@
     flex-shrink: 0;
 }
 
+.tabs-icon-nav {
+    overflow: visible;
+}
+
+.tab-icon-btn {
+    overflow: visible;
+}
+
 .tab-icon-wrap {
     position: relative;
     display: inline-flex;
+    overflow: visible;
+    margin-top: 4px;
 }
 
 .tab-badge {
     position: absolute;
-    top: -6px;
-    right: -8px;
+    top: -4px;
+    right: -6px;
     min-width: 15px;
     height: 15px;
     padding: 0 3px;
@@ -1616,12 +1626,13 @@
     line-height: 15px;
     text-align: center;
     box-shadow: 0 0 0 2px #ffffff;
+    z-index: 2;
 }
 
 @media (max-width: 480px) {
     .tab-badge {
-        top: -5px;
-        right: -7px;
+        top: -3px;
+        right: -5px;
         min-width: 13px;
         height: 13px;
         font-size: 8px;
