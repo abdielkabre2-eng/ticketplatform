@@ -1197,7 +1197,7 @@ function appliquerMiseAJourEvenement(ev) {
       <div style="border-radius:20px; overflow:hidden; box-shadow:0 0 0 1px #e7e5e4; background:#ffffff;">
 
         ${posterDataUrl ? `
-          <div style="width:100%; height:170px; overflow:hidden; line-height:0;">
+          <div style="width:100%; height:130px; overflow:hidden; line-height:0;">
             <img src="${posterDataUrl}" style="width:100%; height:100%; object-fit:cover; display:block;" />
           </div>
         ` : `
@@ -1206,63 +1206,63 @@ function appliquerMiseAJourEvenement(ev) {
           </div>
         `}
 
-        <div style="padding:22px 22px 0;">
+        <div style="padding:16px 20px 0;">
 
-          <div style="font-size:10px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:#a8a29e; margin-bottom:8px;">
+          <div style="font-size:10px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:#a8a29e; margin-bottom:5px;">
             Événement
           </div>
-          <div style="background:#f9f9f8; border-radius:12px; padding:0 16px; margin-bottom:20px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:13px; padding:11px 0; border-bottom:1px solid #eeece9;">
+          <div style="background:#f9f9f8; border-radius:12px; padding:0 14px; margin-bottom:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:12px; padding:7px 0; border-bottom:1px solid #eeece9;">
               <span style="color:#78716c; font-weight:600; flex-shrink:0;">Date</span>
               <span style="font-weight:700; color:#1c1917; text-align:right;">${escHTML(dateValue)}</span>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:13px; padding:11px 0; border-bottom:1px solid #eeece9;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:12px; padding:7px 0; border-bottom:1px solid #eeece9;">
               <span style="color:#78716c; font-weight:600; flex-shrink:0;">Heure</span>
               <span style="font-weight:700; color:#1c1917; text-align:right;">${escHTML(heureValue)}</span>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:13px; padding:11px 0;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:12px; padding:7px 0;">
               <span style="color:#78716c; font-weight:600; flex-shrink:0;">Lieu</span>
               <span style="font-weight:700; color:#1c1917; text-align:right;">${escHTML(lieuValue)}</span>
             </div>
           </div>
 
-          <div style="font-size:10px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:#a8a29e; margin-bottom:8px;">
+          <div style="font-size:10px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:#a8a29e; margin-bottom:5px;">
             Billet
           </div>
-          <div style="background:#f9f9f8; border-radius:12px; padding:0 16px; margin-bottom:20px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:13px; padding:11px 0; border-bottom:1px solid #eeece9;">
+          <div style="background:#f9f9f8; border-radius:12px; padding:0 14px; margin-bottom:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:12px; padding:7px 0; border-bottom:1px solid #eeece9;">
               <span style="color:#78716c; font-weight:600; flex-shrink:0;">Catégories</span>
               <span style="font-weight:800; color:${accentColorA}; text-align:right;">${escHTML(categorieValue)}</span>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:13px; padding:11px 0;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:12px; padding:7px 0;">
               <span style="color:#78716c; font-weight:600; flex-shrink:0;">ID-billet</span>
               <span style="font-weight:700; color:#1c1917; text-align:right;">${escHTML(billetRef)}</span>
             </div>
           </div>
 
-          <div style="font-size:10px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:#a8a29e; margin-bottom:8px;">
+          <div style="font-size:10px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:#a8a29e; margin-bottom:5px;">
             Participant
           </div>
-          <div style="background:#f9f9f8; border-radius:12px; padding:0 16px; margin-bottom:6px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:13px; padding:11px 0; border-bottom:1px solid #eeece9;">
+          <div style="background:#f9f9f8; border-radius:12px; padding:0 14px; margin-bottom:4px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:12px; padding:7px 0; border-bottom:1px solid #eeece9;">
               <span style="color:#78716c; font-weight:600; flex-shrink:0;">Titulaire</span>
               <span style="font-weight:700; color:#1c1917; text-align:right;">${escHTML(titulaireValue)}</span>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:13px; padding:11px 0;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:12px; padding:7px 0;">
               <span style="color:#78716c; font-weight:600; flex-shrink:0;">Téléphone</span>
               <span style="font-weight:700; color:#1c1917; text-align:right;">${escHTML(telephoneValue)}</span>
             </div>
           </div>
 
-          <div style="border-top:2px dashed #d6d3d1; margin:20px 0;"></div>
+          <div style="border-top:2px dashed #d6d3d1; margin:12px 0;"></div>
 
-          <div style="text-align:center; padding-bottom:22px;">
+          <div style="text-align:center; padding-bottom:14px;">
             ${qrDataUrl ? `
-              <div style="display:inline-block; padding:12px; border-radius:14px; box-shadow:0 0 0 1px #e7e5e4;">
-                <img src="${qrDataUrl}" style="width:168px; height:168px; display:block;" />
+              <div style="display:inline-block; padding:8px; border-radius:12px; box-shadow:0 0 0 1px #e7e5e4;">
+                <img src="${qrDataUrl}" style="width:128px; height:128px; display:block;" />
               </div>
             ` : ''}
-            <div style="font-size:10px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:#a8a29e; margin-top:12px;">
+            <div style="font-size:10px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:#a8a29e; margin-top:8px;">
               Code du billet
             </div>
             <div style="font-size:16px; font-weight:800; letter-spacing:.03em; color:#1c1917; font-family:monospace; margin-top:2px;">
@@ -1271,7 +1271,7 @@ function appliquerMiseAJourEvenement(ev) {
           </div>
         </div>
 
-        <div style="border-top:1px solid #f1f0ef; padding:14px 20px; display:flex; align-items:center; justify-content:center; gap:8px;">
+        <div style="border-top:1px solid #f1f0ef; padding:9px 20px; display:flex; align-items:center; justify-content:center; gap:8px;">
           ${logoDataUrl
             ? `<img src="${logoDataUrl}" style="height:16px; width:auto; display:block;" />`
             : `<span style="font-size:10px; font-weight:900; letter-spacing:.08em; color:#1c1917;">GOLDTIX</span>`}
