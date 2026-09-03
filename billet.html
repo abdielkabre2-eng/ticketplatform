@@ -1194,17 +1194,20 @@ function appliquerMiseAJourEvenement(ev) {
     pdfContainer.innerHTML = `
       <div style="border-radius:18px; overflow:hidden; box-shadow:0 0 0 1px #e7e5e4;">
 
-        <div style="position:relative; background:linear-gradient(120deg, ${accentColorA}55, ${accentColorB}55); padding:16px 18px;">
+       <div style="position:relative; background:linear-gradient(120deg, ${accentColorA}55, ${accentColorB}55); padding:16px 18px;">
           <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; position:relative; z-index:1;">
             <div style="display:flex; align-items:center; gap:8px;">
               ${logoDataUrl
                 ? `<img src="${logoDataUrl}" style="height:22px; width:auto; display:block;" />`
                 : `<div style="font-size:13px; font-weight:900; color:#fff; letter-spacing:.08em;">GOLDTIX</div>`}
             </div>
+            <div style="font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:#fff; background:rgba(255,255,255,.22); padding:4px 10px; border-radius:99px; white-space:nowrap;">
+              ${escHTML(categoryText)}
+            </div>
           </div>
-         ${posterDataUrl ? `
-          <img src="${posterDataUrl}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; opacity:.85; z-index:0;" />
-          ` : ''}
+          ${posterDataUrl ? `
+            <img src="${posterDataUrl}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; opacity:.85; z-index:0;" />
+              ` : ''}
         </div>
 
         <div style="padding:20px 20px 0;">
@@ -1215,27 +1218,23 @@ function appliquerMiseAJourEvenement(ev) {
           <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:18px;">
             ${metaPills.map(m => `
               <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#57534e; font-weight:600;">
-                <span style="width:6px; height:6px; border-radius:50%; background:#1c1917; flex-shrink:0;"></span>
+                <span style="width:6px; height:6px; border-radius:50%; background:${accentColorA}; flex-shrink:0;"></span>
                 <span>${escHTML(m)}</span>
               </div>
             `).join('')}
             <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#57534e; font-weight:600;">
-              <span style="width:6px; height:6px; border-radius:50%; background:#1c1917; flex-shrink:0;"></span>
+              <span style="width:6px; height:6px; border-radius:50%; background:${accentColorA}; flex-shrink:0;"></span>
               <span>${escHTML(lieuValue)}</span>
             </div>
           </div>
 
           <div style="font-size:9px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:#a8a29e; margin-bottom:6px;">
-            Billet
+            Événement
           </div>
           <div style="background:#f9f9f8; border-radius:10px; padding:10px 12px; margin-bottom:14px;">
             <div style="display:flex; justify-content:space-between; font-size:12px; padding:3px 0;">
               <span style="color:#78716c; font-weight:600;">Catégorie</span>
-              <span style="font-weight:800; color:#1c1917;">${escHTML(categorieValue)}</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:12px; padding:3px 0;">
-              <span style="color:#78716c; font-weight:600;">ID-billet</span>
-              <span style="font-weight:800; color:#1c1917;">${escHTML(id)}</span>
+              <span style="font-weight:800; color:${accentColorA};">${escHTML(categorieValue)}</span>
             </div>
           </div>
 
