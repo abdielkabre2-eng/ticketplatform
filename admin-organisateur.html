@@ -1595,6 +1595,40 @@
     flex-shrink: 0;
 }
 
+.tab-icon-wrap {
+    position: relative;
+    display: inline-flex;
+}
+
+.tab-badge {
+    position: absolute;
+    top: -6px;
+    right: -8px;
+    min-width: 15px;
+    height: 15px;
+    padding: 0 3px;
+    border-radius: 50px;
+    background: var(--grad-gold);
+    color: #ffffff;
+    font-family: var(--font-display);
+    font-size: 9px;
+    font-weight: 800;
+    line-height: 15px;
+    text-align: center;
+    box-shadow: 0 0 0 2px #ffffff;
+}
+
+@media (max-width: 480px) {
+    .tab-badge {
+        top: -5px;
+        right: -7px;
+        min-width: 13px;
+        height: 13px;
+        font-size: 8px;
+        line-height: 13px;
+    }
+}
+
 .tab-icon-btn span {
     font-family: var(--font-display);
     font-size: 10.5px;
@@ -2254,13 +2288,19 @@ body { padding-top: 92px !important; }
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 22V12h6v10"/></svg>
                             <span>Gestion</span>
                         </button>
-                        <button class="tab-icon-btn active" id="btnTabPaiements" onclick="changerOnglet('paiements', this)">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                            <span>En attente (0)</span>
+                       <button class="tab-icon-btn active" id="btnTabPaiements" onclick="changerOnglet('paiements', this)">
+                          <span class="tab-icon-wrap">
+                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                             <span class="tab-badge" id="badgePaiements">0</span>
+                          </span>
+                         <span>En attente</span>
                         </button>
                         <button class="tab-icon-btn" id="btnTabValidees" onclick="changerOnglet('validees', this)">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
-                            <span>Confirmés (0)</span>
+                          <span class="tab-icon-wrap">
+                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+                             <span class="tab-badge" id="badgeValidees">0</span>
+                          </span>
+                         <span>Confirmés</span>
                         </button>
                         <button class="tab-icon-btn" onclick="changerOnglet('scanner', this)">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2"/><rect x="7" y="7" width="4" height="4" rx="0.5"/><rect x="13" y="7" width="4" height="4" rx="0.5"/><rect x="7" y="13" width="4" height="4" rx="0.5"/><path d="M13 13h2v2h-2zM17 13h2M13 17h2M17 17h2"/></svg>
@@ -3415,21 +3455,16 @@ async function verifierMiseAJourEvenement() {
     }
 
     function mettreAJourCompteurs(nombreConfirmes, nombreEnAttente) {
-    let btnTabValidees = document.getElementById("btnTabValidees");
     let titreValidees = document.getElementById("titreSectionValidees");
-    
-    if (btnTabValidees) {
-        const spanValidees = btnTabValidees.querySelector('span');
-        if (spanValidees) spanValidees.textContent = `Confirmés (${nombreConfirmes})`;
-    }
+
+    const badgeValidees = document.getElementById("badgeValidees");
+    if (badgeValidees) badgeValidees.textContent = nombreConfirmes;
+
     if (titreValidees) titreValidees.textContent = `Participants confirmés (${nombreConfirmes})`;
 
     if (typeof nombreEnAttente === 'number') {
-        let btnTabPaiements = document.getElementById("btnTabPaiements");
-        if (btnTabPaiements) {
-            const spanPaiements = btnTabPaiements.querySelector('span');
-            if (spanPaiements) spanPaiements.textContent = `En attente (${nombreEnAttente})`;
-        }
+        const badgePaiements = document.getElementById("badgePaiements");
+        if (badgePaiements) badgePaiements.textContent = nombreEnAttente;
     }
 }
     /* =============================================
