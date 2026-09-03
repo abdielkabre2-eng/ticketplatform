@@ -1133,6 +1133,8 @@ function appliquerMiseAJourEvenement(ev) {
   const lieuValue = getCell('Lieu');
   const titulaireValue = getCell('Titulaire');
   const telephoneValue = getCell('Téléphone');
+  const dateValue = document.getElementById('evDateH')?.textContent.trim() || metaPills[0] || '—';
+  const heureValue = document.getElementById('evHeureH')?.textContent.trim() || metaPills[1] || '—';
 
   const qrSourceEl = document.querySelector('#qrcode canvas, #qrcode img');
   let qrDataUrl = null;
@@ -1192,85 +1194,91 @@ function appliquerMiseAJourEvenement(ev) {
     `;
 
     pdfContainer.innerHTML = `
-      <div style="border-radius:18px; overflow:hidden; box-shadow:0 0 0 1px #e7e5e4;">
+      <div style="border-radius:20px; overflow:hidden; box-shadow:0 0 0 1px #e7e5e4; background:#ffffff;">
 
-       <div style="position:relative; background:linear-gradient(120deg, ${accentColorA}55, ${accentColorB}55); padding:16px 18px;">
-          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; position:relative; z-index:1;">
-            <div style="display:flex; align-items:center; gap:8px;">
-              ${logoDataUrl
-                ? `<img src="${logoDataUrl}" style="height:22px; width:auto; display:block;" />`
-                : `<div style="font-size:13px; font-weight:900; color:#fff; letter-spacing:.08em;">GOLDTIX</div>`}
-            </div>
-            <div style="font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:#fff; background:rgba(255,255,255,.22); padding:4px 10px; border-radius:99px; white-space:nowrap;">
-              ${escHTML(categoryText)}
-            </div>
+        ${posterDataUrl ? `
+          <div style="width:100%; line-height:0;">
+            <img src="${posterDataUrl}" style="width:100%; height:auto; display:block;" />
           </div>
-          ${posterDataUrl ? `
-            <img src="${posterDataUrl}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; opacity:.85; z-index:0;" />
-              ` : ''}
-        </div>
-
-        <div style="padding:20px 20px 0;">
-          <div style="font-size:19px; font-weight:800; line-height:1.3; color:#1c1917; margin-bottom:10px;">
-            ${escHTML(eventTitle)}
+        ` : `
+          <div style="width:100%; padding:34px 20px; background:linear-gradient(120deg, ${accentColorA}, ${accentColorB}); text-align:center;">
+            <div style="font-size:20px; font-weight:800; color:#fff; letter-spacing:.01em;">${escHTML(eventTitle)}</div>
           </div>
+        `}
 
-          <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:18px;">
-            ${metaPills.map(m => `
-              <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#57534e; font-weight:600;">
-                <span style="width:6px; height:6px; border-radius:50%; background:${accentColorA}; flex-shrink:0;"></span>
-                <span>${escHTML(m)}</span>
-              </div>
-            `).join('')}
-            <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#57534e; font-weight:600;">
-              <span style="width:6px; height:6px; border-radius:50%; background:${accentColorA}; flex-shrink:0;"></span>
-              <span>${escHTML(lieuValue)}</span>
-            </div>
-          </div>
+        <div style="padding:22px 22px 0;">
 
-          <div style="font-size:9px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:#a8a29e; margin-bottom:6px;">
+          <div style="font-size:10px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:#a8a29e; margin-bottom:8px;">
             Événement
           </div>
-          <div style="background:#f9f9f8; border-radius:10px; padding:10px 12px; margin-bottom:14px;">
-            <div style="display:flex; justify-content:space-between; font-size:12px; padding:3px 0;">
-              <span style="color:#78716c; font-weight:600;">Catégorie</span>
-              <span style="font-weight:800; color:${accentColorA};">${escHTML(categorieValue)}</span>
+          <div style="background:#f9f9f8; border-radius:12px; padding:0 16px; margin-bottom:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:13px; padding:11px 0; border-bottom:1px solid #eeece9;">
+              <span style="color:#78716c; font-weight:600; flex-shrink:0;">Date</span>
+              <span style="font-weight:700; color:#1c1917; text-align:right;">${escHTML(dateValue)}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:13px; padding:11px 0; border-bottom:1px solid #eeece9;">
+              <span style="color:#78716c; font-weight:600; flex-shrink:0;">Heure</span>
+              <span style="font-weight:700; color:#1c1917; text-align:right;">${escHTML(heureValue)}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:13px; padding:11px 0;">
+              <span style="color:#78716c; font-weight:600; flex-shrink:0;">Lieu</span>
+              <span style="font-weight:700; color:#1c1917; text-align:right;">${escHTML(lieuValue)}</span>
             </div>
           </div>
 
-          <div style="font-size:9px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:#a8a29e; margin-bottom:6px;">
+          <div style="font-size:10px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:#a8a29e; margin-bottom:8px;">
+            Billet
+          </div>
+          <div style="background:#f9f9f8; border-radius:12px; padding:0 16px; margin-bottom:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:13px; padding:11px 0; border-bottom:1px solid #eeece9;">
+              <span style="color:#78716c; font-weight:600; flex-shrink:0;">Catégories</span>
+              <span style="font-weight:800; color:${accentColorA}; text-align:right;">${escHTML(categorieValue)}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:13px; padding:11px 0;">
+              <span style="color:#78716c; font-weight:600; flex-shrink:0;">ID-billet</span>
+              <span style="font-weight:700; color:#1c1917; text-align:right;">${escHTML(billetRef)}</span>
+            </div>
+          </div>
+
+          <div style="font-size:10px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:#a8a29e; margin-bottom:8px;">
             Participant
           </div>
-          <div style="background:#f9f9f8; border-radius:10px; padding:10px 12px; margin-bottom:16px;">
-            <div style="display:flex; justify-content:space-between; font-size:12px; padding:3px 0;">
-              <span style="color:#78716c; font-weight:600;">Titulaire</span>
-              <span style="font-weight:700; text-align:right;">${escHTML(titulaireValue)}</span>
+          <div style="background:#f9f9f8; border-radius:12px; padding:0 16px; margin-bottom:6px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:13px; padding:11px 0; border-bottom:1px solid #eeece9;">
+              <span style="color:#78716c; font-weight:600; flex-shrink:0;">Titulaire</span>
+              <span style="font-weight:700; color:#1c1917; text-align:right;">${escHTML(titulaireValue)}</span>
             </div>
-            <div style="display:flex; justify-content:space-between; font-size:12px; padding:3px 0;">
-              <span style="color:#78716c; font-weight:600;">Téléphone</span>
-              <span style="font-weight:700; text-align:right;">${escHTML(telephoneValue)}</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:13px; padding:11px 0;">
+              <span style="color:#78716c; font-weight:600; flex-shrink:0;">Téléphone</span>
+              <span style="font-weight:700; color:#1c1917; text-align:right;">${escHTML(telephoneValue)}</span>
             </div>
           </div>
 
-          <div style="border-top:2px dashed #d6d3d1; margin:0 0 16px;"></div>
+          <div style="border-top:2px dashed #d6d3d1; margin:20px 0;"></div>
 
-          <div style="text-align:center; padding-bottom:18px;">
+          <div style="text-align:center; padding-bottom:22px;">
             ${qrDataUrl ? `
-              <div style="display:inline-block; padding:10px; border-radius:12px; box-shadow:0 0 0 1px #e7e5e4;">
-                <img src="${qrDataUrl}" style="width:150px; height:150px; display:block;" />
+              <div style="display:inline-block; padding:12px; border-radius:14px; box-shadow:0 0 0 1px #e7e5e4;">
+                <img src="${qrDataUrl}" style="width:168px; height:168px; display:block;" />
               </div>
             ` : ''}
-            <div style="font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#a8a29e; margin-top:10px;">
+            <div style="font-size:10px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:#a8a29e; margin-top:12px;">
               Code du billet
             </div>
-            <div style="font-size:14px; font-weight:800; letter-spacing:.04em; color:#1c1917; font-family:monospace; margin-top:2px;">
+            <div style="font-size:16px; font-weight:800; letter-spacing:.03em; color:#1c1917; font-family:monospace; margin-top:2px;">
               ${escHTML(billetRef)}
             </div>
           </div>
         </div>
 
-        <div style="border-top:1px solid #f1f0ef; padding:10px 20px; text-align:center; font-size:9px; color:#a8a29e; letter-spacing:.08em; text-transform:uppercase; font-weight:700;">
-          GoldTix · Billet unique
+        <div style="border-top:1px solid #f1f0ef; padding:14px 20px; display:flex; align-items:center; justify-content:center; gap:8px;">
+          ${logoDataUrl
+            ? `<img src="${logoDataUrl}" style="height:16px; width:auto; display:block;" />`
+            : `<span style="font-size:10px; font-weight:900; letter-spacing:.08em; color:#1c1917;">GOLDTIX</span>`}
+          <span style="font-size:9px; color:#a8a29e;">&bull;</span>
+          <span style="font-size:9px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:#a8a29e;">GoldTix</span>
+          <span style="font-size:9px; color:#a8a29e;">&bull;</span>
+          <span style="font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#a8a29e;">Billet unique</span>
         </div>
       </div>
     `;
