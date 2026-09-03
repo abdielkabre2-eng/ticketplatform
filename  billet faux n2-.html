@@ -630,12 +630,6 @@ const params   = new URLSearchParams(window.location.search);
 const billetId = params.get('id');
 if (!billetId) { showError('Aucun identifiant de billet fourni.'); return; }
 
-      // ---------------------------------------------------------------
-      // SYNCHRONISATION AUTOMATIQUE (polling intelligent, same-origin)
-      // Pas de rechargement de page : on interroge périodiquement
-      // /api/tickets (déjà utilisée pour le chargement initial) et on
-      // ne met à jour que les portions du DOM dont le contenu a changé.
-      // ---------------------------------------------------------------
       let dernierSignatureAffichee = null;
       let verificationEnCours = false;
       let pollingBilletIntervalId = null;
@@ -670,8 +664,6 @@ if (!billetId) { showError('Aucun identifiant de billet fourni.'); return; }
       });
       window.addEventListener('pagehide', arreterPollingBillet);
 
-      // Bouton de rafraîchissement du footer (attente / refuse)
-      // -> ne recharge plus la page : il force juste une vérification immédiate.
       const tfReloadBtn = document.getElementById('tfReloadBtn');
       if (tfReloadBtn) {
         tfReloadBtn.addEventListener('click', () => {
@@ -698,9 +690,6 @@ btn.style.display = 'none';
         }
       }
 
-      // Bannière de statut (attente / refusé / confirmé) — markup inchangé,
-      // simplement factorisé pour être réutilisé par le chargement initial
-      // ET par les mises à jour automatiques (polling) sans dupliquer le HTML.
       function statusBannerHTML(statut) {
         if (statut === 'attente' || statut === 'en_attente') {
           return `<div class="status-banner attente">
@@ -727,25 +716,14 @@ btn.style.display = 'none';
               </div>`;
       }
 
-      // ---------------------------------------------------------------
-      // FONCTION : chargerBillet
-      // (CORRECTIF : ouverture de la fonction + du bloc try réinjectées.
-      //  C'était l'accolade manquante qui cassait toute la syntaxe du
-      //  fichier en cascade jusqu'à la fin.)
-      // ---------------------------------------------------------------
       async function recupererDonneesBillet() {
-        // Récupération via l'API Vercel (same-origin, 100% réseau mobile)
        const reponse = await fetch('/api/tickets?id=' + encodeURIComponent(billetId));
         if (!reponse.ok) return null;
         return await reponse.json();
       }
 
-      // ---------------------------------------------------------------
-      // BÉNÉFICIAIRE CLIQUABLE VERS WHATSAPP (attente / refusé uniquement)
-      // ---------------------------------------------------------------
       function formatNumeroWhatsApp(numero) {
         if (!numero) return '';
-        // Garde uniquement les chiffres (retire +, espaces, tirets, points...)
         return String(numero).replace(/[^\d]/g, '');
       }
 
@@ -846,9 +824,6 @@ btn.style.display = 'none';
           const imgUrl = ev.affiche_url || ev.image_url || ev.affiche || null;
           const bgImg = document.getElementById('event-bg-img');
           if (imgUrl) {
-            // CORRECTIF : crossOrigin AVANT de définir src, pour éviter que le canvas
-            // soit "taint" (contaminé) par une image cross-origin sans en-têtes CORS.
-            // Un canvas taint bloque silencieusement toDataURL()/toBlob() sur mobile.
             bgImg.crossOrigin = 'anonymous';
             bgImg.src = imgUrl;
             bgImg.style.display = 'block';
@@ -893,7 +868,6 @@ ${ev.heure ? `<div class="event-meta-pill">
                if (dlBtn) dlBtn.style.display = 'none';
             }
 
-          // Mise à jour du bouton de rafraîchissement dans le footer selon le statut
           updateFooterReloadButton(statut);
 
           statusZone.innerHTML = statusBannerHTML(statut);
@@ -928,7 +902,6 @@ ${ev.heure ? `<div class="event-meta-pill">
           } else {
             document.getElementById('billetRef').textContent = billet.numero_billet || billet.id || '—';
 
-            // On encode uniquement l'ID du billet, en texte brut
             const qrData = String(billet.code_public);
 
             const qrContainerElement = document.getElementById('qrcode');
@@ -954,8 +927,6 @@ ${ev.heure ? `<div class="event-meta-pill">
             qrContainerElement.dataset.genere = String(billet.id);
           }
 
-          // Empreinte de l'état actuellement affiché : sert de référence pour
-          // que le polling ne touche au DOM que si quelque chose a réellement changé.
           dernierSignatureAffichee = `${statut}|${billet.numero_billet || ''}|${billet.id || ''}`;
           dernierSignatureEvenementAffiche = `${ev.titre||''}|${ev.date||''}|${ev.heure||''}|${ev.lieu||''}|${ev.affiche_url||ev.image_url||ev.affiche||''}`;
 
@@ -966,15 +937,8 @@ ${ev.heure ? `<div class="event-meta-pill">
           console.error('Erreur chargerBillet:', err);
           showError('Une erreur est survenue. Veuillez réessayer.');
         }
-      } // <-- fermeture de async function chargerBillet()
+      }
 
-      // ---------------------------------------------------------------
-      // FONCTION : verifierMiseAJour
-      // Appelée par le polling (silencieuse) et par le bouton
-      // Rafraîchir/Réessayer (forcerErreur = true). Ne modifie le DOM
-      // que si le statut affiché a réellement changé depuis la dernière
-      // vérification, jamais via un rechargement de page.
-      // ---------------------------------------------------------------
       async function verifierMiseAJour(forcerErreur) {
         if (verificationEnCours) return;
         verificationEnCours = true;
@@ -1016,14 +980,6 @@ if (!quelqueChoseAChange) return;
         }
       }
 
-      // ---------------------------------------------------------------
-      // FONCTION : mettreAJourStatutAffiche
-      // Mise à jour DYNAMIQUE du DOM (aucune reconstruction complète,
-      // aucun rechargement) : bannière de statut, bouton Rafraîchir,
-      // bouton de téléchargement, cellule ID-billet et bloc QR code.
-      // Le reste (titre, image, date, lieu, catégorie...) ne change
-      // jamais pour un même billet et n'est donc pas retouché ici.
-      // ---------------------------------------------------------------
 let dernierSignatureEvenementAffiche = null;
 
 function appliquerMiseAJourEvenement(ev) {
@@ -1115,10 +1071,6 @@ function appliquerMiseAJourEvenement(ev) {
         }
       }
 
-      // FONCTION : demanderConfirmationTelechargement
-      // Affiche une confirmation SweetAlert2 avant de lancer la génération
-      // du PDF. La génération (telechargerPDF) ne démarre que si
-      // l'utilisateur clique sur le bouton de confirmation "Télécharger".
       function demanderConfirmationTelechargement() {
         Swal.fire({
           icon: 'info',
@@ -1136,7 +1088,6 @@ function appliquerMiseAJourEvenement(ev) {
         });
       }
 
-      // FONCTION : telechargerPDF
      function telechargerPDF() {
   const filename = 'billet-goldtix-' + (new URLSearchParams(window.location.search).get('id') || 'ticket') + '.pdf';
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -1174,7 +1125,14 @@ function appliquerMiseAJourEvenement(ev) {
     value: c.querySelector('.cell-value')?.textContent.trim() || ''
   }));
   const billetRef    = document.getElementById('billetRef')?.textContent.trim() || '';
-  const accentColor  = getComputedStyle(document.getElementById('ticketContent')).getPropertyValue('--tier-a').trim() || '#f59e0b';
+  const accentColorA = getComputedStyle(document.getElementById('ticketContent')).getPropertyValue('--tier-a').trim() || '#f59e0b';
+  const accentColorB = getComputedStyle(document.getElementById('ticketContent')).getPropertyValue('--tier-b').trim() || '#d97706';
+
+  const getCell = (label) => cellValues.find(c => c.label === label)?.value || '—';
+  const categorieValue = getCell('Catégorie');
+  const lieuValue = getCell('Lieu');
+  const titulaireValue = getCell('Titulaire');
+  const telephoneValue = getCell('Téléphone');
 
   const qrSourceEl = document.querySelector('#qrcode canvas, #qrcode img');
   let qrDataUrl = null;
@@ -1186,108 +1144,198 @@ function appliquerMiseAJourEvenement(ev) {
     }
   }
 
-  const pdfContainer = document.createElement('div');
-  pdfContainer.style.cssText = `
-    position: fixed; left: -9999px; top: 0;
-    width: 380px; padding: 24px;
-    background: #ffffff; color: #111010;
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  `;
-
-  pdfContainer.innerHTML = `
-    <div style="border:2px solid ${accentColor}; border-radius:16px; padding:20px; text-align:center;">
-      <div style="font-size:11px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:${accentColor}; margin-bottom:6px;">
-        ${categoryText}
-      </div>
-      <div style="font-size:20px; font-weight:800; margin-bottom:10px; line-height:1.25;">
-        ${eventTitle}
-      </div>
-      <div style="font-size:12px; color:#57534e; margin-bottom:16px;">
-        ${metaPills.join(' · ')}
-      </div>
-      <div style="border-top:2px dashed #d6d3d1; margin:14px 0;"></div>
-      <div style="text-align:left; display:flex; flex-direction:column; gap:8px; margin-bottom:16px;">
-        ${cellValues.map(c => `
-          <div style="display:flex; justify-content:space-between; font-size:12px; border-bottom:1px solid #f1f0ef; padding-bottom:6px;">
-            <span style="color:#78716c; font-weight:600;">${c.label}</span>
-            <span style="font-weight:700; text-align:right; max-width:60%;">${c.value}</span>
-          </div>
-        `).join('')}
-      </div>
-      ${qrDataUrl ? `
-        <img src="${qrDataUrl}" style="width:160px; height:160px; margin:0 auto; display:block; border:8px solid #fff; box-shadow:0 0 0 1px #e7e5e4;" />
-        <div style="font-size:10px; color:#a8a29e; margin-top:8px; letter-spacing:.05em;">Code QR - ID ${billetRef}</div>
-      ` : ''}
-      <div style="font-size:9px; color:#a8a29e; margin-top:16px; letter-spacing:.08em; text-transform:uppercase;">
-        GoldTix · Billet unique
-      </div>
-    </div>
-  `;
-
-  document.body.appendChild(pdfContainer);
-
-  html2canvas(pdfContainer, {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: '#ffffff',
-    logging: false
-  })
-    .then((canvas) => {
-      document.body.removeChild(pdfContainer);
-
-      const imgData = canvas.toDataURL('image/jpeg', 0.95);
-      const { jsPDF } = window.jspdf;
-
-      const marginMm = 6;
-      const maxWidthMm = 100;
-      const pxToMm = maxWidthMm / canvas.width;
-      const imgWidthMm = canvas.width * pxToMm;
-      const imgHeightMm = canvas.height * pxToMm;
-      const pageWidth = imgWidthMm + marginMm * 2;
-      const pageHeight = imgHeightMm + marginMm * 2;
-
-      const pdf = new jsPDF({
-        unit: 'mm',
-        format: [pageWidth, pageHeight],
-        orientation: 'portrait'
-      });
-
-      pdf.addImage(imgData, 'JPEG', marginMm, marginMm, imgWidthMm, imgHeightMm, undefined, 'FAST');
-      return pdf.output('blob');
-    })
-    .then((pdfBlob) => {
-      const blobURL = URL.createObjectURL(pdfBlob);
-
-      if (isMobile) {
-        if (pdfWindow) {
-          // On redirige la fenêtre déjà ouverte vers le PDF prêt.
-          pdfWindow.location.href = blobURL;
-        } else {
-          
-          window.location.href = blobURL;
-        }
-      } else {
-        const downloadLink = document.createElement('a');
-        downloadLink.href = blobURL;
-        downloadLink.download = filename;
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-      }
-
-      // Libère la mémoire un peu plus tard (laisse le temps au navigateur
-      // de charger le blob dans le nouvel onglet avant de le révoquer).
-      setTimeout(() => URL.revokeObjectURL(blobURL), 60000);
-
-      resetButton();
-    })
-    .catch((err) => {
-      if (document.body.contains(pdfContainer)) document.body.removeChild(pdfContainer);
-      if (pdfWindow) pdfWindow.close();
-      console.error("Erreur PDF:", err);
-      alert("Erreur lors de la génération du PDF. Veuillez réessayer.");
-      resetButton();
+  // ---------------------------------------------------------------
+  // NOUVEAU : chargement sécurisé d'images additionnelles (logo,
+  // affiche) pour le PDF uniquement. Chaque image est chargée dans
+  // un <img> détaché, crossOrigin posé AVANT src (même règle que
+  // pour l'image de fond du billet écran), avec un timeout de
+  // sécurité : si l'image ne charge pas à temps ou échoue (CORS,
+  // 404...), on continue sans elle plutôt que de bloquer ou de
+  // faire échouer la génération du PDF.
+  // ---------------------------------------------------------------
+  function chargerImageSecurisee(url, timeoutMs) {
+    return new Promise((resolve) => {
+      if (!url) { resolve(null); return; }
+      const img = new Image();
+      let reglee = false;
+      const finir = (resultat) => {
+        if (reglee) return;
+        reglee = true;
+        resolve(resultat);
+      };
+      const minuteur = setTimeout(() => finir(null), timeoutMs);
+      img.crossOrigin = 'anonymous';
+      img.onload  = () => { clearTimeout(minuteur); finir(img.src); };
+      img.onerror = () => { clearTimeout(minuteur); finir(null); };
+      img.src = url;
     });
+  }
+
+  const posterImgEl = document.getElementById('event-bg-img');
+  const posterUrl = (posterImgEl && posterImgEl.style.display !== 'none') ? posterImgEl.src : null;
+  const logoUrl = document.querySelector('.navbar-logo')?.getAttribute('src') || 'images/logo.png';
+
+  Promise.all([
+    chargerImageSecurisee(logoUrl, 2500),
+    chargerImageSecurisee(posterUrl, 3000)
+  ]).then(([logoDataUrl, posterDataUrl]) => {
+    genererCanvasEtPDF(logoDataUrl, posterDataUrl);
+  });
+
+  function genererCanvasEtPDF(logoDataUrl, posterDataUrl) {
+    const pdfContainer = document.createElement('div');
+    pdfContainer.style.cssText = `
+      position: fixed; left: -9999px; top: 0;
+      width: 380px;
+      background: #ffffff; color: #1c1917;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    `;
+
+    pdfContainer.innerHTML = `
+      <div style="border-radius:18px; overflow:hidden; box-shadow:0 0 0 1px #e7e5e4;">
+
+        <div style="position:relative; background:linear-gradient(120deg, ${accentColorA}, ${accentColorB}); padding:16px 18px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; position:relative; z-index:1;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              ${logoDataUrl
+                ? `<img src="${logoDataUrl}" style="height:22px; width:auto; display:block;" />`
+                : `<div style="font-size:13px; font-weight:900; color:#fff; letter-spacing:.08em;">GOLDTIX</div>`}
+            </div>
+            <div style="font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:#fff; background:rgba(255,255,255,.22); padding:4px 10px; border-radius:99px; white-space:nowrap;">
+              ${escHTML(categoryText)}
+            </div>
+          </div>
+          ${posterDataUrl ? `
+            <img src="${posterDataUrl}" style="position:absolute; top:0; right:0; width:80px; height:100%; object-fit:cover; opacity:.30; z-index:0;" />
+          ` : ''}
+        </div>
+
+        <div style="padding:20px 20px 0;">
+          <div style="font-size:19px; font-weight:800; line-height:1.3; color:#1c1917; margin-bottom:10px;">
+            ${escHTML(eventTitle)}
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:18px;">
+            ${metaPills.map(m => `
+              <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#57534e; font-weight:600;">
+                <span style="width:6px; height:6px; border-radius:50%; background:${accentColorA}; flex-shrink:0;"></span>
+                <span>${escHTML(m)}</span>
+              </div>
+            `).join('')}
+            <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#57534e; font-weight:600;">
+              <span style="width:6px; height:6px; border-radius:50%; background:${accentColorA}; flex-shrink:0;"></span>
+              <span>${escHTML(lieuValue)}</span>
+            </div>
+          </div>
+
+          <div style="font-size:9px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:#a8a29e; margin-bottom:6px;">
+            Événement
+          </div>
+          <div style="background:#f9f9f8; border-radius:10px; padding:10px 12px; margin-bottom:14px;">
+            <div style="display:flex; justify-content:space-between; font-size:12px; padding:3px 0;">
+              <span style="color:#78716c; font-weight:600;">Catégorie</span>
+              <span style="font-weight:800; color:${accentColorA};">${escHTML(categorieValue)}</span>
+            </div>
+          </div>
+
+          <div style="font-size:9px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:#a8a29e; margin-bottom:6px;">
+            Participant
+          </div>
+          <div style="background:#f9f9f8; border-radius:10px; padding:10px 12px; margin-bottom:16px;">
+            <div style="display:flex; justify-content:space-between; font-size:12px; padding:3px 0;">
+              <span style="color:#78716c; font-weight:600;">Titulaire</span>
+              <span style="font-weight:700; text-align:right;">${escHTML(titulaireValue)}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:12px; padding:3px 0;">
+              <span style="color:#78716c; font-weight:600;">Téléphone</span>
+              <span style="font-weight:700; text-align:right;">${escHTML(telephoneValue)}</span>
+            </div>
+          </div>
+
+          <div style="border-top:2px dashed #d6d3d1; margin:0 0 16px;"></div>
+
+          <div style="text-align:center; padding-bottom:18px;">
+            ${qrDataUrl ? `
+              <div style="display:inline-block; padding:10px; border-radius:12px; box-shadow:0 0 0 1px #e7e5e4;">
+                <img src="${qrDataUrl}" style="width:150px; height:150px; display:block;" />
+              </div>
+            ` : ''}
+            <div style="font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#a8a29e; margin-top:10px;">
+              Code du billet
+            </div>
+            <div style="font-size:14px; font-weight:800; letter-spacing:.04em; color:#1c1917; font-family:monospace; margin-top:2px;">
+              ${escHTML(billetRef)}
+            </div>
+          </div>
+        </div>
+
+        <div style="border-top:1px solid #f1f0ef; padding:10px 20px; text-align:center; font-size:9px; color:#a8a29e; letter-spacing:.08em; text-transform:uppercase; font-weight:700;">
+          GoldTix · Billet unique
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(pdfContainer);
+
+    html2canvas(pdfContainer, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      logging: false
+    })
+      .then((canvas) => {
+        document.body.removeChild(pdfContainer);
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        const { jsPDF } = window.jspdf;
+
+        const marginMm = 6;
+        const maxWidthMm = 100;
+        const pxToMm = maxWidthMm / canvas.width;
+        const imgWidthMm = canvas.width * pxToMm;
+        const imgHeightMm = canvas.height * pxToMm;
+        const pageWidth = imgWidthMm + marginMm * 2;
+        const pageHeight = imgHeightMm + marginMm * 2;
+
+        const pdf = new jsPDF({
+          unit: 'mm',
+          format: [pageWidth, pageHeight],
+          orientation: 'portrait'
+        });
+
+        pdf.addImage(imgData, 'JPEG', marginMm, marginMm, imgWidthMm, imgHeightMm, undefined, 'FAST');
+        return pdf.output('blob');
+      })
+      .then((pdfBlob) => {
+        const blobURL = URL.createObjectURL(pdfBlob);
+
+        if (isMobile) {
+          if (pdfWindow) {
+            pdfWindow.location.href = blobURL;
+          } else {
+            window.location.href = blobURL;
+          }
+        } else {
+          const downloadLink = document.createElement('a');
+          downloadLink.href = blobURL;
+          downloadLink.download = filename;
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+          document.body.removeChild(downloadLink);
+        }
+
+        setTimeout(() => URL.revokeObjectURL(blobURL), 60000);
+
+        resetButton();
+      })
+      .catch((err) => {
+        if (document.body.contains(pdfContainer)) document.body.removeChild(pdfContainer);
+        if (pdfWindow) pdfWindow.close();
+        console.error("Erreur PDF:", err);
+        alert("Erreur lors de la génération du PDF. Veuillez réessayer.");
+        resetButton();
+      });
+  }
 }
       function escHTML(str) {
         if (!str) return '';
