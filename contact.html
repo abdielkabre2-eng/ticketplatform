@@ -64,10 +64,24 @@ h1 { font-family: var(--font-display); font-size: 22px; font-weight: 800; letter
     text-align: left;
 }
 .contact-row .ic { font-size: 20px; flex-shrink: 0; }
-.contact-row .txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.contact-row .txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
 .contact-row .label { font-family: var(--font-display); font-size: 10.5px; font-weight: 700; color: var(--ink-400); text-transform: uppercase; letter-spacing: 0.5px; }
 .contact-row a { font-size: 13.5px; font-weight: 700; color: var(--ink-900); text-decoration: none; word-break: break-all; }
 .contact-row a:hover { color: var(--gold-700); }
+
+.badge {
+    font-family: var(--font-display); font-size: 10px; font-weight: 700;
+    padding: 4px 9px; border-radius: 999px; white-space: nowrap; flex-shrink: 0;
+}
+.badge-whatsapp {
+    background: rgba(16,185,129,0.12); color: var(--green-600);
+    border: 1px solid rgba(16,185,129,0.35);
+}
+.badge-call {
+    background: rgba(100,116,139,0.10); color: var(--ink-500);
+    border: 1px solid rgba(100,116,139,0.25);
+}
+.whatsapp-row .ic { color: var(--green-600); }
 
 .btn-whatsapp {
     display: flex; align-items: center; justify-content: center; gap: 8px;
@@ -87,34 +101,37 @@ h1 { font-family: var(--font-display); font-size: 22px; font-weight: 800; letter
         <div class="card-inner">
             <div class="icon-badge">💬</div>
             <h1>Besoin d'aide ?</h1>
-            <p class="subtitle">Notre équipe est disponible pour répondre à vos questions, que vous soyez acheteur ou organisateur.</p>
+            <p class="subtitle">Nous sommes disponibles pour répondre à vos questions, que vous soyez acheteur ou organisateur.</p>
 
             <div class="contact-list">
-                <div class="contact-row">
-                    <span class="ic">📱</span>
+                <div class="contact-row whatsapp-row">
+                    <span class="ic">💬</span>
                     <div class="txt">
-                        <span class="label">WhatsApp</span>
+                        <span class="label">Contacts</span>
                         <a href="https://wa.me/22653107345" target="_blank">+226 53 10 73 45</a>
                     </div>
+                    <span class="badge badge-whatsapp">WhatsApp</span>
                 </div>
                 <div class="contact-row">
-                    <span class="ic">📧</span>
+                    <span class="ic">📞</span>
                     <div class="txt">
-                        <span class="label">Email responsable goldtix</span>
-                        <a href="mailto:abdielkabre2@gmail.com">abdielkabre2@gmail.com</a>
+                        <span class="label">Téléphone</span>
+                        <a href="tel:+212770967646">+212 770-967646</a>
                     </div>
+                    <span class="badge badge-call">Appel</span>
                 </div>
                 <div class="contact-row">
                     <span class="ic">📧</span>
                     <div class="txt">
-                        <span class="label">Email professionnel</span>
+                        <span class="label">Email goldtix</span>
+                        <a href="mailto:abdielkabre2@gmail.com">abdielkabre2@gmail.com</a>
                         <a href="mailto:goldtixbilletterie@gmail.com">goldtixbilletterie@gmail.com</a>
                     </div>
                 </div>
             </div>
 
             <a class="btn-whatsapp" href="https://wa.me/22653107345" target="_blank">
-                Contacter GoldTix sur WhatsApp
+                Contacter le responsable de GoldTix sur WhatsApp
             </a>
         </div>
     </div>
