@@ -1558,25 +1558,6 @@
             color: var(--ink-500);
         }
         .quota-count-text strong { color: var(--ink-900); }
-
-.categorie-quota-box {
-    background: #ffffff;
-    border: 1px solid var(--ink-200);
-    border-radius: var(--radius-sm);
-    padding: 14px 16px;
-    margin-bottom: 12px;
-}
-.categorie-quota-box:last-child {
-    margin-bottom: 0;
-}
-.categorie-quota-nom {
-    font-family: var(--font-display);
-    font-size: 12.5px;
-    font-weight: 700;
-    color: var(--ink-700);
-    margin-bottom: 8px;
-}
-
         /* ============================================
    NAVIGATION ICÔNE + TEXTE (nouvel onglet Gestion)
 ============================================ */
@@ -2397,12 +2378,32 @@ body { padding-top: 92px !important; }
                         </div>
 
                         <div class="gestion-block">
-    <h3 class="gestion-block-title">Limite de billets par catégorie</h3>
-    <p style="font-size:12.5px;color:var(--ink-500);margin-bottom:14px;line-height:1.5;">
-        Laissez le champ vide pour une catégorie afin de la laisser illimitée. Si aucune catégorie n'a de limite, la page d'achat reste inchangée.
-    </p>
-    <div id="categoriesQuotaContainer"></div>
-</div>
+                            <h3 class="gestion-block-title">Nombre de billets disponibles</h3>
+                            <div class="quota-box">
+                                <div class="quota-box-top">
+                                    <div class="quota-label">
+                                        <span class="quota-title">Définir le nombre de billets disponibles pour votre événement</span>
+                                        <span class="quota-sub">Les ventes seront automatiquement fermées une fois le nombre de billets atteint.</span>
+                                        <span class="quota-sub">Laissez ce champ vide pour ne définir aucune limite.</span>
+                                    </div>
+                                    <div class="quota-input-group">
+                                        <input
+                                            type="number"
+                                            id="inputLimiteBillets"
+                                            min="0"
+                                            step="1"
+                                            inputmode="numeric"
+                                            placeholder="Max 500"
+                                            onchange="onChangementLimiteBillets()">
+                                        <span class="quota-save-status" id="quotaSaveStatus"></span>
+                                    </div>
+                                </div>
+                                <div class="quota-progress-track" id="quotaProgressTrack" style="display:none;">
+                                    <div class="quota-progress-fill" id="quotaProgressFill"></div>
+                                </div>
+                                <p class="quota-count-text" id="quotaCountText" style="display:none;"></p>
+                            </div>
+                        </div>
 
                             <div class="gestion-block">
     <h3 class="gestion-block-title">Informations de l'événement</h3>
@@ -2640,8 +2641,18 @@ body { padding-top: 92px !important; }
     let chargementDemandesEnCours = false;
     let debounceRecherche = null;
 
-
-    
+    /* =============================================
+       JAUGE DE BILLETS (quota optionnel)
+       -> limiteBilletsCourante = null tant qu'aucune
+          limite n'a été définie (comportement inchangé)
+       -> fermetureAutoDejaDeclenchee évite de renvoyer
+          l'appel toggle_ventes en boucle une fois que
+          la fermeture automatique a déjà eu lieu pour
+          l'état courant
+    ============================================= */
+    let limiteBilletsCourante = null;
+    let fermetureAutoDejaDeclenchee = false;
+    let debounceLimiteBillets = null;
 
     /* =============================================
        SYNCHRONISATION TEMPS RÉEL (polling intelligent)
@@ -3177,8 +3188,16 @@ async function verifierMiseAJourEvenement() {
             statutVentesFermees = ev.ventes_fermees || false;
             mettreAJourBoutonVentes();
 
-                        limitesCategoriesCourantes = ev.limites_categories || {};
-            genererBlocsQuotaCategories(ev.categories_data, limitesCategoriesCourantes);
+            // Initialise l'état de la jauge à partir de la valeur enregistrée côté serveur.
+            // null/undefined => illimité (comportement inchangé)
+            limiteBilletsCourante = (ev.limite_billets === null || ev.limite_billets === undefined)
+                ? null
+                : Number(ev.limite_billets);
+            fermetureAutoDejaDeclenchee = statutVentesFermees; // évite de re-fermer inutilement au chargement
+            const inputLimite = document.getElementById("inputLimiteBillets");
+            if (inputLimite) {
+                inputLimite.value = (limiteBilletsCourante === null) ? "" : String(limiteBilletsCourante);
+            }
 
             await chargerToutesLesDemandes();
 
@@ -3265,17 +3284,11 @@ async function verifierMiseAJourEvenement() {
         const nombreEnAttenteReel = billets.filter(b => b.statut === 'attente' || b.statut === 'refuse').length;
         mettreAJourCompteurs(nouveauxValidesGlobal.length, nombreEnAttenteReel);
 
-               // Jauges par catégorie : mêmes règles de comptage qu'avant
-        // (attente + confirmé), mais regroupées par catégorie au lieu
-        // d'un seul total global.
-        const comptagesParCategorie = {};
-        billets
-            .filter(b => b.statut === 'attente' || b.statut === 'confirme')
-            .forEach(b => {
-                const nomCat = (b.type_billet || "").split(" - ")[0];
-                comptagesParCategorie[nomCat] = (comptagesParCategorie[nomCat] || 0) + 1;
-            });
-        mettreAJourJaugesCategories(comptagesParCategorie);
+        // Jauge de billets : total pris en compte = billets en attente + confirmés
+        // (les billets refusés ne consomment pas le quota, puisqu'ils ne
+        // deviendront jamais un billet valide).
+        const nombreOccupantLeQuota = billets.filter(b => b.statut === 'attente' || b.statut === 'confirme').length;
+        mettreAJourJaugeBillets(nombreOccupantLeQuota);
     }
 
     function synchroniserListePaiements(cibleMap) {
@@ -3558,130 +3571,121 @@ async function verifierMiseAJourEvenement() {
         await chargerToutesLesDemandes();
     }
 
-    
-    
     /* =============================================
-       LIMITES PAR CATÉGORIE
+       JAUGE DE BILLETS : saisie / sauvegarde de la limite
     ============================================= */
-    let limitesCategoriesCourantes = {};
-    let debounceLimitesCategories = null;
-
-    function genererBlocsQuotaCategories(categoriesData, limites) {
-        const container = document.getElementById("categoriesQuotaContainer");
-        if (!container) return;
-        const categories = Array.isArray(categoriesData) ? categoriesData : [];
-        if (categories.length === 0) {
-            container.innerHTML = `<p style="font-size:12.5px;color:var(--ink-400);">Aucune catégorie définie pour cet événement.</p>`;
-            return;
-        }
-        container.innerHTML = categories.map((cat) => {
-            const nomCat = cat.nom || "";
-            const limiteActuelle = limites && Object.prototype.hasOwnProperty.call(limites, nomCat)
-                ? limites[nomCat]
-                : null;
-            const valeurInput = (limiteActuelle === null || limiteActuelle === undefined) ? "" : String(limiteActuelle);
-            const idSuffixe = nomCat.replace(/[^a-zA-Z0-9]/g, "_");
-            return `
-                <div class="categorie-quota-box" data-categorie-nom="${nomCat}">
-                    <div class="categorie-quota-nom">${nomCat || "(sans nom)"}</div>
-                    <div class="quota-input-group">
-                        <input
-                            type="number"
-                            min="0"
-                            step="1"
-                            inputmode="numeric"
-                            placeholder="Illimité"
-                            class="input-limite-categorie"
-                            data-categorie="${nomCat}"
-                            id="inputLimiteCat_${idSuffixe}"
-                            value="${valeurInput}"
-                            onchange="onChangementLimitesCategories()">
-                        <span class="quota-save-status" id="quotaSaveStatusCat_${idSuffixe}"></span>
-                    </div>
-                    <div class="quota-progress-track" id="quotaProgressTrackCat_${idSuffixe}" style="display:none;margin-top:10px;">
-                        <div class="quota-progress-fill" id="quotaProgressFillCat_${idSuffixe}"></div>
-                    </div>
-                    <p class="quota-count-text" id="quotaCountTextCat_${idSuffixe}" style="display:none;"></p>
-                </div>`;
-        }).join("");
-    }
-
-    function onChangementLimitesCategories() {
-        clearTimeout(debounceLimitesCategories);
-        debounceLimitesCategories = setTimeout(() => {
-            sauvegarderLimitesCategories();
+    function onChangementLimiteBillets() {
+        clearTimeout(debounceLimiteBillets);
+        debounceLimiteBillets = setTimeout(() => {
+            sauvegarderLimiteBillets();
         }, 400);
     }
 
-    async function sauvegarderLimitesCategories() {
-        const inputs = document.querySelectorAll(".input-limite-categorie");
-        const nouvellesLimites = {};
-        let valeurInvalide = false;
-        inputs.forEach((input) => {
-            const nomCat = input.getAttribute("data-categorie");
-            const brut = input.value.trim();
-            if (brut === "") {
-                nouvellesLimites[nomCat] = null;
-                return;
-            }
-            const n = Number(brut);
+    async function sauvegarderLimiteBillets() {
+        const input = document.getElementById("inputLimiteBillets");
+        const statutEl = document.getElementById("quotaSaveStatus");
+        if (!input) return;
+
+        const valeurBrute = input.value.trim();
+        let nouvelleLimite = null;
+
+        if (valeurBrute !== "") {
+            const n = Number(valeurBrute);
             if (!Number.isFinite(n) || n < 0) {
-                valeurInvalide = true;
+                if (statutEl) { statutEl.textContent = "Valeur invalide"; statutEl.style.color = "var(--red-500)"; }
                 return;
             }
-            const entier = Math.floor(n);
-            nouvellesLimites[nomCat] = entier;
-            input.value = String(entier);
-        });
-        if (valeurInvalide) {
-            alert("Une des valeurs saisies est invalide.");
-            return;
+            nouvelleLimite = Math.floor(n);
+            input.value = String(nouvelleLimite);
         }
+
+        if (statutEl) { statutEl.textContent = "Enregistrement..."; statutEl.style.color = "var(--ink-400)"; }
+
         try {
-            await callOrganisateurAPI('definir_limites_categories', {
+            await callOrganisateurAPI('definir_limite_billets', {
                 evenementId: eventId,
                 token: sessionToken,
-                limites: nouvellesLimites
+                limiteBillets: nouvelleLimite // null = illimité
             });
-            limitesCategoriesCourantes = nouvellesLimites;
+
+            limiteBilletsCourante = nouvelleLimite;
+            // Une nouvelle limite (ou une limite augmentée/retirée) doit pouvoir
+            // redéclencher la fermeture automatique si le total la dépasse encore,
+            // et ne doit plus bloquer une réouverture manuelle sinon.
+            fermetureAutoDejaDeclenchee = false;
+
+            if (statutEl) { statutEl.textContent = "✓ Enregistré"; statutEl.style.color = "var(--green-600)"; }
+            setTimeout(() => { if (statutEl) statutEl.textContent = ""; }, 2000);
+
+            // Recalcule immédiatement la jauge avec les données déjà en mémoire
             await chargerToutesLesDemandes();
+
         } catch (err) {
-            console.error("Erreur sauvegarde limites par catégorie :", err);
-            alert("Erreur lors de l'enregistrement des limites : " + err.message);
+            console.error("Erreur sauvegarde limite billets :", err);
+            if (statutEl) { statutEl.textContent = "Erreur"; statutEl.style.color = "var(--red-500)"; }
         }
     }
 
-    function mettreAJourJaugesCategories(comptagesParCategorie) {
-        const boxes = document.querySelectorAll(".categorie-quota-box");
-        boxes.forEach((box) => {
-            const nomCat = box.getAttribute("data-categorie-nom");
-            const idSuffixe = nomCat.replace(/[^a-zA-Z0-9]/g, "_");
-            const track = document.getElementById(`quotaProgressTrackCat_${idSuffixe}`);
-            const fill = document.getElementById(`quotaProgressFillCat_${idSuffixe}`);
-            const texte = document.getElementById(`quotaCountTextCat_${idSuffixe}`);
-            const limite = Object.prototype.hasOwnProperty.call(limitesCategoriesCourantes, nomCat)
-                ? limitesCategoriesCourantes[nomCat]
-                : null;
-            if (limite === null || limite === undefined) {
-                if (track) track.style.display = "none";
-                if (texte) texte.style.display = "none";
-                return;
-            }
-            const compte = comptagesParCategorie[nomCat] || 0;
-            const pourcentage = limite > 0 ? Math.min(100, Math.round((compte / limite) * 100)) : 100;
-            const atteint = compte >= limite;
-            if (track) track.style.display = "block";
-            if (texte) texte.style.display = "block";
-            if (fill) {
-                fill.style.width = pourcentage + "%";
-                fill.classList.toggle("quota-full", atteint);
-            }
-            if (texte) {
-                texte.innerHTML = atteint
-                    ? `<strong>${compte}</strong> / ${limite} billets — quota atteint`
-                    : `<strong>${compte}</strong> / ${limite} billets réservés`;
-            }
-        });
+    /* =============================================
+       JAUGE DE BILLETS : affichage + fermeture auto
+    ============================================= */
+    function mettreAJourJaugeBillets(nombreOccupantLeQuota) {
+        const track = document.getElementById("quotaProgressTrack");
+        const fill = document.getElementById("quotaProgressFill");
+        const texte = document.getElementById("quotaCountText");
+
+        if (limiteBilletsCourante === null || limiteBilletsCourante === undefined) {
+            if (track) track.style.display = "none";
+            if (texte) texte.style.display = "none";
+            fermetureAutoDejaDeclenchee = false; // pas de limite => plus rien à surveiller
+            return;
+        }
+
+        const limite = limiteBilletsCourante;
+        const pourcentage = limite > 0 ? Math.min(100, Math.round((nombreOccupantLeQuota / limite) * 100)) : 100;
+        const atteint = nombreOccupantLeQuota >= limite;
+
+        if (track) track.style.display = "block";
+        if (texte) texte.style.display = "block";
+        if (fill) {
+            fill.style.width = pourcentage + "%";
+            fill.classList.toggle("quota-full", atteint);
+        }
+        if (texte) {
+            texte.innerHTML = atteint
+                ? `<strong>${nombreOccupantLeQuota}</strong> / ${limite} billets — quota atteint`
+                : `<strong>${nombreOccupantLeQuota}</strong> / ${limite} billets réservés`;
+        }
+
+        // Fermeture automatique des ventes dès que le quota est atteint ou dépassé.
+        // On ne déclenche l'appel serveur qu'une seule fois par franchissement,
+        // pour ne pas spammer toggle_ventes à chaque tick de polling, et on ne
+        // touche jamais au statut si les ventes sont déjà fermées (l'organisateur
+        // a pu les fermer manuellement, ou les rouvrir volontairement après coup).
+        if (atteint && !statutVentesFermees && !fermetureAutoDejaDeclenchee) {
+            fermetureAutoDejaDeclenchee = true;
+            fermerVentesAutomatiquement();
+        } else if (!atteint) {
+            // Le quota n'est plus atteint (limite augmentée, ou billet retiré/refusé) :
+            // on autorise un futur re-déclenchement si le total remonte au-dessus.
+            fermetureAutoDejaDeclenchee = false;
+        }
+    }
+
+    async function fermerVentesAutomatiquement() {
+        try {
+            await callOrganisateurAPI('toggle_ventes', {
+                evenementId: eventId,
+                token: sessionToken,
+                nouveauStatut: true
+            });
+            statutVentesFermees = true;
+            mettreAJourBoutonVentes();
+        } catch (err) {
+            console.error("Erreur fermeture automatique des ventes (quota atteint) :", err);
+            // On réautorise une nouvelle tentative au prochain tick de polling.
+            fermetureAutoDejaDeclenchee = false;
+        }
     }
 
     /* =============================================
@@ -4066,6 +4070,11 @@ function scrollVersSectionActive(nomOnglet) {
             statutVentesFermees = !statutVentesFermees;
             return;
         }
+
+        // Une réouverture manuelle doit pouvoir re-déclencher la fermeture
+        // automatique plus tard si le quota est toujours atteint, mais ne
+        // doit pas la redéclencher immédiatement dans la même action.
+        fermetureAutoDejaDeclenchee = statutVentesFermees;
 
         mettreAJourBoutonVentes();
     }

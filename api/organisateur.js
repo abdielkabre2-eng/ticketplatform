@@ -90,8 +90,8 @@ export default async function handler(req, res) {
       case "toggle_ventes":
         return await toggleVentes(supabase, payload, res);
         
-      case "definir_limite_billets":
-        return await definirLimiteBillets(supabase, payload, res);
+      case "definir_limites_categories":
+        return await definirLimitesCategories(supabase, payload, res);
 
       case "modifier_evenement":
         return await modifierEvenement(supabase, payload, res);
@@ -388,22 +388,23 @@ async function toggleVentes(supabase, payload, res) {
   return res.status(200).json({ success: true });
 }
 
-async function definirLimiteBillets(supabase, payload, res) {
-  const { evenementId, token, limiteBillets } = payload;
-  const limiteValide =
-    limiteBillets === null ||
-    (typeof limiteBillets === "number" && Number.isInteger(limiteBillets) && limiteBillets >= 0);
-
-  if (!evenementId || !token || !limiteValide) {
+async function definirLimitesCategories(supabase, payload, res) {
+  const { evenementId, token, limites } = payload;
+  if (!evenementId || !token || typeof limites !== "object" || limites === null) {
     return res.status(400).json({ success: false, error: "Paramètres manquants ou invalides." });
   }
-
-  const { error } = await supabase.rpc("organisateur_definir_limite_billets", {
+  // Validation : chaque valeur doit être null ou un entier >= 0
+  for (const valeur of Object.values(limites)) {
+    const valide = valeur === null || (typeof valeur === "number" && Number.isInteger(valeur) && valeur >= 0);
+    if (!valide) {
+      return res.status(400).json({ success: false, error: "Valeur de limite invalide." });
+    }
+  }
+  const { error } = await supabase.rpc("organisateur_definir_limites_categories", {
     p_evenement_id: evenementId,
     p_token: token,
-    p_limite: limiteBillets,
+    p_limites: limites,
   });
-
   if (error) {
     return res.status(500).json({ success: false, error: error.message });
   }
