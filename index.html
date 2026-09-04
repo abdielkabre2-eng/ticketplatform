@@ -1364,25 +1364,14 @@ if (ev.ventes_fermees) {
                     // Categorie select — avec disponibilités par catégorie
                     // uniquement si l'organisateur a défini au moins une limite.
                     let categorieHTML = "";
-                    if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_data.length > 0) {
-                        const options = ev.categories_data.map(cat => {
-                            const infoDispo = ev.disponibilites ? ev.disponibilites[cat.nom] : null;
-                            const estEpuisee = !!(infoDispo && infoDispo.epuise);
-                            const valeur = `${cat.nom} - ${cat.prix}`;
-                            let libelle = `${cat.nom} (${cat.prix})`;
-                            if (infoDispo) {
-                                libelle += estEpuisee
-                                    ? " — Épuisé"
-                                    : ` — ${infoDispo.restant} place${infoDispo.restant > 1 ? 's' : ''} disponible${infoDispo.restant > 1 ? 's' : ''}`;
-                            }
-                            return `<option value="${valeur}"${estEpuisee ? " disabled" : ""}>${libelle}</option>`;
-                        }).join("");
-                        categorieHTML = `
-                            <div class="form-group gx-reveal gx-delay-5">
-                                <label for="selectCategorie">Catégorie de billet</label>
-                                <select id="selectCategorie">${options}</select>
-                            </div>`;
-                    }
+if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_data.length > 0) {
+    const options = genererOptionsCategorieAchat(ev);
+    categorieHTML = `
+        <div class="form-group gx-reveal gx-delay-5">
+            <label for="selectCategorie">Catégorie de billet</label>
+            <select id="selectCategorie">${options}</select>
+        </div>`;
+}
 
                     // QR / RIB
                     const qrSection = (ev.rib_image_url || ev.qr_code_paiement) ? `
@@ -1728,7 +1717,9 @@ function signatureEvenementAchat(ev) {
     return [
         ev.titre || "", ev.date || "", ev.heure || "", ev.lieu || "",
         ev.affiche_url || "", ev.beneficiaire_nom || "", ev.beneficiaire_infos || "",
-        JSON.stringify(ev.categories_data || []), ev.prix || "",
+        JSON.stringify(ev.categories_data || []),
+        JSON.stringify(ev.disponibilites || {}),  
+        ev.prix || "",
         ev.ventes_fermees ? "1" : "0"
     ].join("|");
 }
@@ -1773,9 +1764,39 @@ async function verifierMiseAJourAchat() {
         if (beneficiaireNomEl) beneficiaireNomEl.textContent = ev.beneficiaire_nom || 'Non renseigne';
         const beneficiaireContactEl = document.getElementById("evBeneficiaireContactEl");
         if (beneficiaireContactEl) beneficiaireContactEl.textContent = ev.beneficiaire_infos || 'Non renseigne';
+        const selectCategorieEl = document.getElementById("selectCategorie");
+        if (selectCategorieEl) {
+            const valeurSelectionnee = selectCategorieEl.value;
+            selectCategorieEl.innerHTML = genererOptionsCategorieAchat(ev);
+            const optionExisteEncore = Array.from(selectCategorieEl.options)
+                .some(o => o.value === valeurSelectionnee && !o.disabled);
+            if (optionExisteEncore) {
+                selectCategorieEl.value = valeurSelectionnee;
+            } else if (valeurSelectionnee) {
+                alert("La catégorie que vous aviez sélectionnée vient d'être épuisée. Merci de choisir une autre catégorie.");
+            }
+        }
     } catch (err) {
         console.error("Erreur vérification mise à jour (achat) :", err);
     }
+}
+
+function genererOptionsCategorieAchat(ev) {
+    if (!ev.categories_data || !Array.isArray(ev.categories_data) || ev.categories_data.length === 0) {
+        return "";
+    }
+    return ev.categories_data.map(cat => {
+        const infoDispo = ev.disponibilites ? ev.disponibilites[cat.nom] : null;
+        const estEpuisee = !!(infoDispo && infoDispo.epuise);
+        const valeur = `${cat.nom} - ${cat.prix}`;
+        let libelle = `${cat.nom} (${cat.prix})`;
+        if (infoDispo) {
+            libelle += estEpuisee
+                ? " — Épuisé"
+                : ` — ${infoDispo.restant} place${infoDispo.restant > 1 ? 's' : ''} disponible${infoDispo.restant > 1 ? 's' : ''}`;
+        }
+        return `<option value="${valeur}"${estEpuisee ? " disabled" : ""}>${libelle}</option>`;
+    }).join("");
 }
 
 function demarrerVerificationPeriodiqueAchat() {
