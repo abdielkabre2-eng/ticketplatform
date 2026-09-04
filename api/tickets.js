@@ -165,7 +165,7 @@ async function handlePost(req, res, supabase) {
         return res.status(409).json({ success: false, error: "La vente des billets pour cet évènement vient d'être fermée." });
       }
       if (messageBrut.includes("CATEGORIE_EPUISEE")) {
-        return res.status(409).json({ success: false, error: "Cette catégorie de billets vient d'être épuisée. Veuillez choisir une autre catégorie." });
+        return res.status(409).json({ success: false, error: "Cette catégorie de billets vient d'être épuisée. Veuillez choisir une autre catégorie. Si vous avez déjà effectué le paiement, contactez le bénéficiaire avec la preuve pour un remboursement." });
       }
       if (messageBrut.includes("EVENEMENT_INTROUVABLE")) {
         return res.status(404).json({ success: false, error: "Événement introuvable." });
