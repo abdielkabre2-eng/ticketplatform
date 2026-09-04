@@ -1359,102 +1359,100 @@ if (ev.ventes_fermees) {
             </div>
         </div>`;
 } else {
-                  const infosCoordonnees = ev.beneficiaire_infos || 'Non renseigne';
+                    const infosCoordonnees = ev.beneficiaire_infos || 'Non renseigne';
 
-let categorieHTML = "";
+                    // Categorie select — avec disponibilités par catégorie
+                    // uniquement si l'organisateur a défini au moins une limite.
+                    let categorieHTML = "";
 if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_data.length > 0) {
     const options = genererOptionsCategorieAchat(ev);
     categorieHTML = `
-        <div class="form-group gx-reveal gx-delay-4">
+        <div class="form-group gx-reveal gx-delay-5">
             <label for="selectCategorie">Catégorie de billet</label>
             <select id="selectCategorie">${options}</select>
         </div>`;
 }
 
-const qrSection = (ev.rib_image_url || ev.qr_code_paiement) ? `
-    <div class="qr-wrapper">
-        <p class="qr-label">
-            ${ICONS.card}
-            RIB du bénéficiaire ci-dessous
-        </p>
-        <img src="${ev.rib_image_url || ev.qr_code_paiement}" alt="Support de paiement" class="qr-image">
-    </div>` : "";
+                    // QR / RIB
+                    const qrSection = (ev.rib_image_url || ev.qr_code_paiement) ? `
+                        <div class="qr-wrapper">
+                            <p class="qr-label">
+                                ${ICONS.card}
+                                RIB du bénéficiaire ci-dessous
+                            </p>
+                            <img src="${ev.rib_image_url || ev.qr_code_paiement}" alt="Support de paiement" class="qr-image">
+                        </div>` : "";
 
-rightColumn = `
-    <div class="card anim-3" id="cardEtape1">
-        <h3 class="section-title gx-reveal gx-delay-4">
-            ${ICONS.user}
-            Etape 1 — Vos informations
-        </h3>
-        ${categorieHTML}
-        <div class="form-group gx-reveal gx-delay-4">
-            <label for="nomParticipant">Nom et Prénom(s) <span style="color: red;">*</span></label>
-            <input type="text" id="nomParticipant" placeholder="ex : KONATE Jean">
-            <p class="gx-field-error-msg" id="errNomParticipant"></p>
-        </div>
-        <div class="form-group gx-reveal gx-delay-4">
-            <label for="emailParticipant">Adresse e-mail (optionnelle - réception lien du billet)</label>
-            <input type="email" id="emailParticipant" placeholder="ex : nom@gmail.com">
-            <p class="gx-field-error-msg" id="errEmailParticipant"></p>
-        </div>
-        <div class="form-group gx-reveal gx-delay-4">
-            <label for="telParticipant">Contact WhatsApp <span style="color: red;">*</span></label>
-            <input type="tel" id="telParticipant" placeholder="ex : +226 ... / +212 ...">
-            <p class="gx-field-error-msg" id="errTelParticipant"></p>
-        </div>
-        <p class="gx-field-error-msg" id="errCategorieIndisponible"></p>
-        <button class="btn-submit gx-reveal gx-delay-4" id="btnContinuerEtape1">
-            <span class="btn-icon">${ICONS.check}</span>
-            <div class="spinner"></div>
-            Continuer
-        </button>
-    </div>
+                    rightColumn = `
+                        <div class="card anim-3">
 
-    <div class="card anim-3" id="cardEtape2" style="display:none;">
-        <div class="payment-box gx-reveal gx-delay-4">
-            <p class="payment-box-title">
-                ${ICONS.mobile}
-                Etape 2 — Effectuer le paiement
-            </p>
-            <div class="info-rows">
-                <div class="info-row">
-                    <span class="info-row-label">${ICONS.user} Bénéficiaire des paiements</span>
-                    <span class="info-row-value" id="evBeneficiaireNomEl">${ev.beneficiaire_nom || 'Non renseigne'}</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-row-label">${ICONS.phone} Contact</span>
-                    <span class="info-row-value" id="evBeneficiaireContactEl">${infosCoordonnees}</span>
-                </div>
-            </div>
-            ${qrSection}
-        </div>
+                            <!-- ETAPE 1 : PAIEMENT -->
+                            <div class="payment-box gx-reveal gx-delay-4">
+                                <p class="payment-box-title">
+                                    ${ICONS.mobile}
+                                    Etape 1 — Effectuer le paiement
+                                </p>
+                                <div class="info-rows">
+                                    <div class="info-row">
+                                        <span class="info-row-label">${ICONS.user} Bénéficiaire des paiements</span>
+                                      <span class="info-row-value" id="evBeneficiaireNomEl">${ev.beneficiaire_nom || 'Non renseigne'}</span>
+</div>
+<div class="info-row">
+    <span class="info-row-label">${ICONS.phone} Contact</span>
+    <span class="info-row-value" id="evBeneficiaireContactEl">${infosCoordonnees}</span>
+                                    </div>
+                                </div>
+                                ${qrSection}
+                            </div>
 
-        <h3 class="section-title gx-reveal gx-delay-5">
-            ${ICONS.mail}
-            Etape 3 — Confirmez votre paiement
-        </h3>
+                            <!-- ETAPE 2 : FORMULAIRE -->
+                            <h3 class="section-title gx-reveal gx-delay-5">
+                                ${ICONS.mail}
+                                Etape 2 — Confirmez votre paiement
+                            </h3>
 
-        <div class="form-group gx-reveal gx-delay-5">
-            <label>Preuve de paiement (capture du reçu) <span style="color: red;">*</span></label>
-            <div class="file-input-wrapper" id="fileWrapper">
-                <input type="file" id="preuvePaiement" accept="image/*">
-                <div class="file-input-display">
-                    ${ICONS.upload}
-                    <span>Cliquez pour choisir un fichier</span>
-                    <em>JPG, PNG, WEBP acceptés(2MB max)</em>
-                    <span class="file-name-preview" id="fileNamePreview"></span>
-                </div>
-            </div>
-            <p class="gx-field-error-msg" id="errPreuvePaiement"></p>
-        </div>
+                            ${categorieHTML}
 
-        <button class="btn-submit gx-reveal gx-delay-5" id="btnValiderAchat">
-            <span class="btn-icon">${ICONS.check}</span>
-            <div class="spinner"></div>
-            Valider mon paiement et obtenir mon billet
-        </button>
-    </div>`;
-}
+                            <div class="form-group gx-reveal gx-delay-5">
+                                <label for="nomParticipant">Nom et Prénom(s) <span style="color: red;">*</span></label>
+                                <input type="text" id="nomParticipant" placeholder="ex : KONATE Jean">
+                                <p class="gx-field-error-msg" id="errNomParticipant"></p>
+                            </div>
+
+                            <div class="form-group gx-reveal gx-delay-5">
+                                <label for="emailParticipant">Adresse e-mail (optionnelle - réception lien du billet)</label>
+                                <input type="email" id="emailParticipant" placeholder="ex : nom@gmail.com">
+                                <p class="gx-field-error-msg" id="errEmailParticipant"></p>
+                            </div>
+
+                            <div class="form-group gx-reveal gx-delay-5">
+                                <label for="telParticipant">Contact WhatsApp <span style="color: red;">*</span></label>
+                                <input type="tel" id="telParticipant" placeholder="ex : +226 ... / +212 ...">
+                                <p class="gx-field-error-msg" id="errTelParticipant"></p>
+                            </div>
+
+                            <div class="form-group gx-reveal gx-delay-5">
+                                <label>Preuve de paiement (capture du reçu) <span style="color: red;">*</span></label>
+                                <div class="file-input-wrapper" id="fileWrapper">
+                                    <input type="file" id="preuvePaiement" accept="image/*">
+                                    <div class="file-input-display">
+                                        ${ICONS.upload}
+                                        <span>Cliquez pour choisir un fichier</span>
+                                        <em>JPG, PNG, WEBP acceptés(2MB max)</em>
+                                        <span class="file-name-preview" id="fileNamePreview"></span>
+                                    </div>
+                                </div>
+                                <p class="gx-field-error-msg" id="errPreuvePaiement"></p>
+                            </div>
+
+                            <button class="btn-submit gx-reveal gx-delay-5" id="btnValiderAchat">
+                                <span class="btn-icon">${ICONS.check}</span>
+                                <div class="spinner"></div>
+                                Valider mon paiement et obtenir mon billet
+                            </button>
+
+                        </div>`;
+                }
 
                 // ── Prix HTML ───────────────────────────────────────────────────────
                 let prixHTML = "";
@@ -1521,187 +1519,179 @@ rightColumn = `
 
                 // ── File input preview ──────────────────────────────────────────────
                 if (!ev.ventes_fermees && !categoriesToutesEpuisees) {
-    let infosEtape1 = null;
+                    const fileInput = document.getElementById("preuvePaiement");
+                    const filePreview = document.getElementById("fileNamePreview");
+                    const fileWrapperEl = document.getElementById("fileWrapper");
+                    const errPreuvePaiementEl = document.getElementById("errPreuvePaiement");
 
-    const cardEtape1 = document.getElementById("cardEtape1");
-    const cardEtape2 = document.getElementById("cardEtape2");
-    const btnContinuer = document.getElementById("btnContinuerEtape1");
-    const errCategorieIndisponibleEl = document.getElementById("errCategorieIndisponible");
+                    // Efface l'erreur d'un champ classique (input texte/tel) dès que
+                    // l'utilisateur commence à corriger sa saisie.
+                    ["nomParticipant", "telParticipant"].forEach(function(champId) {
+                        const champEl = document.getElementById(champId);
+                        const erreurEl = document.getElementById("err" + champId.charAt(0).toUpperCase() + champId.slice(1));
+                        if (champEl) {
+                            champEl.addEventListener("input", function() {
+                                if (this.value.trim()) {
+                                    gxEffacerChampInvalide(champEl, erreurEl);
+                                }
+                            });
+                        }
+                    });
 
-    ["nomParticipant", "telParticipant"].forEach(function(champId) {
-        const champEl = document.getElementById(champId);
-        const erreurEl = document.getElementById("err" + champId.charAt(0).toUpperCase() + champId.slice(1));
-        if (champEl) {
-            champEl.addEventListener("input", function() {
-                if (this.value.trim()) gxEffacerChampInvalide(champEl, erreurEl);
-            });
-        }
-    });
+                    fileInput.addEventListener("change", function() {
+                        if (this.files && this.files[0]) {
+                            const fichier = this.files[0];
 
-    btnContinuer.onclick = async function() {
-        const nomEl = document.getElementById("nomParticipant");
-        const telEl = document.getElementById("telParticipant");
-        const emailEl = document.getElementById("emailParticipant");
-        const errNomEl = document.getElementById("errNomParticipant");
-        const errTelEl = document.getElementById("errTelParticipant");
-        const errEmailEl = document.getElementById("errEmailParticipant");
+                            // Contrôle de taille immédiat : évite de laisser l'utilisateur
+                            // remplir tout le formulaire avant de découvrir, au clic sur
+                            // "Valider", que son fichier est trop volumineux.
+                            if (fichier.size > TAILLE_MAX_FICHIER) {
+                                alert("Ce fichier dépasse la taille maximale autorisée (2 Mo). Choisissez une image plus légère.");
+                                this.value = "";
+                                filePreview.style.display = "none";
+                                document.getElementById("fileWrapper").style.borderColor = "";
+                                document.getElementById("fileWrapper").style.background = "";
+                                return;
+                            }
 
-        gxEffacerChampInvalide(nomEl, errNomEl);
-        gxEffacerChampInvalide(telEl, errTelEl);
-        if (errCategorieIndisponibleEl) errCategorieIndisponibleEl.classList.remove("gx-visible");
+                            filePreview.textContent = fichier.name;
+                            filePreview.style.display = "block";
+                            document.getElementById("fileWrapper").style.borderColor = "var(--gold-2)";
+                            document.getElementById("fileWrapper").style.background = "#fffdf5";
 
-        let formulaireValide = true;
-        if (!nomEl.value.trim()) { gxMarquerChampInvalide(nomEl, errNomEl); formulaireValide = false; }
-        if (!telEl.value.trim()) { gxMarquerChampInvalide(telEl, errTelEl); formulaireValide = false; }
-        const emailVal = emailEl.value.trim();
-        if (emailVal && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
-            gxMarquerChampInvalide(emailEl, errEmailEl, "Cette adresse e-mail ne semble pas valide.");
-            formulaireValide = false;
-        }
-        if (!formulaireValide) {
-            const premierChampInvalide = document.querySelector(".gx-field-invalid");
-            if (premierChampInvalide) premierChampInvalide.scrollIntoView({ behavior: "smooth", block: "center" });
-            return;
-        }
+                            // Un fichier a été choisi : on efface l'éventuelle erreur
+                            // "champ obligatoire" affichée sous le champ fichier.
+                            gxEffacerChampInvalide(fileWrapperEl, errPreuvePaiementEl);
+                        }
+                    });
 
-        let categorieChoisie = "Standard";
-        const selectCat = document.getElementById("selectCategorie");
-        if (selectCat) categorieChoisie = selectCat.value;
-        else if (ev.prix) categorieChoisie = String(ev.prix);
+                    // ── Soumission — tout passe par POST /api/tickets ────────────────
+                    const btnValiderAchat = document.getElementById("btnValiderAchat");
+                    const btnHTMLOriginal = btnValiderAchat.innerHTML; // Sauvegarde le HTML d'origine une seule fois
 
-        const htmlOriginal = btnContinuer.innerHTML;
-        btnContinuer.disabled = true;
-        btnContinuer.innerHTML = `<div class="spinner"></div> Vérification de la disponibilité...`;
+                    btnValiderAchat.onclick = async function() {
+                        const nomEl = document.getElementById("nomParticipant");
+                        const telEl = document.getElementById("telParticipant");
+                        const emailEl = document.getElementById("emailParticipant");
+                        const errNomEl = document.getElementById("errNomParticipant");
+                        const errTelEl = document.getElementById("errTelParticipant");
+                        const errEmailEl = document.getElementById("errEmailParticipant");
+                        const fileWrapperEl2 = document.getElementById("fileWrapper");
+                        const errPreuveEl = document.getElementById("errPreuvePaiement");
 
-        try {
-            const reponseCheck = await fetchAvecTimeout(
-                '/api/tickets?event=' + encodeURIComponent(ev.id),
-                { method: 'GET' },
-                15000
-            );
-            if (!reponseCheck.ok) throw new Error("Erreur serveur");
-            const dataCheck = await reponseCheck.json();
-            const evFrais = dataCheck.event;
-            if (!evFrais) throw new Error("Introuvable");
+                        const nom   = nomEl.value.trim();
+                        const email = emailEl.value.trim();
+                        const tel   = telEl.value.trim();
+                        const fichierPreuve = document.getElementById("preuvePaiement").files[0];
 
-            if (evFrais.ventes_fermees) {
-                errCategorieIndisponibleEl.innerHTML = `${ICONS.alertCircle} <span>Les ventes viennent d'être fermées par l'organisateur.</span>`;
-                errCategorieIndisponibleEl.classList.add("gx-visible");
-                btnContinuer.innerHTML = htmlOriginal;
-                return;
-            }
+                        let typeBilletChoisi = "Standard";
+                        const selectCat = document.getElementById("selectCategorie");
+                        if (selectCat) {
+                            typeBilletChoisi = selectCat.value;
+                        } else if (typeof ev !== 'undefined' && ev.prix) {
+                            typeBilletChoisi = String(ev.prix);
+                        }
 
-            const nomCategorieChoisie = categorieChoisie.split(" - ")[0];
-            const infoDispo = evFrais.disponibilites ? evFrais.disponibilites[nomCategorieChoisie] : null;
-            if (infoDispo && infoDispo.epuise) {
-                errCategorieIndisponibleEl.innerHTML = `${ICONS.alertCircle} <span>Cette catégorie vient d'être épuisée par un autre acheteur. Merci de recharger la page et choisir une autre catégorie.</span>`;
-                errCategorieIndisponibleEl.classList.add("gx-visible");
-                btnContinuer.disabled = false;
-                btnContinuer.innerHTML = htmlOriginal;
-                return;
-            }
+                        // ── Validation individuelle des champs obligatoires ──────────
+                        // Efface d'abord tous les états d'erreur précédents, puis
+                        // ré-évalue chaque champ obligatoire indépendamment : bordure
+                        // rouge + message dédié uniquement sur les champs concernés.
+                        gxEffacerChampInvalide(nomEl, errNomEl);
+                        gxEffacerChampInvalide(telEl, errTelEl);
+                        gxEffacerChampInvalide(fileWrapperEl2, errPreuveEl);
 
-            infosEtape1 = { nom: nomEl.value.trim(), email: emailVal, telephone: telEl.value.trim(), typeBillet: categorieChoisie };
-            cardEtape1.style.display = "none";
-            cardEtape2.style.display = "block";
-            if (window.gxObserveReveal) window.gxObserveReveal(cardEtape2);
-            cardEtape2.scrollIntoView({ behavior: "smooth", block: "start" });
+                        let formulaireValide = true;
 
-        } catch (err) {
-            console.error("Erreur vérification disponibilité :", err);
-            errCategorieIndisponibleEl.innerHTML = `${ICONS.alertCircle} <span>Erreur de connexion. Réessayez.</span>`;
-            errCategorieIndisponibleEl.classList.add("gx-visible");
-            btnContinuer.disabled = false;
-            btnContinuer.innerHTML = htmlOriginal;
-        }
-    };
+                        if (!nom) {
+                            gxMarquerChampInvalide(nomEl, errNomEl);
+                            formulaireValide = false;
+                        }
+                        if (!tel) {
+                            gxMarquerChampInvalide(telEl, errTelEl);
+                            formulaireValide = false;
+                        }
+                        if (!fichierPreuve) {
+                            gxMarquerChampInvalide(fileWrapperEl2, errPreuveEl, "Une preuve de paiement est obligatoire.");
+                            formulaireValide = false;
+                        }
 
-    const fileInput = document.getElementById("preuvePaiement");
-    const filePreview = document.getElementById("fileNamePreview");
-    const fileWrapperEl = document.getElementById("fileWrapper");
-    const errPreuvePaiementEl = document.getElementById("errPreuvePaiement");
+                        if (!formulaireValide) {
+                            // Amène l'utilisateur au premier champ en erreur.
+                            const premierChampInvalide = document.querySelector(".gx-field-invalid");
+                            if (premierChampInvalide) {
+                                premierChampInvalide.scrollIntoView({ behavior: "smooth", block: "center" });
+                            }
+                            return;
+                        }
 
-    fileInput.addEventListener("change", function() {
-        if (this.files && this.files[0]) {
-            const fichier = this.files[0];
-            if (fichier.size > TAILLE_MAX_FICHIER) {
-                alert("Ce fichier dépasse la taille maximale autorisée. Choisissez une image plus légère.");
-                this.value = "";
-                filePreview.style.display = "none";
-                fileWrapperEl.style.borderColor = "";
-                fileWrapperEl.style.background = "";
-                return;
-            }
-            filePreview.textContent = fichier.name;
-            filePreview.style.display = "block";
-            fileWrapperEl.style.borderColor = "var(--gold-2)";
-            fileWrapperEl.style.background = "#fffdf5";
-            gxEffacerChampInvalide(fileWrapperEl, errPreuvePaiementEl);
-        }
-    });
+                        // Contrôle de taille en dernier recours (au cas où le fichier
+                        // aurait été substitué après l'événement "change" initial).
+                        if (fichierPreuve.size > TAILLE_MAX_FICHIER) {
+                            alert("Le fichier de preuve de paiement dépasse 10 Mo. Choisissez une image plus légère.");
+                            return;
+                        }
 
-    const btnValiderAchat = document.getElementById("btnValiderAchat");
-    const btnHTMLOriginal = btnValiderAchat.innerHTML;
+                        // Validation légère de l'email (champ optionnel) : on ne bloque
+                        // que si un email a été saisi et qu'il est manifestement invalide.
+                        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                            gxMarquerChampInvalide(emailEl, errEmailEl, "Cette adresse e-mail ne semble pas valide.");
+                            emailEl.scrollIntoView({ behavior: "smooth", block: "center" });
+                            return;
+                        }
 
-    btnValiderAchat.onclick = async function() {
-        const fileWrapperEl2 = document.getElementById("fileWrapper");
-        const errPreuveEl = document.getElementById("errPreuvePaiement");
-        const fichierPreuve = document.getElementById("preuvePaiement").files[0];
+                        if (btnValiderAchat.disabled) return; // Anti-double clic
+                        btnValiderAchat.disabled = true;
 
-        gxEffacerChampInvalide(fileWrapperEl2, errPreuveEl);
+                        // FIX VISUEL : Remplace tout le contenu du bouton au lieu d'ajouter un child par-dessus
+                        btnValiderAchat.innerHTML = `<div class="spinner"></div> Validation et envoi sécurisé en cours...`;
 
-        if (!fichierPreuve) {
-            gxMarquerChampInvalide(fileWrapperEl2, errPreuveEl, "Une preuve de paiement est obligatoire.");
-            fileWrapperEl2.scrollIntoView({ behavior: "smooth", block: "center" });
-            return;
-        }
-        if (fichierPreuve.size > TAILLE_MAX_FICHIER) {
-            alert("Le fichier de preuve de paiement dépasse la taille maximale. Choisissez une image plus légère.");
-            return;
-        }
-        if (!infosEtape1) {
-            alert("Une erreur est survenue, veuillez recommencer depuis l'étape 1.");
-            return;
-        }
+                        try {
+                            // Envoi direct du formulaire en UNE SEULE requête POST (suppression du GET de vérification inutile)
+                            const formData = new FormData();
+                            formData.append("event", ev.id);
+                            formData.append("nom_participant", nom);
+                            formData.append("email", email || "");
+                            formData.append("telephone", tel);
+                            formData.append("type_billet", typeBilletChoisi);
+                            formData.append("preuve", fichierPreuve);
 
-        if (btnValiderAchat.disabled) return;
-        btnValiderAchat.disabled = true;
-        btnValiderAchat.innerHTML = `<div class="spinner"></div> Validation et envoi sécurisé en cours...`;
+                            const reponseAchat = await fetchAvecTimeout(
+                                '/api/tickets',
+                                { method: 'POST', body: formData },
+                                30000
+                            );
 
-        try {
-            const formData = new FormData();
-            formData.append("event", ev.id);
-            formData.append("nom_participant", infosEtape1.nom);
-            formData.append("email", infosEtape1.email || "");
-            formData.append("telephone", infosEtape1.telephone);
-            formData.append("type_billet", infosEtape1.typeBillet);
-            formData.append("preuve", fichierPreuve);
+                            let resultatAchat;
+                            try {
+                                resultatAchat = await reponseAchat.json();
+                            } catch (e) {
+                                resultatAchat = null;
+                            }
 
-            const reponseAchat = await fetchAvecTimeout('/api/tickets', { method: 'POST', body: formData }, 30000);
-            let resultatAchat;
-            try { resultatAchat = await reponseAchat.json(); } catch (e) { resultatAchat = null; }
+                            if (!reponseAchat.ok || !resultatAchat || !resultatAchat.success) {
+                                const messageErreur = (resultatAchat && resultatAchat.error)
+                                    ? resultatAchat.error
+                                    : "Erreur lors de l'enregistrement du billet.";
+                                alert(messageErreur);
+                                btnValiderAchat.disabled = false;
+                                btnValiderAchat.innerHTML = btnHTMLOriginal;
+                                return;
+                            }
 
-            if (!reponseAchat.ok || !resultatAchat || !resultatAchat.success) {
-                const messageErreur = (resultatAchat && resultatAchat.error) ? resultatAchat.error : "Erreur lors de l'enregistrement du billet.";
-                alert(messageErreur);
-                btnValiderAchat.disabled = false;
-                btnValiderAchat.innerHTML = btnHTMLOriginal;
-                return;
-            }
+                            // Redirection immédiate
+                            window.location.href = `billet.html?id=${encodeURIComponent(resultatAchat.code_public)}`;
 
-            window.location.href = `billet.html?id=${encodeURIComponent(resultatAchat.code_public)}`;
-
-        } catch (err) {
-            console.error("Erreur inattendue :", err);
-            const messageErreur = (err && err.name === "AbortError")
-                ? "La connexion met trop de temps à répondre. Vérifiez votre réseau puis réessayez."
-                : "Une erreur inattendue est survenue lors du traitement.";
-            alert(messageErreur);
-            btnValiderAchat.disabled = false;
-            btnValiderAchat.innerHTML = btnHTMLOriginal;
-        }
-    };
-}
+                        } catch (err) {
+                            console.error("Erreur inattendue :", err);
+                            const messageErreur = (err && err.name === "AbortError")
+                                ? "La connexion met trop de temps à répondre. Vérifiez votre réseau puis réessayez."
+                                : "Une erreur inattendue est survenue lors du traitement.";
+                            alert(messageErreur);
+                            btnValiderAchat.disabled = false;
+                            btnValiderAchat.innerHTML = btnHTMLOriginal;
+                        }
+                    };
+                }
                 derniereSignatureAchat = signatureEvenementAchat(ev);
                 demarrerVerificationPeriodiqueAchat();
                 window.dispatchEvent(new Event('goldtix:donneesPretes'));
