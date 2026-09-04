@@ -1907,6 +1907,36 @@ body { padding-top: 92px !important; }
 .sidebar-item.sidebar-logout { color: #fca5a5; }
 .sidebar-item.sidebar-logout svg { color: #f87171; }
 .sidebar-item.sidebar-logout:hover { background: rgba(239,68,68,0.12); color: #fff; }
+
+/* ============================================
+   BOUTON TÉLÉCHARGER LISTE PDF (participants confirmés)
+============================================ */
+.btn-download-liste {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 10px 0 14px;
+    padding: 8px 14px;
+    background: var(--ink-50);
+    border: 1px solid var(--ink-200);
+    border-radius: var(--radius-xs);
+    font-family: var(--font-display);
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--ink-700);
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
+}
+.btn-download-liste:hover:not(:disabled) {
+    background: rgba(217,119,6,0.08);
+    border-color: var(--border-gold-strong);
+    color: var(--gold-700);
+    transform: translateY(-1px);
+}
+.btn-download-liste:active:not(:disabled) { transform: translateY(0); }
+.btn-download-liste:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-download-liste:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
+.btn-download-liste svg { width: 14px; height: 14px; flex-shrink: 0; }
     </style>
 </head>
 <body>
@@ -2476,6 +2506,10 @@ body { padding-top: 92px !important; }
                     <div id="section-validees" class="section-content">
                         <div class="section-header">
                             <h2 id="titreSectionValidees">Participants confirmés (0)</h2>
+                            <button type="button" class="btn-download-liste" id="btnTelechargerListePDF" onclick="telechargerListeParticipantsPDF()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                Télécharger la liste PDF
+                            </button>
                             <p>Liste complète des participants valides. Vous pouvez retirer un participant en cas d'empêchement.</p>
                         </div>
                         <div class="search-container">
@@ -2585,6 +2619,8 @@ body { padding-top: 92px !important; }
 
    
 <script src="https://unpkg.com/html5-qrcode"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
 <script>
     /* =============================================
@@ -3772,6 +3808,88 @@ async function envoyerSuggestion() {
     } finally {
         btn.disabled = false;
         btn.textContent = "Envoyer";
+    }
+}
+
+/* =============================================
+   TÉLÉCHARGEMENT PDF — LISTE DES PARTICIPANTS CONFIRMÉS
+   -> utilise pdfMake (chargé via pdfmake.min.js +
+      vfs_fonts.js) plutôt que html2pdf.js : pdfMake gère
+      nativement la pagination automatique d'un tableau
+      long (dontBreakRows évite qu'une ligne soit coupée
+      entre deux pages) et permet un pied de page répété
+      sur CHAQUE page via la fonction "footer", ce que
+      html2pdf.js (rendu image unique découpé) ne permet
+      pas de faire proprement.
+   -> aucune donnée n'est recalculée : on réutilise
+      directement listeParticipantsValidesGlobal, déjà
+      tenue à jour par appliquerMiseAJourBillets().
+============================================= */
+function telechargerListeParticipantsPDF() {
+    const participants = listeParticipantsValidesGlobal || [];
+
+    if (participants.length === 0) {
+        alert("Aucun participant confirmé à exporter pour le moment.");
+        return;
+    }
+
+    const btn = document.getElementById("btnTelechargerListePDF");
+    const original = btn ? btn.innerHTML : null;
+    if (btn) { btn.disabled = true; btn.textContent = "Génération..."; }
+
+    try {
+        const corpsTableau = participants.map((p, index) => ([
+            {
+                text: `${index + 1}-${p.nom_participant || 'Non renseigné'}`,
+                alignment: 'center',
+                fontSize: 11,
+                margin: [4, 6, 4, 6]
+            }
+        ]));
+
+        const docDefinition = {
+            pageSize: 'A4',
+            pageMargins: [40, 50, 40, 60],
+            content: [
+                {
+                    text: 'Liste des participants confirmés',
+                    alignment: 'center',
+                    fontSize: 16,
+                    bold: true,
+                    decoration: 'underline',
+                    margin: [0, 0, 0, 24]
+                },
+                {
+                    table: {
+                        widths: ['*'],
+                        body: corpsTableau,
+                        dontBreakRows: true
+                    },
+                    layout: {
+                        hLineWidth: () => 0.75,
+                        vLineWidth: () => 0.75,
+                        hLineColor: () => '#000000',
+                        vLineColor: () => '#000000'
+                    }
+                }
+            ],
+            footer: function() {
+                return {
+                    text: 'GoldTix',
+                    alignment: 'center',
+                    fontSize: 10,
+                    bold: true,
+                    margin: [0, 10, 0, 0]
+                };
+            }
+        };
+
+        pdfMake.createPdf(docDefinition).download('liste-participants-confirmes.pdf');
+    } catch (err) {
+        console.error("Erreur génération PDF liste participants :", err);
+        alert("Erreur lors de la génération du PDF. Veuillez réessayer.");
+    } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = original; }
     }
 }
 
