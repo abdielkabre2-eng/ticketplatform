@@ -1518,7 +1518,7 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                 }
 
                 // ── File input preview ──────────────────────────────────────────────
-                if (!ev.ventes_fermees) {
+                if (!ev.ventes_fermees && !categoriesToutesEpuisees) {
                     const fileInput = document.getElementById("preuvePaiement");
                     const filePreview = document.getElementById("fileNamePreview");
                     const fileWrapperEl = document.getElementById("fileWrapper");
@@ -1546,7 +1546,7 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                             // remplir tout le formulaire avant de découvrir, au clic sur
                             // "Valider", que son fichier est trop volumineux.
                             if (fichier.size > TAILLE_MAX_FICHIER) {
-                                alert("Ce fichier dépasse la taille maximale autorisée (10 Mo). Choisissez une image plus légère.");
+                                alert("Ce fichier dépasse la taille maximale autorisée (2 Mo). Choisissez une image plus légère.");
                                 this.value = "";
                                 filePreview.style.display = "none";
                                 document.getElementById("fileWrapper").style.borderColor = "";
