@@ -997,8 +997,8 @@ img, svg, video, canvas {
         if (!overlay) return;
         document.documentElement.style.overflowY = 'hidden';
         var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        var DUREE_MIN = prefersReducedMotion ? 0 : 700;
-        var DUREE_MAX = prefersReducedMotion ? 0 : 1400;
+        var DUREE_MIN = prefersReducedMotion ? 0 : 2000;
+        var DUREE_MAX = prefersReducedMotion ? 0 : 3200;
         var donneesPretes = false, minimumEcoule = false, dejaFini = false;
 
         function terminerIntro() {
