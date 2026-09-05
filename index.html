@@ -940,6 +940,9 @@ img, svg, video, canvas {
         .gx-delay-3 { transition-delay: 260ms; }
         .gx-delay-4 { transition-delay: 390ms; }
         .gx-delay-5 { transition-delay: 520ms; }
+        .gx-reveal:not(.gx-visible) {
+          transition-delay: 0ms;
+        }
 
         @media (prefers-reduced-motion: reduce) {
             .gx-reveal {
@@ -1050,30 +1053,38 @@ img, svg, video, canvas {
         var introOverlayEl = document.getElementById('introOverlayGoldTix');
 
         function gxEnsureObserver() {
-            if (gxObserver || prefersReducedMotion) return;
-            gxObserver = new IntersectionObserver(function(entries) {
-                entries.forEach(function(entry) {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('gx-visible');
-                        gxObserver.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
-        }
-
-        function gxObserveNow(root) {
-            var scope = root || document;
-            if (prefersReducedMotion) {
-                scope.querySelectorAll('.gx-reveal:not(.gx-visible)').forEach(function(el) {
-                    el.classList.add('gx-visible');
-                });
-                return;
+    if (gxObserver || prefersReducedMotion) return;
+    gxObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            // Bascule simple : visible dans l'écran -> on affiche,
+            // sort de l'écran -> on réinitialise, pour que l'animation
+            // se rejoue à chaque nouvelle entrée dans le viewport
+            // (scroll vers le haut comme vers le bas).
+            if (entry.isIntersecting) {
+                entry.target.classList.add('gx-visible');
+            } else {
+                entry.target.classList.remove('gx-visible');
             }
-            gxEnsureObserver();
-            scope.querySelectorAll('.gx-reveal:not(.gx-visible)').forEach(function(el) {
-                gxObserver.observe(el);
-            });
-        }
+        });
+    }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+}
+
+function gxObserveNow(root) {
+    var scope = root || document;
+    if (prefersReducedMotion) {
+        scope.querySelectorAll('.gx-reveal:not(.gx-visible)').forEach(function(el) {
+            el.classList.add('gx-visible');
+        });
+        return;
+    }
+    gxEnsureObserver();
+    // On observe en continu (plus de unobserve) : c'est ce qui permet
+    // à l'animation de se redéclencher à chaque passage dans le viewport.
+    // observe() sur un élément déjà observé ne fait rien (sûr à rappeler).
+    scope.querySelectorAll('.gx-reveal').forEach(function(el) {
+        gxObserver.observe(el);
+    });
+}
 
         function gxFlushPending() {
             gxIntroDone = true;
@@ -1627,7 +1638,7 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                         // Contrôle de taille en dernier recours (au cas où le fichier
                         // aurait été substitué après l'événement "change" initial).
                         if (fichierPreuve.size > TAILLE_MAX_FICHIER) {
-                            alert("Le fichier de preuve de paiement dépasse 10 Mo. Choisissez une image plus légère.");
+                            alert("Le fichier de preuve de paiement dépasse 2 Mo. Choisissez une image plus légère.");
                             return;
                         }
 
@@ -1773,7 +1784,7 @@ async function verifierMiseAJourAchat() {
             if (optionExisteEncore) {
                 selectCategorieEl.value = valeurSelectionnee;
             } else if (valeurSelectionnee) {
-                alert("Pour toute réclamation, contactez le bénéficiaire.");
+                alert("Pour toute réclamation, contactez le bénéficiaire des paiements.");
             }
         }
     } catch (err) {
