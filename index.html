@@ -926,20 +926,20 @@ img, svg, video, canvas {
            IntersectionObserver en JS (voir script en bas de page).
         ============================================================= */
         .gx-reveal {
-            opacity: 0;
-            transform: translateY(16px);
-            transition: opacity 0.9s var(--ease), transform 0.9s var(--ease);
-            will-change: opacity, transform;
+           opacity: 0;
+           transform: translateY(16px);
+           transition: opacity 0.45s var(--ease), transform 0.45s var(--ease);
+           will-change: opacity, transform;
         }
         .gx-reveal.gx-visible {
             opacity: 1;
             transform: translateY(0);
         }
         .gx-delay-1 { transition-delay: 0ms; }
-        .gx-delay-2 { transition-delay: 130ms; }
-        .gx-delay-3 { transition-delay: 260ms; }
-        .gx-delay-4 { transition-delay: 390ms; }
-        .gx-delay-5 { transition-delay: 520ms; }
+        .gx-delay-2 { transition-delay: 60ms; }
+        .gx-delay-3 { transition-delay: 120ms; }
+        .gx-delay-4 { transition-delay: 180ms; }
+        .gx-delay-5 { transition-delay: 240ms; }
         .gx-reveal:not(.gx-visible) {
           transition-delay: 0ms;
         }
@@ -997,8 +997,8 @@ img, svg, video, canvas {
         if (!overlay) return;
         document.documentElement.style.overflowY = 'hidden';
         var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        var DUREE_MIN = prefersReducedMotion ? 0 : 2000;
-        var DUREE_MAX = prefersReducedMotion ? 0 : 3200;
+        var DUREE_MIN = prefersReducedMotion ? 0 : 700;
+        var DUREE_MAX = prefersReducedMotion ? 0 : 1400;
         var donneesPretes = false, minimumEcoule = false, dejaFini = false;
 
         function terminerIntro() {
