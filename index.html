@@ -1679,7 +1679,7 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                         window.addEventListener('beforeunload', gxAvertirAvantFermeture);
 
                         // FIX VISUEL : Remplace tout le contenu du bouton au lieu d'ajouter un child par-dessus
-                        btnValiderAchat.innerHTML = `<div class="spinner"></div> Validation et envoi sécurisé en cours... Ne fermez pas cette page.`;
+                        btnValiderAchat.innerHTML = `<div class="spinner"></div> Ne fermez pas cette page svp.`;
 
                         try {
                             // Envoi direct du formulaire en UNE SEULE requête POST (suppression du GET de vérification inutile)
