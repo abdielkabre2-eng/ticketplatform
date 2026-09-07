@@ -233,21 +233,13 @@ img, svg, video, canvas {
         /* =============================================
            POSTER
         ============================================= */
-        .poster-wrapper {
-            position: relative;
-            width: 100%;
-            min-height: 320px;
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            background: linear-gradient(180deg, #fffdf9 0%, #f8f5f0 100%);
-            margin-bottom: 26px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            box-shadow: var(--shadow-poster);
-            transition: var(--transition);
-        }
+        .poster-wrapper img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;            /* remplit tout le cadre au lieu de "contain" */
+    object-position: center center;
+}
         .poster-wrapper:hover { transform: scale(1.012); }
         .poster-wrapper::after {
             content: '';
@@ -258,15 +250,12 @@ img, svg, video, canvas {
             pointer-events: none;
         }
         .poster-wrapper img {
-            display: block;
-            width: 100%;
-            max-width: 100%;
-            height: auto;
-            max-height: 520px;
-            object-fit: contain;
-            object-position: center center;
-            margin: 0 auto;
-        }
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;            /* remplit tout le cadre au lieu de "contain" */
+    object-position: center center;
+}
         .poster-fallback {
             width: 100%;
             min-height: 280px;
@@ -767,8 +756,7 @@ img, svg, video, canvas {
             body { padding: 18px 14px 70px; }
             .card { padding: 22px 18px; }
             .event-title { font-size: 23px; }
-            .poster-wrapper { min-height: 0; margin-bottom: 20px; }
-            .poster-wrapper img { max-height: 260px; }
+            .poster-wrapper { margin-bottom: 20px; }
             .poster-fallback { min-height: 180px; }
         }
 
