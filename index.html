@@ -1056,14 +1056,13 @@ img, svg, video, canvas {
     if (gxObserver || prefersReducedMotion) return;
     gxObserver = new IntersectionObserver(function(entries) {
         entries.forEach(function(entry) {
-            // Bascule simple : visible dans l'écran -> on affiche,
-            // sort de l'écran -> on réinitialise, pour que l'animation
-            // se rejoue à chaque nouvelle entrée dans le viewport
-            // (scroll vers le haut comme vers le bas).
+            // Première apparition dans le viewport -> on révèle
+            // l'élément DÉFINITIVEMENT (on n'enlève plus jamais
+            // gx-visible), puis on cesse de l'observer : remonter et
+            // redescendre dans la page ne doit plus rejouer l'animation.
             if (entry.isIntersecting) {
                 entry.target.classList.add('gx-visible');
-            } else {
-                entry.target.classList.remove('gx-visible');
+                gxObserver.unobserve(entry.target);
             }
         });
     }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
@@ -1078,10 +1077,10 @@ function gxObserveNow(root) {
         return;
     }
     gxEnsureObserver();
-    // On observe en continu (plus de unobserve) : c'est ce qui permet
-    // à l'animation de se redéclencher à chaque passage dans le viewport.
-    // observe() sur un élément déjà observé ne fait rien (sûr à rappeler).
-    scope.querySelectorAll('.gx-reveal').forEach(function(el) {
+    // On n'observe que les éléments pas encore révélés : ceux déjà
+    // .gx-visible ont été désobservés dès leur première apparition et
+    // ne doivent plus jamais être ré-observés (donc plus jamais rejoués).
+    scope.querySelectorAll('.gx-reveal:not(.gx-visible)').forEach(function(el) {
         gxObserver.observe(el);
     });
 }
@@ -1679,7 +1678,7 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                         window.addEventListener('beforeunload', gxAvertirAvantFermeture);
 
                         // FIX VISUEL : Remplace tout le contenu du bouton au lieu d'ajouter un child par-dessus
-                        btnValiderAchat.innerHTML = `<div class="spinner"></div> Ne fermez pas cette page svp.`;
+                        btnValiderAchat.innerHTML = `<div class="spinner"></div> Validation et envoi sécurisé en cours... Ne fermez pas cette page.`;
 
                         try {
                             // Envoi direct du formulaire en UNE SEULE requête POST (suppression du GET de vérification inutile)

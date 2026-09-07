@@ -1193,6 +1193,10 @@ function gxObserveNow(root) {
            - Contrôle de la taille du fichier de preuve de paiement côté
              client (10 Mo max, alignement avec le texte affiché) avant
              l'envoi, pour éviter une attente inutile côté utilisateur.
+           - NOUVEAU : protection anti-rafraîchissement/fermeture pendant
+             la fenêtre de traitement (entre le clic sur "Valider" et la
+             redirection vers le billet), via l'événement natif
+             `beforeunload`. Aucune autre logique n'est modifiée.
         ============================================= */
 
         // ─── SVG ICONS ────────────────────────────────────────────────────────────
@@ -1220,6 +1224,22 @@ function gxObserveNow(root) {
         // chargerPageAchatUnique() (ex. double clic sur "Réessayer") ne
         // s'exécutent en parallèle et ne se marchent dessus.
         let chargementEnCours = false;
+
+        // ── Protection anti-rafraîchissement pendant le traitement ─────────────
+        // Affiche l'avertissement natif du navigateur si l'utilisateur tente de
+        // fermer/rafraîchir la page PENDANT le court traitement (entre le clic
+        // sur "Valider mon paiement" et la redirection vers le billet). C'est
+        // la seule protection fiable et standard : un navigateur ne permet pas
+        // de bloquer totalement une navigation, seulement d'afficher sa propre
+        // boîte de dialogue de confirmation. Ajoutée juste avant l'envoi de la
+        // requête, retirée dans TOUS les cas de sortie (succès juste avant la
+        // redirection, échec serveur, erreur réseau) pour ne jamais gêner une
+        // navigation normale une fois le traitement terminé.
+        function gxAvertirAvantFermeture(e) {
+            e.preventDefault();
+            e.returnValue = '';
+            return '';
+        }
 
         function afficherErreurChargement(container, titre, message) {
             container.innerHTML = `
@@ -1653,8 +1673,13 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                         if (btnValiderAchat.disabled) return; // Anti-double clic
                         btnValiderAchat.disabled = true;
 
+                        // NOUVEAU : active la protection anti-rafraîchissement dès que
+                        // le traitement démarre réellement (juste après la validation,
+                        // au moment même où le bouton est désactivé).
+                        window.addEventListener('beforeunload', gxAvertirAvantFermeture);
+
                         // FIX VISUEL : Remplace tout le contenu du bouton au lieu d'ajouter un child par-dessus
-                        btnValiderAchat.innerHTML = `<div class="spinner"></div> Validation et envoi sécurisé en cours...`;
+                        btnValiderAchat.innerHTML = `<div class="spinner"></div> Ne fermez pas cette page svp.`;
 
                         try {
                             // Envoi direct du formulaire en UNE SEULE requête POST (suppression du GET de vérification inutile)
@@ -1683,11 +1708,21 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                                 const messageErreur = (resultatAchat && resultatAchat.error)
                                     ? resultatAchat.error
                                     : "Erreur lors de l'enregistrement du billet.";
+                                // NOUVEAU : traitement terminé (échec) → protection retirée
+                                // AVANT le alert(), pour ne jamais gêner l'utilisateur qui
+                                // reste volontairement sur la page pour corriger/réessayer.
+                                window.removeEventListener('beforeunload', gxAvertirAvantFermeture);
                                 alert(messageErreur);
                                 btnValiderAchat.disabled = false;
                                 btnValiderAchat.innerHTML = btnHTMLOriginal;
                                 return;
                             }
+
+                            // NOUVEAU : traitement terminé (succès) → protection retirée
+                            // JUSTE AVANT la redirection, pour que celle-ci s'effectue
+                            // normalement, sans déclencher l'avertissement du navigateur
+                            // sur notre propre navigation intentionnelle.
+                            window.removeEventListener('beforeunload', gxAvertirAvantFermeture);
 
                             // Redirection immédiate
                             window.location.href = `billet.html?id=${encodeURIComponent(resultatAchat.code_public)}`;
@@ -1697,6 +1732,9 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                             const messageErreur = (err && err.name === "AbortError")
                                 ? "La connexion met trop de temps à répondre. Vérifiez votre réseau puis réessayez."
                                 : "Une erreur inattendue est survenue lors du traitement.";
+                            // NOUVEAU : traitement terminé (erreur réseau/inattendue) →
+                            // protection retirée avant de rendre la main à l'utilisateur.
+                            window.removeEventListener('beforeunload', gxAvertirAvantFermeture);
                             alert(messageErreur);
                             btnValiderAchat.disabled = false;
                             btnValiderAchat.innerHTML = btnHTMLOriginal;
