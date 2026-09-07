@@ -23,10 +23,10 @@
 --gold-800: #92400e;
 --gold-900: #78350f;
 
---t0-a: #f59e0b; --t0-b: #d97706; --t0-c: #92400e; --t0-glow: rgba(245,158,11,.45);
---t1-a: #facc15; --t1-b: #eab308; --t1-c: #713f12; --t1-glow: rgba(250,204,21,.45);
---t2-a: #10b981; --t2-b: #059669; --t2-c: #064e3b; --t2-glow: rgba(16,185,129,.40);
---t3-a: #f43f5e; --t3-b: #e11d48; --t3-c: #881337; --t3-glow: rgba(244,63,94,.40);
+--t0-a: #f59e0b; --t0-b: #d97706; --t0-c: #92400e; --t0-glow: rgba(245,158,11,.28);
+--t1-a: #facc15; --t1-b: #eab308; --t1-c: #713f12; --t1-glow: rgba(250,204,21,.28);
+--t2-a: #10b981; --t2-b: #059669; --t2-c: #064e3b; --t2-glow: rgba(16,185,129,.26);
+--t3-a: #f43f5e; --t3-b: #e11d48; --t3-c: #881337; --t3-glow: rgba(244,63,94,.26);
 
 --bg-page:   #0c0a09;
 --bg-card:   #111010;
@@ -178,7 +178,7 @@ to   { opacity:1; transform:translateY(0) scale(1); }
 content: ''; position: absolute; inset: -1px;
 border-radius: calc(var(--radius-lg) + 1px);
 background: var(--tier-gradient, linear-gradient(135deg, var(--gold-500), var(--gold-700)));
-z-index: -1; opacity: .6;
+z-index: -1; opacity: .35;
     }
 .ticket::after {
 content: ''; position: absolute; inset: 0; border-radius: var(--radius-lg);
@@ -220,7 +220,7 @@ background:
 linear-gradient(0deg, rgba(12,10,9,1) 0%, rgba(12,10,9,.82) 35%, rgba(12,10,9,.28) 70%, rgba(12,10,9,.05) 100%),
 linear-gradient(180deg, rgba(0,0,0,.55) 0%, transparent 40%);
     }
-.header-color-wash { position: absolute; inset: 0; opacity: .22; mix-blend-mode: color; }
+.header-color-wash { position: absolute; inset: 0; opacity: .10; mix-blend-mode: color; }
 .ticket.tier-0 .header-color-wash { background: var(--t0-a); }
 .ticket.tier-1 .header-color-wash { background: var(--t1-a); }
 .ticket.tier-2 .header-color-wash { background: var(--t2-a); }
@@ -253,7 +253,7 @@ animation: fadeUp .6s ease .2s both;
 display: inline-flex; align-items: center; gap: 6px;
 background: rgba(255,255,255,.08); backdrop-filter: blur(8px);
 border: 1px solid rgba(255,255,255,.12); border-radius: 99px;
-padding: 4px 10px; font-size: .72rem; font-weight: 600; color: var(--gold-300);
+padding: 4px 10px; font-size: .72rem; font-weight: 600; color: var(--text-hi);
 animation: fadeUp .6s ease .35s both;
     }
 .meta-icon { width: 12px; height: 12px; opacity: .8; }
@@ -350,7 +350,6 @@ display: block; height: 100%;
 background: linear-gradient(90deg, var(--gold-500), var(--gold-400));
 transition: width .4s ease;
     }
-.status-panel--refuse .sp-steps-line-fill { background: linear-gradient(90deg, #f43f5e, #fb7185); }
 
 .sp-step {
 position: relative; display: flex; flex-direction: column; align-items: center;
@@ -612,8 +611,8 @@ font-size: .65rem; font-weight: 900; color: #0c0a09; letter-spacing: -.02em;
 .footer-tagline { font-size: .62rem; color: var(--text-lo); letter-spacing: .08em; text-transform: uppercase; font-weight: 600; }
 .footer-contacts { display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .footer-contact-item { font-size: .68rem; color: var(--text-lo); font-weight: 500; }
-.footer-contact-item a { color: var(--gold-600); text-decoration: none; transition: color .2s; }
-.footer-contact-item a:hover { color: var(--gold-400); }
+.footer-contact-item a { color: var(--gold-400); text-decoration: none; transition: color .2s; }
+.footer-contact-item a:hover { color: var(--gold-300); }
 .footer-dev { font-size: .6rem; color: var(--text-lo); text-align: center; border-top: 1px solid var(--border); padding-top: 12px; width: 100%; }
 
 .tier-pattern { position: absolute; inset: 0; border-radius: var(--radius-sm); pointer-events: none; z-index: 0; opacity: .03; }
@@ -832,7 +831,7 @@ btn.style.display = 'none';
                   <div class="sp-icon-wrap pending"><span class="sp-icon-ring"></span>${svgClock}</div>
                   <div class="sp-head-text">
                     <div class="sp-title">Paiement en cours de vérification</div>
-                    <div class="sp-sub">Votre demande et votre preuve de paiement ont bien été reçues. L'organisateur doit maintenant confirmer votre paiement.</div>
+                    <div class="sp-sub">Votre demande et votre preuve de paiement ont bien été reçues. Veillez patienter que le bénéficiaire confirme votre paiement.</div>
                   </div>
                 </div>
                 <div class="sp-steps">
@@ -850,25 +849,25 @@ btn.style.display = 'none';
                   <div class="sp-icon-wrap refuse">${svgCross}</div>
                   <div class="sp-head-text">
                     <div class="sp-title">Paiement refusé</div>
-                    <div class="sp-sub">Votre paiement n'a pas pu être confirmé par l'organisateur.</div>
+                    <div class="sp-sub">Votre paiement n'a pas été confirmé par le bénéficiaire.</div>
                   </div>
                 </div>
                 <div class="sp-steps">
-                  <div class="sp-steps-line"><span class="sp-steps-line-fill" style="width:100%;"></span></div>
+                  <div class="sp-steps-line"><span class="sp-steps-line-fill" style="width:66%;"></span></div>
                   <div class="sp-step is-done"><span class="sp-step-dot">${svgCheck}</span><span class="sp-step-label">Demande</span></div>
                   <div class="sp-step is-done"><span class="sp-step-dot">${svgCheck}</span><span class="sp-step-label">Preuve reçue</span></div>
                   <div class="sp-step is-error"><span class="sp-step-dot">${svgCross}</span><span class="sp-step-label">Refusé</span></div>
                   <div class="sp-step"><span class="sp-step-dot">${svgTicket}</span><span class="sp-step-label">Billet prêt</span></div>
                 </div>
-                <div class="sp-reassure">${svgShield}<span>Contactez le bénéficiaire des paiements pour vérifier la réception. Dès que votre paiement est confirmé, cette page se met à jour automatiquement.</span></div>
+                <div class="sp-reassure">${svgShield}<span>Contactez le bénéficiaire des paiements pour vérifier la réception. Dès que votre paiement est confirmé, votre billet sera disponible.</span></div>
               </div>`;
         }
         return `<div class="status-panel status-panel--done">
                 <div class="sp-head" style="align-items:center;">
                   <div class="sp-icon-wrap done">${svgCheck}</div>
                   <div class="sp-head-text">
-                    <div class="sp-title">Paiement validé — billet actif</div>
-                    <div class="sp-sub">Votre billet et son QR code sont prêts ci-dessous.</div>
+                    <div class="sp-title">Paiement validé</div>
+                    <div class="sp-sub">Votre billet est à présent actif et téléchargeable en version réduite.</div>
                   </div>
                 </div>
               </div>`;
@@ -963,13 +962,13 @@ btn.style.display = 'none';
           }
 
           const tierStyles = {
-            'tier-0': { badgeBg:'rgba(217,119,6,.22)', badgeBdr:'rgba(245,158,11,.45)', badgeClr:'#fcd34d', dotClr:'#f59e0b', glowClr:'rgba(245,158,11,.3)', label:'Standard' },
-            'tier-1': { badgeBg:'rgba(250,204,21,.22)', badgeBdr:'rgba(250,204,21,.5)', badgeClr:'#fef08a', dotClr:'#facc15', glowClr:'rgba(250,204,21,.35)', label:'Premium' },
-            'tier-2': { badgeBg:'rgba(16,185,129,.18)', badgeBdr:'rgba(16,185,129,.4)', badgeClr:'#6ee7b7', dotClr:'#10b981', glowClr:'rgba(16,185,129,.3)', label:'Émeraude' },
-            'tier-3': { badgeBg:'rgba(244,63,94,.18)', badgeBdr:'rgba(244,63,94,.4)', badgeClr:'#fda4af', dotClr:'#f43f5e', glowClr:'rgba(244,63,94,.3)', label:'Rubis' }
+            'tier-0': { badgeBg:'rgba(180,83,9,.38)', badgeBdr:'rgba(245,158,11,.5)', badgeClr:'#fcd34d', dotClr:'#f59e0b', glowClr:'rgba(245,158,11,.22)', label:'Standard' },
+            'tier-1': { badgeBg:'rgba(161,98,7,.38)', badgeBdr:'rgba(250,204,21,.55)', badgeClr:'#fef08a', dotClr:'#facc15', glowClr:'rgba(250,204,21,.24)', label:'Premium' },
+            'tier-2': { badgeBg:'rgba(6,95,70,.38)', badgeBdr:'rgba(16,185,129,.5)', badgeClr:'#6ee7b7', dotClr:'#10b981', glowClr:'rgba(16,185,129,.22)', label:'Émeraude' },
+            'tier-3': { badgeBg:'rgba(159,18,57,.38)', badgeBdr:'rgba(244,63,94,.5)', badgeClr:'#fda4af', dotClr:'#f43f5e', glowClr:'rgba(244,63,94,.22)', label:'Rubis' }
           };
           const ts = tierStyles[tierClass];
-          const badgeBgStyle  = `background:${ts.badgeBg}; border:1px solid ${ts.badgeBdr}; color:${ts.badgeClr};`;
+          const badgeBgStyle  = `background:${ts.badgeBg}; border:1px solid ${ts.badgeBdr}; color:var(--text-hi);`;
           const passCardStyle = `box-shadow: 0 0 0 2px ${ts.badgeBdr}, 0 24px 64px rgba(0,0,0,.7), 0 0 80px ${ts.glowClr};`;
 
           const ticketEl = document.getElementById('ticketContent');
@@ -977,7 +976,7 @@ btn.style.display = 'none';
           ticketEl.style.cssText += passCardStyle;
 
           const glowEl = document.getElementById('ticketGlow');
-          glowEl.style.cssText = `background: radial-gradient(ellipse, ${ts.dotClr} 0%, transparent 70%); width:120%; height:60%; top:10%; left:50%; transform:translateX(-50%); position:absolute; opacity:.18; filter:blur(40px);`;
+          glowEl.style.cssText = `background: radial-gradient(ellipse, ${ts.dotClr} 0%, transparent 70%); width:120%; height:60%; top:10%; left:50%; transform:translateX(-50%); position:absolute; opacity:.10; filter:blur(40px);`;
 
           const imgUrl = ev.affiche_url || ev.image_url || ev.affiche || null;
           const bgImg = document.getElementById('event-bg-img');
@@ -1046,8 +1045,9 @@ ${ev.heure ? `<div class="event-meta-pill">
             if (cell.label === 'Lieu') div.id = 'cellLieu';
             if (cell.label === 'Bénéficiaire_paiements') div.id = 'cellBeneficiaire';
             div.style.animationDelay = (0.25 + i * 0.055) + 's';
-            const valueStyle = cell.accent ? `color:${ts.badgeClr}; font-weight:800;` : '';
-            const valueContent = cell.rawHtml ? cell.value : escHTML(String(cell.value));
+            const valueStyle = cell.accent ? `color:var(--text-hi); font-weight:800; display:inline-flex; align-items:center; gap:6px;` : '';
+            const accentDot = cell.accent ? `<span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:${ts.dotClr}; box-shadow:0 0 5px ${ts.dotClr}; flex-shrink:0;"></span>` : '';
+            const valueContent = cell.rawHtml ? cell.value : (accentDot + escHTML(String(cell.value)));
             div.innerHTML = `<span class="cell-label">${cell.label}</span><span class="cell-value" style="${valueStyle}">${valueContent}</span><span class="cell-icon">${cell.icon}</span>`;
             infoGrid.appendChild(div);
           });
