@@ -22,10 +22,11 @@
             --surface-raised: #ffffff;
             --border: rgba(217, 119, 6, 0.13);
             --border-neutral: #e8ecf0;
+            --hairline: rgba(180, 131, 42, 0.22);
 
-            --text: #0d1117;
-            --text-sub: #5a6478;
-            --text-muted: #8a94a6;
+            --text: #17150f;
+            --text-sub: #5a5648;
+            --text-muted: #8b8676;
 
             --green: #059669;
             --green-bg: rgba(16, 185, 129, 0.09);
@@ -43,6 +44,7 @@
             --shadow-card: 0 24px 48px -16px rgba(217, 119, 6, 0.09), 0 8px 24px -8px rgba(0,0,0,0.04);
             --shadow-hover: 0 32px 64px -20px rgba(217, 119, 6, 0.17), 0 12px 32px -12px rgba(0,0,0,0.06);
             --shadow-glow: 0 12px 30px var(--gold-glow);
+            --shadow-poster: 0 30px 60px -22px rgba(23, 21, 15, 0.35), 0 10px 24px -10px rgba(23, 21, 15, 0.18);
 
             --ease: cubic-bezier(0.16, 1, 0.3, 1);
             --transition: all 0.4s var(--ease);
@@ -175,13 +177,42 @@ img, svg, video, canvas {
         .main-wrapper { max-width: 1100px; margin: 0 auto; }
 
         .grid {
+            position: relative;
             display: grid;
             grid-template-columns: 1fr 1.15fr;
-            gap: 32px;
+            gap: 44px;
             align-items: start;
         }
+
+        /* Ligne de "perforation" décorative entre les deux colonnes,
+           clin d'œil au billet déchirable — purement visuel. */
+        .ticket-divider {
+            position: absolute;
+            top: 28px;
+            bottom: 28px;
+            left: calc(50% - (44px / 2));
+            width: 1px;
+            background-image: linear-gradient(var(--hairline) 60%, transparent 0%);
+            background-position: left;
+            background-size: 1px 12px;
+            background-repeat: repeat-y;
+        }
+        .ticket-divider .notch {
+            position: absolute;
+            left: 50%;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--bg);
+            border: 1px solid var(--hairline);
+            transform: translateX(-50%);
+        }
+        .ticket-divider .notch-top { top: -11px; }
+        .ticket-divider .notch-bottom { bottom: -11px; }
+
         @media (max-width: 900px) {
-            .grid { grid-template-columns: 1fr; }
+            .grid { grid-template-columns: 1fr; gap: 22px; }
+            .ticket-divider { display: none; }
         }
 
         /* =============================================
@@ -203,32 +234,37 @@ img, svg, video, canvas {
            POSTER
         ============================================= */
         .poster-wrapper {
+            position: relative;
             width: 100%;
             min-height: 320px;
             border-radius: var(--radius-lg);
             overflow: hidden;
             background: linear-gradient(180deg, #fffdf9 0%, #f8f5f0 100%);
-            margin-bottom: 22px;
+            margin-bottom: 26px;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            border: 1px solid rgba(217,119,6,0.1);
-            box-shadow: 0 10px 28px rgba(0,0,0,0.04);
-            padding: 12px;
+            box-shadow: var(--shadow-poster);
             transition: var(--transition);
-            position: relative;
         }
         .poster-wrapper:hover { transform: scale(1.012); }
+        .poster-wrapper::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            box-shadow: inset 0 0 0 1px rgba(23,21,15,0.06);
+            pointer-events: none;
+        }
         .poster-wrapper img {
             display: block;
-            width: auto;
+            width: 100%;
             max-width: 100%;
             height: auto;
-            max-height: 500px;
+            max-height: 520px;
             object-fit: contain;
             object-position: center center;
-            border-radius: var(--radius-md);
             margin: 0 auto;
         }
         .poster-fallback {
@@ -242,16 +278,14 @@ img, svg, video, canvas {
             color: var(--text-muted);
             font-size: 14px;
             font-weight: 600;
-            background: linear-gradient(135deg, rgba(245,158,11,0.04), rgba(217,119,6,0.02));
-            border-radius: var(--radius-md);
-            border: 1px dashed rgba(217,119,6,0.15);
+            background: linear-gradient(135deg, rgba(245,158,11,0.05), rgba(217,119,6,0.02));
             padding: 24px 18px;
         }
         .poster-fallback svg {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             margin-bottom: 10px;
-            opacity: 0.35;
+            opacity: 0.32;
             display: block;
         }
         .poster-fallback p {
@@ -266,90 +300,120 @@ img, svg, video, canvas {
         ============================================= */
         .event-title {
             font-family: 'Syne', sans-serif;
-            font-size: 26px;
+            font-size: clamp(26px, 4vw, 34px);
             font-weight: 800;
             color: var(--text);
-            margin: 0 0 18px;
-            letter-spacing: -0.6px;
-            line-height: 1.25;
+            margin: 0 0 16px;
+            letter-spacing: -0.7px;
+            line-height: 1.18;
         }
 
-                .meta-row {
+        .meta-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 22px;
+        }
+        .meta-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: #fbfaf6;
+            border: 1px solid var(--border-neutral);
+            padding: 8px 13px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-sub);
+        }
+        .meta-chip svg { width: 15px; height: 15px; flex-shrink: 0; color: var(--gold-2); }
+        .meta-chip strong { color: var(--text); font-weight: 700; }
+
+        /* =============================================
+           CATÉGORIES / PRIX — présentées comme une liste de billets
+        ============================================= */
+        .ticket-price-list {
+            margin-top: 20px;
+            border-top: 1px solid var(--border-neutral);
+        }
+        .ticket-price-row {
             display: flex;
             align-items: center;
-            flex-wrap: wrap;
-            row-gap: 6px;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 14px 4px;
+            border-bottom: 1px solid var(--border-neutral);
+        }
+        .ticket-price-row-name {
+            display: flex;
+            align-items: center;
             gap: 10px;
             font-size: 14.5px;
-            color: var(--text-sub);
-            margin-bottom: 12px;
-            font-weight: 500;
+            font-weight: 700;
+            color: var(--text);
+            min-width: 0;
         }
-        .meta-item {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            flex-shrink: 0;
-        }
-        .meta-text {
+        .ticket-price-row-name svg { width: 16px; height: 16px; color: var(--gold-2); flex-shrink: 0; }
+        .ticket-price-row-price {
+            font-family: 'Syne', sans-serif;
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--gold-3);
             white-space: nowrap;
         }
-        .meta-row svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--gold-2); }
-        .meta-row strong { color: var(--text); }
-        .meta-sep { color: var(--border-neutral); margin: 0 4px; }
-
-        .price-badge {
-            display: inline-flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 5px;
-            margin-top: 18px;
-            padding: 14px 22px;
+        .ticket-price-single {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            padding: 16px 20px;
             background: var(--gold-gradient);
             color: #fff;
             border-radius: var(--radius-lg);
             font-weight: 700;
-            font-size: 14.5px;
+            font-size: 15px;
             box-shadow: var(--shadow-glow);
-            animation: float 4s ease-in-out infinite;
-            width: 100%;
         }
-        .price-badge-item { display: flex; align-items: center; gap: 8px; }
-        .price-badge-item svg { width: 15px; height: 15px; opacity: 0.85; }
+        .ticket-price-single svg { width: 17px; height: 17px; opacity: 0.9; }
 
         /* =============================================
            PAYMENT BOX
         ============================================= */
         .payment-box {
-            background: linear-gradient(135deg, #fefce8, #fef9c3);
-            border: 1px solid rgba(245,158,11,0.28);
+            background: #fffdf7;
+            border: 1px solid var(--hairline);
             border-radius: var(--radius-lg);
-            padding: 22px;
-            margin-bottom: 28px;
-            position: relative;
-            overflow: hidden;
-        }
-        .payment-box::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0;
-            width: 4px; height: 100%;
-            background: var(--gold-gradient);
+            padding: 24px;
+            margin-bottom: 30px;
         }
 
-        .payment-box-title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-family: 'Syne', sans-serif;
-    font-size: 12px;
-    font-weight: 800;
-    color: var(--text);
-    letter-spacing: 0.7px;
-    text-transform: uppercase;
-    margin-bottom: 16px;
-    }
-        .payment-box-title svg { width: 14px; height: 14px; color: var(--gold-2); }
+        .step-heading {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        .step-heading-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--gold-gradient);
+            color: #fff;
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+        .step-heading-text {
+            font-family: 'Syne', sans-serif;
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text);
+            letter-spacing: -0.2px;
+        }
 
         .info-rows { display: flex; flex-direction: column; gap: 10px; }
 
@@ -358,54 +422,53 @@ img, svg, video, canvas {
             justify-content: space-between;
             align-items: center;
             gap: 12px;
-            background: rgba(255,255,255,0.72);
-            padding: 11px 15px;
+            background: rgba(255,255,255,0.75);
+            padding: 12px 15px;
             border-radius: var(--radius-md);
-            border: 1px solid rgba(245,158,11,0.13);
-            flex-wrap: wrap; 
+            border: 1px solid var(--border-neutral);
+            flex-wrap: wrap;
         }
         .info-row-label {
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-size: 11.5px;
+            gap: 7px;
+            font-size: 12.5px;
             color: var(--text-muted);
-            font-weight: 700;
+            font-weight: 600;
             white-space: normal;
-            letter-spacing: 0.2px;
-            min-width: 0; 
+            min-width: 0;
         }
-        .info-row-label svg { width: 13px; height: 13px; }
+        .info-row-label svg { width: 14px; height: 14px; color: var(--gold-2); }
         .info-row-value {
             font-size: 14px;
-            font-weight: 800;
+            font-weight: 700;
             color: var(--text);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             text-align: right;
-            min-width: 0;  
+            min-width: 0;
         }
 
         .qr-wrapper {
-            margin-top: 14px;
-            background: rgba(255,255,255,0.8);
-            padding: 16px;
+            margin-top: 16px;
+            background: rgba(255,255,255,0.85);
+            padding: 18px;
             border-radius: var(--radius-md);
-            border: 1px solid rgba(245,158,11,0.13);
+            border: 1px solid var(--border-neutral);
             text-align: center;
         }
         .qr-label {
-            font-size: 11.5px;
+            font-size: 12.5px;
             color: var(--text-muted);
-            font-weight: 700;
-            margin-bottom: 12px;
+            font-weight: 600;
+            margin-bottom: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
         }
-        .qr-label svg { width: 13px; height: 13px; }
+        .qr-label svg { width: 14px; height: 14px; color: var(--gold-2); }
         .qr-image {
             max-width: 190px;
             width: 100%;
@@ -422,41 +485,28 @@ img, svg, video, canvas {
         /* =============================================
            FORM
         ============================================= */
-        .section-title {
-            font-family: 'Syne', sans-serif;
-            font-size: 17px;
-            font-weight: 800;
-            margin: 0 0 20px;
-            color: var(--text);
-            letter-spacing: -0.3px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .section-title svg { width: 18px; height: 18px; color: var(--gold-2); }
-
         .form-group { margin-bottom: 20px; }
 
         .form-group label {
             display: block;
-            font-size: 11px;
-            font-weight: 800;
-            color: var(--gold-3);
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text);
             margin-bottom: 8px;
-            text-transform: none;
-            letter-spacing: 0.9px;
+            letter-spacing: 0;
         }
+        .form-group label .required-mark { color: var(--gold-3); font-weight: 700; }
 
         input[type="text"],
         input[type="email"],
         input[type="tel"],
         select {
             width: 100%;
-            padding: 15px 17px;
+            padding: 14.5px 16px;
             font-size: 14.5px;
             font-family: 'DM Sans', sans-serif;
-            border: 2px solid var(--border-neutral);
-            border-radius: var(--radius-lg);
+            border: 1.5px solid var(--border-neutral);
+            border-radius: var(--radius-md);
             outline: none;
             background: var(--surface-raised);
             color: var(--text);
@@ -469,9 +519,8 @@ img, svg, video, canvas {
         input[type="tel"]:focus,
         select:focus {
             border-color: var(--gold-2);
-            box-shadow: 0 0 0 5px var(--gold-glow);
+            box-shadow: 0 0 0 4px var(--gold-glow-soft);
             background: #fff;
-            transform: translateY(-2px);
         }
         input::placeholder { color: var(--text-muted); }
 
@@ -498,8 +547,8 @@ img, svg, video, canvas {
         /* File Input Custom */
         .file-input-wrapper {
             position: relative;
-            border: 2px dashed var(--border-neutral);
-            border-radius: var(--radius-lg);
+            border: 1.5px dashed var(--border-neutral);
+            border-radius: var(--radius-md);
             background: #fbfcfd;
             transition: var(--transition);
             overflow: hidden;
@@ -522,11 +571,11 @@ img, svg, video, canvas {
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 24px;
+            padding: 26px 20px;
             gap: 8px;
             pointer-events: none;
         }
-        .file-input-display svg { width: 28px; height: 28px; color: var(--gold-2); opacity: 0.7; }
+        .file-input-display svg { width: 26px; height: 26px; color: var(--gold-2); opacity: 0.75; }
         .file-input-display span {
             font-size: 13.5px;
             font-weight: 600;
@@ -547,10 +596,10 @@ img, svg, video, canvas {
 
         /* Submit Button */
         .btn-submit {
-            background: var(--gold-gradient);
+            background: linear-gradient(135deg, var(--text) 0%, #2a2718 100%);
             color: #fff;
             border: none;
-            padding: 17px 24px;
+            padding: 18px 24px;
             width: 100%;
             border-radius: var(--radius-lg);
             font-size: 15.5px;
@@ -558,32 +607,24 @@ img, svg, video, canvas {
             font-family: 'DM Sans', sans-serif;
             cursor: pointer;
             transition: var(--transition);
-            box-shadow: var(--shadow-glow);
-            margin-top: 8px;
-            letter-spacing: 0.3px;
+            box-shadow: 0 16px 32px -12px rgba(23,21,15,0.4);
+            margin-top: 10px;
+            letter-spacing: 0.2px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
             position: relative;
         }
-        .btn-submit::after {
-            content: '';
-            position: absolute;
-            inset: -6px;
-            border-radius: inherit;
-            background: var(--gold-gradient);
-            filter: blur(14px);
-            opacity: 0.3;
-            z-index: -1;
-            pointer-events: none;
-            animation: pulseGlowOpacity 3s ease-in-out infinite;
+        .btn-submit .btn-icon {
+            display: inline-flex;
+            color: var(--gold-1);
         }
-        .btn-submit:disabled::after { opacity: 0; }
-        @keyframes pulseGlowOpacity {
-            0%, 100% { opacity: 0.22; }
-            50%      { opacity: 0.48; }
+        .btn-submit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px -12px rgba(23,21,15,0.48);
         }
+        .btn-submit:disabled { cursor: not-allowed; opacity: 0.75; }
 
         /* =============================================
            STATES
@@ -659,12 +700,11 @@ img, svg, video, canvas {
         }
         .footer-brand {
             font-family: 'Syne', sans-serif;
-            font-size: 12px;
-            font-weight: 800;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
             color: var(--gold-2);
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
         .footer a {
             color: var(--gold-2);
@@ -677,21 +717,19 @@ img, svg, video, canvas {
 
         .footer-description {
     max-width: 420px;
-    margin: 0 auto 20px;
+    margin: 0 auto 22px;
     font-size: 12.5px;
     line-height: 1.7;
     color: var(--text-sub);
 }
 
-.footer-about { margin-bottom: 16px; }
+.footer-about { margin-bottom: 18px; }
 .footer-about-title {
     display: block;
     font-family: 'Syne', sans-serif;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--gold-2);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-sub);
     margin-bottom: 12px;
 }
 .footer-about-links {
@@ -728,7 +766,10 @@ img, svg, video, canvas {
         @media (max-width: 600px) {
             body { padding: 18px 14px 70px; }
             .card { padding: 22px 18px; }
-            .event-title { font-size: 22px; }
+            .event-title { font-size: 23px; }
+            .poster-wrapper { min-height: 0; margin-bottom: 20px; }
+            .poster-wrapper img { max-height: 260px; }
+            .poster-fallback { min-height: 180px; }
         }
 
         /* =============================================================
@@ -1192,10 +1233,14 @@ function gxObserveNow(root) {
            - Contrôle de la taille du fichier de preuve de paiement côté
              client (10 Mo max, alignement avec le texte affiché) avant
              l'envoi, pour éviter une attente inutile côté utilisateur.
-           - NOUVEAU : protection anti-rafraîchissement/fermeture pendant
-             la fenêtre de traitement (entre le clic sur "Valider" et la
+           - Protection anti-rafraîchissement/fermeture pendant la
+             fenêtre de traitement (entre le clic sur "Valider" et la
              redirection vers le billet), via l'événement natif
-             `beforeunload`. Aucune autre logique n'est modifiée.
+             `beforeunload`.
+           - Design revu (cette version) : la mise en page, les classes
+             CSS et le HTML injecté ont été retravaillés pour un rendu
+             plus premium. Aucune logique métier, aucun appel réseau,
+             aucun identifiant fonctionnel (id="...") n'a été modifié.
         ============================================= */
 
         // ─── SVG ICONS ────────────────────────────────────────────────────────────
@@ -1216,7 +1261,7 @@ function gxObserveNow(root) {
         };
 
         // Taille maximale acceptée pour la preuve de paiement (cohérent avec le
-        // texte affiché "10MB max" dans le formulaire).
+        // texte affiché "2MB max" dans le formulaire).
         const TAILLE_MAX_FICHIER = 10 * 1024 * 1024; // 10 Mo
 
         // Verrou global anti-chevauchement : évite que deux appels à
@@ -1418,10 +1463,10 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
 
                             <!-- ETAPE 1 : PAIEMENT -->
                             <div class="payment-box gx-reveal gx-delay-4">
-                                <p class="payment-box-title">
-                                    ${ICONS.mobile}
-                                    Etape 1 — Effectuer le paiement
-                                </p>
+                                <div class="step-heading">
+                                    <span class="step-heading-number">1</span>
+                                    <span class="step-heading-text">Effectuez le paiement</span>
+                                </div>
                                 <div class="info-rows">
                                     <div class="info-row">
                                         <span class="info-row-label">${ICONS.user} Bénéficiaire des paiements</span>
@@ -1436,15 +1481,15 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                             </div>
 
                             <!-- ETAPE 2 : FORMULAIRE -->
-                            <h3 class="section-title gx-reveal gx-delay-5">
-                                ${ICONS.mail}
-                                Etape 2 — Confirmez votre paiement
-                            </h3>
+                            <div class="step-heading gx-reveal gx-delay-5">
+                                <span class="step-heading-number">2</span>
+                                <span class="step-heading-text">Confirmez votre paiement</span>
+                            </div>
 
                             ${categorieHTML}
 
                             <div class="form-group gx-reveal gx-delay-5">
-                                <label for="nomParticipant">Nom et Prénom(s) <span style="color: red;">*</span></label>
+                                <label for="nomParticipant">Nom et Prénom(s) <span class="required-mark">*</span></label>
                                 <input type="text" id="nomParticipant" placeholder="ex : KONATE Jean">
                                 <p class="gx-field-error-msg" id="errNomParticipant"></p>
                             </div>
@@ -1456,19 +1501,19 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                             </div>
 
                             <div class="form-group gx-reveal gx-delay-5">
-                                <label for="telParticipant">Contact WhatsApp <span style="color: red;">*</span></label>
+                                <label for="telParticipant">Contact WhatsApp <span class="required-mark">*</span></label>
                                 <input type="tel" id="telParticipant" placeholder="ex : +226 ... / +212 ...">
                                 <p class="gx-field-error-msg" id="errTelParticipant"></p>
                             </div>
 
                             <div class="form-group gx-reveal gx-delay-5">
-                                <label>Preuve de paiement (capture du reçu) <span style="color: red;">*</span></label>
+                                <label>Preuve de paiement (capture du reçu) <span class="required-mark">*</span></label>
                                 <div class="file-input-wrapper" id="fileWrapper">
                                     <input type="file" id="preuvePaiement" accept="image/*">
                                     <div class="file-input-display">
                                         ${ICONS.upload}
                                         <span>Cliquez pour choisir un fichier</span>
-                                        <em>JPG, PNG, WEBP acceptés(2MB max)</em>
+                                        <em>JPG, PNG, WEBP acceptés (2MB max)</em>
                                         <span class="file-name-preview" id="fileNamePreview"></span>
                                     </div>
                                 </div>
@@ -1487,13 +1532,14 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                 // ── Prix HTML ───────────────────────────────────────────────────────
                 let prixHTML = "";
                 if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_data.length > 0) {
-                    prixHTML = ev.categories_data.map(c => `
-                        <div class="price-badge-item">
-                            ${ICONS.ticket}
-                            <strong>${c.nom}</strong>&nbsp;:&nbsp;${c.prix}
+                    const lignes = ev.categories_data.map(c => `
+                        <div class="ticket-price-row">
+                            <span class="ticket-price-row-name">${ICONS.ticket} ${c.nom}</span>
+                            <span class="ticket-price-row-price">${c.prix}</span>
                         </div>`).join("");
+                    prixHTML = `<div class="ticket-price-list">${lignes}</div>`;
                 } else {
-                    prixHTML = `<div class="price-badge-item">${ICONS.card} Prix : ${ev.prix || 'Gratuit'}</div>`;
+                    prixHTML = `<div class="ticket-price-single">${ICONS.card} Prix : ${ev.prix || 'Gratuit'}</div>`;
                 }
 
                 // ── Affiche HTML ────────────────────────────────────────────────────
@@ -1503,27 +1549,28 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                 // ── Injection ───────────────────────────────────────────────────────
                 container.innerHTML = `
                     <div class="grid">
+                        <div class="ticket-divider" aria-hidden="true">
+                            <span class="notch notch-top"></span>
+                            <span class="notch notch-bottom"></span>
+                        </div>
                         <div class="card card--event">
                             <div class="poster-wrapper gx-reveal gx-delay-1">${posterHTML}</div>
                             <h1 class="event-title gx-reveal gx-delay-2" id="evTitreEl">${ev.titre}</h1>
-<div class="meta-row gx-reveal gx-delay-2">
-    <span class="meta-item">
+<div class="meta-chips gx-reveal gx-delay-2">
+    <span class="meta-chip">
         ${ICONS.calendar}
-        <span class="meta-text"><strong>Date :</strong> <span id="evDateEl">${ev.date}</span></span>
+        <span><strong id="evDateEl">${ev.date}</strong></span>
     </span>
-    <span class="meta-sep">—</span>
-    <span class="meta-item">
+    <span class="meta-chip">
         ${ICONS.clock}
-        <span class="meta-text"><strong>Heure :</strong> <span id="evHeureEl">${(ev.heure || '').slice(0, 5)}</span></span>
+        <span><strong id="evHeureEl">${(ev.heure || '').slice(0, 5)}</strong></span>
     </span>
-</div>
-<div class="meta-row gx-reveal gx-delay-2">
-    <span class="meta-item">
+    <span class="meta-chip">
         ${ICONS.pin}
-        <span class="meta-text"><strong>Lieu :</strong> <span id="evLieuEl">${ev.lieu}</span></span>
+        <span><strong id="evLieuEl">${ev.lieu}</strong></span>
     </span>
 </div>
-                            <div class="price-badge gx-reveal gx-delay-3">${prixHTML}</div>
+                            <div class="gx-reveal gx-delay-3">${prixHTML}</div>
                         </div>
                         <div>${rightColumn}</div>
                     </div>`;
@@ -1672,12 +1719,12 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                         if (btnValiderAchat.disabled) return; // Anti-double clic
                         btnValiderAchat.disabled = true;
 
-                        // NOUVEAU : active la protection anti-rafraîchissement dès que
-                        // le traitement démarre réellement (juste après la validation,
+                        // Active la protection anti-rafraîchissement dès que le
+                        // traitement démarre réellement (juste après la validation,
                         // au moment même où le bouton est désactivé).
                         window.addEventListener('beforeunload', gxAvertirAvantFermeture);
 
-                        // FIX VISUEL : Remplace tout le contenu du bouton au lieu d'ajouter un child par-dessus
+                        // Remplace tout le contenu du bouton au lieu d'ajouter un child par-dessus
                         btnValiderAchat.innerHTML = `<div class="spinner"></div> Validation en cours... Ne fermez pas cette page.`;
 
                         try {
@@ -1707,8 +1754,8 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                                 const messageErreur = (resultatAchat && resultatAchat.error)
                                     ? resultatAchat.error
                                     : "Erreur lors de l'enregistrement du billet.";
-                                // NOUVEAU : traitement terminé (échec) → protection retirée
-                                // AVANT le alert(), pour ne jamais gêner l'utilisateur qui
+                                // Traitement terminé (échec) → protection retirée AVANT
+                                // le alert(), pour ne jamais gêner l'utilisateur qui
                                 // reste volontairement sur la page pour corriger/réessayer.
                                 window.removeEventListener('beforeunload', gxAvertirAvantFermeture);
                                 alert(messageErreur);
@@ -1717,8 +1764,8 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                                 return;
                             }
 
-                            // NOUVEAU : traitement terminé (succès) → protection retirée
-                            // JUSTE AVANT la redirection, pour que celle-ci s'effectue
+                            // Traitement terminé (succès) → protection retirée JUSTE
+                            // AVANT la redirection, pour que celle-ci s'effectue
                             // normalement, sans déclencher l'avertissement du navigateur
                             // sur notre propre navigation intentionnelle.
                             window.removeEventListener('beforeunload', gxAvertirAvantFermeture);
@@ -1731,7 +1778,7 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                             const messageErreur = (err && err.name === "AbortError")
                                 ? "La connexion met trop de temps à répondre. Vérifiez votre réseau puis réessayez."
                                 : "Une erreur inattendue est survenue lors du traitement.";
-                            // NOUVEAU : traitement terminé (erreur réseau/inattendue) →
+                            // Traitement terminé (erreur réseau/inattendue) →
                             // protection retirée avant de rendre la main à l'utilisateur.
                             window.removeEventListener('beforeunload', gxAvertirAvantFermeture);
                             alert(messageErreur);
