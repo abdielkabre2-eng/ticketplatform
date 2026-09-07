@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Mon Billet - GoldTix</title>
 
+<!-- Police d'accent premium (Syne), déjà utilisée sur la page d'achat GoldTix -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&display=swap" rel="stylesheet">
+
 <!-- 3. Enfin, les autres bibliothèques -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
 <style>
@@ -36,6 +40,7 @@
 --radius-sm: 8px;
 --shadow-ticket: 0 32px 80px rgba(0,0,0,.75), 0 0 0 1px rgba(255,255,255,.06);
 --font: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+--font-accent: 'Syne', var(--font);
     }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -239,6 +244,7 @@ to   { opacity:1; transform:scale(1) translateY(0); }
 .badge-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
 .event-title-h {
+font-family: var(--font-accent);
 font-size: 1.35rem; font-weight: 800; line-height: 1.2; color: var(--text-hi);
 text-shadow: 0 2px 12px rgba(0,0,0,.8); letter-spacing: -.01em;
 animation: fadeUp .6s ease .2s both;
@@ -278,6 +284,130 @@ animation: ripple 2s ease-in-out infinite;
 @keyframes ripple {
 0%,100% { box-shadow: 0 0 0 0 currentColor; opacity:1; }
 60%      { box-shadow: 0 0 0 8px transparent; opacity:.3; }
+    }
+
+/* =============================================================
+   PANNEAU DE STATUT — refonte visuelle uniquement (attente /
+   refusé / validé). Aucune classe/øid utilisée ailleurs par le
+   JS n'est modifiée ; seul le HTML retourné par statusBannerHTML()
+   change, ainsi que ces styles associés.
+============================================================= */
+.status-panel {
+position: relative; z-index: 1;
+padding: 20px 20px 18px;
+border-bottom: 1px solid var(--border);
+    }
+.status-panel--pending {
+background: linear-gradient(180deg, rgba(245,158,11,.09) 0%, rgba(245,158,11,.02) 100%);
+    }
+.status-panel--refuse {
+background: linear-gradient(180deg, rgba(244,63,94,.09) 0%, rgba(244,63,94,.02) 100%);
+    }
+.status-panel--done {
+padding: 16px 20px;
+background: linear-gradient(180deg, rgba(16,185,129,.10) 0%, rgba(16,185,129,.02) 100%);
+    }
+
+.sp-head { display: flex; align-items: flex-start; gap: 12px; }
+.sp-icon-wrap {
+position: relative; flex-shrink: 0;
+width: 42px; height: 42px; border-radius: 50%;
+display: flex; align-items: center; justify-content: center;
+    }
+.sp-icon-wrap.pending { background: rgba(245,158,11,.16); color: var(--gold-400); }
+.sp-icon-wrap.refuse  { background: rgba(244,63,94,.16); color: #fb7185; }
+.sp-icon-wrap.done    { background: rgba(16,185,129,.16); color: #34d399; }
+.sp-icon-wrap svg { width: 20px; height: 20px; }
+.sp-icon-ring {
+position: absolute; inset: -4px; border-radius: 50%;
+border: 1.5px solid currentColor; opacity: 0;
+animation: spRingPulse 2.2s ease-out infinite;
+    }
+@keyframes spRingPulse {
+0%   { opacity: .55; transform: scale(.85); }
+70%  { opacity: 0;   transform: scale(1.35); }
+100% { opacity: 0;   transform: scale(1.35); }
+    }
+
+.sp-head-text { min-width: 0; flex: 1; padding-top: 1px; }
+.sp-title {
+font-family: var(--font-accent);
+font-size: .96rem; font-weight: 800; letter-spacing: -.01em;
+color: var(--text-hi); line-height: 1.3;
+    }
+.sp-sub {
+margin-top: 4px; font-size: .74rem; font-weight: 500; line-height: 1.55;
+color: var(--text-mid);
+    }
+
+.sp-steps { margin-top: 18px; position: relative; display: flex; justify-content: space-between; }
+.sp-steps-line {
+position: absolute; top: 13px; left: 8%; right: 8%; height: 2px;
+background: rgba(255,255,255,.08); border-radius: 2px; overflow: hidden;
+    }
+.sp-steps-line-fill {
+display: block; height: 100%;
+background: linear-gradient(90deg, var(--gold-500), var(--gold-400));
+transition: width .4s ease;
+    }
+.status-panel--refuse .sp-steps-line-fill { background: linear-gradient(90deg, #f43f5e, #fb7185); }
+
+.sp-step {
+position: relative; display: flex; flex-direction: column; align-items: center;
+gap: 6px; flex: 1; min-width: 0;
+    }
+.sp-step-dot {
+width: 26px; height: 26px; border-radius: 50%;
+display: flex; align-items: center; justify-content: center;
+background: var(--bg-card); border: 1.5px solid rgba(255,255,255,.12);
+color: var(--text-lo); flex-shrink: 0;
+    }
+.sp-step-dot svg { width: 13px; height: 13px; }
+.sp-step.is-done .sp-step-dot {
+background: rgba(245,158,11,.18); border-color: var(--gold-500); color: var(--gold-400);
+    }
+.sp-step.is-error .sp-step-dot {
+background: rgba(244,63,94,.18); border-color: #f43f5e; color: #fb7185;
+    }
+.sp-step.is-active .sp-step-dot {
+background: var(--gold-500); border-color: var(--gold-400); color: #1c1200;
+box-shadow: 0 0 0 4px rgba(245,158,11,.18);
+    }
+.sp-step-pulse {
+display: block; width: 7px; height: 7px; border-radius: 50%;
+background: currentColor; animation: spDotPulse 1.4s ease-in-out infinite;
+    }
+@keyframes spDotPulse {
+0%,100% { transform: scale(1);   opacity: 1; }
+50%      { transform: scale(.6); opacity: .55; }
+    }
+.sp-step-label {
+font-size: .56rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+color: var(--text-lo); text-align: center; line-height: 1.25;
+    }
+.sp-step.is-done .sp-step-label,
+.sp-step.is-active .sp-step-label { color: var(--text-mid); }
+.sp-step.is-error .sp-step-label { color: #fb7185; }
+
+.sp-reassure {
+display: flex; align-items: flex-start; gap: 8px;
+margin-top: 16px; padding: 11px 13px; border-radius: var(--radius-md);
+background: rgba(255,255,255,.04); border: 1px solid var(--border);
+font-size: .72rem; font-weight: 600; line-height: 1.5; color: var(--text-mid);
+    }
+.sp-reassure svg { width: 15px; height: 15px; flex-shrink: 0; margin-top: 1px; color: var(--gold-400); }
+.status-panel--refuse .sp-reassure svg { color: #fb7185; }
+
+.sp-note {
+display: flex; align-items: flex-start; gap: 7px;
+margin-top: 10px; font-size: .66rem; font-weight: 500; font-style: italic;
+line-height: 1.5; color: var(--text-lo);
+    }
+.sp-note svg { width: 13px; height: 13px; flex-shrink: 0; margin-top: 2px; opacity: .8; }
+.sp-note a.beneficiaire-whatsapp-link { font-style: normal; }
+
+@media (max-width: 360px) {
+.sp-step-label { display: none; }
     }
 
 .ticket-body { padding: 20px 18px 0; position: relative; }
@@ -688,28 +818,60 @@ btn.style.display = 'none';
       }
 
       function statusBannerHTML(statut) {
+        // Icônes SVG réutilisées dans le panneau de statut (purement visuel).
+        const svgClock  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>`;
+        const svgCheck  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+        const svgCross  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+        const svgTicket = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg>`;
+        const svgShield = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" style="display:none"/><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`;
+        const svgInfo   = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="10.5" x2="12" y2="16"/><circle cx="12" cy="7.5" r=".5" fill="currentColor" stroke="none"/></svg>`;
+
         if (statut === 'attente' || statut === 'en_attente') {
-          return `<div class="status-banner attente">
-                <div class="status-icon"><div class="status-pulse"></div></div>
-                <div>
-                  <div style="font-weight:800; font-size:.82rem;">Paiement en attente de confirmation</div>
-                  <div style="font-size:.7rem; font-weight:500; opacity:.75; margin-top:2px;">Votre demande est bien enregistrée - Votre preuve de paiement a bien été reçue. L'organisateur doit maintenant vérifier et confirmer votre paiement.</div>
-                  <div style="font-size:.65rem; font-weight:500; font-style:italic; opacity:.75; margin-top:10px;">Si votre billet n'est toujours pas disponible après 1 heure, veuillez contacter le bénéficiaire afin de vérifier que votre paiement a bien été reçu et validé.</div>
+          return `<div class="status-panel status-panel--pending">
+                <div class="sp-head">
+                  <div class="sp-icon-wrap pending"><span class="sp-icon-ring"></span>${svgClock}</div>
+                  <div class="sp-head-text">
+                    <div class="sp-title">Paiement en cours de vérification</div>
+                    <div class="sp-sub">Votre demande et votre preuve de paiement ont bien été reçues. L'organisateur doit maintenant confirmer votre paiement.</div>
+                  </div>
                 </div>
+                <div class="sp-steps">
+                  <div class="sp-steps-line"><span class="sp-steps-line-fill" style="width:66%;"></span></div>
+                  <div class="sp-step is-done"><span class="sp-step-dot">${svgCheck}</span><span class="sp-step-label">Demande</span></div>
+                  <div class="sp-step is-done"><span class="sp-step-dot">${svgCheck}</span><span class="sp-step-label">Preuve reçue</span></div>
+                  <div class="sp-step is-active"><span class="sp-step-dot"><span class="sp-step-pulse"></span></span><span class="sp-step-label">Vérification</span></div>
+                  <div class="sp-step"><span class="sp-step-dot">${svgTicket}</span><span class="sp-step-label">Billet prêt</span></div>
+                </div>
+                <div class="sp-reassure">${svgShield}<span>Vous n'avez rien d'autre à faire : dès la validation par l'organisateur, votre billet et son QR code apparaîtront automatiquement ici.</span></div>
+                <div class="sp-note">${svgInfo}<span>Toujours en attente après 1 heure ? Contactez le bénéficiaire pour vérifier la réception de votre paiement.</span></div>
               </div>`;
         } else if (statut === 'refuse' || statut === 'annule') {
-          return `<div class="status-banner refuse">
-                <div class="status-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
-                <div>
-                  <div style="font-weight:800; font-size:.82rem;">Paiement refusé</div>
-                  <div style="font-size:.7rem; font-weight:500; opacity:.75; margin-top:2px;">Votre paiement n'a pas été confirmé. Veuillez contacter le bénéficiaire pour vérifier sa réception.</div>
-                  <div style="font-size:.7rem; font-weight:500; opacity:.75; margin-top:2px;">Dès que votre paiement est confirmé, la page se mettra à jour automatiquement afin de récupérer votre billet.</div>
+          return `<div class="status-panel status-panel--refuse">
+                <div class="sp-head">
+                  <div class="sp-icon-wrap refuse">${svgCross}</div>
+                  <div class="sp-head-text">
+                    <div class="sp-title">Paiement refusé</div>
+                    <div class="sp-sub">Votre paiement n'a pas pu être confirmé par l'organisateur.</div>
+                  </div>
                 </div>
+                <div class="sp-steps">
+                  <div class="sp-steps-line"><span class="sp-steps-line-fill" style="width:100%;"></span></div>
+                  <div class="sp-step is-done"><span class="sp-step-dot">${svgCheck}</span><span class="sp-step-label">Demande</span></div>
+                  <div class="sp-step is-done"><span class="sp-step-dot">${svgCheck}</span><span class="sp-step-label">Preuve reçue</span></div>
+                  <div class="sp-step is-error"><span class="sp-step-dot">${svgCross}</span><span class="sp-step-label">Refusé</span></div>
+                  <div class="sp-step"><span class="sp-step-dot">${svgTicket}</span><span class="sp-step-label">Billet prêt</span></div>
+                </div>
+                <div class="sp-reassure">${svgShield}<span>Contactez le bénéficiaire des paiements pour vérifier la réception. Dès que votre paiement est confirmé, cette page se met à jour automatiquement.</span></div>
               </div>`;
         }
-        return `<div class="status-banner" style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.3); color:#10b981; padding:12px 16px; border-radius:12px; display:flex; align-items:center; gap:12px;">
-                <div style="width:8px; height:8px; background:#10b981; border-radius:50%; box-shadow:0 0 8px #10b981;"></div>
-                <div style="font-weight:800; font-size:.82rem;">Billet validé et actif</div>
+        return `<div class="status-panel status-panel--done">
+                <div class="sp-head" style="align-items:center;">
+                  <div class="sp-icon-wrap done">${svgCheck}</div>
+                  <div class="sp-head-text">
+                    <div class="sp-title">Paiement validé — billet actif</div>
+                    <div class="sp-sub">Votre billet et son QR code sont prêts ci-dessous.</div>
+                  </div>
+                </div>
               </div>`;
       }
 
