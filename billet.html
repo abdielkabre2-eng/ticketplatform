@@ -350,7 +350,7 @@ display: block; height: 100%;
 background: linear-gradient(90deg, var(--gold-500), var(--gold-400));
 transition: width .4s ease;
     }
-.status-panel--refuse .sp-steps-line-fill { background: linear-gradient(90deg, #f43f5e, #fb7185); }
+.status-panel--refuse .sp-steps-line-fill { background: linear-gradient(90deg,#dc2626, #dc2626); }
 
 .sp-step {
 position: relative; display: flex; flex-direction: column; align-items: center;
@@ -860,14 +860,14 @@ btn.style.display = 'none';
                   <div class="sp-step is-error"><span class="sp-step-dot">${svgCross}</span><span class="sp-step-label">Refusé</span></div>
                   <div class="sp-step"><span class="sp-step-dot">${svgTicket}</span><span class="sp-step-label">Billet prêt</span></div>
                 </div>
-                <div class="sp-reassure">${svgShield}<span>Contactez le bénéficiaire des paiements pour vérifier la réception. Dès que votre paiement est confirmé, cette page se met à jour automatiquement.</span></div>
+                <div class="sp-reassure">${svgShield}<span>Contactez le bénéficiaire des paiements pour vérifier la réception. Dès que votre paiement est confirmé, votre billet sera disponible.</span></div>
               </div>`;
         }
         return `<div class="status-panel status-panel--done">
                 <div class="sp-head" style="align-items:center;">
                   <div class="sp-icon-wrap done">${svgCheck}</div>
                   <div class="sp-head-text">
-                    <div class="sp-title">Paiement validé — billet actif</div>
+                    <div class="sp-title">Paiement validé</div>
                     <div class="sp-sub">Votre billet et son QR code sont prêts ci-dessous.</div>
                   </div>
                 </div>
