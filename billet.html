@@ -298,17 +298,14 @@ padding: 20px 20px 18px;
 border-bottom: 1px solid var(--border);
     }
 .status-panel--pending {
-background: var(--bg-cell);
-border-left: 3px solid var(--gold-500);
+background: linear-gradient(180deg, rgba(245,158,11,.09) 0%, rgba(245,158,11,.02) 100%);
     }
 .status-panel--refuse {
-background: var(--bg-cell);
-border-left: 3px solid #f43f5e;
+background: linear-gradient(180deg, rgba(244,63,94,.09) 0%, rgba(244,63,94,.02) 100%);
     }
 .status-panel--done {
 padding: 16px 20px;
-background: var(--bg-cell);
-border-left: 3px solid #10b981;
+background: linear-gradient(180deg, rgba(16,185,129,.10) 0%, rgba(16,185,129,.02) 100%);
     }
 
 .sp-head { display: flex; align-items: flex-start; gap: 12px; }
@@ -835,7 +832,7 @@ btn.style.display = 'none';
                   <div class="sp-icon-wrap pending"><span class="sp-icon-ring"></span>${svgClock}</div>
                   <div class="sp-head-text">
                     <div class="sp-title">Paiement en cours de vérification</div>
-                    <div class="sp-sub">Votre demande et votre preuve de paiement ont bien été reçues. L'organisateur doit maintenant confirmer votre paiement.</div>
+                    <div class="sp-sub">Votre demande et votre preuve de paiement ont bien été reçues. Veillez patienter que le bénéficiaire confirme votre paiement.</div>
                   </div>
                 </div>
                 <div class="sp-steps">
@@ -845,7 +842,6 @@ btn.style.display = 'none';
                   <div class="sp-step is-active"><span class="sp-step-dot"><span class="sp-step-pulse"></span></span><span class="sp-step-label">Vérification</span></div>
                   <div class="sp-step"><span class="sp-step-dot">${svgTicket}</span><span class="sp-step-label">Billet prêt</span></div>
                 </div>
-                <div class="sp-reassure">${svgShield}<span>Vous n'avez rien d'autre à faire : dès la validation par l'organisateur, votre billet et son QR code apparaîtront automatiquement ici.</span></div>
                 <div class="sp-note">${svgInfo}<span>Toujours en attente après 1 heure ? Contactez le bénéficiaire pour vérifier la réception de votre paiement.</span></div>
               </div>`;
         } else if (statut === 'refuse' || statut === 'annule') {
@@ -854,7 +850,7 @@ btn.style.display = 'none';
                   <div class="sp-icon-wrap refuse">${svgCross}</div>
                   <div class="sp-head-text">
                     <div class="sp-title">Paiement refusé</div>
-                    <div class="sp-sub">Votre paiement n'a pas pu être confirmé par l'organisateur.</div>
+                    <div class="sp-sub">Votre paiement n'a pas pu être confirmé par le bénéficiaire.</div>
                   </div>
                 </div>
                 <div class="sp-steps">
