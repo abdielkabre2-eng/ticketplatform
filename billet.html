@@ -499,11 +499,11 @@ font-size: 1.15rem; color: var(--text-lo); font-weight: 400; line-height: 1;
 }
 
 .tear-separator {
-position: relative; margin: 14px 0 0;
-display: flex; align-items: center;
-padding: 0 14px;
-background: var(--bg-card);
-    }
+  position: relative;
+  padding: 14px 14px 0;   /* ← 14px en haut intégrés au padding, plus de margin */
+  display: flex; align-items: center;
+  background: var(--bg-card);
+}
 .tear-separator hr.dashed-line {
 flex: 1; height: 0; margin: 0; padding: 0; border: none;
 border-top: 2px dashed rgba(180,131,9,.4);
