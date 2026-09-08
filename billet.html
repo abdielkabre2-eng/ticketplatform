@@ -169,6 +169,8 @@ width: 100%; border-radius: var(--radius-lg);
 background: var(--bg-card); box-shadow: var(--shadow-ticket);
 overflow: visible; position: relative;
 animation: ticketReveal .9s cubic-bezier(.22,1,.36,1) .1s both;
+--notch-r: 11px;
+--notch-y: 0px;
     }
 @keyframes ticketReveal {
 from { opacity:0; transform:translateY(32px) scale(.97); }
@@ -191,6 +193,30 @@ pointer-events: none; z-index: 10;
 0%   { background-position: 200% 0; }
 50%  { background-position: -200% 0; }
 100% { background-position: 200% 0; }
+    }
+
+/* ===== Encoches semi-circulaires (perforation type "vrai billet") =====
+   Découpe réelle de la silhouette du ticket via un masque CSS, au niveau
+   de la séparation entre le corps du billet et le bloc QR code.
+   La position verticale (--notch-y) est calculée en JS pour rester
+   parfaitement alignée avec .tear-separator, quelle que soit la hauteur
+   dynamique du contenu au-dessus (titre, statut, etc.).
+   Astuce : chaque encoche est un radial-gradient limité à SA moitié de
+   largeur (mask-size: 50% 100%) => pas besoin de mask-composite, donc
+   compatible avec un maximum de navigateurs. */
+.ticket--notched {
+-webkit-mask-image:
+radial-gradient(circle var(--notch-r) at 0 var(--notch-y), transparent var(--notch-r), #000 calc(var(--notch-r) + 1px)),
+radial-gradient(circle var(--notch-r) at 100% var(--notch-y), transparent var(--notch-r), #000 calc(var(--notch-r) + 1px));
+mask-image:
+radial-gradient(circle var(--notch-r) at 0 var(--notch-y), transparent var(--notch-r), #000 calc(var(--notch-r) + 1px)),
+radial-gradient(circle var(--notch-r) at 100% var(--notch-y), transparent var(--notch-r), #000 calc(var(--notch-r) + 1px));
+-webkit-mask-size: 50% 100%, 50% 100%;
+mask-size: 50% 100%, 50% 100%;
+-webkit-mask-position: left top, right top;
+mask-position: left top, right top;
+-webkit-mask-repeat: no-repeat, no-repeat;
+mask-repeat: no-repeat, no-repeat;
     }
 
 .ticket.tier-0 { --tier-gradient: linear-gradient(145deg, var(--t0-a), var(--t0-b), var(--t0-c)); --tier-a: var(--t0-a); --tier-b: var(--t0-b); --tier-glow: var(--t0-glow); }
@@ -774,6 +800,51 @@ if (!billetId) { showError('Aucun identifiant de billet fourni.'); return; }
       let pollingBilletActif = false;
       const POLLING_BILLET_INTERVAL_MS = 4500;
 
+      // ===== Encoches semi-circulaires du billet (perforation) =====
+      // Calcule la position verticale de la séparation (.tear-separator)
+      // par rapport au haut du ticket, et l'applique en variable CSS
+      // --notch-y utilisée par la classe .ticket--notched (voir CSS).
+      function positionnerEncoches() {
+        const ticket = document.getElementById('ticketContent');
+        const separateur = document.querySelector('.tear-separator');
+        if (!ticket || !separateur) return;
+        const ticketRect = ticket.getBoundingClientRect();
+        const sepRect = separateur.getBoundingClientRect();
+        if (!ticketRect.height || !sepRect.height && sepRect.top === 0) return;
+        const notchY = Math.round((sepRect.top + sepRect.height / 2) - ticketRect.top);
+        ticket.style.setProperty('--notch-y', notchY + 'px');
+      }
+
+      function activerEncoches() {
+        const ticket = document.getElementById('ticketContent');
+        if (!ticket) return;
+        ticket.classList.add('ticket--notched');
+        // Double rAF : on laisse le DOM/les polices se stabiliser avant de mesurer.
+        requestAnimationFrame(() => requestAnimationFrame(positionnerEncoches));
+      }
+
+      function desactiverEncoches() {
+        const ticket = document.getElementById('ticketContent');
+        if (!ticket) return;
+        ticket.classList.remove('ticket--notched');
+      }
+
+      let resizeNotchTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeNotchTimeout);
+        resizeNotchTimeout = setTimeout(() => {
+          const ticket = document.getElementById('ticketContent');
+          if (ticket && ticket.classList.contains('ticket--notched')) positionnerEncoches();
+        }, 120);
+      });
+
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+          const ticket = document.getElementById('ticketContent');
+          if (ticket && ticket.classList.contains('ticket--notched')) positionnerEncoches();
+        });
+      }
+
       function demarrerPollingBillet() {
         if (pollingBilletActif) return;
         pollingBilletActif = true;
@@ -1070,6 +1141,7 @@ ${ev.heure ? `<div class="event-meta-pill">
             if (qrWrapper && qrWrapper.parentElement) qrWrapper.parentElement.style.display = 'none';
             const refEl = document.getElementById('billetRef');
             if (refEl && refEl.parentElement) refEl.parentElement.style.display = 'none';
+            desactiverEncoches();
           } else {
             document.getElementById('billetRef').textContent = billet.numero_billet || billet.id || '—';
 
@@ -1096,6 +1168,8 @@ ${ev.heure ? `<div class="event-meta-pill">
             }
 
             qrContainerElement.dataset.genere = String(billet.id);
+
+            activerEncoches();
           }
 
           dernierSignatureAffichee = `${statut}|${billet.numero_billet || ''}|${billet.id || ''}`;
@@ -1103,6 +1177,7 @@ ${ev.heure ? `<div class="event-meta-pill">
 
           showTicket();
           demarrerPollingBillet();
+          activerEncoches();
 
         } catch(err) {
           console.error('Erreur chargerBillet:', err);
@@ -1174,6 +1249,8 @@ function appliquerMiseAJourEvenement(ev) {
         bgImg.src = imgUrl;
         bgImg.style.display = 'block';
     }
+    const ticket = document.getElementById('ticketContent');
+    if (ticket && ticket.classList.contains('ticket--notched')) positionnerEncoches();
 }
 
       function mettreAJourStatutAffiche(billet, statut, ev) {
@@ -1237,8 +1314,11 @@ function appliquerMiseAJourEvenement(ev) {
 
             qrContainerElement.dataset.genere = String(billet.code_public);
           }
+
+          activerEncoches();
         } else {
           if (qrSection) qrSection.style.display = 'none';
+          desactiverEncoches();
         }
       }
 
