@@ -252,6 +252,21 @@ linear-gradient(180deg, rgba(0,0,0,.35) 0%, transparent 40%);
 .ticket.tier-2 .header-color-wash { background: var(--t2-a); }
 .ticket.tier-3 .header-color-wash { background: var(--t3-a); }
 
+.ticket-brand-topleft {
+position: absolute; top: 14px; left: 16px; z-index: 3;
+display: flex; align-items: center; gap: 7px;
+    }
+.ticket-brand-topleft .ticket-brand-logo {
+height: 20px; width: auto; display: block;
+filter: drop-shadow(0 1px 3px rgba(0,0,0,.6));
+    }
+.ticket-brand-topleft .ticket-brand-word {
+font-family: var(--font-accent);
+font-size: .78rem; font-weight: 800; letter-spacing: .06em;
+color: #ffffff; text-shadow: 0 1px 6px rgba(0,0,0,.7);
+    }
+.ticket-brand-topleft .ticket-brand-word b { color: var(--gold-400); }
+
 #ticketHeaderBlock {
 position: relative; z-index: 2; padding: 18px 20px 22px;
 display: flex; flex-direction: column; gap: 10px;
@@ -484,10 +499,19 @@ font-size: 1.15rem; color: var(--text-lo); font-weight: 400; line-height: 1;
     color: #25D366;
 }
 
-.tear-separator { position: relative; margin: 12px 0 0; display: flex; align-items: center; }
+.tear-separator {
+position: relative; margin: 14px 0 0;
+display: flex; align-items: center;
+padding: 0 14px;
+    }
+.tear-separator hr.dashed-line {
+flex: 1; height: 0; margin: 0; padding: 0; border: none;
+border-top: 2px dashed rgba(180,131,9,.4);
+    }
+.tear-separator hr.dashed-line + hr.dashed-line { display: none; }
 
 .qr-section {
-padding: 16px; display: flex; align-items: center; gap: 16px;
+padding: 18px 16px; display: flex; align-items: center; gap: 14px;
 animation: fadeUp .6s ease .55s both; background: var(--bg-page);
 }
 .qr-frame {
@@ -532,7 +556,15 @@ margin: 0 auto !important;
 border-radius: 4px;
     }
 
-.qr-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.qr-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.qr-cta-label {
+font-size: .78rem; font-weight: 800; letter-spacing: .02em;
+color: var(--text-hi); line-height: 1.3;
+    }
+.qr-cta-sub {
+font-size: .68rem; font-weight: 500; color: var(--text-mid); line-height: 1.35;
+margin-bottom: 4px;
+    }
 .qr-info-text { font-size: .74rem; font-weight: 600; color: var(--text-mid); line-height: 1.35; }
 .qr-info-brand {
 font-family: var(--font-accent); font-size: 1.05rem; font-weight: 800; font-style: italic;
@@ -547,6 +579,23 @@ color: var(--text-mid);
 }
 .qr-security-row svg { width: 14px; height: 14px; color: #10b981; flex-shrink: 0; }
 
+.qr-divider { width: 1px; align-self: stretch; margin: 2px 0; border-left: 1px dashed rgba(180,131,9,.3); flex-shrink: 0; }
+.qr-security-badge {
+flex-shrink: 0; width: 62px;
+display: flex; flex-direction: column; align-items: center; gap: 5px;
+text-align: center;
+    }
+.qr-security-badge .qsb-icon {
+width: 26px; height: 26px; border-radius: 50%;
+display: flex; align-items: center; justify-content: center;
+background: rgba(16,185,129,.12); border: 1px solid rgba(16,185,129,.35);
+    }
+.qr-security-badge .qsb-icon svg { width: 14px; height: 14px; color: #10b981; }
+.qr-security-badge span {
+font-size: .5rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+color: var(--text-mid); line-height: 1.35;
+    }
+
 .qr-corner { position: absolute; width: 14px; height: 14px; border-color: var(--tier-a, var(--gold-500)); border-style: solid; border-width: 0; }
 .qr-corner.tl { top: -2px; left: -2px; border-top-width: 3px; border-left-width: 3px; border-radius: 4px 0 0 0; }
 .qr-corner.tr { top: -2px; right: -2px; border-top-width: 3px; border-right-width: 3px; border-radius: 0 4px 0 0; }
@@ -558,17 +607,24 @@ color: var(--text-mid);
 
 .ticket-footer-strip {
 display: flex; align-items: center; justify-content: space-between;
-padding: 9px 14px; border-top: 1px solid var(--border);
-border-radius: 0 0 var(--radius-lg) var(--radius-lg); background: var(--bg-page);
+padding: 12px 18px;
+border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+background: linear-gradient(135deg, #14110f 0%, #0c0a09 100%);
 gap: 8px;
     }
+.tf-brand-group { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.tf-logo { height: 18px; width: auto; display: block; flex-shrink: 0; }
 .tf-brand {
-font-size: .58rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
-background: linear-gradient(135deg, var(--gold-400), var(--gold-600));
+font-size: .68rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+background: linear-gradient(135deg, var(--gold-300), var(--gold-500));
 -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 flex-shrink: 0;
     }
-.tf-valid { display: flex; align-items: center; gap: 4px; font-size: .56rem; font-weight: 600; color: var(--text-lo); flex-shrink: 0; }
+.tf-tagline {
+font-size: .55rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase;
+color: rgba(255,255,255,.55); text-align: right; white-space: nowrap;
+    }
+.tf-valid { display: none; }
 
 .tf-reload-btn {
 display: none;
@@ -633,12 +689,12 @@ display: flex; align-items: center; justify-content: center;
 font-size: .56rem; font-weight: 900; color: #0c0a09; letter-spacing: -.02em;
     }
 .footer-wordmark { font-size: .66rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--text-mid); }
-.footer-tagline { font-size: .56rem; color: var(--text-lo); letter-spacing: .07em; text-transform: uppercase; font-weight: 600; }
+.footer-tagline { font-size: .56rem; color: var(--text-lo); letter-spacing: .07em; text-transform: uppercase; font-weight: 600; margin-bottom: 6px; }
 .footer-contacts { display: flex; flex-direction: column; align-items: center; gap: 3px; }
 .footer-contact-item { font-size: .6rem; color: var(--text-lo); font-weight: 500; }
 .footer-contact-item a { color: var(--gold-600); text-decoration: none; transition: color .2s; }
 .footer-contact-item a:hover { color: var(--gold-700); }
-.footer-dev { font-size: .54rem; color: var(--text-lo); text-align: center; border-top: 1px solid var(--border); padding-top: 10px; width: 100%; }
+.footer-dev { font-size: .54rem; color: var(--text-lo); text-align: center; border-top: 1px solid var(--border); padding-top: 10px; width: 100%; margin-top: 8px; }
 
 .tier-pattern { position: absolute; inset: 0; border-radius: var(--radius-sm); pointer-events: none; z-index: 0; opacity: .03; }
 .ticket-body > *:not(.tier-pattern) { position: relative; z-index: 1; }
@@ -651,6 +707,11 @@ body { background: #fff !important; }
 @media (min-width: 480px) {
 .ticket-wrapper { padding: 36px 24px 56px; }
 .event-title-h { font-size: 1.5rem; }
+    }
+
+@media (max-width: 370px) {
+.qr-security-badge { display: none; }
+.qr-divider { display: none; }
     }
 
 .sp-confirmed-badge {
@@ -698,6 +759,10 @@ color: #10b981; font-size: .6rem; font-weight: 800; letter-spacing: .06em; text-
 <img id="event-bg-img" src="" alt="Affiche" style="display:none;" />
 <div class="header-scrim"></div>
 <div class="header-color-wash"></div>
+<div class="ticket-brand-topleft">
+<img src="images/logo.png" alt="GoldTix" class="ticket-brand-logo" />
+<span class="ticket-brand-word">GOLD<b>TIX</b></span>
+</div>
 <div id="ticketHeaderBlock"><!-- injecté par JS --></div>
 </div>
 
@@ -729,19 +794,27 @@ color: #10b981; font-size: .6rem; font-weight: 800; letter-spacing: .06em; text-
 <div id="qrcode"></div>
 </div>
 <div class="qr-info">
-<p class="qr-info-text">Présentez ce QR code à l’entrée pour accéder à l’événement.</p>
+<p class="qr-cta-label">Scannez ce QR code</p>
+<p class="qr-cta-sub">pour accéder à l'événement</p>
 <p class="qr-info-brand">GoldTix</p>
-<div class="qr-security-row">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-<span>Billet officiel et sécurisé</span>
 </div>
+<div class="qr-divider"></div>
+<div class="qr-security-badge">
+<div class="qsb-icon">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+</div>
+<span>Billet sécurisé et authentifié</span>
 </div>
 <div class="qr-ref-label" style="display:none;">Code QR </div>
 <div class="qr-ref-value" id="billetRef" style="display:none;">—</div>
 </div>
 
 <div class="ticket-footer-strip">
+<div class="tf-brand-group">
+<img src="images/logo.png" alt="GoldTix" class="tf-logo" />
 <span class="tf-brand">GoldTix</span>
+</div>
+<span class="tf-tagline">Des événements qui marquent</span>
 <div class="tf-valid">
 <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
 <circle cx="5" cy="5" r="4.5" stroke="#d97706" stroke-width="1"/>
@@ -1553,7 +1626,7 @@ function appliquerMiseAJourEvenement(ev) {
           <!-- ===== SÉPARATEUR TICKET (effet détachable) ===== -->
           <div style="position:relative; display:flex; align-items:center; margin:0 -22px 16px;">
             <div style="width:18px; height:18px; border-radius:50%; background:#ffffff; box-shadow:inset 0 0 0 1px #ece7dd; margin-left:-9px; flex-shrink:0;"></div>
-            <div style="flex:1; border-top:2px dashed #d9d3c7;"></div>
+            <div style="flex:1; border-top:2px dashed #000000;"></div>
             <div style="width:18px; height:18px; border-radius:50%; background:#ffffff; box-shadow:inset 0 0 0 1px #ece7dd; margin-right:-9px; flex-shrink:0;"></div>
           </div>
 
