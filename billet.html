@@ -430,7 +430,7 @@ line-height: 1.5; color: var(--text-mid);
 .sp-step-label { display: none; }
     }
 
-.ticket-body { padding: 14px 14px 0; position: relative; background: var(--bg-page); }
+.ticket-body { padding: 14px 14px 0; position: relative; background: var(--bg-card); }
 .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .info-cell {
 background: var(--bg-cell); border: 1px solid var(--border);
@@ -511,7 +511,8 @@ border-top: 2px dashed rgba(180,131,9,.4);
 
 .qr-section {
 padding: 18px 16px; display: flex; align-items: center; gap: 14px;
-animation: fadeUp .6s ease .55s both; background: var(--bg-page);
+animation: fadeUp .6s ease .55s both; background: var(--bg-card);
+overflow: hidden;
 }
 .qr-frame {
 position: relative; z-index: 11;
