@@ -294,7 +294,7 @@ border-bottom: 1px solid var(--border);
 border-left: 3px solid transparent;
     }
 .status-panel--pending {
-border-left-color: var(--gold-600);
+border-left-color: #64748b;
     }
 .status-panel--refuse {
 border-left-color: #9f1239;
@@ -309,7 +309,7 @@ position: relative; flex-shrink: 0;
 width: 38px; height: 38px; border-radius: 8px;
 display: flex; align-items: center; justify-content: center;
     }
-.sp-icon-wrap.pending { background: rgba(255,255,255,.06); color: var(--gold-500); }
+.sp-icon-wrap.pending { background: rgba(255,255,255,.06); color: #94a3b8; }
 .sp-icon-wrap.refuse  { background: rgba(255,255,255,.06); color: #e05169; }
 .sp-icon-wrap.done    { background: rgba(255,255,255,.06); color: #10b981; }
 .sp-icon-wrap svg { width: 18px; height: 18px; }
@@ -336,7 +336,7 @@ display: block; height: 100%;
 background: var(--text-lo);
 transition: width .4s ease;
     }
-.status-panel--pending .sp-steps-line-fill { background: var(--gold-600); }
+.status-panel--pending .sp-steps-line-fill { background: #64748b; }
 .status-panel--refuse .sp-steps-line-fill { background: #9f1239; }
 
 .sp-step {
@@ -351,13 +351,13 @@ color: var(--text-lo); flex-shrink: 0;
     }
 .sp-step-dot svg { width: 11px; height: 11px; }
 .sp-step.is-done .sp-step-dot {
-background: rgba(255,255,255,.06); border-color: var(--gold-600); color: var(--gold-500);
+background: rgba(255,255,255,.06); border-color: #64748b; color: #94a3b8;
     }
 .sp-step.is-error .sp-step-dot {
 background: rgba(255,255,255,.06); border-color: #9f1239; color: #e05169;
     }
 .sp-step.is-active .sp-step-dot {
-background: var(--gold-600); border-color: var(--gold-600); color: #fafaf9;
+background: #64748b; border-color: #64748b; color: #fafaf9;
     }
 .sp-step-pulse {
 display: block; width: 6px; height: 6px; border-radius: 50%;
