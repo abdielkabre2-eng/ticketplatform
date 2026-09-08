@@ -217,9 +217,9 @@ transform: scale(1.04); transition: transform 8s ease;
 .header-scrim {
 position: absolute; inset: 0;
 background:
-linear-gradient(0deg, rgba(12,10,9,1) 0%, rgba(12,10,9,.82) 35%, rgba(12,10,9,.28) 70%, rgba(12,10,9,.05) 100%),
-linear-gradient(180deg, rgba(0,0,0,.55) 0%, transparent 40%);
-    }
+linear-gradient(0deg, rgba(12,10,9,.85) 0%, rgba(12,10,9,.55) 35%, rgba(12,10,9,.15) 70%, rgba(12,10,9,.02) 100%),
+linear-gradient(180deg, rgba(0,0,0,.35) 0%, transparent 40%);
+}
 .header-color-wash { position: absolute; inset: 0; opacity: .10; mix-blend-mode: color; }
 .ticket.tier-0 .header-color-wash { background: var(--t0-a); }
 .ticket.tier-1 .header-color-wash { background: var(--t1-a); }
@@ -229,6 +229,7 @@ linear-gradient(180deg, rgba(0,0,0,.55) 0%, transparent 40%);
 #ticketHeaderBlock {
 position: relative; z-index: 2; padding: 18px 20px 22px;
 display: flex; flex-direction: column; gap: 10px;
+justify-content: flex-end;
     }
 .category-badge {
 display: inline-flex; align-items: center; gap: 7px;
@@ -985,26 +986,26 @@ btn.style.display = 'none';
           const dateStr = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' }) : '—';
           const headerEl = document.getElementById('ticketHeaderBlock');
           headerEl.innerHTML = `
-            <div class="category-badge" style="${badgeBgStyle}">
-              <span class="badge-dot" style="background:${ts.dotClr}; box-shadow:0 0 6px ${ts.dotClr};"></span>
-               ${escHTML(nomCategorie)}
-            </div>
-            <h1 class="event-title-h" id="evTitreH">${escHTML(ev.titre || 'Événement')}</h1>
-            <div style="display:flex; gap:8px; flex-wrap:wrap;">
-              <div class="event-meta-pill">
-                <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="${ts.dotClr}" stroke-width="2" stroke-linecap="round">
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                  <line x1="16" y1="2" x2="16" y2="6"/>
-                  <line x1="8"  y1="2" x2="8"  y2="6"/>
-                  <line x1="3"  y1="10" x2="21" y2="10"/>
-                </svg>
-<span id="evDateH">${escHTML(dateStr)}</span>
-              </div>
+  <div class="category-badge" style="${badgeBgStyle} display:none;">
+    <span class="badge-dot" style="background:${ts.dotClr}; box-shadow:0 0 6px ${ts.dotClr};"></span>
+     ${escHTML(nomCategorie)}
+  </div>
+  <h1 class="event-title-h" id="evTitreH" style="display:none;">${escHTML(ev.titre || 'Événement')}</h1>
+  <div style="display:flex; gap:8px; flex-wrap:wrap;">
+    <div class="event-meta-pill">
+      <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="${ts.dotClr}" stroke-width="2" stroke-linecap="round">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/>
+        <line x1="8"  y1="2" x2="8"  y2="6"/>
+        <line x1="3"  y1="10" x2="21" y2="10"/>
+      </svg>
+      <span id="evDateH">${escHTML(dateStr)}</span>
+    </div>
 ${ev.heure ? `<div class="event-meta-pill">
-                <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="${ts.dotClr}" stroke-width="2" stroke-linecap="round">
-                  <circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 12"/>
-                </svg><span id="evHeureH">${escHTML((ev.heure || '').slice(0, 5))}</span></div>` : ''}
-            </div>`;
+      <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="${ts.dotClr}" stroke-width="2" stroke-linecap="round">
+        <circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 12"/>
+      </svg><span id="evHeureH">${escHTML((ev.heure || '').slice(0, 5))}</span></div>` : ''}
+  </div>`;
 
           const statut = (billet.statut || 'attente').trim().toLowerCase();
           const statusZone = document.getElementById('statusBannerZone');
