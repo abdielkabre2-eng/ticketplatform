@@ -1420,7 +1420,7 @@ function appliquerMiseAJourEvenement(ev) {
 
           <!-- ===== LABEL + TITRE ===== -->
           <div style="text-align:center; margin-bottom:14px;">
-            <div style="font-size:11px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:${neutralAccent}; margin-bottom:6px;">
+            <div style="font-size:12px; font-weight:400; color:#1c1917; margin-bottom:6px;">
               Billet Officiel &middot; GoldTix
             </div>
             <div style="font-size:20px; font-weight:800; color:#1c1917; line-height:1.25; letter-spacing:-.01em;">
@@ -1431,20 +1431,20 @@ function appliquerMiseAJourEvenement(ev) {
           <!-- ===== BLOC INFOS (neutre, sans liseré coloré) ===== -->
           <div style="background:#faf8f4; border-radius:14px; padding:2px 18px; margin-bottom:14px;">
             <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid #efece4;">
-              <span style="color:#9a9186; font-weight:700; font-size:11.5px; letter-spacing:.04em; text-transform:uppercase;">Date &amp; Heure</span>
+              <span style="color:#1c1917; font-weight:400; font-size:13px;">Date &amp; Heure</span>
               <span style="font-weight:700; color:#1c1917; font-size:14px; text-align:right;">${escHTML(dateValue)} &middot; ${escHTML(heureValue)}</span>
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid #efece4;">
-              <span style="color:#9a9186; font-weight:700; font-size:11.5px; letter-spacing:.04em; text-transform:uppercase;">Lieu</span>
+              <span style="color:#1c1917; font-weight:400; font-size:13px;">Lieu</span>
               <span style="font-weight:700; color:#1c1917; font-size:14px; text-align:right;">${escHTML(lieuValue)}</span>
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 0; ${telephoneValue && telephoneValue !== '—' ? 'border-bottom:1px solid #efece4;' : ''}">
-              <span style="color:#9a9186; font-weight:700; font-size:11.5px; letter-spacing:.04em; text-transform:uppercase;">Participant</span>
+              <span style="color:#1c1917; font-weight:400; font-size:13px;">Participant</span>
               <span style="font-weight:700; color:#1c1917; font-size:14px; text-align:right;">${escHTML(titulaireValue)}</span>
             </div>
             ${telephoneValue && telephoneValue !== '—' ? `
             <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 0;">
-              <span style="color:#9a9186; font-weight:700; font-size:11.5px; letter-spacing:.04em; text-transform:uppercase;">Téléphone</span>
+              <span style="color:#1c1917; font-weight:400; font-size:13px;">Téléphone</span>
               <span style="font-weight:700; color:#1c1917; font-size:14px; text-align:right;">${escHTML(telephoneValue)}</span>
             </div>` : ''}
           </div>
