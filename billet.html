@@ -210,13 +210,13 @@ pointer-events: none; z-index: 10;
    largeur (mask-size: 50% 100%) => pas besoin de mask-composite, donc
    compatible avec un maximum de navigateurs. */
 .ticket--notched {
-  -webkit-mask-size: 50% 100%, 50% 100%, 50% 100%, 50% 100%;
-  mask-size: 50% 100%, 50% 100%, 50% 100%, 50% 100%;
-  -webkit-mask-position: left top, right top, left top, right top;
-  mask-position: left top, right top, left top, right top;
-  -webkit-mask-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
-  mask-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
-}
+-webkit-mask-size: 50% 100%, 50% 100%;
+mask-size: 50% 100%, 50% 100%;
+-webkit-mask-position: left top, right top;
+mask-position: left top, right top;
+-webkit-mask-repeat: no-repeat, no-repeat;
+mask-repeat: no-repeat, no-repeat;
+    }
 
 .ticket.tier-0 { --tier-gradient: linear-gradient(145deg, var(--t0-a), var(--t0-b), var(--t0-c)); --tier-a: var(--t0-a); --tier-b: var(--t0-b); --tier-glow: var(--t0-glow); }
 .ticket.tier-1 { --tier-gradient: linear-gradient(145deg, var(--t1-a), var(--t1-b), #854d0e, var(--t1-c)); --tier-a: var(--t1-a); --tier-b: var(--t1-b); --tier-glow: var(--t1-glow); }
@@ -871,45 +871,28 @@ if (!billetId) { showError('Aucun identifiant de billet fourni.'); return; }
       // mask-image (avec des valeurs en px, sans var() dans le gradient)
       // en style inline sur #ticketContent. C'est plus robuste que de
       // passer par une variable CSS lue à l'intérieur du radial-gradient.
-           const NOTCH_RADIUS_PX = 14; // rayon de l'encoche ; augmente si besoin
+      const NOTCH_RADIUS_PX = 14; // rayon de l'encoche ; augmente si besoin
 
       function positionnerEncoches() {
         const ticket = document.getElementById('ticketContent');
-        if (!ticket) return;
+        const separateur = document.querySelector('.tear-separator');
+        if (!ticket || !separateur) return;
         const ticketRect = ticket.getBoundingClientRect();
+        const sepRect = separateur.getBoundingClientRect();
         if (!ticketRect.height) return;
 
         const r = NOTCH_RADIUS_PX;
-        const positionsY = [];
+        const notchY = Math.round((sepRect.top + sepRect.height / 2) - ticketRect.top);
 
-        // Encoche du haut : juste sous la bannière de statut
-        const statusPanel = document.querySelector('.status-panel');
-        if (statusPanel) {
-          const spRect = statusPanel.getBoundingClientRect();
-          positionsY.push(Math.round(spRect.bottom - ticketRect.top));
-        }
-
-        // Encoche du bas : au niveau de la séparation avant le QR code
-        const separateur = document.querySelector('.tear-separator');
-        if (separateur) {
-          const sepRect = separateur.getBoundingClientRect();
-          positionsY.push(Math.round((sepRect.top + sepRect.height / 2) - ticketRect.top));
-        }
-
-        if (!positionsY.length) return;
-
-        const maskLayers = [];
-        positionsY.forEach((notchY) => {
-          maskLayers.push(`radial-gradient(circle ${r}px at 0 ${notchY}px, transparent ${r}px, #000 ${r + 1}px)`);
-          maskLayers.push(`radial-gradient(circle ${r}px at 100% ${notchY}px, transparent ${r}px, #000 ${r + 1}px)`);
-        });
-        const maskValue = maskLayers.join(', ');
+        const maskLeft  = `radial-gradient(circle ${r}px at 0 ${notchY}px, transparent ${r}px, #000 ${r + 1}px)`;
+        const maskRight = `radial-gradient(circle ${r}px at 100% ${notchY}px, transparent ${r}px, #000 ${r + 1}px)`;
+        const maskValue = `${maskLeft}, ${maskRight}`;
 
         ticket.style.setProperty('-webkit-mask-image', maskValue);
         ticket.style.setProperty('mask-image', maskValue);
 
         // eslint-disable-next-line no-console
-        console.debug('[GoldTix] encoches positionnées à', positionsY.join('px, '), 'px, rayon', r, 'px');
+        console.debug('[GoldTix] encoche positionnée à', notchY, 'px, rayon', r, 'px');
       }
 
       function activerEncoches() {
