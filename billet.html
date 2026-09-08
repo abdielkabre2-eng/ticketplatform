@@ -288,115 +288,104 @@ animation: ripple 2s ease-in-out infinite;
 
 .status-panel {
 position: relative; z-index: 1;
-padding: 20px 20px 18px;
+padding: 18px 20px;
+background: rgba(255,255,255,.02);
 border-bottom: 1px solid var(--border);
+border-left: 3px solid transparent;
     }
 .status-panel--pending {
-background: linear-gradient(180deg, rgba(245,158,11,.09) 0%, rgba(245,158,11,.02) 100%);
+border-left-color: var(--gold-600);
     }
 .status-panel--refuse {
-background: linear-gradient(180deg, rgba(244,63,94,.09) 0%, rgba(244,63,94,.02) 100%);
+border-left-color: #9f1239;
     }
 .status-panel--done {
-padding: 16px 20px;
-background: linear-gradient(180deg, rgba(16,185,129,.10) 0%, rgba(16,185,129,.02) 100%);
+border-left-color: #047857;
     }
 
 .sp-head { display: flex; align-items: flex-start; gap: 12px; }
 .sp-icon-wrap {
 position: relative; flex-shrink: 0;
-width: 42px; height: 42px; border-radius: 50%;
+width: 38px; height: 38px; border-radius: 8px;
 display: flex; align-items: center; justify-content: center;
     }
-.sp-icon-wrap.pending { background: rgba(245,158,11,.16); color: var(--gold-400); }
-.sp-icon-wrap.refuse  { background: rgba(244,63,94,.16); color: #fb7185; }
-.sp-icon-wrap.done    { background: rgba(16,185,129,.16); color: #34d399; }
-.sp-icon-wrap svg { width: 20px; height: 20px; }
-.sp-icon-ring {
-position: absolute; inset: -4px; border-radius: 50%;
-border: 1.5px solid currentColor; opacity: 0;
-animation: spRingPulse 2.2s ease-out infinite;
-    }
-@keyframes spRingPulse {
-0%   { opacity: .55; transform: scale(.85); }
-70%  { opacity: 0;   transform: scale(1.35); }
-100% { opacity: 0;   transform: scale(1.35); }
-    }
+.sp-icon-wrap.pending { background: rgba(255,255,255,.06); color: var(--gold-500); }
+.sp-icon-wrap.refuse  { background: rgba(255,255,255,.06); color: #e05169; }
+.sp-icon-wrap.done    { background: rgba(255,255,255,.06); color: #10b981; }
+.sp-icon-wrap svg { width: 18px; height: 18px; }
+.sp-icon-ring { display: none; }
 
 .sp-head-text { min-width: 0; flex: 1; padding-top: 1px; }
 .sp-title {
-font-family: var(--font-accent);
-font-size: .96rem; font-weight: 800; letter-spacing: -.01em;
-color: var(--text-hi); line-height: 1.3;
+font-family: var(--font);
+font-size: .88rem; font-weight: 700; letter-spacing: -.005em;
+color: var(--text-hi); line-height: 1.35;
     }
 .sp-sub {
-margin-top: 4px; font-size: .74rem; font-weight: 500; line-height: 1.55;
+margin-top: 4px; font-size: .74rem; font-weight: 400; line-height: 1.55;
 color: var(--text-mid);
     }
 
 .sp-steps { margin-top: 18px; position: relative; display: flex; justify-content: space-between; }
 .sp-steps-line {
-position: absolute; top: 13px; left: 8%; right: 8%; height: 2px;
+position: absolute; top: 11px; left: 8%; right: 8%; height: 2px;
 background: rgba(255,255,255,.08); border-radius: 2px; overflow: hidden;
     }
 .sp-steps-line-fill {
 display: block; height: 100%;
-background: linear-gradient(90deg, var(--gold-500), var(--gold-400));
+background: var(--text-lo);
 transition: width .4s ease;
     }
+.status-panel--pending .sp-steps-line-fill { background: var(--gold-600); }
+.status-panel--refuse .sp-steps-line-fill { background: #9f1239; }
 
 .sp-step {
 position: relative; display: flex; flex-direction: column; align-items: center;
 gap: 6px; flex: 1; min-width: 0;
     }
 .sp-step-dot {
-width: 26px; height: 26px; border-radius: 50%;
+width: 22px; height: 22px; border-radius: 50%;
 display: flex; align-items: center; justify-content: center;
-background: var(--bg-card); border: 1.5px solid rgba(255,255,255,.12);
+background: var(--bg-card); border: 1.5px solid rgba(255,255,255,.14);
 color: var(--text-lo); flex-shrink: 0;
     }
-.sp-step-dot svg { width: 13px; height: 13px; }
+.sp-step-dot svg { width: 11px; height: 11px; }
 .sp-step.is-done .sp-step-dot {
-background: rgba(245,158,11,.18); border-color: var(--gold-500); color: var(--gold-400);
+background: rgba(255,255,255,.06); border-color: var(--gold-600); color: var(--gold-500);
     }
 .sp-step.is-error .sp-step-dot {
-background: rgba(244,63,94,.18); border-color: #f43f5e; color: #fb7185;
+background: rgba(255,255,255,.06); border-color: #9f1239; color: #e05169;
     }
 .sp-step.is-active .sp-step-dot {
-background: var(--gold-500); border-color: var(--gold-400); color: #1c1200;
-box-shadow: 0 0 0 4px rgba(245,158,11,.18);
+background: var(--gold-600); border-color: var(--gold-600); color: #fafaf9;
     }
 .sp-step-pulse {
-display: block; width: 7px; height: 7px; border-radius: 50%;
-background: currentColor; animation: spDotPulse 1.4s ease-in-out infinite;
-    }
-@keyframes spDotPulse {
-0%,100% { transform: scale(1);   opacity: 1; }
-50%      { transform: scale(.6); opacity: .55; }
+display: block; width: 6px; height: 6px; border-radius: 50%;
+background: currentColor;
     }
 .sp-step-label {
-font-size: .56rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+font-size: .58rem; font-weight: 600; letter-spacing: .01em;
 color: var(--text-lo); text-align: center; line-height: 1.25;
     }
 .sp-step.is-done .sp-step-label,
 .sp-step.is-active .sp-step-label { color: var(--text-mid); }
-.sp-step.is-error .sp-step-label { color: #fb7185; }
+.sp-step.is-error .sp-step-label { color: #e05169; }
 
 .sp-reassure {
 display: flex; align-items: flex-start; gap: 8px;
 margin-top: 16px; padding: 11px 13px; border-radius: var(--radius-md);
-background: rgba(255,255,255,.04); border: 1px solid var(--border);
-font-size: .72rem; font-weight: 600; line-height: 1.5; color: var(--text-mid);
+background: rgba(255,255,255,.03); border: 1px solid var(--border);
+font-size: .72rem; font-weight: 400; line-height: 1.5; color: var(--text-mid);
     }
-.sp-reassure svg { width: 15px; height: 15px; flex-shrink: 0; margin-top: 1px; color: var(--gold-400); }
-.status-panel--refuse .sp-reassure svg { color: #fb7185; }
+.sp-reassure svg { width: 15px; height: 15px; flex-shrink: 0; margin-top: 1px; color: var(--text-lo); }
+.status-panel--refuse .sp-reassure svg { color: var(--text-lo); }
 
 .sp-note {
 display: flex; align-items: flex-start; gap: 7px;
-margin-top: 10px; font-size: .66rem; font-weight: 500; font-style: italic;
+margin-top: 10px; font-size: .66rem; font-weight: 400; font-style: normal;
 line-height: 1.5; color: var(--text-lo);
     }
-.sp-note svg { width: 13px; height: 13px; flex-shrink: 0; margin-top: 2px; opacity: .8; }
+.sp-note svg { width: 13px; height: 13px; flex-shrink: 0; margin-top: 2px; opacity: .7; }
 .sp-note a.beneficiaire-whatsapp-link { font-style: normal; }
 
 @media (max-width: 360px) {
