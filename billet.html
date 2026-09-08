@@ -254,10 +254,10 @@ animation: fadeUp .6s ease .2s both;
 display: inline-flex; align-items: center; gap: 6px;
 background: rgba(12,10,9,.72); backdrop-filter: blur(8px);
 -webkit-backdrop-filter: blur(8px);
-border: 1px solid rgba(255,255,255,.35);   /* ← bordure plus marquée */
+border: 1px solid rgba(255,255,255,.35);
 border-radius: 99px;
 padding: 4px 10px; font-size: .72rem; font-weight: 600; color: #ffffff;
-box-shadow: 0 2px 10px rgba(0,0,0,.4), 0 0 0 1px rgba(0,0,0,.2);  /* ← ombre renforcée */
+box-shadow: 0 2px 10px rgba(0,0,0,.4), 0 0 0 1px rgba(0,0,0,.2);
 animation: fadeUp .6s ease .35s both;
 }
 .meta-icon { width: 12px; height: 12px; opacity: .8; }
@@ -474,12 +474,16 @@ font-size: .54rem; font-weight: 700; letter-spacing: .12em; text-transform: uppe
 color: var(--text-lo); border: 1px solid var(--border); white-space: nowrap;
     }
 
-.qr-section { padding: 14px 16px 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; animation: fadeUp .6s ease .55s both; background: var(--bg-page); }
+.qr-section {
+padding: 16px; display: flex; align-items: center; gap: 16px;
+animation: fadeUp .6s ease .55s both; background: var(--bg-page);
+}
 .qr-frame {
 position: relative; z-index: 11;
-width: 150px; height: 150px;
-padding: 10px; border-radius: var(--radius-md); background: #fff;
+width: 108px; height: 108px;
+padding: 8px; border-radius: var(--radius-md); background: #fff;
 display: flex; align-items: center; justify-content: center;
+flex-shrink: 0;
 box-shadow:
 0 0 0 1px var(--border),
 0 8px 24px rgba(28,25,23,.10),
@@ -495,8 +499,8 @@ box-shadow:
     }
 
 #qrcode {
-width: 130px !important;
-height: 130px !important;
+width: 92px !important;
+height: 92px !important;
 display: flex !important;
 align-items: center !important;
 justify-content: center !important;
@@ -508,13 +512,28 @@ overflow: hidden !important;
 #qrcode canvas,
 #qrcode img {
 display: block !important;
-width: 130px !important;
-height: 130px !important;
-max-width: 130px !important;
-max-height: 130px !important;
+width: 92px !important;
+height: 92px !important;
+max-width: 92px !important;
+max-height: 92px !important;
 margin: 0 auto !important;
 border-radius: 4px;
     }
+
+.qr-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.qr-info-text { font-size: .74rem; font-weight: 600; color: var(--text-mid); line-height: 1.35; }
+.qr-info-brand {
+font-family: var(--font-accent); font-size: 1.05rem; font-weight: 800; font-style: italic;
+background: linear-gradient(135deg, var(--gold-500), var(--gold-700));
+-webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.qr-security-row {
+display: flex; align-items: center; gap: 6px; padding-top: 8px;
+border-top: 1px dashed var(--border);
+font-size: .6rem; font-weight: 700; letter-spacing: .03em; text-transform: uppercase;
+color: var(--text-mid);
+}
+.qr-security-row svg { width: 14px; height: 14px; color: #10b981; flex-shrink: 0; }
 
 .qr-corner { position: absolute; width: 14px; height: 14px; border-color: var(--tier-a, var(--gold-500)); border-style: solid; border-width: 0; }
 .qr-corner.tl { top: -2px; left: -2px; border-top-width: 3px; border-left-width: 3px; border-radius: 4px 0 0 0; }
@@ -621,6 +640,14 @@ body { background: #fff !important; }
 .ticket-wrapper { padding: 36px 24px 56px; }
 .event-title-h { font-size: 1.5rem; }
     }
+
+.sp-confirmed-badge {
+display: inline-block; margin-bottom: 4px;
+padding: 3px 10px; border-radius: 99px;
+background: rgba(16,185,129,.10); border: 1px solid rgba(16,185,129,.35);
+color: #10b981; font-size: .6rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+}
+.status-panel--done { padding: 16px 20px; }
 </style>
 </head>
 <body>
@@ -692,8 +719,16 @@ body { background: #fff !important; }
 <div class="qr-corner br"></div>
 <div id="qrcode"></div>
 </div>
-<div class="qr-ref-label">Code QR </div>
-<div class="qr-ref-value" id="billetRef">—</div>
+<div class="qr-info">
+<p class="qr-info-text">Scannez ce QR code pour accéder à l'événement</p>
+<p class="qr-info-brand">GoldTix</p>
+<div class="qr-security-row">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+<span>Billet sécurisé et authentifié</span>
+</div>
+</div>
+<div class="qr-ref-label" style="display:none;">Code QR </div>
+<div class="qr-ref-value" id="billetRef" style="display:none;">—</div>
 </div>
 
 <div class="ticket-footer-strip">
@@ -857,14 +892,15 @@ btn.style.display = 'none';
               </div>`;
         }
         return `<div class="status-panel status-panel--done">
-                <div class="sp-head" style="align-items:center;">
-                  <div class="sp-icon-wrap done">${svgCheck}</div>
-                  <div class="sp-head-text">
-                    <div class="sp-title">Paiement validé</div>
-                    <div class="sp-sub">Votre billet est à présent actif et téléchargeable en version réduite.</div>
-                  </div>
-                </div>
-              </div>`;
+        <div class="sp-head" style="align-items:center;">
+          <div class="sp-icon-wrap done">${svgCheck}</div>
+          <div class="sp-head-text">
+            <span class="sp-confirmed-badge">Billet validé</span>
+            <div class="sp-title">Paiement validé</div>
+            <div class="sp-sub">Votre billet est à présent actif et téléchargeable en version réduite.</div>
+          </div>
+        </div>
+      </div>`;
       }
 
       async function recupererDonneesBillet() {
