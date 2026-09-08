@@ -198,19 +198,18 @@ pointer-events: none; z-index: 10;
 /* ===== Encoches semi-circulaires (perforation type "vrai billet") =====
    Découpe réelle de la silhouette du ticket via un masque CSS, au niveau
    de la séparation entre le corps du billet et le bloc QR code.
-   La position verticale (--notch-y) est calculée en JS pour rester
-   parfaitement alignée avec .tear-separator, quelle que soit la hauteur
-   dynamique du contenu au-dessus (titre, statut, etc.).
+   Le masque (mask-image) complet — y compris la position verticale — est
+   injecté directement en style inline par le JS (voir positionnerEncoches),
+   avec des valeurs en pixels "en dur" plutôt que des var() à l'intérieur
+   du radial-gradient : certains moteurs de rendu n'interpolent pas
+   correctement une variable CSS dans un gradient utilisé comme masque,
+   ce qui peut rendre l'encoche invisible sans erreur. Ici, seules les
+   propriétés statiques (taille/position/repeat des calques) restent en
+   CSS ; mask-image lui-même est toujours défini par le JS.
    Astuce : chaque encoche est un radial-gradient limité à SA moitié de
    largeur (mask-size: 50% 100%) => pas besoin de mask-composite, donc
    compatible avec un maximum de navigateurs. */
 .ticket--notched {
--webkit-mask-image:
-radial-gradient(circle var(--notch-r) at 0 var(--notch-y), transparent var(--notch-r), #000 calc(var(--notch-r) + 1px)),
-radial-gradient(circle var(--notch-r) at 100% var(--notch-y), transparent var(--notch-r), #000 calc(var(--notch-r) + 1px));
-mask-image:
-radial-gradient(circle var(--notch-r) at 0 var(--notch-y), transparent var(--notch-r), #000 calc(var(--notch-r) + 1px)),
-radial-gradient(circle var(--notch-r) at 100% var(--notch-y), transparent var(--notch-r), #000 calc(var(--notch-r) + 1px));
 -webkit-mask-size: 50% 100%, 50% 100%;
 mask-size: 50% 100%, 50% 100%;
 -webkit-mask-position: left top, right top;
@@ -870,31 +869,52 @@ if (!billetId) { showError('Aucun identifiant de billet fourni.'); return; }
 
       // ===== Encoches semi-circulaires du billet (perforation) =====
       // Calcule la position verticale de la séparation (.tear-separator)
-      // par rapport au haut du ticket, et l'applique en variable CSS
-      // --notch-y utilisée par la classe .ticket--notched (voir CSS).
+      // par rapport au haut du ticket, puis injecte DIRECTEMENT le
+      // mask-image (avec des valeurs en px, sans var() dans le gradient)
+      // en style inline sur #ticketContent. C'est plus robuste que de
+      // passer par une variable CSS lue à l'intérieur du radial-gradient.
+      const NOTCH_RADIUS_PX = 14; // rayon de l'encoche ; augmente si besoin
+
       function positionnerEncoches() {
         const ticket = document.getElementById('ticketContent');
         const separateur = document.querySelector('.tear-separator');
         if (!ticket || !separateur) return;
         const ticketRect = ticket.getBoundingClientRect();
         const sepRect = separateur.getBoundingClientRect();
-        if (!ticketRect.height || !sepRect.height && sepRect.top === 0) return;
+        if (!ticketRect.height) return;
+
+        const r = NOTCH_RADIUS_PX;
         const notchY = Math.round((sepRect.top + sepRect.height / 2) - ticketRect.top);
-        ticket.style.setProperty('--notch-y', notchY + 'px');
+
+        const maskLeft  = `radial-gradient(circle ${r}px at 0 ${notchY}px, transparent ${r}px, #000 ${r + 1}px)`;
+        const maskRight = `radial-gradient(circle ${r}px at 100% ${notchY}px, transparent ${r}px, #000 ${r + 1}px)`;
+        const maskValue = `${maskLeft}, ${maskRight}`;
+
+        ticket.style.setProperty('-webkit-mask-image', maskValue);
+        ticket.style.setProperty('mask-image', maskValue);
+
+        // eslint-disable-next-line no-console
+        console.debug('[GoldTix] encoche positionnée à', notchY, 'px, rayon', r, 'px');
       }
 
       function activerEncoches() {
         const ticket = document.getElementById('ticketContent');
         if (!ticket) return;
         ticket.classList.add('ticket--notched');
-        // Double rAF : on laisse le DOM/les polices se stabiliser avant de mesurer.
+        // Plusieurs relances : on laisse le DOM/les polices/les images se
+        // stabiliser avant de mesurer (une seule frame n'est parfois pas
+        // suffisante si la police Syne ou l'affiche chargent en différé).
         requestAnimationFrame(() => requestAnimationFrame(positionnerEncoches));
+        setTimeout(positionnerEncoches, 250);
+        setTimeout(positionnerEncoches, 800);
       }
 
       function desactiverEncoches() {
         const ticket = document.getElementById('ticketContent');
         if (!ticket) return;
         ticket.classList.remove('ticket--notched');
+        ticket.style.removeProperty('-webkit-mask-image');
+        ticket.style.removeProperty('mask-image');
       }
 
       let resizeNotchTimeout;
