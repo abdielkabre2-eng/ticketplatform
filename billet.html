@@ -722,6 +722,12 @@ background: rgba(16,185,129,.10); border: 1px solid rgba(16,185,129,.35);
 color: #10b981; font-size: .6rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
 }
 .status-panel--done { padding: 16px 20px; }
+
+.info-icon {
+  font-size: 18px;
+  line-height: 1;
+  flex-shrink: 0;
+}
 </style>
 </head>
 <body>
@@ -791,8 +797,8 @@ color: #10b981; font-size: .6rem; font-weight: 800; letter-spacing: .06em; text-
 <div id="qrcode"></div>
 </div>
 <div class="qr-info">
-<p class="qr-cta-label">Scannez ce QR code</p>
-<p class="qr-cta-sub">pour accéder à l'événement</p>
+<p class="qr-cta-label">Veuillez présenter ce QR code</p>
+<p class="qr-cta-sub">à l'entrée svp</p>
 <p class="qr-info-brand">GoldTix</p>
 </div>
 <div class="qr-divider"></div>
@@ -800,7 +806,7 @@ color: #10b981; font-size: .6rem; font-weight: 800; letter-spacing: .06em; text-
 <div class="qsb-icon">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
 </div>
-<span>Billet sécurisé et authentifié</span>
+<span>Billet unique et sécurisé</span>
 </div>
 <div class="qr-ref-label" style="display:none;">Code QR </div>
 <div class="qr-ref-value" id="billetRef" style="display:none;">—</div>
@@ -811,13 +817,11 @@ color: #10b981; font-size: .6rem; font-weight: 800; letter-spacing: .06em; text-
 <img src="images/logo.png" alt="GoldTix" class="tf-logo" />
 <span class="tf-brand">GoldTix</span>
 </div>
-<span class="tf-tagline">Des événements qui marquent</span>
 <div class="tf-valid">
 <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
 <circle cx="5" cy="5" r="4.5" stroke="#d97706" stroke-width="1"/>
 <path d="M3 5l1.3 1.4L7 3.5" stroke="#d97706" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
-<span>Billet unique</span>
 </div>
 </div>
 </div>
@@ -828,7 +832,7 @@ color: #10b981; font-size: .6rem; font-weight: 800; letter-spacing: .06em; text-
 <polyline points="7 10 12 15 17 10"/>
 <line x1="12" y1="15" x2="12" y2="3"/>
 </svg>
-      Télécharger mon billet PDF
+      Télécharger mon billet en PDF
 </button>
 </div>
 
@@ -1045,7 +1049,10 @@ btn.style.display = 'none';
                   <div class="sp-step is-error"><span class="sp-step-dot">${svgCross}</span><span class="sp-step-label">Refusé</span></div>
                   <div class="sp-step"><span class="sp-step-dot">${svgTicket}</span><span class="sp-step-label">Billet prêt</span></div>
                 </div>
-                <div class="sp-reassure">${svgShield}<span>Contactez le bénéficiaire des paiements pour vérifier la réception. Dès que votre paiement est confirmé, votre billet sera disponible.</span></div>
+                <div class="sp-reassure">
+                  <span class="info-icon">ⓘ</span>
+                      <span>Contactez le bénéficiaire pour confirmer votre paiement. Votre billet sera disponible dès validation.</span>
+                </div>
               </div>`;
         }
         return `<div class="status-panel status-panel--done">
