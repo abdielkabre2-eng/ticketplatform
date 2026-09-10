@@ -980,6 +980,52 @@ img, svg, video, canvas {
                 transition: none !important;
             }
         }
+
+        /* =============================================================
+           ===== ANIMATION 1 : "RESPIRATION" DE L'AFFICHE (ajout uniquement)
+           Zoom avant/arrière très léger, en boucle continue, appliqué
+           uniquement sur l'image de l'affiche (#posterImgEl). On ne
+           touche pas au comportement au survol (.poster-wrapper:hover)
+           ni au reste du design : overflow:hidden sert uniquement à
+           garantir que le très léger zoom ne déborde jamais du cadre,
+           pour que l'affiche reste parfaitement nette et "propre".
+        ============================================================= */
+        .poster-wrapper {
+            overflow: hidden;
+        }
+        @keyframes gxPosterBreathe {
+            0%, 100% { transform: scale(1); }
+            50%      { transform: scale(1.03); }
+        }
+        #posterImgEl {
+            animation: gxPosterBreathe 7s ease-in-out infinite;
+            transform-origin: center center;
+            will-change: transform;
+            backface-visibility: hidden;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #posterImgEl { animation: none; }
+        }
+
+        /* =============================================================
+           ===== ANIMATION 2 : TITRE LETTRE PAR LETTRE (ajout uniquement)
+           Un texte "fantôme" invisible (mais présent dans le flux)
+           réserve exactement l'espace final du titre, pendant qu'un
+           texte superposé se remplit progressivement par-dessus.
+           Résultat : aucun décalage de mise en page pendant l'écriture.
+        ============================================================= */
+        .event-title { position: relative; }
+        .gx-title-ghost { visibility: hidden; }
+        .gx-title-visible {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .gx-title-ghost { visibility: visible; }
+            .gx-title-visible { display: none; }
+        }
     </style>
 </head>
 <body>
@@ -1298,6 +1344,66 @@ function gxObserveNow(root) {
             }
         }
 
+        // =============================================================
+        // ===== ANIMATION DU TITRE — LETTRE PAR LETTRE (ajout uniquement)
+        // Superpose un texte "fantôme" invisible (qui réserve l'espace
+        // final, donc aucun décalage de mise en page) et un texte visible
+        // rempli progressivement. Se répète 2 fois maximum puis se fige
+        // définitivement en texte simple, identique à l'origine.
+        // N'est appelée qu'au premier rendu de la fiche événement.
+        // =============================================================
+        const gxPrefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        function demarrerAnimationTitreGoldTix(titreEl, texteComplet, repetitionsMax) {
+            if (!titreEl || !texteComplet) return;
+            repetitionsMax = repetitionsMax || 2;
+
+            if (gxPrefersReducedMotion) {
+                titreEl.textContent = texteComplet;
+                return;
+            }
+
+            const texteEchappe = texteComplet.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            titreEl.innerHTML =
+                '<span class="gx-title-ghost" aria-hidden="true">' + texteEchappe + '</span>' +
+                '<span class="gx-title-visible"></span>';
+
+            const visibleEl = titreEl.querySelector('.gx-title-visible');
+            if (!visibleEl) { titreEl.textContent = texteComplet; return; }
+
+            const vitesseMs = 55;
+            const pauseEntreRepetitionsMs = 650;
+            let repetitionActuelle = 0;
+
+            function taperUneFois(callback) {
+                let index = 0;
+                visibleEl.textContent = "";
+                const intervalId = setInterval(function() {
+                    index++;
+                    visibleEl.textContent = texteComplet.slice(0, index);
+                    if (index >= texteComplet.length) {
+                        clearInterval(intervalId);
+                        if (callback) callback();
+                    }
+                }, vitesseMs);
+            }
+
+            function lancerRepetition() {
+                repetitionActuelle++;
+                taperUneFois(function() {
+                    if (repetitionActuelle < repetitionsMax) {
+                        setTimeout(lancerRepetition, pauseEntreRepetitionsMs);
+                    } else {
+                        // Terminé définitivement : retour à un texte simple et
+                        // fixe, identique à l'origine (plus de spans superposés).
+                        titreEl.textContent = texteComplet;
+                    }
+                });
+            }
+
+            lancerRepetition();
+        }
+
         // ─── VALIDATION EN LIGNE DES CHAMPS OBLIGATOIRES ───────────────────────────
         // Marque un champ (input/select classique OU le wrapper du champ fichier)
         // en erreur : bordure rouge + message "Ce champ est obligatoire." affiché
@@ -1571,6 +1677,13 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                 // l'intro ; ceux plus bas (sous le pli, mobile) n'apparaissent
                 // que lorsqu'on scrolle jusqu'à eux (IntersectionObserver).
                 if (window.gxObserveReveal) window.gxObserveReveal(container);
+
+                // Lance l'animation du titre lettre par lettre (2 répétitions
+                // maximum, puis arrêt définitif) uniquement au premier rendu.
+                const evTitreElPourAnim = document.getElementById("evTitreEl");
+                if (evTitreElPourAnim) {
+                    demarrerAnimationTitreGoldTix(evTitreElPourAnim, ev.titre || "", 2);
+                }
 
                 const posterImage = container.querySelector(".poster-wrapper img");
                 if (posterImage) {
