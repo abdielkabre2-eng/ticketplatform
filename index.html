@@ -325,6 +325,16 @@ img, svg, video, canvas {
             margin-top: 20px;
             border-top: 1px solid var(--border-neutral);
         }
+        .ticket-avail-label {
+            display: block;
+            font-family: 'Syne', sans-serif;
+            font-size: 11.5px;
+            font-weight: 700;
+            letter-spacing: 1.3px;
+            text-transform: uppercase;
+            color: var(--gold-2);
+            margin: 22px 0 4px;
+        }
         .ticket-price-row {
             display: flex;
             align-items: center;
@@ -1676,7 +1686,10 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
         <span><strong id="evLieuEl">${ev.lieu}</strong></span>
     </span>
 </div>
-                            <div class="gx-reveal gx-delay-3">${prixHTML}</div>
+                            <div class="gx-reveal gx-delay-3">
+                                <span class="ticket-avail-label">Ticket disponible</span>
+                                ${prixHTML}
+                            </div>
                         </div>
                         <div>${rightColumn}</div>
                     </div>`;
