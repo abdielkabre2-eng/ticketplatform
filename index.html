@@ -1354,6 +1354,25 @@ function gxObserveNow(root) {
         // =============================================================
         const gxPrefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+        // Attend que l'overlay d'introduction ait réellement disparu avant
+        // d'exécuter "callback". Sans ça, l'écriture du titre se déroulait
+        // pendant l'intro (masquée) et l'utilisateur ne voyait que le
+        // résultat déjà figé à l'ouverture de la page.
+        function gxAttendreFinIntroPourTitre(callback) {
+            const overlay = document.getElementById('introOverlayGoldTix');
+            if (!overlay || overlay.classList.contains('intro-exit') || overlay.classList.contains('intro-hidden')) {
+                callback();
+                return;
+            }
+            const observer = new MutationObserver(function() {
+                if (overlay.classList.contains('intro-exit') || overlay.classList.contains('intro-hidden')) {
+                    observer.disconnect();
+                    callback();
+                }
+            });
+            observer.observe(overlay, { attributes: true, attributeFilter: ['class'] });
+        }
+
         function demarrerAnimationTitreGoldTix(titreEl, texteComplet, repetitionsMax) {
             if (!titreEl || !texteComplet) return;
             repetitionsMax = repetitionsMax || 2;
@@ -1371,8 +1390,8 @@ function gxObserveNow(root) {
             const visibleEl = titreEl.querySelector('.gx-title-visible');
             if (!visibleEl) { titreEl.textContent = texteComplet; return; }
 
-            const vitesseMs = 55;
-            const pauseEntreRepetitionsMs = 650;
+            const vitesseMs = 110;
+            const pauseEntreRepetitionsMs = 900;
             let repetitionActuelle = 0;
 
             function taperUneFois(callback) {
@@ -1679,10 +1698,15 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                 if (window.gxObserveReveal) window.gxObserveReveal(container);
 
                 // Lance l'animation du titre lettre par lettre (2 répétitions
-                // maximum, puis arrêt définitif) uniquement au premier rendu.
+                // maximum, puis arrêt définitif) uniquement au premier rendu,
+                // et seulement une fois l'overlay d'introduction disparu, pour
+                // que l'utilisateur voie réellement le texte s'écrire.
                 const evTitreElPourAnim = document.getElementById("evTitreEl");
                 if (evTitreElPourAnim) {
-                    demarrerAnimationTitreGoldTix(evTitreElPourAnim, ev.titre || "", 2);
+                    const texteTitreCourant = ev.titre || "";
+                    gxAttendreFinIntroPourTitre(function() {
+                        demarrerAnimationTitreGoldTix(evTitreElPourAnim, texteTitreCourant, 2);
+                    });
                 }
 
                 const posterImage = container.querySelector(".poster-wrapper img");
