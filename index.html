@@ -1348,9 +1348,9 @@ function gxObserveNow(root) {
         // ===== ANIMATION DU TITRE — LETTRE PAR LETTRE (ajout uniquement)
         // Superpose un texte "fantôme" invisible (qui réserve l'espace
         // final, donc aucun décalage de mise en page) et un texte visible
-        // rempli progressivement. Se répète 2 fois maximum puis se fige
-        // définitivement en texte simple, identique à l'origine.
-        // N'est appelée qu'au premier rendu de la fiche événement.
+        // rempli progressivement. Tourne en boucle continue tant que la
+        // page reste ouverte. N'est appelée qu'au premier rendu de la
+        // fiche événement.
         // =============================================================
         const gxPrefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -1408,15 +1408,8 @@ function gxObserveNow(root) {
             }
 
             function lancerRepetition() {
-                repetitionActuelle++;
                 taperUneFois(function() {
-                    if (repetitionActuelle < repetitionsMax) {
-                        setTimeout(lancerRepetition, pauseEntreRepetitionsMs);
-                    } else {
-                        // Terminé définitivement : retour à un texte simple et
-                        // fixe, identique à l'origine (plus de spans superposés).
-                        titreEl.textContent = texteComplet;
-                    }
+                    setTimeout(lancerRepetition, pauseEntreRepetitionsMs);
                 });
             }
 
