@@ -322,8 +322,19 @@ img, svg, video, canvas {
            CATÉGORIES / PRIX — présentées comme une liste de billets
         ============================================= */
         .ticket-price-list {
-            margin-top: 20px;
+            margin-top: 6px;
             border-top: 1px solid var(--border-neutral);
+        }
+        .ticket-avail-label {
+            display: block;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.2px;
+            text-transform: none;
+            text-align: center;
+            color: #78828f;
+            margin: 22px 0 2px;
         }
         .ticket-price-row {
             display: flex;
@@ -980,6 +991,52 @@ img, svg, video, canvas {
                 transition: none !important;
             }
         }
+
+        /* =============================================================
+           ===== ANIMATION 1 : "RESPIRATION" DE L'AFFICHE (ajout uniquement)
+           Zoom avant/arrière très léger, en boucle continue, appliqué
+           uniquement sur l'image de l'affiche (#posterImgEl). On ne
+           touche pas au comportement au survol (.poster-wrapper:hover)
+           ni au reste du design : overflow:hidden sert uniquement à
+           garantir que le très léger zoom ne déborde jamais du cadre,
+           pour que l'affiche reste parfaitement nette et "propre".
+        ============================================================= */
+        .poster-wrapper {
+            overflow: hidden;
+        }
+        @keyframes gxPosterBreathe {
+            0%, 100% { transform: scale(1); }
+            50%      { transform: scale(1.03); }
+        }
+        #posterImgEl {
+            animation: gxPosterBreathe 7s ease-in-out infinite;
+            transform-origin: center center;
+            will-change: transform;
+            backface-visibility: hidden;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #posterImgEl { animation: none; }
+        }
+
+        /* =============================================================
+           ===== ANIMATION 2 : TITRE LETTRE PAR LETTRE (ajout uniquement)
+           Un texte "fantôme" invisible (mais présent dans le flux)
+           réserve exactement l'espace final du titre, pendant qu'un
+           texte superposé se remplit progressivement par-dessus.
+           Résultat : aucun décalage de mise en page pendant l'écriture.
+        ============================================================= */
+        .event-title { position: relative; }
+        .gx-title-ghost { visibility: hidden; }
+        .gx-title-visible {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .gx-title-ghost { visibility: visible; }
+            .gx-title-visible { display: none; }
+        }
     </style>
 </head>
 <body>
@@ -1298,6 +1355,78 @@ function gxObserveNow(root) {
             }
         }
 
+        // =============================================================
+        // ===== ANIMATION DU TITRE — LETTRE PAR LETTRE (ajout uniquement)
+        // Superpose un texte "fantôme" invisible (qui réserve l'espace
+        // final, donc aucun décalage de mise en page) et un texte visible
+        // rempli progressivement. Tourne en boucle continue tant que la
+        // page reste ouverte. N'est appelée qu'au premier rendu de la
+        // fiche événement.
+        // =============================================================
+        const gxPrefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // Attend que l'overlay d'introduction ait réellement disparu avant
+        // d'exécuter "callback". Sans ça, l'écriture du titre se déroulait
+        // pendant l'intro (masquée) et l'utilisateur ne voyait que le
+        // résultat déjà figé à l'ouverture de la page.
+        function gxAttendreFinIntroPourTitre(callback) {
+            const overlay = document.getElementById('introOverlayGoldTix');
+            if (!overlay || overlay.classList.contains('intro-exit') || overlay.classList.contains('intro-hidden')) {
+                callback();
+                return;
+            }
+            const observer = new MutationObserver(function() {
+                if (overlay.classList.contains('intro-exit') || overlay.classList.contains('intro-hidden')) {
+                    observer.disconnect();
+                    callback();
+                }
+            });
+            observer.observe(overlay, { attributes: true, attributeFilter: ['class'] });
+        }
+
+        function demarrerAnimationTitreGoldTix(titreEl, texteComplet, repetitionsMax) {
+            if (!titreEl || !texteComplet) return;
+            repetitionsMax = repetitionsMax || 2;
+
+            if (gxPrefersReducedMotion) {
+                titreEl.textContent = texteComplet;
+                return;
+            }
+
+            const texteEchappe = texteComplet.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            titreEl.innerHTML =
+                '<span class="gx-title-ghost" aria-hidden="true">' + texteEchappe + '</span>' +
+                '<span class="gx-title-visible"></span>';
+
+            const visibleEl = titreEl.querySelector('.gx-title-visible');
+            if (!visibleEl) { titreEl.textContent = texteComplet; return; }
+
+            const vitesseMs = 110;
+            const pauseEntreRepetitionsMs = 900;
+            let repetitionActuelle = 0;
+
+            function taperUneFois(callback) {
+                let index = 0;
+                visibleEl.textContent = "";
+                const intervalId = setInterval(function() {
+                    index++;
+                    visibleEl.textContent = texteComplet.slice(0, index);
+                    if (index >= texteComplet.length) {
+                        clearInterval(intervalId);
+                        if (callback) callback();
+                    }
+                }, vitesseMs);
+            }
+
+            function lancerRepetition() {
+                taperUneFois(function() {
+                    setTimeout(lancerRepetition, pauseEntreRepetitionsMs);
+                });
+            }
+
+            lancerRepetition();
+        }
+
         // ─── VALIDATION EN LIGNE DES CHAMPS OBLIGATOIRES ───────────────────────────
         // Marque un champ (input/select classique OU le wrapper du champ fichier)
         // en erreur : bordure rouge + message "Ce champ est obligatoire." affiché
@@ -1448,7 +1577,17 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
 
                     rightColumn = `
                         <div class="card anim-3">
-
+                                 <p class="gx-reveal gx-delay-3" style="
+                                     text-align:center;
+                                     font-family:'Syne', sans-serif;
+                                     font-size:12px;
+                                     font-weight:800;
+                                     letter-spacing:0.3px;
+                                     color: var(--gold-3);
+                                     margin-bottom: 18px;
+                                 ">
+                                     🎟️ J'achète mon billet
+                                 </p>
                             <!-- ETAPE 1 : PAIEMENT -->
                             <div class="payment-box gx-reveal gx-delay-4">
                                 <div class="step-heading">
@@ -1558,7 +1697,10 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
         <span><strong id="evLieuEl">${ev.lieu}</strong></span>
     </span>
 </div>
-                            <div class="gx-reveal gx-delay-3">${prixHTML}</div>
+                            <div class="gx-reveal gx-delay-3">
+                                <span class="ticket-avail-label">Tarif(s) billet(s)</span>
+                                ${prixHTML}
+                            </div>
                         </div>
                         <div>${rightColumn}</div>
                     </div>`;
@@ -1571,6 +1713,18 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                 // l'intro ; ceux plus bas (sous le pli, mobile) n'apparaissent
                 // que lorsqu'on scrolle jusqu'à eux (IntersectionObserver).
                 if (window.gxObserveReveal) window.gxObserveReveal(container);
+
+                // Lance l'animation du titre lettre par lettre (2 répétitions
+                // maximum, puis arrêt définitif) uniquement au premier rendu,
+                // et seulement une fois l'overlay d'introduction disparu, pour
+                // que l'utilisateur voie réellement le texte s'écrire.
+                const evTitreElPourAnim = document.getElementById("evTitreEl");
+                if (evTitreElPourAnim) {
+                    const texteTitreCourant = ev.titre || "";
+                    gxAttendreFinIntroPourTitre(function() {
+                        demarrerAnimationTitreGoldTix(evTitreElPourAnim, texteTitreCourant, 2);
+                    });
+                }
 
                 const posterImage = container.querySelector(".poster-wrapper img");
                 if (posterImage) {
