@@ -482,6 +482,38 @@ img, svg, video, canvas {
             object-fit: contain;
         }
 
+.btn-download-rib {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    margin-top: 12px;
+    padding: 10px 18px;
+    background: #fff;
+    color: var(--gold-3);
+    border: 1.5px solid var(--gold-2);
+    border-radius: var(--radius-md);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.btn-download-rib svg { width: 15px; height: 15px; }
+.btn-download-rib:hover:not(:disabled) {
+    background: var(--gold-gradient);
+    color: #fff;
+    border-color: transparent;
+}
+.btn-download-rib:disabled { opacity: 0.7; cursor: not-allowed; }
+.btn-download-rib .spinner {
+    width: 13px; height: 13px;
+    border: 2px solid rgba(180,131,42,0.25);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+        
         /* =============================================
            FORM
         ============================================= */
@@ -1298,6 +1330,7 @@ function gxObserveNow(root) {
             phone:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.65 3.27 2 2 0 0 1 3.62 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.29 6.29l1.02-.88a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`,
             mobile:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>`,
             card:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>`,
+            download: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`,
             upload:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>`,
             check:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
             image:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
@@ -1426,6 +1459,48 @@ function gxObserveNow(root) {
 
             lancerRepetition();
         }
+
+function gxTelechargerRIB(url, btnEl) {
+    if (!url) return;
+    const texteOriginal = btnEl.innerHTML;
+    btnEl.disabled = true;
+    btnEl.innerHTML = `<div class="spinner"></div> Téléchargement...`;
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+
+    img.onload = function () {
+        try {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            canvas.getContext('2d').drawImage(img, 0, 0);
+
+            const lien = document.createElement('a');
+            lien.href = canvas.toDataURL('image/png');
+            lien.download = 'RIB-GoldTix.png';
+            document.body.appendChild(lien);
+            lien.click();
+            document.body.removeChild(lien);
+        } catch (err) {
+            console.error('Erreur téléchargement RIB (canvas) :', err);
+            window.open(url, '_blank');
+        } finally {
+            btnEl.disabled = false;
+            btnEl.innerHTML = texteOriginal;
+        }
+    };
+
+    img.onerror = function () {
+        console.error('Erreur chargement image RIB pour téléchargement.');
+        window.open(url, '_blank');
+        btnEl.disabled = false;
+        btnEl.innerHTML = texteOriginal;
+    };
+
+    img.src = url;
+}
+
 
         // ─── VALIDATION EN LIGNE DES CHAMPS OBLIGATOIRES ───────────────────────────
         // Marque un champ (input/select classique OU le wrapper du champ fichier)
@@ -1567,13 +1642,16 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
 
                     // QR / RIB
                     const qrSection = (ev.rib_image_url || ev.qr_code_paiement) ? `
-                        <div class="qr-wrapper">
-                            <p class="qr-label">
-                                ${ICONS.card}
-                                RIB du bénéficiaire ci-dessous
-                            </p>
-                            <img src="${ev.rib_image_url || ev.qr_code_paiement}" alt="Support de paiement" class="qr-image">
-                        </div>` : "";
+                         <div class="qr-wrapper">
+                              <p class="qr-label">
+                                 ${ICONS.card}
+                                 RIB du bénéficiaire ci-dessous
+                              </p>
+                              <img src="${ev.rib_image_url || ev.qr_code_paiement}" alt="Support de paiement" class="qr-image">
+                              <button type="button" class="btn-download-rib" onclick="gxTelechargerRIB('${ev.rib_image_url || ev.qr_code_paiement}', this)">
+                                  ${ICONS.download} Télécharger le RIB
+                              </button>
+                         </div>` : "";
 
                     rightColumn = `
                         <div class="card anim-3">

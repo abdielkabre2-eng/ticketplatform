@@ -233,29 +233,29 @@ img, svg, video, canvas {
         /* =============================================
            POSTER
         ============================================= */
+        .poster-wrapper {
+            background: #fffdf7;
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius-lg);
+            padding: 10px;
+            position: relative;
+        }
         .poster-wrapper img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;            /* remplit tout le cadre au lieu de "contain" */
-    object-position: center center;
-}
+            display: block;
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            border-radius: calc(var(--radius-lg) - 6px);
+        }
         .poster-wrapper:hover { transform: scale(1.012); }
         .poster-wrapper::after {
             content: '';
             position: absolute;
-            inset: 0;
-            border-radius: inherit;
+            inset: 10px;
+            border-radius: calc(var(--radius-lg) - 6px);
             box-shadow: inset 0 0 0 1px rgba(23,21,15,0.06);
             pointer-events: none;
         }
-        .poster-wrapper img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;            /* remplit tout le cadre au lieu de "contain" */
-    object-position: center center;
-}
         .poster-fallback {
             width: 100%;
             min-height: 280px;
