@@ -1465,21 +1465,17 @@ function gxTelechargerRIB(url, btnEl) {
     if (!url) return;
 
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-    // Sur mobile : on ouvre directement l'URL réelle de l'image (pas de
-    // canvas/data-URL, que Safari iOS bloque en navigation directe et qui
-    // provoquait la page blanche). L'utilisateur fait ensuite un appui
-    // long sur l'image pour l'enregistrer — méthode fiable sur iOS/Android.
-    if (isMobile) {
-        window.open(url, '_blank');
-        return;
-    }
-
-    // Sur PC : on garde le canvas pour déclencher un vrai téléchargement
-    // automatique du fichier (comportement attendu sur ordinateur).
     const texteOriginal = btnEl.innerHTML;
     btnEl.disabled = true;
     btnEl.innerHTML = `<div class="spinner"></div> Téléchargement...`;
+
+    // Comme pour telechargerPDF() : sur mobile, on ouvre la fenêtre
+    // IMMÉDIATEMENT et de façon synchrone dans le clic (sinon bloqué
+    // comme pop-up), puis on la redirige une fois le blob prêt.
+    let fenetreMobile = null;
+    if (isMobile) {
+        fenetreMobile = window.open('', '_blank');
+    }
 
     const img = new Image();
     img.crossOrigin = 'anonymous';
@@ -1491,16 +1487,39 @@ function gxTelechargerRIB(url, btnEl) {
             canvas.height = img.naturalHeight;
             canvas.getContext('2d').drawImage(img, 0, 0);
 
-            const lien = document.createElement('a');
-            lien.href = canvas.toDataURL('image/png');
-            lien.download = 'RIB-GoldTix.png';
-            document.body.appendChild(lien);
-            lien.click();
-            document.body.removeChild(lien);
+            // toBlob (et non toDataURL) : produit un vrai fichier binaire,
+            // exactement comme pdf.output('blob') dans telechargerPDF().
+            canvas.toBlob(function (blob) {
+                if (!blob) throw new Error('Blob vide');
+                const blobURL = URL.createObjectURL(blob);
+
+                if (isMobile) {
+                    if (fenetreMobile) {
+                        fenetreMobile.location.href = blobURL;
+                    } else {
+                        window.location.href = blobURL;
+                    }
+                } else {
+                    const lien = document.createElement('a');
+                    lien.href = blobURL;
+                    lien.download = 'RIB-GoldTix.png';
+                    document.body.appendChild(lien);
+                    lien.click();
+                    document.body.removeChild(lien);
+                }
+
+                setTimeout(() => URL.revokeObjectURL(blobURL), 60000);
+                btnEl.disabled = false;
+                btnEl.innerHTML = texteOriginal;
+            }, 'image/png');
+
         } catch (err) {
             console.error('Erreur téléchargement RIB (canvas) :', err);
-            window.open(url, '_blank');
-        } finally {
+            if (isMobile && fenetreMobile) {
+                fenetreMobile.location.href = url;
+            } else {
+                window.open(url, '_blank');
+            }
             btnEl.disabled = false;
             btnEl.innerHTML = texteOriginal;
         }
@@ -1508,7 +1527,11 @@ function gxTelechargerRIB(url, btnEl) {
 
     img.onerror = function () {
         console.error('Erreur chargement image RIB pour téléchargement.');
-        window.open(url, '_blank');
+        if (isMobile && fenetreMobile) {
+            fenetreMobile.location.href = url;
+        } else {
+            window.open(url, '_blank');
+        }
         btnEl.disabled = false;
         btnEl.innerHTML = texteOriginal;
     };
