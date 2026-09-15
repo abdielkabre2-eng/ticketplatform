@@ -1466,6 +1466,18 @@ function gxTelechargerRIB(url, btnEl) {
     btnEl.disabled = true;
     btnEl.innerHTML = `<div class="spinner"></div> Téléchargement...`;
 
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    // Sur mobile (surtout iOS Safari) : l'attribut "download" d'un <a> est
+    // ignoré, et window.open() appelé APRÈS un chargement asynchrone est
+    // bloqué comme pop-up. On ouvre donc l'onglet immédiatement et de
+    // façon synchrone dans le clic, puis on le redirige une fois l'image
+    // prête — même technique que telechargerPDF() plus haut dans la page.
+    let fenetreMobile = null;
+    if (isMobile) {
+        fenetreMobile = window.open('', '_blank');
+    }
+
     const img = new Image();
     img.crossOrigin = 'anonymous';
 
@@ -1475,16 +1487,29 @@ function gxTelechargerRIB(url, btnEl) {
             canvas.width = img.naturalWidth;
             canvas.height = img.naturalHeight;
             canvas.getContext('2d').drawImage(img, 0, 0);
+            const dataUrl = canvas.toDataURL('image/png');
 
-            const lien = document.createElement('a');
-            lien.href = canvas.toDataURL('image/png');
-            lien.download = 'RIB-GoldTix.png';
-            document.body.appendChild(lien);
-            lien.click();
-            document.body.removeChild(lien);
+            if (isMobile) {
+                if (fenetreMobile) {
+                    fenetreMobile.location.href = dataUrl;
+                } else {
+                    window.location.href = url;
+                }
+            } else {
+                const lien = document.createElement('a');
+                lien.href = dataUrl;
+                lien.download = 'RIB-GoldTix.png';
+                document.body.appendChild(lien);
+                lien.click();
+                document.body.removeChild(lien);
+            }
         } catch (err) {
             console.error('Erreur téléchargement RIB (canvas) :', err);
-            window.open(url, '_blank');
+            if (isMobile && fenetreMobile) {
+                fenetreMobile.location.href = url;
+            } else {
+                window.open(url, '_blank');
+            }
         } finally {
             btnEl.disabled = false;
             btnEl.innerHTML = texteOriginal;
@@ -1493,7 +1518,11 @@ function gxTelechargerRIB(url, btnEl) {
 
     img.onerror = function () {
         console.error('Erreur chargement image RIB pour téléchargement.');
-        window.open(url, '_blank');
+        if (isMobile && fenetreMobile) {
+            fenetreMobile.location.href = url;
+        } else {
+            window.open(url, '_blank');
+        }
         btnEl.disabled = false;
         btnEl.innerHTML = texteOriginal;
     };
