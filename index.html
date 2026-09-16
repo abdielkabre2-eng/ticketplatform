@@ -1559,7 +1559,7 @@ if (ev.ventes_fermees) {
 if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_data.length > 0) {
     const options = genererOptionsCategorieAchat(ev);
     categorieHTML = `
-        <div class="form-group gx-reveal gx-delay-5">
+        <div class="form-group gx-reveal gx-delay-4">
             <label for="selectCategorie">Catégorie de billet</label>
             <select id="selectCategorie">${options}</select>
         </div>`;
@@ -1576,25 +1576,28 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                         </div>` : "";
 
                     rightColumn = `
-                       <div class="card anim-3">
-    <p class="gx-reveal gx-delay-3" style="
-        text-align:center;
-        font-family:'Poppins', sans-serif;
-        font-size:13px;
-        font-weight:600;
-        letter-spacing:0.3px;
-        color: #4a3b32;
-        margin-bottom: 18px;
-    ">
-        Suivez les étapes ci-dessous pour acheter votre billet en quelques instants.
-    </p>
-</div>
+                        <div class="card anim-3">
+                            <p class="gx-reveal gx-delay-3" style="
+                                text-align:center;
+                                font-family:'Poppins', sans-serif;
+                                font-size:13px;
+                                font-weight:600;
+                                letter-spacing:0.3px;
+                                color: #4a3b32;
+                                margin-bottom: 18px;
+                            ">
+                                Suivez les étapes ci-dessous pour acheter votre billet en quelques instants.
+                            </p>
+
                             <!-- ETAPE 1 : PAIEMENT -->
                             <div class="payment-box gx-reveal gx-delay-4">
                                 <div class="step-heading">
                                     <span class="step-heading-number">1</span>
                                     <span class="step-heading-text">Effectuez le paiement</span>
                                 </div>
+
+                                ${categorieHTML}
+
                                 <div class="info-rows">
                                     <div class="info-row">
                                         <span class="info-row-label">${ICONS.user} Bénéficiaire des paiements</span>
@@ -1613,8 +1616,6 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                                 <span class="step-heading-number">2</span>
                                 <span class="step-heading-text">Confirmer mon paiement</span>
                             </div>
-
-                            ${categorieHTML}
 
                             <div class="form-group gx-reveal gx-delay-5">
                                 <label for="nomParticipant">Nom et Prénom(s) <span class="required-mark" style="color: red;">*</span></label>
