@@ -1286,6 +1286,15 @@ function gxObserveNow(root) {
              CSS et le HTML injecté ont été retravaillés pour un rendu
              plus premium. Aucune logique métier, aucun appel réseau,
              aucun identifiant fonctionnel (id="...") n'a été modifié.
+           - Correction d'alignement (cette version) : le titre de
+             l'étape 1 ("Choisissez votre catégorie...") est désormais
+             placé HORS de la boîte dorée .payment-box, directement au
+             même niveau que le titre de l'étape 2 ("Confirmer mon
+             paiement"). Auparavant, l'étape 1 héritait en plus du
+             padding interne de .payment-box (24px), ce qui la décalait
+             vers la droite par rapport à l'étape 2 : les deux titres ne
+             partageaient donc pas le même axe vertical gauche. Aucune
+             autre logique n'a été modifiée.
         ============================================= */
 
         // ─── SVG ICONS ────────────────────────────────────────────────────────────
@@ -1586,16 +1595,15 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                                 color: #4a3b32;
                                 margin-bottom: 18px;
                             ">
-                                Suivez les étapes ci-dessous pour acheter votre billet en quelques instants.
+                                Suivez les étapes ci-dessous pour procéder à l'achat de votre billet.
                             </p>
 
                             <!-- ETAPE 1 : PAIEMENT -->
+                            <div class="step-heading gx-reveal gx-delay-4">
+                                <span class="step-heading-number">1</span>
+                                <span class="step-heading-text">Choisissez votre catégorie de billet puis effectuez le paiement</span>
+                            </div>
                             <div class="payment-box gx-reveal gx-delay-4">
-                                <div class="step-heading">
-                                    <span class="step-heading-number">1</span>
-                                    <span class="step-heading-text">Choisissez votre catégorie de billet puis effectuez le paiement</span>
-                                </div>
-
                                 ${categorieHTML}
 
                                 <div class="info-rows">
