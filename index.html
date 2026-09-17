@@ -1532,7 +1532,7 @@ function gxObserveNow(root) {
         // fonctionne aussi bien sur mobile que sur ordinateur.
         async function gxTelechargerRib(url, btnEl, statusEl) {
             if (!url || !btnEl) return;
-            const nomFichier = gxNomFichierDepuisUrl(url, "RIB-GoldTix");
+            const nomFichier = gxNomFichierDepuisUrl(url, "RIB du bénéficiaire");
             const contenuOriginalBtn = btnEl.innerHTML;
             btnEl.disabled = true;
             btnEl.innerHTML = `${ICONS.download} Téléchargement...`;
