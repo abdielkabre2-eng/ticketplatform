@@ -805,10 +805,77 @@ img, svg, video, canvas {
         ============================================= */
         @media (max-width: 600px) {
             body { padding: 18px 14px 70px; }
-            .card { padding: 22px 18px; }
-            .event-title { font-size: 23px; }
+            .card { padding: 20px 16px; }
+            .event-title { font-size: 22px; margin-bottom: 12px; }
             .poster-wrapper { margin-bottom: 20px; }
             .poster-fallback { min-height: 180px; }
+
+            /* Navbar plus compacte */
+            .navbar { padding: 10px 14px; margin-bottom: 26px; }
+            .brand-name { font-size: 1rem; }
+            .secure-badge { font-size: 10px; padding: 6px 10px; }
+
+            /* Chips de meta-infos (date / heure / lieu) plus discrets */
+            .meta-chips { gap: 6px; margin-bottom: 18px; }
+            .meta-chip { font-size: 12px; padding: 6px 11px; gap: 5px; }
+            .meta-chip svg { width: 13px; height: 13px; }
+
+            /* Tarifs */
+            .ticket-avail-label { font-size: 12px; margin: 16px 0 2px; }
+            .ticket-price-row { padding: 11px 2px; }
+            .ticket-price-row-name { font-size: 13.5px; gap: 8px; }
+            .ticket-price-row-price { font-size: 14.5px; }
+            .ticket-price-single { font-size: 13.5px; padding: 13px 16px; }
+
+            /* Bloc paiement / titres d'étapes */
+            .payment-box { padding: 18px; margin-bottom: 22px; }
+            .step-heading { gap: 10px; margin-bottom: 14px; }
+            .step-heading-number { width: 24px; height: 24px; font-size: 11.5px; }
+            .step-heading-text { font-size: 15px; }
+
+            .info-row { padding: 10px 12px; }
+            .info-row-label { font-size: 11.5px; }
+            .info-row-value { font-size: 13px; }
+
+            .qr-wrapper { padding: 14px; }
+            .qr-image { max-width: 160px; }
+            .rib-download-btn { font-size: 12px; padding: 7px 12px; }
+            .rib-download-status { font-size: 11px; }
+
+            /* Formulaire */
+            .form-group { margin-bottom: 16px; }
+            .form-group label { font-size: 12.5px; margin-bottom: 6px; }
+            /* font-size fixé à 16px (et non réduit) : en dessous, Safari iOS
+               zoome automatiquement sur le champ au focus, ce qui casse la
+               mise en page sur téléphone. */
+            input[type="text"],
+            input[type="email"],
+            input[type="tel"],
+            select {
+                padding: 12.5px 14px;
+                font-size: 16px;
+            }
+            .file-input-display { padding: 20px 16px; gap: 6px; }
+            .file-input-display svg { width: 22px; height: 22px; }
+            .file-input-display span { font-size: 12.5px; }
+            .file-input-display em { font-size: 11px; }
+            .gx-field-error-msg { font-size: 11px; }
+
+            .btn-submit { font-size: 14.5px; padding: 15px 20px; gap: 8px; }
+
+            /* Footer */
+            .footer { margin-top: 44px; padding-top: 20px; font-size: 12px; }
+            .footer-description { font-size: 12px; }
+            .footer-about-links a { font-size: 12px; padding: 7px 12px; }
+        }
+
+        /* Ajustements supplémentaires pour les très petits écrans
+           (ex. iPhone SE et petits Android). */
+        @media (max-width: 380px) {
+            .event-title { font-size: 20px; }
+            .step-heading-text { font-size: 14px; }
+            .meta-chip { font-size: 11px; padding: 5px 9px; }
+            .btn-submit { font-size: 13.5px; padding: 14px 16px; }
         }
 
         /* =============================================================
