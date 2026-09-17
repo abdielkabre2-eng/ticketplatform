@@ -510,6 +510,17 @@ img, svg, video, canvas {
             opacity: 0.7;
             cursor: wait;
         }
+        .rib-download-status {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            margin-top: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--green);
+        }
+        .rib-download-status.gx-visible { display: flex; }
+        .rib-download-status svg { width: 13px; height: 13px; flex-shrink: 0; }
 
         /* =============================================
            FORM
@@ -1519,12 +1530,16 @@ function gxObserveNow(root) {
         // stricte côté hébergeur), on retombe sur l'ouverture de l'image dans un
         // nouvel onglet, où l'utilisateur peut l'enregistrer manuellement — cela
         // fonctionne aussi bien sur mobile que sur ordinateur.
-        async function gxTelechargerRib(url, btnEl) {
+        async function gxTelechargerRib(url, btnEl, statusEl) {
             if (!url || !btnEl) return;
             const nomFichier = gxNomFichierDepuisUrl(url, "RIB-GoldTix");
             const contenuOriginalBtn = btnEl.innerHTML;
             btnEl.disabled = true;
             btnEl.innerHTML = `${ICONS.download} Téléchargement...`;
+            if (statusEl) {
+                statusEl.classList.remove("gx-visible");
+                statusEl.innerHTML = "";
+            }
             try {
                 const reponse = await fetchAvecTimeout(url, { mode: 'cors' }, 20000);
                 if (!reponse.ok) throw new Error("Réponse réseau invalide (" + reponse.status + ")");
@@ -1537,9 +1552,19 @@ function gxObserveNow(root) {
                 lienTemp.click();
                 document.body.removeChild(lienTemp);
                 setTimeout(function() { URL.revokeObjectURL(objectUrl); }, 4000);
+                if (statusEl) {
+                    statusEl.innerHTML = `${ICONS.check} <span>RIB enregistré dans vos téléchargements.</span>`;
+                    statusEl.classList.add("gx-visible");
+                    setTimeout(function() { statusEl.classList.remove("gx-visible"); }, 5000);
+                }
             } catch (err) {
                 console.error("Téléchargement direct du RIB impossible, ouverture dans un nouvel onglet :", err);
                 window.open(url, "_blank", "noopener");
+                if (statusEl) {
+                    statusEl.innerHTML = `${ICONS.alertCircle} <span>Le RIB s'est ouvert dans un nouvel onglet — enregistrez-le depuis là.</span>`;
+                    statusEl.classList.add("gx-visible");
+                    setTimeout(function() { statusEl.classList.remove("gx-visible"); }, 6000);
+                }
             } finally {
                 btnEl.disabled = false;
                 btnEl.innerHTML = contenuOriginalBtn;
@@ -1679,6 +1704,7 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                                     ${ICONS.download}
                                     Télécharger le RIB
                                 </button>
+                                <p class="rib-download-status" id="ribDownloadStatus"></p>
                             </div>
                         </div>` : "";
 
@@ -1856,8 +1882,9 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                     const btnTelechargerRib = document.getElementById("btnTelechargerRib");
                     if (btnTelechargerRib) {
                         const urlRib = ev.rib_image_url || ev.qr_code_paiement;
+                        const ribDownloadStatusEl = document.getElementById("ribDownloadStatus");
                         btnTelechargerRib.addEventListener("click", function() {
-                            gxTelechargerRib(urlRib, btnTelechargerRib);
+                            gxTelechargerRib(urlRib, btnTelechargerRib, ribDownloadStatusEl);
                         });
                     }
 
