@@ -482,32 +482,33 @@ img, svg, video, canvas {
             object-fit: contain;
         }
 
-        /* Petit lien discret "Télécharger le RIB", sous l'image du RIB. */
+                /* Petit bouton discret "Télécharger le RIB", sous l'image du RIB. */
         .rib-download-btn {
             display: inline-flex;
             align-items: center;
             gap: 6px;
             margin-top: 12px;
-            padding: 0;
-            background: none;
-            border: none;
-            color: var(--gold-3);
+            padding: 7px 14px;
+            background: transparent;
+            color: var(--text);
+            border: 1px solid rgba(217,119,6,0.4);
+            border-radius: 30px;
             font-family: 'DM Sans', sans-serif;
-            font-size: 13px;
-            font-weight: 700;
-            text-decoration: underline;
-            text-underline-offset: 3px;
+            font-size: 12.5px;
+            font-weight: 600;
             cursor: pointer;
+            transition: var(--transition);
         }
         .rib-download-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
         .rib-download-btn:hover:not(:disabled) {
-            color: var(--gold-2);
+            border-color: var(--gold-2);
+            background: rgba(217,119,6,0.06);
         }
         .rib-download-btn:disabled {
             opacity: 0.6;
             cursor: wait;
-            text-decoration: none;
         }
+        
         .rib-download-status {
             display: none;
             align-items: center;
