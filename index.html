@@ -482,6 +482,35 @@ img, svg, video, canvas {
             object-fit: contain;
         }
 
+        /* Petit bouton discret "Télécharger le RIB", sous l'image du RIB. */
+        .rib-download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 12px;
+            padding: 8px 14px;
+            background: linear-gradient(135deg, var(--text) 0%, #2a2718 100%);
+            color: var(--gold-1);
+            border: 1px solid rgba(245,158,11,0.35);
+            border-radius: 30px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 12.5px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .rib-download-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+        .rib-download-btn:hover:not(:disabled) {
+            border-color: var(--gold-1);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px -6px rgba(217,119,6,0.4);
+        }
+        .rib-download-btn:disabled {
+            opacity: 0.7;
+            cursor: wait;
+        }
+
         /* =============================================
            FORM
         ============================================= */
@@ -1295,6 +1324,14 @@ function gxObserveNow(root) {
              vers la droite par rapport à l'étape 2 : les deux titres ne
              partageaient donc pas le même axe vertical gauche. Aucune
              autre logique n'a été modifiée.
+           - Ajout (cette version) : petit bouton "Télécharger le RIB" sous
+             l'image du RIB déjà affichée (qrSection). Il télécharge le
+             fichier original (fetch + blob → lien "download"), jamais une
+             capture d'écran ni une version dégradée, avec repli sur
+             l'ouverture dans un nouvel onglet si le fetch échoue (ex.
+             restriction CORS côté hébergeur). Aucune autre logique
+             (Supabase, parcours de paiement, reste du design) n'a été
+             modifiée.
         ============================================= */
 
         // ─── SVG ICONS ────────────────────────────────────────────────────────────
@@ -1312,6 +1349,7 @@ function gxObserveNow(root) {
             image:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
             mail:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`,
             alertCircle: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+            download: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`,
         };
 
         // Taille maximale acceptée pour la preuve de paiement (cohérent avec le
@@ -1454,6 +1492,60 @@ function gxObserveNow(root) {
             erreurMsgEl.classList.remove('gx-visible');
         }
 
+        // ─── TÉLÉCHARGEMENT DU RIB ──────────────────────────────────────────────
+        // Déduit une extension de fichier réelle depuis l'URL de l'image du RIB
+        // (ex: ".jpg", ".webp"). Si l'URL ne contient pas d'extension exploitable
+        // (URL Supabase signée sans extension apparente, etc.), on retombe sur
+        // ".png" par défaut.
+        function gxNomFichierDepuisUrl(url, nomParDefaut) {
+            try {
+                const pathname = new URL(url, window.location.href).pathname;
+                const segment = pathname.split('/').pop() || "";
+                const correspondance = segment.match(/\.[a-zA-Z0-9]+$/);
+                const extension = correspondance ? correspondance[0] : ".png";
+                return nomParDefaut + extension;
+            } catch (e) {
+                return nomParDefaut + ".png";
+            }
+        }
+
+        // Télécharge l'image originale du RIB (celle déjà affichée sur la page,
+        // via ev.rib_image_url / ev.qr_code_paiement) — jamais une capture
+        // d'écran ni une version dégradée. On récupère le fichier en mémoire
+        // (fetch + blob) pour forcer un vrai téléchargement même si l'image est
+        // hébergée sur un autre domaine (ex: stockage Supabase), ce qui ne
+        // fonctionne pas de manière fiable avec un simple attribut "download"
+        // sur une URL cross-origin. Si le fetch échoue (ex: politique CORS trop
+        // stricte côté hébergeur), on retombe sur l'ouverture de l'image dans un
+        // nouvel onglet, où l'utilisateur peut l'enregistrer manuellement — cela
+        // fonctionne aussi bien sur mobile que sur ordinateur.
+        async function gxTelechargerRib(url, btnEl) {
+            if (!url || !btnEl) return;
+            const nomFichier = gxNomFichierDepuisUrl(url, "RIB-GoldTix");
+            const contenuOriginalBtn = btnEl.innerHTML;
+            btnEl.disabled = true;
+            btnEl.innerHTML = `${ICONS.download} Téléchargement...`;
+            try {
+                const reponse = await fetchAvecTimeout(url, { mode: 'cors' }, 20000);
+                if (!reponse.ok) throw new Error("Réponse réseau invalide (" + reponse.status + ")");
+                const blob = await reponse.blob();
+                const objectUrl = URL.createObjectURL(blob);
+                const lienTemp = document.createElement("a");
+                lienTemp.href = objectUrl;
+                lienTemp.download = nomFichier;
+                document.body.appendChild(lienTemp);
+                lienTemp.click();
+                document.body.removeChild(lienTemp);
+                setTimeout(function() { URL.revokeObjectURL(objectUrl); }, 4000);
+            } catch (err) {
+                console.error("Téléchargement direct du RIB impossible, ouverture dans un nouvel onglet :", err);
+                window.open(url, "_blank", "noopener");
+            } finally {
+                btnEl.disabled = false;
+                btnEl.innerHTML = contenuOriginalBtn;
+            }
+        }
+
         // ─── MAIN LOADER ─────────────────────────────────────────────────────────
         async function chargerPageAchatUnique() {
             // Empêche deux chargements simultanés (ex. clics répétés sur "Réessayer").
@@ -1569,7 +1661,7 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
     const options = genererOptionsCategorieAchat(ev);
     categorieHTML = `
         <div class="form-group gx-reveal gx-delay-4">
-            <label for="selectCategorie">Catégorie(s) de billet</label>
+            <label for="selectCategorie">Catégorie de billet</label>
             <select id="selectCategorie">${options}</select>
         </div>`;
 }
@@ -1581,7 +1673,13 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                                 ${ICONS.card}
                                 RIB du bénéficiaire ci-dessous
                             </p>
-                            <img src="${ev.rib_image_url || ev.qr_code_paiement}" alt="Support de paiement" class="qr-image">
+                            <img src="${ev.rib_image_url || ev.qr_code_paiement}" alt="Support de paiement" class="qr-image" id="ribImageEl">
+                            <div>
+                                <button type="button" class="rib-download-btn" id="btnTelechargerRib">
+                                    ${ICONS.download}
+                                    Télécharger le RIB
+                                </button>
+                            </div>
                         </div>` : "";
 
                     rightColumn = `
@@ -1589,19 +1687,19 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                             <p class="gx-reveal gx-delay-3" style="
                                 text-align:center;
                                 font-family:'Poppins', sans-serif;
-                                font-size:11px;
+                                font-size:13px;
                                 font-weight:600;
                                 letter-spacing:0.3px;
                                 color: #4a3b32;
                                 margin-bottom: 18px;
                             ">
-                                Suivez les étapes ci-dessous pour procéder à l'achat de votre billet.
+                                Suivez les étapes ci-dessous pour acheter votre billet en quelques instants.
                             </p>
 
                             <!-- ETAPE 1 : PAIEMENT -->
                             <div class="step-heading gx-reveal gx-delay-4">
                                 <span class="step-heading-number">1</span>
-                                <span class="step-heading-text">Sélectionnez le billet souhaité, puis effectuez le paiement</span>
+                                <span class="step-heading-text">Choisissez votre catégorie de billet puis effectuez le paiement</span>
                             </div>
                             <div class="payment-box gx-reveal gx-delay-4">
                                 ${categorieHTML}
@@ -1752,6 +1850,16 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                     const filePreview = document.getElementById("fileNamePreview");
                     const fileWrapperEl = document.getElementById("fileWrapper");
                     const errPreuvePaiementEl = document.getElementById("errPreuvePaiement");
+
+                    // Bouton "Télécharger le RIB" — n'existe que si un RIB/QR a
+                    // été fourni par l'organisateur (voir qrSection plus haut).
+                    const btnTelechargerRib = document.getElementById("btnTelechargerRib");
+                    if (btnTelechargerRib) {
+                        const urlRib = ev.rib_image_url || ev.qr_code_paiement;
+                        btnTelechargerRib.addEventListener("click", function() {
+                            gxTelechargerRib(urlRib, btnTelechargerRib);
+                        });
+                    }
 
                     // Efface l'erreur d'un champ classique (input texte/tel) dès que
                     // l'utilisateur commence à corriger sa saisie.

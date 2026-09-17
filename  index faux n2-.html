@@ -1286,6 +1286,15 @@ function gxObserveNow(root) {
              CSS et le HTML injecté ont été retravaillés pour un rendu
              plus premium. Aucune logique métier, aucun appel réseau,
              aucun identifiant fonctionnel (id="...") n'a été modifié.
+           - Correction d'alignement (cette version) : le titre de
+             l'étape 1 ("Choisissez votre catégorie...") est désormais
+             placé HORS de la boîte dorée .payment-box, directement au
+             même niveau que le titre de l'étape 2 ("Confirmer mon
+             paiement"). Auparavant, l'étape 1 héritait en plus du
+             padding interne de .payment-box (24px), ce qui la décalait
+             vers la droite par rapport à l'étape 2 : les deux titres ne
+             partageaient donc pas le même axe vertical gauche. Aucune
+             autre logique n'a été modifiée.
         ============================================= */
 
         // ─── SVG ICONS ────────────────────────────────────────────────────────────
@@ -1559,8 +1568,8 @@ if (ev.ventes_fermees) {
 if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_data.length > 0) {
     const options = genererOptionsCategorieAchat(ev);
     categorieHTML = `
-        <div class="form-group gx-reveal gx-delay-5">
-            <label for="selectCategorie">Catégorie de billet</label>
+        <div class="form-group gx-reveal gx-delay-4">
+            <label for="selectCategorie">Catégorie(s) de billet</label>
             <select id="selectCategorie">${options}</select>
         </div>`;
 }
@@ -1576,25 +1585,27 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                         </div>` : "";
 
                     rightColumn = `
-                       <div class="card anim-3">
-    <p class="gx-reveal gx-delay-3" style="
-        text-align:center;
-        font-family:'Poppins', sans-serif;
-        font-size:13px;
-        font-weight:600;
-        letter-spacing:0.3px;
-        color: #4a3b32;
-        margin-bottom: 18px;
-    ">
-        Suivez les étapes ci-dessous pour acheter votre billet en quelques instants.
-    </p>
-</div>
+                        <div class="card anim-3">
+                            <p class="gx-reveal gx-delay-3" style="
+                                text-align:center;
+                                font-family:'Poppins', sans-serif;
+                                font-size:11px;
+                                font-weight:600;
+                                letter-spacing:0.3px;
+                                color: #4a3b32;
+                                margin-bottom: 18px;
+                            ">
+                                Suivez les étapes ci-dessous pour procéder à l'achat de votre billet.
+                            </p>
+
                             <!-- ETAPE 1 : PAIEMENT -->
+                            <div class="step-heading gx-reveal gx-delay-4">
+                                <span class="step-heading-number">1</span>
+                                <span class="step-heading-text">Sélectionnez le billet souhaité, puis effectuez le paiement</span>
+                            </div>
                             <div class="payment-box gx-reveal gx-delay-4">
-                                <div class="step-heading">
-                                    <span class="step-heading-number">1</span>
-                                    <span class="step-heading-text">Effectuez le paiement</span>
-                                </div>
+                                ${categorieHTML}
+
                                 <div class="info-rows">
                                     <div class="info-row">
                                         <span class="info-row-label">${ICONS.user} Bénéficiaire des paiements</span>
@@ -1613,8 +1624,6 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                                 <span class="step-heading-number">2</span>
                                 <span class="step-heading-text">Confirmer mon paiement</span>
                             </div>
-
-                            ${categorieHTML}
 
                             <div class="form-group gx-reveal gx-delay-5">
                                 <label for="nomParticipant">Nom et Prénom(s) <span class="required-mark" style="color: red;">*</span></label>
