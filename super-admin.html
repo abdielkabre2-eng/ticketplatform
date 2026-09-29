@@ -468,7 +468,7 @@ function ouvrirModalDetails(idEvenement) {
     if (!ev) return;
     document.getElementById("detail-titre").innerText = "Gérer : " + ev.titre;
  
-    const baseUrl = "https://ticketplatform-kappa.vercel.app";
+    const baseUrl = "https://goldtixbilletterie.com";
     document.getElementById("lien-acheteur").value = `${baseUrl}/?event=${ev.id}`;
     document.getElementById("lien-vendeur").value = `${baseUrl}/admin-organisateur?event=${ev.id}`;
     document.getElementById("modalDetails").style.display = "flex";
