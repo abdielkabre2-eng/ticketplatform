@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Achat de Billet | GoldTix</title>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
 /* =============================================
    GOLDTIX — design premium (sombre + or)
@@ -53,7 +53,7 @@
 html { overflow-x: hidden; width: 100%; max-width: 100%; background: var(--bg); }
 
 body {
-    font-family: 'DM Sans', system-ui, sans-serif;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     background-color: var(--bg);
     background-image:
         radial-gradient(ellipse 70% 50% at 15% 0%, rgba(247,198,90,0.10) 0, transparent 60%),
@@ -67,6 +67,7 @@ body {
     min-height: 100vh;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.005em;
 }
 
 img, svg, video, canvas { max-width: 100%; }
@@ -133,7 +134,7 @@ img, svg, video, canvas { max-width: 100%; }
 .brand-logo { height: 32px !important; width: auto; flex-shrink: 0; transition: var(--transition); }
 .brand-logo:hover { transform: scale(1.06) rotate(-3deg); }
 .brand-name {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 22px !important;
     font-weight: 800 !important;
     letter-spacing: -0.4px;
@@ -310,14 +311,13 @@ img, svg, video, canvas { max-width: 100%; }
 ============================================= */
 .event-title {
     position: relative;
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(28px, 4.4vw, 40px);
-    font-weight: 800;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: clamp(26px, 4vw, 36px);
+    font-weight: 700;
     color: #fff;
     margin: 0 0 18px;
-    letter-spacing: -1px;
-    line-height: 1.12;
-    text-shadow: 0 2px 30px rgba(224,160,42,0.25);
+    letter-spacing: -0.5px;
+    line-height: 1.2;
 }
 .gx-title-ghost { visibility: hidden; }
 .gx-title-visible { position: absolute; top: 0; left: 0; width: 100%; }
@@ -346,13 +346,13 @@ img, svg, video, canvas { max-width: 100%; }
     display: flex;
     align-items: center;
     gap: 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 11.5px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px;
     font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
+    letter-spacing: 0;
+    text-transform: none;
     text-align: left;
-    color: var(--gold-1);
+    color: #fff;
     margin: 4px 0 14px;
 }
 .ticket-avail-label::after {
@@ -394,8 +394,8 @@ img, svg, video, canvas { max-width: 100%; }
 }
 .ticket-price-row-name svg { width: 17px; height: 17px; color: var(--gold-1); flex-shrink: 0; }
 .ticket-price-row-price {
-    font-family: 'Syne', sans-serif;
-    font-size: 16px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px;
     font-weight: 800;
     color: #1a1204;
     background: var(--gold-gradient);
@@ -422,7 +422,7 @@ img, svg, video, canvas { max-width: 100%; }
    PAIEMENT
 ============================================= */
 .card > p.gx-reveal {
-    font-family: 'DM Sans', sans-serif !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
     text-align: center !important;
     font-size: 13.5px !important;
     font-weight: 600 !important;
@@ -453,19 +453,19 @@ img, svg, video, canvas { max-width: 100%; }
     border-radius: 50%;
     background: var(--gold-gradient);
     color: #1a1204;
-    font-family: 'Syne', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 800;
     font-size: 14px;
     flex-shrink: 0;
     box-shadow: 0 0 0 4px rgba(247,198,90,0.16), 0 8px 18px -4px rgba(224,160,42,0.5);
 }
 .step-heading-text {
-    font-family: 'Syne', sans-serif !important;
-    font-size: 17px;
-    font-weight: 800;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 16.5px;
+    font-weight: 700;
     color: #fff;
-    letter-spacing: -0.3px;
-    line-height: 1.3;
+    letter-spacing: -0.1px;
+    line-height: 1.35;
 }
 
 .info-rows { display: flex; flex-direction: column; gap: 10px; }
@@ -542,7 +542,7 @@ img, svg, video, canvas { max-width: 100%; }
     color: var(--gold-1);
     border: 1px solid rgba(247,198,90,0.45);
     border-radius: 30px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 12.5px;
     font-weight: 700;
     cursor: pointer;
@@ -584,7 +584,7 @@ select {
     width: 100%;
     padding: 14px 16px;
     font-size: 14.5px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     border: 1.5px solid rgba(255,255,255,0.12);
     border-radius: var(--radius-md);
     outline: none;
@@ -683,7 +683,7 @@ input:-webkit-autofill {
     border-radius: var(--radius-lg);
     font-size: 15.5px;
     font-weight: 800;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     cursor: pointer;
     transition: var(--transition);
     box-shadow: var(--shadow-glow), inset 0 1px 0 rgba(255,255,255,0.4);
@@ -756,12 +756,12 @@ input:-webkit-autofill {
     margin: 0 auto 18px;
 }
 .closed-box-icon svg { width: 26px; height: 26px; color: var(--red); }
-.closed-box h3 { color: var(--red); font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 10px; }
+.closed-box h3 { color: var(--red); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 10px; }
 .closed-box p { color: var(--text-sub); font-size: 14.5px; line-height: 1.65; }
 .closed-box p + p { margin-top: 10px; color: var(--text-muted); font-size: 13px; font-weight: 600; }
 
 .error-card { text-align: center; padding: 60px 24px; }
-.error-card h2 { font-family: 'Syne', sans-serif; font-size: 23px; font-weight: 800; margin-bottom: 10px; color: #fff; }
+.error-card h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 23px; font-weight: 800; margin-bottom: 10px; color: #fff; }
 .error-card p { color: var(--text-sub); font-size: 14.5px; }
 
 /* Bandeau de confiance (ajouté sous le bouton) */
@@ -801,11 +801,11 @@ input:-webkit-autofill {
     color: var(--text-muted);
 }
 .footer-brand {
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
     font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
+    letter-spacing: 0.2px;
+    text-transform: none;
     background: var(--gold-gradient);
     -webkit-background-clip: text;
     background-clip: text;
@@ -823,10 +823,10 @@ input:-webkit-autofill {
 .footer-about { margin-bottom: 20px; }
 .footer-about-title {
     display: block;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
+    letter-spacing: 0;
+    text-transform: none;
     color: var(--text-sub);
     margin-bottom: 14px;
 }
@@ -934,7 +934,7 @@ input:-webkit-autofill {
     background: rgba(255,255,255,0.06);
     border: 1px solid rgba(245,158,11,0.25);
     color: rgba(255,255,255,0.75);
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.4px;
@@ -950,10 +950,10 @@ input:-webkit-autofill {
 .intro-center { position: relative; text-align: center; padding: 24px; z-index: 1; max-width: 480px; width: 100%; }
 .intro-logo-wrap { opacity: 0; animation: introFadeUp 0.6s ease 0.15s forwards; }
 .intro-logo {
-    font-family: 'Syne', sans-serif;
-    font-size: 46px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 44px;
     font-weight: 800;
-    letter-spacing: -1px;
+    letter-spacing: -1.2px;
     color: #f5f5f4;
     margin: 0;
     text-shadow: 0 0 24px rgba(245,158,11,0.35), 0 0 60px rgba(245,158,11,0.15);
@@ -968,10 +968,10 @@ input:-webkit-autofill {
 }
 .intro-tagline {
     margin-top: 10px;
-    font-size: 13px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: rgba(245,197,109,0.75);
+    font-size: 14px;
+    letter-spacing: 0.2px;
+    text-transform: none;
+    color: rgba(245,197,109,0.8);
     font-weight: 600;
     opacity: 0;
     animation: introFadeUp 0.6s ease 0.35s forwards;
@@ -1027,7 +1027,7 @@ input:-webkit-autofill {
     transform: scale(0.85);
     opacity: 0.5;
 }
-.intro-flow-step span { font-size: 10px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; }
+.intro-flow-step span { font-size: 11px; font-weight: 600; letter-spacing: 0.2px; text-transform: none; }
 .intro-flow-step[data-step="1"] svg { animation: introStepLight 0.35s ease 0.75s forwards; }
 .intro-flow-step[data-step="2"] svg { animation: introStepLight 0.35s ease 1.1s forwards; }
 .intro-flow-step[data-step="3"] svg { animation: introStepLight 0.35s ease 1.45s forwards; }
@@ -1583,7 +1583,7 @@ if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_dat
                         <div class="card anim-3">
                             <p class="gx-reveal gx-delay-3" style="
                                 text-align:center;
-                                font-family:'Poppins', sans-serif;
+                                font-family:'Plus Jakarta Sans', sans-serif;
                                 font-size:13px;
                                 font-weight:600;
                                 letter-spacing:0.3px;
