@@ -549,7 +549,7 @@ input:focus, select:focus { border-color: var(--ink); box-shadow: 0 0 0 4px rgba
                     // Étape 1 — catégorie / prix
                     const blocPrix = aDesCategories(ev)
                         ? `<div class="field">
-                               <label for="selectCategorie">Catégorie de billet</label>
+                               <label for="selectCategorie">Catégorie(s) de billet disponible(s)</label>
                                <select id="selectCategorie">${genererOptionsCategorieAchat(ev)}</select>
                            </div>
                            <div class="price-line"><span>Total à payer</span><span id="prixChoisiEl">—</span></div>`
@@ -598,7 +598,7 @@ input:focus, select:focus { border-color: var(--ink); box-shadow: 0 0 0 4px rgba
                                 <div class="info-item">
                                     <span class="info-item-ico">${ICONS.phone}</span>
                                     <div class="info-item-txt">
-                                        <div class="info-item-label">Contact / numéro de paiement</div>
+                                        <div class="info-item-label">Contact</div>
                                         <div class="info-item-value" id="evBeneficiaireContactEl">${esc(ev.beneficiaire_infos || 'Non renseigné')}</div>
                                     </div>
                                 </div>
@@ -622,7 +622,7 @@ input:focus, select:focus { border-color: var(--ink); box-shadow: 0 0 0 4px rgba
                             </div>
 
                             <div class="field">
-                                <label for="emailParticipant">Adresse e-mail <span class="hint">(optionnelle — pour recevoir le lien du billet)</span></label>
+                                <label for="emailParticipant">Adresse e-mail <span class="hint">(Pour la réception du lien du billet)</span></label>
                                 <input type="email" id="emailParticipant" placeholder="ex : nom@gmail.com" autocomplete="email" inputmode="email">
                                 <p class="field-error" id="errEmailParticipant"></p>
                             </div>
@@ -658,7 +658,7 @@ input:focus, select:focus { border-color: var(--ink); box-shadow: 0 0 0 4px rgba
                                 ${ICONS.check} Valider mon paiement
                             </button>
                             <div id="zoneMessageAchat" aria-live="polite"></div>
-                            <p class="submit-note">Votre paiement sera vérifié par l'organisateur avant la validation de votre billet.</p>
+                            <p class="submit-note">Votre paiement sera vérifié par le bénéficiare avant la validation  et obtention de votre billet.</p>
                         </section>`;
                 }
 
