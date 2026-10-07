@@ -103,26 +103,23 @@ button { font-family: inherit; }
 .card-desc { font-size: 13.5px; color: var(--ink-sub); margin-top: 3px; }
 
 /* ---------- Carte événement ---------- */
-.event-card { padding: 0; overflow: hidden; }
-.poster { background: #efede7; }
-.poster img { display: block; width: 100%; height: auto; max-height: 420px; object-fit: contain; }
-.poster-fallback { min-height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--ink-muted); font-size: 13px; font-weight: 600; }
+.col-event { display: flex; flex-direction: column; gap: 18px; }
+.poster { border-radius: 22px; overflow: hidden; background: #f1efea; line-height: 0; }
+.poster img { display: block; width: 100%; height: auto; }
+.poster-fallback { line-height: 1.5; min-height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--ink-muted); font-size: 13px; font-weight: 600; }
 .poster-fallback svg { width: 30px; height: 30px; opacity: 0.6; }
-.event-body { padding: 20px 22px 22px; }
-.event-title { font-size: 21px; font-weight: 800; letter-spacing: -0.4px; line-height: 1.25; margin-bottom: 14px; word-break: break-word; }
-.event-meta { display: flex; flex-direction: column; gap: 9px; }
-.meta-row { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--ink-sub); }
-.meta-row svg { width: 16px; height: 16px; color: var(--gold); flex-shrink: 0; }
-.meta-row strong { color: var(--ink); font-weight: 600; }
 
-.recap { margin-top: 18px; padding-top: 16px; border-top: 1px dashed var(--line-strong); }
-.recap-label { font-size: 11.5px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 10px; }
-.recap-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 14px; padding: 4px 0; }
-.recap-row span:first-child { color: var(--ink-sub); }
-.recap-row span:last-child { font-weight: 600; text-align: right; }
-.recap-total { margin-top: 8px; padding: 12px 14px; background: var(--gold-soft); border-radius: var(--radius-sm); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-.recap-total span:first-child { font-size: 13px; font-weight: 600; color: var(--ink-sub); }
-.recap-total span:last-child { font-size: 18px; font-weight: 800; color: var(--ink); }
+/* Catégories disponibles (juste après l'affiche) */
+.cat-card { padding: 20px 20px 18px; }
+.cat-card h3 { font-size: 16px; font-weight: 800; letter-spacing: -0.2px; margin-bottom: 14px; }
+.cat-list { display: flex; flex-direction: column; gap: 10px; }
+.cat-row { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 14px 13px 18px; background: #f6f5f2; border-radius: var(--radius-sm); overflow: hidden; }
+.cat-row::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--gold); }
+.cat-row.epuise { opacity: 0.55; }
+.cat-name { font-size: 15px; font-weight: 700; min-width: 0; word-break: break-word; }
+.cat-price { flex-shrink: 0; padding: 5px 12px; font-size: 14px; font-weight: 800; color: var(--ink); background: var(--gold); border-radius: 6px; white-space: nowrap; }
+.cat-row.epuise .cat-price { background: #dcd8cf; }
+
 
 /* ---------- Formulaires ---------- */
 .field { margin-bottom: 18px; }
@@ -425,6 +422,20 @@ input:focus, select:focus { border-color: var(--gold); box-shadow: 0 0 0 4px rgb
             return !!(ev && Array.isArray(ev.categories_data) && ev.categories_data.length > 0);
         }
 
+        function htmlLignesCategories(ev) {
+            if (aDesCategories(ev)) {
+                return ev.categories_data.map(c => {
+                    const dispo = ev.disponibilites ? ev.disponibilites[c.nom] : null;
+                    const epuise = !!(dispo && dispo.epuise);
+                    return `<div class="cat-row${epuise ? ' epuise' : ''}">
+                                <span class="cat-name">${esc(c.nom)}</span>
+                                <span class="cat-price">${epuise ? 'Épuisé' : esc(c.prix)}</span>
+                            </div>`;
+                }).join('');
+            }
+            return `<div class="cat-row"><span class="cat-name">Billet</span><span class="cat-price">${esc(ev.prix || 'Gratuit')}</span></div>`;
+        }
+
         function genererOptionsCategorieAchat(ev) {
             if (!aDesCategories(ev)) return '';
             return ev.categories_data.map(cat => {
@@ -454,8 +465,6 @@ input:focus, select:focus { border-color: var(--gold); box-shadow: 0 0 0 4px rgb
             }
             const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
             set('prixChoisiEl', prix);
-            set('recapCategorieEl', nomCat);
-            set('recapTotalEl', prix);
         }
 
         // ─── Bandeau événement : date, titre, lieu, heure ─────────────────────
@@ -573,8 +582,8 @@ input:focus, select:focus { border-color: var(--gold); box-shadow: 0 0 0 4px rgb
                                <label for="selectCategorie">Catégorie de billet</label>
                                <select id="selectCategorie">${genererOptionsCategorieAchat(ev)}</select>
                            </div>
-                           <div class="price-line"><span>Prix du billet</span><span id="prixChoisiEl">—</span></div>`
-                        : `<div class="price-single"><span>Prix du billet</span><span id="prixChoisiEl">${esc(ev.prix || 'Gratuit')}</span></div>`;
+                           <div class="price-line"><span>Total à payer</span><span id="prixChoisiEl">—</span></div>`
+                        : `<div class="price-single"><span>Total à payer</span><span id="prixChoisiEl">${esc(ev.prix || 'Gratuit')}</span></div>`;
 
                     // Bloc RIB : uniquement s'il existe réellement
                     const blocRib = urlRib ? `
@@ -688,19 +697,16 @@ input:focus, select:focus { border-color: var(--gold); box-shadow: 0 0 0 4px rgb
                     ? `<img id="posterImgEl" src="${esc(ev.affiche_url)}" alt="Affiche de l'événement">`
                     : `<div class="poster-fallback">${ICONS.image}<span>Affiche non disponible</span></div>`;
 
-                const recapHTML = (!ev.ventes_fermees && !categoriesToutesEpuisees) ? `
-                    <div class="recap">
-                        <div class="recap-label">Récapitulatif</div>
-                        <div class="recap-row"><span>Catégorie</span><span id="recapCategorieEl">—</span></div>
-                        <div class="recap-total"><span>Total à payer</span><span id="recapTotalEl">—</span></div>
-                    </div>` : '';
+                // Catégories disponibles : liste informative, juste sous l'affiche
+                const lignesCat = htmlLignesCategories(ev);
 
                 container.innerHTML = `
                     <div class="layout">
                         <aside class="col-event">
-                            <div class="card event-card">
-                                <div class="poster">${posterHTML}</div>
-                                ${recapHTML ? `<div class="event-body">${recapHTML}</div>` : ''}
+                            <div class="poster">${posterHTML}</div>
+                            <div class="card cat-card">
+                                <h3>Catégories disponibles</h3>
+                                <div class="cat-list" id="listeCategoriesEl">${lignesCat}</div>
                             </div>
                         </aside>
                         <div class="col-steps">${colonneEtapes}</div>
@@ -942,6 +948,8 @@ input:focus, select:focus { border-color: var(--gold); box-shadow: 0 0 0 4px rgb
 
                 const maj = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
                 rendreBandeau(ev);
+                const listeCatEl = document.getElementById('listeCategoriesEl');
+                if (listeCatEl) listeCatEl.innerHTML = htmlLignesCategories(ev);
                 maj('evBeneficiaireNomEl', ev.beneficiaire_nom || 'Non renseigné');
                 maj('evBeneficiaireContactEl', ev.beneficiaire_infos || 'Non renseigné');
 
