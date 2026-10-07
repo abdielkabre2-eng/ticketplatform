@@ -3507,41 +3507,25 @@ async function verifierMiseAJourEvenement() {
        inchangé — ce n'est pas un appel Supabase)
     ============================================= */
     async function changerStatut(billetId, nouveauStatut) {
-        let data;
-        try {
-            data = await callOrganisateurAPI('changer_statut', {
-                evenementId: eventId,
-                token: sessionToken,
-                billetId: billetId,
-                nouveauStatut: nouveauStatut
-            });
-        } catch (err) {
-            alert("Erreur lors de la mise a jour : " + err.message);
-            return;
-        }
-
-        if (nouveauStatut === 'confirme') {
-            try {
-                // Le serveur renvoie désormais directement email + nom_participant
-                // du billet concerné (plus besoin d'un second appel Supabase).
-                const billetContact = data.billet;
-                if (billetContact && billetContact.email) {
-                    let lienBillet = `${window.location.origin}/billet.html?id=${billetContact.code_public}`;
-                    const templateParams = {
-                        email: billetContact.email,
-                        nom_participant: billetContact.nom_participant,
-                        lien_billet: lienBillet
-                    };
-                    await emailjs.send('service_p8rnipf', 'template_ilhe1ca', templateParams);
-                }
-            } catch (mailErr) {
-                console.error('Erreur email :', mailErr);
-            }
-        }
-
-        await chargerToutesLesDemandes();
+    let data;
+    try {
+        data = await callOrganisateurAPI('changer_statut', {
+            evenementId: eventId,
+            token: sessionToken,
+            billetId: billetId,
+            nouveauStatut: nouveauStatut
+        });
+    } catch (err) {
+        alert("Erreur lors de la mise a jour : " + err.message);
+        return;
     }
 
+    if (data.email_envoye === false) {
+        alert("Statut mis à jour, mais l'e-mail n'a pas pu être envoyé à l'acheteur.");
+    }
+
+    await chargerToutesLesDemandes();
+}
     async function retirerParticipant(billetId) {
         if (!confirm("Voulez-vous vraiment supprimer definitivement ce participant et son billet ?")) return;
 

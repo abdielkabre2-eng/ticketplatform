@@ -296,7 +296,7 @@ async function chargerBillets(supabase, payload, res) {
   return res.status(200).json({ success: true, billets: data || [] });
 }
 
-async function changerStatut(supabase, payload, res) {
+async function changerStatutAncien(supabase, payload, res) {
   const { evenementId, token, billetId, nouveauStatut } = payload;
   if (!evenementId || !token || !billetId || !nouveauStatut) {
     return res.status(400).json({ success: false, error: "Paramètres manquants." });
@@ -458,4 +458,118 @@ async function modifierAffiche(supabase, payload, res) {
     return res.status(500).json({ success: false, error: error.message });
   }
   return res.status(200).json({ success: true, affiche_url: afficheUrl });
+}
+
+/* =============================================
+   ENVOI D'E-MAILS (Resend)
+============================================= */
+function echapperHtml(s) {
+  return String(s ?? "").replace(/[&<>"']/g, (c) => (
+    { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
+  ));
+}
+
+async function envoyerEmailResend({ to, subject, html }) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.MAIL_FROM;
+  if (!apiKey || !from) {
+    console.error("RESEND_API_KEY ou MAIL_FROM manquant sur Vercel.");
+    return false;
+  }
+  try {
+    const r = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ from, to: [to], subject, html }),
+    });
+    if (!r.ok) {
+      console.error("Erreur Resend :", r.status, await r.text());
+      return false;
+    }
+    return true;
+  } catch (e) {
+    console.error("Erreur réseau Resend :", e);
+    return false;
+  }
+}
+
+function emailBilletHtml(nom, lien) {
+  return `
+  <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:24px;background:#fffbeb;">
+    <h2 style="color:#b45309;margin:0 0 16px;">GoldTix 🎫</h2>
+    <p>Bonjour <strong>${nom}</strong>,</p>
+    <p>Votre paiement a bien été reçu. Votre billet est prêt !</p>
+    <p style="text-align:center;margin:28px 0;">
+      <a href="${lien}" style="background:#d97706;color:#ffffff;padding:14px 26px;border-radius:10px;text-decoration:none;font-weight:bold;">Voir mon billet</a>
+    </p>
+    <p style="font-size:12px;color:#64748b;">Présentez le QR code de votre billet à l'entrée de l'événement.</p>
+  </div>`;
+}
+
+function emailRefusHtml(nom) {
+  return `
+  <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:24px;background:#fffbeb;">
+    <h2 style="color:#b45309;margin:0 0 16px;">GoldTix 🎫</h2>
+    <p>Bonjour <strong>${nom}</strong>,</p>
+    <p>Nous n'avons pas pu confirmer la réception de votre paiement.</p>
+    <p>Merci de vérifier votre transfert et de contacter l'organisateur si vous pensez qu'il s'agit d'une erreur.</p>
+  </div>`;
+}
+
+async function changerStatut(supabase, payload, res) {
+  const { evenementId, token, billetId, nouveauStatut } = payload;
+  if (!evenementId || !token || !billetId || !nouveauStatut) {
+    return res.status(400).json({ success: false, error: "Paramètres manquants." });
+  }
+
+  const { data: avant } = await supabase
+    .from("billets").select("statut").eq("id", billetId).single();
+  const ancienStatut = avant ? avant.statut : null;
+
+  const { error } = await supabase.rpc("organisateur_changer_statut", {
+    p_evenement_id: evenementId,
+    p_token: token,
+    p_billet_id: billetId,
+    p_nouveau_statut: nouveauStatut,
+  });
+
+  if (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+
+  let emailEnvoye = null;
+  const doitEnvoyer =
+    (nouveauStatut === "confirme" || nouveauStatut === "refuse") &&
+    ancienStatut !== nouveauStatut;
+
+  if (doitEnvoyer) {
+    const { data: b } = await supabase
+      .from("billets")
+      .select("email, nom_participant, code_public")
+      .eq("id", billetId)
+      .single();
+
+    if (b && b.email) {
+      const nom = echapperHtml(b.nom_participant || "");
+      if (nouveauStatut === "confirme") {
+        const lien = `${process.env.SITE_URL}/billet.html?id=${encodeURIComponent(b.code_public)}`;
+        emailEnvoye = await envoyerEmailResend({
+          to: b.email,
+          subject: "Votre billet GoldTix est prêt 🎫",
+          html: emailBilletHtml(nom, lien),
+        });
+      } else {
+        emailEnvoye = await envoyerEmailResend({
+          to: b.email,
+          subject: "Paiement non reçu - GoldTix",
+          html: emailRefusHtml(nom),
+        });
+      }
+    }
+  }
+
+  return res.status(200).json({ success: true, email_envoye: emailEnvoye });
 }
