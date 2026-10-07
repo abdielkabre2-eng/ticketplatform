@@ -93,41 +93,37 @@ pointer-events: none; z-index: 0;
 
 .top-navbar {
 position: sticky; top: 0; z-index: 100;
-width: 100%;
-display: flex; align-items: center; justify-content: space-between;
-padding: 14px 20px;
-background: rgba(255,255,255,.82);
-backdrop-filter: blur(20px) saturate(160%);
--webkit-backdrop-filter: blur(20px) saturate(160%);
-border-bottom: 1px solid var(--border);
+width: 100%; height: 60px;
+display: flex; align-items: center; justify-content: space-between; gap: 12px;
+padding: 0 max(20px, calc((100% - 1040px) / 2));
+background: #ffffff;
+border-bottom: 1px solid #ece9e3;
     }
 
-.navbar-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-.navbar-logo { height: 32px; width: auto; filter: drop-shadow(0 0 6px rgba(245,158,11,.5)); }
+.navbar-brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: #14161f; }
+.navbar-logo { height: 26px; width: auto; filter: none; }
 .navbar-name {
-  font-family: var(--font-accent);
-  font-size: .95rem; font-weight: 800;
-  letter-spacing: -.01em; text-transform: none;
-  color: var(--text-hi);
+  font-family: 'Plus Jakarta Sans', var(--font-accent), system-ui, sans-serif;
+  font-size: 19px; font-weight: 800;
+  letter-spacing: -.3px; text-transform: none;
+  color: #14161f;
     }
 .navbar-name .navbar-name-accent {
-  background: linear-gradient(135deg, var(--gold-500), var(--gold-600));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text;
+  background: none; -webkit-background-clip: border-box; -webkit-text-fill-color: currentColor;
+  background-clip: border-box;
+  color: #d9a520; font-style: normal;
 }
 .navbar-badge {
-display: flex; align-items: center; gap: 5px;
-padding: 4px 10px; border-radius: 99px;
-background: linear-gradient(135deg, rgba(245,158,11,.12), rgba(217,119,6,.06));
-border: 1px solid rgba(217,119,6,.25);
-font-size: .58rem; font-weight: 700;
-letter-spacing: .06em; text-transform: uppercase;
-color: var(--gold-600);
+display: inline-flex; align-items: center; gap: 6px;
+padding: 0; border-radius: 0; background: none; border: none;
+font-size: 12px; font-weight: 600;
+letter-spacing: 0; text-transform: none; white-space: nowrap;
+color: #4b4f5c;
     }
-.navbar-badge::before {
-content: ''; display: block; width: 6px; height: 6px; border-radius: 50%;
-background: var(--gold-400); box-shadow: 0 0 6px var(--gold-400);
-animation: pulse-dot 2s ease-in-out infinite;
+.navbar-badge svg { width: 14px; height: 14px; color: #14161f; flex-shrink: 0; }
+@media (max-width: 600px) {
+.top-navbar { height: 54px; padding: 0 14px; }
+.navbar-badge { font-size: 11px; }
     }
 @keyframes pulse-dot {
 0%,100% { opacity:1; transform:scale(1); }
@@ -436,8 +432,9 @@ line-height: 1.5; color: var(--text-mid);
 .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .info-cell {
 background: var(--bg-cell); border: 1px solid var(--border);
-border-radius: var(--radius-md); padding: 10px 12px;
-display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+border-radius: var(--radius-md); padding: 8px 10px;
+display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto;
+column-gap: 6px; row-gap: 3px; align-items: center; align-content: center;
 position: relative; overflow: visible;
 animation: cellReveal .5s ease both;
 transition: border-color .25s, box-shadow .25s;
@@ -445,13 +442,8 @@ transition: border-color .25s, box-shadow .25s;
 .info-cell:hover { border-color: rgba(217,119,6,.25); box-shadow: 0 4px 14px rgba(28,25,23,.06); }
 .info-cell.full {
 grid-column: 1 / -1;
-display: grid; grid-template-columns: 28px 1fr; grid-template-rows: auto auto;
-column-gap: 10px; row-gap: 1px; align-items: center;
-padding: 10px 32px 10px 12px;
+padding: 8px 30px 8px 10px;
     }
-.info-cell.full .cell-icon { grid-column: 1; grid-row: 1 / 3; margin-bottom: 0; align-self: center; }
-.info-cell.full .cell-label { grid-column: 2; grid-row: 1; }
-.info-cell.full .cell-value { grid-column: 2; grid-row: 2; }
 @keyframes cellReveal {
 from { opacity:0; transform:translateY(8px); }
 to   { opacity:1; transform:translateY(0); }
@@ -463,18 +455,13 @@ to   { opacity:1; transform:translateY(0); }
 .info-cell:nth-child(5) { animation-delay: .45s; }
 .info-cell:nth-child(6) { animation-delay: .50s; }
 .info-cell::before { content: none; }
-.cell-label { order: 1; font-size: .56rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--text-lo); }
-.cell-value { order: 2; font-size: .78rem; font-weight: 700; color: var(--text-hi); line-height: 1.25; word-break: break-word; }
-.cell-icon {
-order: 0; position: static; opacity: 1; margin-bottom: 4px;
-width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
-display: flex; align-items: center; justify-content: center;
-background: rgba(217,119,6,.10);
-    }
-.cell-icon svg { width: 13px; height: 13px; stroke: var(--gold-600) !important; }
-#cellBeneficiaire { padding-right: 34px; }
+.cell-icon { grid-column: 1; grid-row: 1; display: flex; align-items: center; justify-content: center; width: 14px; height: 14px; flex-shrink: 0; background: none; }
+.cell-icon svg { width: 12px; height: 12px; stroke: var(--gold-600) !important; stroke-width: 2; }
+.cell-label { grid-column: 2; grid-row: 1; font-size: .52rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-lo); line-height: 1; }
+.cell-value { grid-column: 1 / -1; grid-row: 2; font-size: .7rem; font-weight: 700; color: var(--text-hi); line-height: 1.25; word-break: break-word; }
+#cellBeneficiaire { padding-right: 30px; }
 #cellBeneficiaire::after {
-content: '›'; position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+content: '›'; position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
 font-size: 1.15rem; color: var(--text-lo); font-weight: 400; line-height: 1;
     }
 
@@ -735,6 +722,7 @@ color: #10b981; font-size: .6rem; font-weight: 800; letter-spacing: .06em; text-
   flex-shrink: 0;
 }
 </style>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -743,7 +731,7 @@ color: #10b981; font-size: .6rem; font-weight: 800; letter-spacing: .06em; text-
 <img src="images/logo.png" alt="GoldTix" class="navbar-logo" />
 <span class="navbar-name">Gold<span class="navbar-name-accent">Tix</span></span>
 </a>
-<div class="navbar-badge">Billet Authentique</div>
+<span class="navbar-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>Billetterie sécurisée</span>
 </nav>
 
 <div id="loadingScreen" class="state-screen">
