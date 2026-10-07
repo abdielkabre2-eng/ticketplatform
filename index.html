@@ -10,15 +10,16 @@
    GOLDTIX — interface claire, noir + touches dorées
 ============================================= */
 :root {
-    --bg: #f7f7f5;
+    --bg: #fdfbf8;
     --card: #ffffff;
-    --ink: #111111;
-    --ink-sub: #4b4b4b;
-    --ink-muted: #8a8a85;
-    --line: #e7e5df;
-    --line-strong: #d6d3ca;
-    --gold: #b8892b;
-    --gold-soft: #f6efdc;
+    --ink: #14161f;
+    --ink-sub: #4b4f5c;
+    --ink-muted: #8b8f9b;
+    --line: #ece9e3;
+    --line-strong: #dcd8cf;
+    --gold: #d9a520;
+    --gold-text: #a87600;
+    --gold-soft: #fdf6dd;
     --green: #15803d;
     --green-bg: #ecfdf3;
     --red: #c62828;
@@ -57,10 +58,31 @@ button { font-family: inherit; }
 .secure-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--ink-sub); white-space: nowrap; }
 .secure-badge svg { width: 14px; height: 14px; color: var(--gold); flex-shrink: 0; }
 
-.page-head { padding: 34px 0 26px; text-align: center; }
-.page-head h1 { font-size: clamp(26px, 4.5vw, 34px); font-weight: 800; letter-spacing: -0.6px; line-height: 1.2; }
-.page-head p { margin-top: 8px; font-size: 15px; color: var(--ink-sub); }
-.page-head .rule { width: 36px; height: 3px; border-radius: 3px; background: var(--gold); margin: 14px auto 0; }
+.page-head { padding: 30px 0 22px; text-align: left; }
+.page-head h1 { font-size: clamp(24px, 4.2vw, 30px); font-weight: 800; letter-spacing: -0.5px; line-height: 1.2; }
+.page-head p { margin-top: 6px; font-size: 15px; color: var(--ink-sub); }
+.page-head .rule { width: 36px; height: 3px; border-radius: 3px; background: linear-gradient(90deg, #f5d36b, #d9a520); margin: 14px 0 0; }
+
+/* ---------- Bandeau événement (date + titre + lieu) ---------- */
+.event-banner { background: var(--ink); color: #fff; border-bottom: 3px solid var(--gold); }
+.banner-inner { display: flex; align-items: center; gap: 22px; padding-top: 26px; padding-bottom: 26px; }
+.date-block { flex-shrink: 0; min-width: 76px; padding: 4px 18px 4px 0; border-right: 1px solid rgba(255,255,255,0.18); text-align: center; line-height: 1.05; }
+.date-block .d { display: block; font-size: 44px; font-weight: 800; letter-spacing: -1px; }
+.date-block .m { display: block; margin-top: 4px; font-size: 19px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: var(--gold); }
+.date-block .y { display: block; margin-top: 4px; font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.75); }
+.date-raw { font-size: 16px; font-weight: 700; }
+.banner-txt { min-width: 0; }
+.banner-title { font-size: clamp(21px, 3.6vw, 30px); font-weight: 800; letter-spacing: -0.5px; line-height: 1.2; word-break: break-word; }
+.banner-meta { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14.5px; color: rgba(255,255,255,0.78); }
+.banner-meta span { display: inline-flex; align-items: center; gap: 7px; }
+.banner-meta svg { width: 15px; height: 15px; color: var(--gold); flex-shrink: 0; }
+@media (max-width: 600px) {
+    .banner-inner { gap: 14px; padding-top: 20px; padding-bottom: 20px; }
+    .date-block { min-width: 62px; padding-right: 14px; }
+    .date-block .d { font-size: 34px; }
+    .date-block .m { font-size: 15px; }
+    .date-block .y { font-size: 12px; }
+}
 
 /* ---------- Mise en page ---------- */
 .layout { display: grid; grid-template-columns: 340px 1fr; gap: 24px; align-items: start; padding-bottom: 60px; }
@@ -119,7 +141,7 @@ select {
     background-repeat: no-repeat; background-position: right 15px center; padding-right: 42px; cursor: pointer;
 }
 input::placeholder { color: #aaa7a0; }
-input:focus, select:focus { border-color: var(--gold); box-shadow: 0 0 0 4px rgba(184,137,43,0.15); }
+input:focus, select:focus { border-color: var(--gold); box-shadow: 0 0 0 4px rgba(217,165,32,0.22); }
 .field-invalid { border-color: var(--red) !important; box-shadow: 0 0 0 4px rgba(198,40,40,0.10) !important; }
 .field-error { display: none; align-items: center; gap: 6px; margin-top: 7px; font-size: 12.5px; font-weight: 600; color: var(--red); }
 .field-error.visible { display: flex; }
@@ -175,7 +197,7 @@ input:focus, select:focus { border-color: var(--gold); box-shadow: 0 0 0 4px rgb
 .upload-meta { flex: 1; min-width: 0; }
 .upload-name { font-size: 13.5px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .upload-size { font-size: 12px; color: var(--ink-muted); margin-top: 1px; }
-.upload-replace { margin-top: 6px; padding: 0; background: none; border: none; font-size: 12.5px; font-weight: 700; color: var(--gold); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.upload-replace { margin-top: 6px; padding: 0; background: none; border: none; font-size: 12.5px; font-weight: 700; color: var(--gold-text); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
 .upload.field-invalid { background: var(--red-bg); }
 
 .btn-submit { width: 100%; min-height: 54px; margin-top: 8px; padding: 15px 22px; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 15.5px; font-weight: 700; color: #fff; background: var(--ink); border: none; border-bottom: 3px solid var(--gold); border-radius: var(--radius-sm); cursor: pointer; transition: transform 0.2s, background 0.2s; }
@@ -203,7 +225,7 @@ input:focus, select:focus { border-color: var(--gold); box-shadow: 0 0 0 4px rgb
 
 /* ---------- Pied de page ---------- */
 .footer { border-top: 1px solid var(--line); background: var(--card); padding: 34px 0 28px; text-align: center; font-size: 13px; color: var(--ink-muted); }
-.footer-brand { font-size: 14px; font-weight: 700; color: var(--gold); margin-bottom: 10px; }
+.footer-brand { font-size: 14px; font-weight: 700; color: var(--gold-text); margin-bottom: 10px; }
 .footer-description { max-width: 520px; margin: 0 auto 20px; font-size: 12.5px; line-height: 1.7; }
 .footer-links { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
 .footer-links a { font-size: 12.5px; font-weight: 600; color: var(--ink-sub); text-decoration: none; padding: 8px 14px; border: 1px solid var(--line); border-radius: 30px; transition: border-color 0.2s, color 0.2s; }
@@ -242,6 +264,8 @@ input:focus, select:focus { border-color: var(--gold); box-shadow: 0 0 0 4px rgb
             </span>
         </div>
     </header>
+
+    <section class="event-banner" id="bandeauEvenement" hidden></section>
 
     <div class="wrap">
         <div class="page-head">
@@ -432,6 +456,39 @@ input:focus, select:focus { border-color: var(--gold); box-shadow: 0 0 0 4px rgb
             set('prixChoisiEl', prix);
             set('recapCategorieEl', nomCat);
             set('recapTotalEl', prix);
+        }
+
+        // ─── Bandeau événement : date, titre, lieu, heure ─────────────────────
+        function decouperDate(texte) {
+            const mois = ['JAN', 'FÉV', 'MAR', 'AVR', 'MAI', 'JUIN', 'JUIL', 'AOÛT', 'SEP', 'OCT', 'NOV', 'DÉC'];
+            const t = String(texte || '').trim();
+            let y, m, d, r;
+            if ((r = t.match(/^(\d{4})-(\d{2})-(\d{2})/))) { y = r[1]; m = +r[2]; d = +r[3]; }
+            else if ((r = t.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/))) { d = +r[1]; m = +r[2]; y = r[3]; }
+            if (!y || m < 1 || m > 12) return null;
+            return { jour: String(d).padStart(2, '0'), mois: mois[m - 1], annee: y };
+        }
+
+        function rendreBandeau(ev) {
+            const bandeau = document.getElementById('bandeauEvenement');
+            if (!bandeau || !ev) return;
+            const dt = decouperDate(ev.date);
+            const blocDate = dt
+                ? `<div class="date-block"><span class="d">${esc(dt.jour)}</span><span class="m">${esc(dt.mois)}</span><span class="y">${esc(dt.annee)}</span></div>`
+                : (ev.date ? `<div class="date-block"><span class="date-raw">${esc(ev.date)}</span></div>` : '');
+            const heure = (ev.heure || '').slice(0, 5);
+            bandeau.innerHTML = `
+                <div class="wrap banner-inner">
+                    ${blocDate}
+                    <div class="banner-txt">
+                        <h2 class="banner-title">${esc(ev.titre)}</h2>
+                        <div class="banner-meta">
+                            ${ev.lieu ? `<span>${ICONS.pin}${esc(ev.lieu)}</span>` : ''}
+                            ${heure ? `<span>${ICONS.clock}${esc(heure)}</span>` : ''}
+                        </div>
+                    </div>
+                </div>`;
+            bandeau.hidden = false;
         }
 
         // ─── Aperçu de la preuve de paiement ──────────────────────────────────
@@ -643,19 +700,13 @@ input:focus, select:focus { border-color: var(--gold); box-shadow: 0 0 0 4px rgb
                         <aside class="col-event">
                             <div class="card event-card">
                                 <div class="poster">${posterHTML}</div>
-                                <div class="event-body">
-                                    <h2 class="event-title" id="evTitreEl">${esc(ev.titre)}</h2>
-                                    <div class="event-meta">
-                                        <div class="meta-row">${ICONS.calendar}<strong id="evDateEl">${esc(ev.date)}</strong></div>
-                                        <div class="meta-row">${ICONS.clock}<strong id="evHeureEl">${esc((ev.heure || '').slice(0, 5))}</strong></div>
-                                        <div class="meta-row">${ICONS.pin}<strong id="evLieuEl">${esc(ev.lieu)}</strong></div>
-                                    </div>
-                                    ${recapHTML}
-                                </div>
+                                ${recapHTML ? `<div class="event-body">${recapHTML}</div>` : ''}
                             </div>
                         </aside>
                         <div class="col-steps">${colonneEtapes}</div>
                     </div>`;
+
+                rendreBandeau(ev);
 
                 const posterImage = container.querySelector('.poster img');
                 if (posterImage) {
@@ -890,10 +941,7 @@ input:focus, select:focus { border-color: var(--gold); box-shadow: 0 0 0 4px rgb
                 }
 
                 const maj = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-                maj('evTitreEl', ev.titre);
-                maj('evDateEl', ev.date);
-                maj('evHeureEl', (ev.heure || '').slice(0, 5));
-                maj('evLieuEl', ev.lieu);
+                rendreBandeau(ev);
                 maj('evBeneficiaireNomEl', ev.beneficiaire_nom || 'Non renseigné');
                 maj('evBeneficiaireContactEl', ev.beneficiaire_infos || 'Non renseigné');
 
