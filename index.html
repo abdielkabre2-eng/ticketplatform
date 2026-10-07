@@ -2,2030 +2,933 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Achat de Billet | GoldTix</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
 /* =============================================
-   GOLDTIX — design premium (sombre + or)
+   GOLDTIX — interface claire, noir + touches dorées
 ============================================= */
 :root {
-    --gold-1: #f7c65a;
-    --gold-2: #e0a02a;
-    --gold-3: #b4781a;
-    --gold-gradient: linear-gradient(135deg, #f9d77a 0%, #e0a02a 50%, #b4781a 100%);
-    --gold-glow: rgba(224, 160, 42, 0.35);
-    --gold-glow-soft: rgba(247, 198, 90, 0.14);
-
-    --bg: #07070b;
-    --surface: rgba(24, 21, 16, 0.78);
-    --surface-raised: rgba(255, 255, 255, 0.05);
-    --border: rgba(247, 198, 90, 0.18);
-    --border-neutral: rgba(255, 255, 255, 0.10);
-    --hairline: rgba(247, 198, 90, 0.28);
-
-    --text: #f7f3ea;
-    --text-sub: #cfc7b3;
-    --text-muted: #948c78;
-
-    --green: #4ade80;
-    --green-bg: rgba(74, 222, 128, 0.10);
-    --green-border: rgba(74, 222, 128, 0.28);
-
-    --red: #ff6b6b;
-    --red-bg: rgba(255, 107, 107, 0.08);
-    --red-border: rgba(255, 107, 107, 0.28);
-
-    --radius-xl: 24px;
-    --radius-lg: 16px;
-    --radius-md: 12px;
-    --radius-sm: 8px;
-
-    --shadow-card: 0 40px 80px -40px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.02);
-    --shadow-glow: 0 14px 34px rgba(224, 160, 42, 0.35);
-
+    --bg: #f7f7f5;
+    --card: #ffffff;
+    --ink: #111111;
+    --ink-sub: #4b4b4b;
+    --ink-muted: #8a8a85;
+    --line: #e7e5df;
+    --line-strong: #d6d3ca;
+    --gold: #b8892b;
+    --gold-soft: #f6efdc;
+    --green: #15803d;
+    --green-bg: #ecfdf3;
+    --red: #c62828;
+    --red-bg: #fdf0f0;
+    --radius: 14px;
+    --radius-sm: 10px;
     --ease: cubic-bezier(0.16, 1, 0.3, 1);
-    --transition: all 0.35s var(--ease);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-html { overflow-x: hidden; width: 100%; max-width: 100%; background: var(--bg); }
-
+html { overflow-x: hidden; background: var(--bg); }
 body {
-    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-    background-color: var(--bg);
-    background-image:
-        radial-gradient(ellipse 70% 50% at 15% 0%, rgba(247,198,90,0.10) 0, transparent 60%),
-        radial-gradient(ellipse 60% 45% at 100% 100%, rgba(180,120,26,0.10) 0, transparent 60%);
-    background-attachment: fixed;
-    color: var(--text);
-    width: 100%;
-    max-width: 100%;
-    padding: 0 20px 90px;
-    line-height: 1.6;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.55;
     min-height: 100vh;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
-    letter-spacing: -0.005em;
 }
+img { max-width: 100%; }
+button { font-family: inherit; }
 
-img, svg, video, canvas { max-width: 100%; }
-
-/* =============================================
-   ANIMATIONS
-============================================= */
-@keyframes entranceUp {
-    from { opacity: 0; transform: translateY(30px) scale(0.985); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-}
 @keyframes spin { to { transform: rotate(360deg); } }
-@keyframes shimmer {
-    0%   { background-position: -400px 0; }
-    100% { background-position: 400px 0; }
-}
-@keyframes sheen {
-    0%   { transform: translateX(-130%) skewX(-20deg); }
-    60%, 100% { transform: translateX(330%) skewX(-20deg); }
-}
-@keyframes gxPosterBreathe {
-    0%, 100% { transform: scale(1); }
-    50%      { transform: scale(1.03); }
-}
-@keyframes pulseDot {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(74,222,128,0.55); }
-    50%      { box-shadow: 0 0 0 6px rgba(74,222,128,0); }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+
+/* ---------- En-tête ---------- */
+.topbar { background: var(--card); border-bottom: 1px solid var(--line); }
+.topbar-inner { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 60px; }
+.brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--ink); }
+.brand-logo { height: 26px; width: auto; }
+.brand-name { font-size: 19px; font-weight: 800; letter-spacing: -0.3px; }
+.brand-name em { font-style: normal; color: var(--gold); }
+.secure-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--ink-sub); white-space: nowrap; }
+.secure-badge svg { width: 14px; height: 14px; color: var(--gold); flex-shrink: 0; }
+
+.page-head { padding: 34px 0 26px; text-align: center; }
+.page-head h1 { font-size: clamp(26px, 4.5vw, 34px); font-weight: 800; letter-spacing: -0.6px; line-height: 1.2; }
+.page-head p { margin-top: 8px; font-size: 15px; color: var(--ink-sub); }
+.page-head .rule { width: 36px; height: 3px; border-radius: 3px; background: var(--gold); margin: 14px auto 0; }
+
+/* ---------- Mise en page ---------- */
+.layout { display: grid; grid-template-columns: 340px 1fr; gap: 24px; align-items: start; padding-bottom: 60px; }
+.col-steps { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.col-event { position: sticky; top: 18px; min-width: 0; }
+@media (max-width: 880px) {
+    .layout { grid-template-columns: 1fr; gap: 18px; }
+    .col-event { position: static; }
 }
 
-.anim-1 { animation: entranceUp 0.8s var(--ease) both; }
-.anim-2 { animation: entranceUp 0.8s var(--ease) 0.15s both; opacity: 0; }
-.anim-3 { animation: entranceUp 0.8s var(--ease) 0.3s both; opacity: 0; }
+/* ---------- Cartes ---------- */
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; animation: fadeUp 0.45s var(--ease) both; }
+.card-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 18px; }
+.step-num { width: 28px; height: 28px; border-radius: 50%; background: var(--ink); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; box-shadow: 0 0 0 3px var(--gold-soft); }
+.step-icon { width: 28px; height: 28px; border-radius: 50%; background: var(--gold-soft); color: var(--gold); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.step-icon svg { width: 15px; height: 15px; }
+.card-title { font-size: 17px; font-weight: 700; letter-spacing: -0.2px; line-height: 1.3; }
+.card-desc { font-size: 13.5px; color: var(--ink-sub); margin-top: 3px; }
 
-/* =============================================
-   NAVBAR
-============================================= */
-.navbar {
-    position: relative;
-    z-index: 5;
-    max-width: none;
-    margin: 0 -20px 34px;
-    width: calc(100% + 40px) !important;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    background: rgba(10, 9, 7, 0.72);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    padding: 14px 32px !important;
-    border: none;
-    border-bottom: 1px solid var(--border);
-    border-radius: 0;
-}
-.navbar::after {
-    content: '';
-    position: absolute;
-    left: 0; right: 0; bottom: -1px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--gold-1) 50%, transparent);
-    opacity: 0.7;
-}
-.brand { display: flex; align-items: center; gap: 10px; min-width: 0; text-decoration: none; }
-.brand-logo { height: 32px !important; width: auto; flex-shrink: 0; transition: var(--transition); }
-.brand-logo:hover { transform: scale(1.06) rotate(-3deg); }
-.brand-name {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 22px !important;
-    font-weight: 800 !important;
-    letter-spacing: -0.4px;
-    color: #fff;
-    white-space: nowrap;
-}
-.brand-name em {
-    font-style: normal;
-    background: var(--gold-gradient);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
+/* ---------- Carte événement ---------- */
+.event-card { padding: 0; overflow: hidden; }
+.poster { background: #efede7; }
+.poster img { display: block; width: 100%; height: auto; max-height: 420px; object-fit: contain; }
+.poster-fallback { min-height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--ink-muted); font-size: 13px; font-weight: 600; }
+.poster-fallback svg { width: 30px; height: 30px; opacity: 0.6; }
+.event-body { padding: 20px 22px 22px; }
+.event-title { font-size: 21px; font-weight: 800; letter-spacing: -0.4px; line-height: 1.25; margin-bottom: 14px; word-break: break-word; }
+.event-meta { display: flex; flex-direction: column; gap: 9px; }
+.meta-row { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--ink-sub); }
+.meta-row svg { width: 16px; height: 16px; color: var(--gold); flex-shrink: 0; }
+.meta-row strong { color: var(--ink); font-weight: 600; }
 
-.secure-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--green-bg);
-    color: var(--green);
-    border: 1px solid var(--green-border);
-    padding: 7px 14px;
-    border-radius: 30px;
-    font-size: 11.5px !important;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-.secure-badge svg { width: 13px; height: 13px; }
+.recap { margin-top: 18px; padding-top: 16px; border-top: 1px dashed var(--line-strong); }
+.recap-label { font-size: 11.5px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 10px; }
+.recap-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 14px; padding: 4px 0; }
+.recap-row span:first-child { color: var(--ink-sub); }
+.recap-row span:last-child { font-weight: 600; text-align: right; }
+.recap-total { margin-top: 8px; padding: 12px 14px; background: var(--gold-soft); border-radius: var(--radius-sm); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.recap-total span:first-child { font-size: 13px; font-weight: 600; color: var(--ink-sub); }
+.recap-total span:last-child { font-size: 18px; font-weight: 800; color: var(--ink); }
 
-/* =============================================
-   LAYOUT
-============================================= */
-.main-wrapper { max-width: 1120px; margin: 0 auto; position: relative; }
-#detailsEvenement { position: relative; }
+/* ---------- Formulaires ---------- */
+.field { margin-bottom: 18px; }
+.field:last-child { margin-bottom: 0; }
+.field label, .field .label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 7px; }
+.field .hint { font-weight: 500; color: var(--ink-muted); }
+.req { color: var(--red); }
 
-/* Ambiance : l'affiche floutée en arrière-plan (ajoutée par le template) */
-.hero-bg {
-    position: absolute;
-    z-index: 0;
-    left: 50%;
-    width: 100vw;
-    margin-left: -50vw;
-    top: -150px;
-    height: 640px;
-    background-size: cover;
-    background-position: center;
-    filter: blur(46px) saturate(1.5);
-    opacity: 0.42;
-    transform: scale(1.15);
-    -webkit-mask-image: linear-gradient(to bottom, #000 25%, transparent 100%);
-    mask-image: linear-gradient(to bottom, #000 25%, transparent 100%);
-    pointer-events: none;
-}
-
-.grid {
-    position: relative;
-    z-index: 1;
-    display: grid;
-    grid-template-columns: 1fr 1.15fr;
-    gap: 44px;
-    align-items: start;
-}
-
-.ticket-divider {
-    position: absolute;
-    top: 28px;
-    bottom: 28px;
-    left: calc(50% - (44px / 2));
-    width: 1px;
-    background-image: linear-gradient(rgba(247,198,90,0.45) 60%, transparent 0%);
-    background-position: left;
-    background-size: 1px 12px;
-    background-repeat: repeat-y;
-}
-.ticket-divider .notch {
-    position: absolute;
-    left: 50%;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: var(--bg);
-    border: 1px solid rgba(247,198,90,0.35);
-    transform: translateX(-50%);
-}
-.ticket-divider .notch-top { top: -12px; }
-.ticket-divider .notch-bottom { bottom: -12px; }
-
-@media (max-width: 900px) {
-    .grid { grid-template-columns: 1fr; gap: 22px; }
-    .ticket-divider { display: none; }
-}
-
-/* =============================================
-   CARDS
-============================================= */
-.card {
-    position: relative;
-    background: linear-gradient(180deg, rgba(36,31,22,0.80) 0%, rgba(16,14,11,0.88) 100%);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-radius: var(--radius-xl);
-    padding: 34px;
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow-card), inset 0 1px 0 rgba(255,255,255,0.06);
-    transition: var(--transition);
-    overflow: hidden;
-}
-.card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 8%; right: 8%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--gold-1), transparent);
-    opacity: 0.8;
-}
-.card--event:hover { border-color: rgba(247,198,90,0.32); }
-
-/* =============================================
-   POSTER
-============================================= */
-.poster-wrapper {
-    position: relative;
-    padding: 6px;
-    border-radius: var(--radius-lg);
-    background: linear-gradient(135deg, #f9d77a, #b4781a 55%, #f9d77a);
-    box-shadow: 0 30px 60px -20px rgba(0,0,0,0.85), 0 0 50px -10px rgba(224,160,42,0.35);
-    overflow: hidden;
-    margin-bottom: 26px;
-}
-.poster-wrapper img {
-    display: block;
-    width: 100%;
-    height: auto;
-    object-fit: contain;
-    border-radius: calc(var(--radius-lg) - 6px);
-    background: #0b0a08;
-}
-.poster-wrapper::after {
-    content: '';
-    position: absolute;
-    inset: 6px;
-    border-radius: calc(var(--radius-lg) - 6px);
-    background: linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.25));
-    pointer-events: none;
-}
-#posterImgEl {
-    animation: gxPosterBreathe 7s ease-in-out infinite;
-    transform-origin: center center;
-    will-change: transform;
-    backface-visibility: hidden;
-}
-.poster-fallback {
-    width: 100%;
-    min-height: 280px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: var(--text-muted);
-    font-size: 14px;
-    font-weight: 600;
-    background: #0f0d0a;
-    border-radius: calc(var(--radius-lg) - 6px);
-    padding: 24px 18px;
-}
-.poster-fallback svg { width: 36px; height: 36px; margin-bottom: 10px; opacity: 0.4; display: block; color: var(--gold-1); }
-.poster-fallback p { margin: 0; line-height: 1.4; text-align: center; }
-
-/* =============================================
-   EVENT INFO
-============================================= */
-.event-title {
-    position: relative;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: clamp(26px, 4vw, 36px);
-    font-weight: 700;
-    color: #fff;
-    margin: 0 0 18px;
-    letter-spacing: -0.5px;
-    line-height: 1.2;
-}
-.gx-title-ghost { visibility: hidden; }
-.gx-title-visible { position: absolute; top: 0; left: 0; width: 100%; }
-
-.meta-chips { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 26px; }
-.meta-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(247,198,90,0.22);
-    padding: 9px 15px;
-    border-radius: 30px;
-    font-size: 13.5px;
-    font-weight: 600;
-    color: var(--text-sub);
-    backdrop-filter: blur(6px);
-}
-.meta-chip svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--gold-1); }
-.meta-chip strong { color: #fff; font-weight: 700; }
-
-/* =============================================
-   TARIFS — présentés comme de petits billets
-============================================= */
-.ticket-avail-label {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 0;
-    text-transform: none;
-    text-align: left;
-    color: #fff;
-    margin: 4px 0 14px;
-}
-.ticket-avail-label::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, rgba(247,198,90,0.4), transparent);
-}
-.ticket-price-list { display: flex; flex-direction: column; gap: 10px; border: none; margin: 0; }
-.ticket-price-row {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-    padding: 15px 18px 15px 22px;
-    background: linear-gradient(90deg, rgba(247,198,90,0.10), rgba(255,255,255,0.03) 60%);
-    border: 1px solid rgba(247,198,90,0.20);
-    border-radius: var(--radius-md);
-    transition: var(--transition);
-}
-.ticket-price-row::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 14%; bottom: 14%;
-    width: 3px;
-    border-radius: 0 3px 3px 0;
-    background: var(--gold-gradient);
-}
-.ticket-price-row:hover { transform: translateX(3px); border-color: rgba(247,198,90,0.45); }
-.ticket-price-row-name {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 15px;
-    font-weight: 700;
-    color: #fff;
-    min-width: 0;
-}
-.ticket-price-row-name svg { width: 17px; height: 17px; color: var(--gold-1); flex-shrink: 0; }
-.ticket-price-row-price {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 800;
-    color: #1a1204;
-    background: var(--gold-gradient);
-    padding: 6px 14px;
-    border-radius: 30px;
-    white-space: nowrap;
-    box-shadow: 0 6px 16px -4px rgba(224,160,42,0.5);
-}
-.ticket-price-single {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 17px 22px;
-    background: var(--gold-gradient);
-    color: #1a1204;
-    border-radius: var(--radius-lg);
-    font-weight: 800;
-    font-size: 16px;
-    box-shadow: var(--shadow-glow);
-}
-.ticket-price-single svg { width: 18px; height: 18px; }
-
-/* =============================================
-   PAIEMENT
-============================================= */
-.card > p.gx-reveal {
-    font-family: 'Plus Jakarta Sans', sans-serif !important;
-    text-align: center !important;
-    font-size: 13.5px !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.2px !important;
-    color: var(--text-sub) !important;
-    margin-bottom: 26px !important;
-    padding: 12px 16px;
-    background: rgba(247,198,90,0.07);
-    border: 1px solid rgba(247,198,90,0.18);
-    border-radius: var(--radius-md);
-}
-
-.payment-box {
-    background: rgba(0,0,0,0.30);
-    border: 1px solid rgba(247,198,90,0.22);
-    border-radius: var(--radius-lg);
-    padding: 24px;
-    margin-bottom: 34px;
-}
-
-.step-heading { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
-.step-heading-number {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: var(--gold-gradient);
-    color: #1a1204;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-weight: 800;
-    font-size: 14px;
-    flex-shrink: 0;
-    box-shadow: 0 0 0 4px rgba(247,198,90,0.16), 0 8px 18px -4px rgba(224,160,42,0.5);
-}
-.step-heading-text {
-    font-family: 'Plus Jakarta Sans', sans-serif !important;
-    font-size: 16.5px;
-    font-weight: 700;
-    color: #fff;
-    letter-spacing: -0.1px;
-    line-height: 1.35;
-}
-
-.info-rows { display: flex; flex-direction: column; gap: 10px; }
-.info-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    background: rgba(255,255,255,0.05);
-    padding: 13px 16px;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border-neutral);
-    flex-wrap: wrap;
-}
-.info-row-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12.5px;
-    color: var(--text-muted);
-    font-weight: 600;
-    min-width: 0;
-}
-.info-row-label svg { width: 15px; height: 15px; color: var(--gold-1); }
-.info-row-value {
-    font-size: 14.5px;
-    font-weight: 700;
-    color: #fff;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-align: right;
-    min-width: 0;
-}
-
-.qr-wrapper {
-    margin-top: 14px;
-    background: rgba(255,255,255,0.04);
-    padding: 20px;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border-neutral);
-    text-align: center;
-}
-.qr-label {
-    font-size: 12.5px;
-    color: var(--text-muted);
-    font-weight: 600;
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-}
-.qr-label svg { width: 15px; height: 15px; color: var(--gold-1); }
-.qr-image {
-    max-width: 200px;
-    width: 100%;
-    height: auto;
-    border-radius: 12px;
-    display: inline-block;
-    box-shadow: 0 14px 30px -10px rgba(0,0,0,0.7), 0 0 0 1px rgba(247,198,90,0.3);
-    background: #fff;
-    padding: 6px;
-    object-fit: contain;
-}
-
-.rib-download-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    margin-top: 14px;
-    padding: 9px 18px;
-    background: rgba(247,198,90,0.08);
-    color: var(--gold-1);
-    border: 1px solid rgba(247,198,90,0.45);
-    border-radius: 30px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 12.5px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: var(--transition);
-}
-.rib-download-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
-.rib-download-btn:hover:not(:disabled) { background: rgba(247,198,90,0.18); border-color: var(--gold-1); transform: translateY(-1px); }
-.rib-download-btn:disabled { opacity: 0.6; cursor: wait; }
-.rib-download-status {
-    display: none;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    margin-top: 9px;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--green);
-}
-.rib-download-status.gx-visible { display: flex; }
-.rib-download-status svg { width: 13px; height: 13px; flex-shrink: 0; }
-
-/* =============================================
-   FORMULAIRE
-============================================= */
-.form-group { margin-bottom: 20px; }
-.form-group label {
-    display: block;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text-sub);
-    margin-bottom: 8px;
-}
-.form-group label .required-mark { color: var(--red) !important; font-weight: 700; }
-
-input[type="text"],
-input[type="email"],
-input[type="tel"],
-select {
-    width: 100%;
-    padding: 14px 16px;
-    font-size: 14.5px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    border: 1.5px solid rgba(255,255,255,0.12);
-    border-radius: var(--radius-md);
-    outline: none;
-    background: rgba(255,255,255,0.05);
-    color: #fff;
-    transition: var(--transition);
-    -webkit-appearance: none;
-    appearance: none;
+input[type="text"], input[type="email"], input[type="tel"], select {
+    width: 100%; min-height: 50px; padding: 13px 15px; font-size: 15px; font-family: inherit;
+    color: var(--ink); background: #fff; border: 1.5px solid var(--line-strong); border-radius: var(--radius-sm);
+    outline: none; transition: border-color 0.2s, box-shadow 0.2s; -webkit-appearance: none; appearance: none;
 }
 select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23f7c65a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 16px center;
-    padding-right: 42px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23111' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 15px center; padding-right: 42px; cursor: pointer;
 }
-select option { background: #16130d; color: #f7f3ea; }
-input[type="text"]:focus,
-input[type="email"]:focus,
-input[type="tel"]:focus,
-select:focus {
-    border-color: var(--gold-1);
-    box-shadow: 0 0 0 4px rgba(247,198,90,0.14);
-    background: rgba(255,255,255,0.08);
-}
-input::placeholder { color: #756e5d; }
-input:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0 40px #1b1710 inset !important;
-    -webkit-text-fill-color: #fff !important;
-}
+input::placeholder { color: #aaa7a0; }
+input:focus, select:focus { border-color: var(--gold); box-shadow: 0 0 0 4px rgba(184,137,43,0.15); }
+.field-invalid { border-color: var(--red) !important; box-shadow: 0 0 0 4px rgba(198,40,40,0.10) !important; }
+.field-error { display: none; align-items: center; gap: 6px; margin-top: 7px; font-size: 12.5px; font-weight: 600; color: var(--red); }
+.field-error.visible { display: flex; }
+.field-error svg { width: 14px; height: 14px; flex-shrink: 0; }
 
-.form-group input.gx-field-invalid,
-.form-group select.gx-field-invalid,
-.file-input-wrapper.gx-field-invalid {
-    border-color: var(--red) !important;
-    box-shadow: 0 0 0 4px rgba(255,107,107,0.14);
-}
-.gx-field-error-msg {
-    display: none;
-    align-items: center;
-    gap: 5px;
-    margin-top: 7px;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--red);
-    line-height: 1.4;
-}
-.gx-field-error-msg.gx-visible { display: flex; }
-.gx-field-error-msg svg { width: 13px; height: 13px; flex-shrink: 0; }
+.price-line { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; padding: 13px 16px; background: var(--gold-soft); border-radius: var(--radius-sm); }
+.price-line span:first-child { font-size: 13px; font-weight: 600; color: var(--ink-sub); }
+.price-line span:last-child { font-size: 19px; font-weight: 800; }
+.price-single { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 16px; background: var(--gold-soft); border-radius: var(--radius-sm); }
+.price-single span:first-child { font-size: 13px; font-weight: 600; color: var(--ink-sub); }
+.price-single span:last-child { font-size: 19px; font-weight: 800; }
 
-.file-input-wrapper {
-    position: relative;
-    border: 1.5px dashed rgba(247,198,90,0.4);
-    border-radius: var(--radius-md);
-    background: rgba(247,198,90,0.04) !important;
-    transition: var(--transition);
-    overflow: hidden;
-}
-.file-input-wrapper:hover { border-color: var(--gold-1); background: rgba(247,198,90,0.09) !important; }
-.file-input-wrapper input[type="file"] {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    cursor: pointer;
-    width: 100%;
-    height: 100%;
-    z-index: 2;
-}
-.file-input-display {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 28px 20px;
-    gap: 8px;
-    pointer-events: none;
-}
-.file-input-display svg { width: 30px; height: 30px; color: var(--gold-1); }
-.file-input-display span { font-size: 14px; font-weight: 700; color: #fff; }
-.file-input-display em { font-style: normal; font-size: 12px; color: var(--text-muted); }
-.file-name-preview {
-    font-size: 12px !important;
-    font-weight: 700 !important;
-    color: var(--gold-1) !important;
-    margin-top: 4px;
-    display: none;
-}
+/* ---------- Bénéficiaire ---------- */
+.info-list { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; }
+.info-item { display: flex; align-items: center; gap: 13px; padding: 14px 16px; background: #fff; }
+.info-item + .info-item { border-top: 1px solid var(--line); }
+.info-item-ico { width: 34px; height: 34px; border-radius: 9px; background: var(--gold-soft); color: var(--gold); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.info-item-ico svg { width: 17px; height: 17px; }
+.info-item-txt { min-width: 0; }
+.info-item-label { font-size: 12px; font-weight: 600; color: var(--ink-muted); }
+.info-item-value { font-size: 15.5px; font-weight: 700; word-break: break-word; }
 
-.btn-submit {
-    position: relative;
-    overflow: hidden;
-    background: var(--gold-gradient);
-    color: #1a1204;
-    border: none;
-    padding: 19px 24px;
-    width: 100%;
-    border-radius: var(--radius-lg);
-    font-size: 15.5px;
-    font-weight: 800;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    cursor: pointer;
-    transition: var(--transition);
-    box-shadow: var(--shadow-glow), inset 0 1px 0 rgba(255,255,255,0.4);
-    margin-top: 10px;
-    letter-spacing: 0.2px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-}
-.btn-submit::after {
-    content: '';
-    position: absolute;
-    top: 0; bottom: 0; left: 0;
-    width: 40%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
-    animation: sheen 3.6s ease-in-out infinite;
-    pointer-events: none;
-}
-.btn-submit .btn-icon { display: inline-flex; color: #1a1204; }
-.btn-submit .btn-icon svg { width: 18px; height: 18px; }
-.btn-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 20px 44px rgba(224,160,42,0.5), inset 0 1px 0 rgba(255,255,255,0.4); }
-.btn-submit:disabled { cursor: not-allowed; opacity: 0.8; }
-.btn-submit:disabled::after { display: none; }
-.btn-submit .spinner { display: none; }
-.btn-submit .spinner:first-child {
-    display: block;
-    width: 17px; height: 17px;
-    border: 2.5px solid rgba(26,18,4,0.25);
-    border-top-color: #1a1204;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-}
+.rib-box { margin-top: 14px; display: flex; align-items: center; gap: 14px; padding: 16px; border: 1px dashed var(--line-strong); border-radius: var(--radius-sm); background: #fcfcfa; flex-wrap: wrap; }
+.rib-ico { width: 40px; height: 40px; border-radius: 10px; background: var(--ink); color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.rib-ico svg { width: 19px; height: 19px; }
+.rib-txt { flex: 1; min-width: 160px; }
+.rib-txt strong { display: block; font-size: 14.5px; }
+.rib-txt span { display: block; font-size: 12.5px; color: var(--ink-sub); margin-top: 2px; }
+.btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; padding: 10px 18px; font-size: 13.5px; font-weight: 700; color: var(--ink); background: #fff; border: 1.5px solid var(--ink); border-radius: var(--radius-sm); cursor: pointer; transition: background 0.2s, color 0.2s; }
+.btn-outline svg { width: 15px; height: 15px; }
+.btn-outline:hover:not(:disabled) { background: var(--ink); color: #fff; }
+.btn-outline:disabled { opacity: 0.6; cursor: wait; }
+.rib-status { display: none; width: 100%; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--green); }
+.rib-status.visible { display: flex; }
+.rib-status svg { width: 14px; height: 14px; flex-shrink: 0; }
+.rib-status.warn { color: var(--ink-sub); }
 
-/* =============================================
-   ÉTATS
-============================================= */
-.loading-card { text-align: center; padding: 80px 24px; }
-.loading-text {
-    color: var(--text-sub);
-    font-size: 15px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-}
-.loading-text .spinner {
-    width: 20px; height: 20px;
-    border: 2.5px solid rgba(255,255,255,0.12);
-    border-top-color: var(--gold-1);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-}
+/* ---------- Preuve de paiement ---------- */
+.upload { position: relative; border: 1.5px dashed var(--line-strong); border-radius: var(--radius-sm); background: #fcfcfa; transition: border-color 0.2s, background 0.2s; }
+.upload:hover { border-color: var(--gold); background: var(--gold-soft); }
+.upload input[type="file"] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2; }
+.upload-empty { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 26px 16px; text-align: center; pointer-events: none; }
+.upload-empty svg { width: 28px; height: 28px; color: var(--gold); }
+.upload-empty strong { font-size: 14px; }
+.upload-empty span { font-size: 12.5px; color: var(--ink-muted); }
+.upload.has-file { border-style: solid; border-color: var(--line-strong); background: #fff; cursor: default; }
+.upload.has-file:hover { background: #fff; border-color: var(--line-strong); }
+.upload.has-file input[type="file"] { display: none; }
+.upload.has-file .upload-empty { display: none; }
+.upload-file { display: none; align-items: center; gap: 14px; padding: 12px; }
+.upload.has-file .upload-file { display: flex; }
+.upload-thumb { width: 64px; height: 64px; border-radius: 8px; object-fit: cover; background: #eee; flex-shrink: 0; border: 1px solid var(--line); }
+.upload-meta { flex: 1; min-width: 0; }
+.upload-name { font-size: 13.5px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.upload-size { font-size: 12px; color: var(--ink-muted); margin-top: 1px; }
+.upload-replace { margin-top: 6px; padding: 0; background: none; border: none; font-size: 12.5px; font-weight: 700; color: var(--gold); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.upload.field-invalid { background: var(--red-bg); }
 
-.closed-box {
-    background: var(--red-bg);
-    border: 1px solid var(--red-border);
-    border-radius: var(--radius-lg);
-    padding: 44px 28px;
-    text-align: center;
-}
-.closed-box-icon {
-    width: 56px; height: 56px;
-    background: rgba(255,107,107,0.14);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 18px;
-}
-.closed-box-icon svg { width: 26px; height: 26px; color: var(--red); }
-.closed-box h3 { color: var(--red); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 10px; }
-.closed-box p { color: var(--text-sub); font-size: 14.5px; line-height: 1.65; }
-.closed-box p + p { margin-top: 10px; color: var(--text-muted); font-size: 13px; font-weight: 600; }
+.btn-submit { width: 100%; min-height: 54px; margin-top: 8px; padding: 15px 22px; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 15.5px; font-weight: 700; color: #fff; background: var(--ink); border: none; border-bottom: 3px solid var(--gold); border-radius: var(--radius-sm); cursor: pointer; transition: transform 0.2s, background 0.2s; }
+.btn-submit svg { width: 18px; height: 18px; }
+.btn-submit:hover:not(:disabled) { background: #2a2a2a; transform: translateY(-1px); }
+.btn-submit:disabled { cursor: not-allowed; opacity: 0.75; }
+.spinner { width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
+.submit-note { margin-top: 12px; text-align: center; font-size: 12.5px; color: var(--ink-muted); }
 
-.error-card { text-align: center; padding: 60px 24px; }
-.error-card h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 23px; font-weight: 800; margin-bottom: 10px; color: #fff; }
-.error-card p { color: var(--text-sub); font-size: 14.5px; }
+.notice { display: flex; align-items: flex-start; gap: 10px; padding: 13px 15px; border-radius: var(--radius-sm); font-size: 13.5px; font-weight: 600; line-height: 1.45; margin-top: 12px; }
+.notice svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; }
+.notice.success { background: var(--green-bg); color: var(--green); border: 1px solid #bbf0cf; }
+.notice.error { background: var(--red-bg); color: var(--red); border: 1px solid #f3c6c6; }
 
-/* Bandeau de confiance (ajouté sous le bouton) */
-.trust-strip {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-top: 22px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255,255,255,0.08);
-}
-.trust-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 7px;
-    text-align: center;
-    font-size: 11.5px;
-    font-weight: 600;
-    color: var(--text-muted);
-    line-height: 1.35;
-}
-.trust-item svg { width: 20px; height: 20px; color: var(--gold-1); }
+/* ---------- États ---------- */
+.state-card { text-align: center; padding: 56px 24px; }
+.state-card h2 { font-size: 21px; font-weight: 800; margin-bottom: 8px; }
+.state-card p { font-size: 14.5px; color: var(--ink-sub); }
+.state-card p + p { margin-top: 8px; font-size: 13px; color: var(--ink-muted); font-weight: 600; }
+.state-ico { width: 52px; height: 52px; border-radius: 50%; background: var(--red-bg); color: var(--red); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+.state-ico svg { width: 24px; height: 24px; }
+.state-card .btn-submit { max-width: 260px; margin: 20px auto 0; }
+.loading-line { display: flex; align-items: center; justify-content: center; gap: 12px; color: var(--ink-sub); font-size: 14.5px; font-weight: 600; padding: 70px 0; }
+.loading-line .spinner { border-color: var(--line-strong); border-top-color: var(--gold); width: 20px; height: 20px; }
 
-/* =============================================
-   FOOTER
-============================================= */
-.footer {
-    position: relative;
-    z-index: 1;
-    max-width: 1120px;
-    margin: 70px auto 0;
-    padding-top: 32px;
-    border-top: 1px solid rgba(255,255,255,0.08);
-    text-align: center;
-    font-size: 13px;
-    color: var(--text-muted);
-}
-.footer-brand {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.2px;
-    text-transform: none;
-    background: var(--gold-gradient);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 12px;
-}
-.footer a { color: var(--gold-1); text-decoration: none; font-weight: 600; }
-.footer-description {
-    max-width: 520px;
-    margin: 0 auto 24px;
-    font-size: 12.5px;
-    line-height: 1.75;
-    color: var(--text-muted);
-}
-.footer-about { margin-bottom: 20px; }
-.footer-about-title {
-    display: block;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0;
-    text-transform: none;
-    color: var(--text-sub);
-    margin-bottom: 14px;
-}
-.footer-about-links { display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; }
-.footer-about-links a {
-    font-size: 12.5px;
-    font-weight: 600;
-    color: var(--text-sub);
-    padding: 9px 16px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.10);
-    border-radius: 30px;
-    transition: var(--transition);
-}
-.footer-about-links a:hover { color: var(--gold-1); border-color: rgba(247,198,90,0.5); transform: translateY(-1px); }
-.footer-copy { font-size: 11.5px; color: var(--text-muted); margin-top: 4px; }
+/* ---------- Pied de page ---------- */
+.footer { border-top: 1px solid var(--line); background: var(--card); padding: 34px 0 28px; text-align: center; font-size: 13px; color: var(--ink-muted); }
+.footer-brand { font-size: 14px; font-weight: 700; color: var(--gold); margin-bottom: 10px; }
+.footer-description { max-width: 520px; margin: 0 auto 20px; font-size: 12.5px; line-height: 1.7; }
+.footer-links { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+.footer-links a { font-size: 12.5px; font-weight: 600; color: var(--ink-sub); text-decoration: none; padding: 8px 14px; border: 1px solid var(--line); border-radius: 30px; transition: border-color 0.2s, color 0.2s; }
+.footer-links a:hover { color: var(--ink); border-color: var(--gold); }
+.footer-copy { font-size: 11.5px; }
 
-/* =============================================
-   RESPONSIVE
-============================================= */
 @media (max-width: 600px) {
-    body { padding: 0 14px 70px; }
-    .navbar { margin: 0 -14px 22px; width: calc(100% + 28px) !important; padding: 12px 16px !important; }
-    .hero-bg { top: -90px; height: 460px; }
-    .card { padding: 22px 16px; border-radius: 20px; }
-    .event-title { font-size: 26px; margin-bottom: 14px; }
-    .poster-wrapper { margin-bottom: 20px; }
-    .poster-fallback { min-height: 180px; }
-    .brand-name { font-size: 1.05rem !important; }
-    .secure-badge { font-size: 10.5px !important; padding: 6px 10px; }
-    .meta-chips { gap: 8px; margin-bottom: 22px; }
-    .meta-chip { font-size: 12.5px; padding: 8px 12px; }
-    .ticket-price-row { padding: 13px 14px 13px 18px; }
-    .ticket-price-row-name { font-size: 14px; }
-    .ticket-price-row-price { font-size: 14px; padding: 5px 12px; }
-    .payment-box { padding: 18px 14px; margin-bottom: 26px; }
-    .step-heading { gap: 12px; }
-    .step-heading-number { width: 28px; height: 28px; font-size: 12.5px; }
-    .step-heading-text { font-size: 15px; }
-    .info-row { padding: 11px 13px; }
-    .qr-wrapper { padding: 16px; }
-    .qr-image { max-width: 170px; }
-    .form-group { margin-bottom: 16px; }
-    .form-group label { font-size: 12.5px; }
-    /* 16px : évite le zoom automatique de Safari iOS au focus */
-    input[type="text"], input[type="email"], input[type="tel"], select { padding: 13px 14px; font-size: 16px; }
-    .file-input-display { padding: 22px 16px; }
-    .btn-submit { font-size: 14.5px; padding: 17px 18px; }
-    .trust-strip { gap: 6px; }
-    .trust-item { font-size: 10.5px; }
-    .footer { margin-top: 48px; padding-top: 24px; }
-}
-@media (max-width: 380px) {
-    .event-title { font-size: 22px; }
-    .step-heading-text { font-size: 14px; }
-    .btn-submit { font-size: 13.5px; padding: 15px 14px; }
-}
-
-/* =============================================
-   INTRODUCTION ANIMÉE
-============================================= */
-#introOverlayGoldTix {
-    position: fixed;
-    inset: 0;
-    z-index: 99999;
-    background:
-        radial-gradient(ellipse 80% 60% at 50% 20%, rgba(245,158,11,0.14) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(217,119,6,0.10) 0%, transparent 60%),
-        #0a0908;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-}
-#introOverlayGoldTix.intro-exit { animation: introOverlayExit 0.5s ease forwards; }
-#introOverlayGoldTix.intro-hidden { display: none !important; }
-@keyframes introOverlayExit { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.04); } }
-
-.intro-particles { position: absolute; inset: 0; pointer-events: none; }
-.intro-particles span {
-    position: absolute;
-    width: 3px; height: 3px;
-    background: rgba(245,158,11,0.55);
-    border-radius: 50%;
-    box-shadow: 0 0 6px rgba(245,158,11,0.6);
-    opacity: 0;
-    animation: introParticleFloat 3.6s ease-in-out infinite;
-}
-.intro-particles span:nth-child(1){ top:15%; left:12%; animation-delay:.1s; }
-.intro-particles span:nth-child(2){ top:70%; left:20%; animation-delay:.6s; }
-.intro-particles span:nth-child(3){ top:25%; left:80%; animation-delay:.3s; }
-.intro-particles span:nth-child(4){ top:60%; left:88%; animation-delay:.9s; }
-.intro-particles span:nth-child(5){ top:85%; left:50%; animation-delay:.5s; }
-.intro-particles span:nth-child(6){ top:10%; left:55%; animation-delay:1.1s; }
-.intro-particles span:nth-child(7){ top:45%; left:6%; animation-delay:.8s; }
-.intro-particles span:nth-child(8){ top:40%; left:94%; animation-delay:1.3s; }
-@keyframes introParticleFloat {
-    0%, 100% { opacity: 0; transform: translateY(0); }
-    50%      { opacity: 1; transform: translateY(-14px); }
-}
-
-#introSkipBtn {
-    position: absolute;
-    top: 20px; right: 20px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(245,158,11,0.25);
-    color: rgba(255,255,255,0.75);
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.4px;
-    padding: 8px 16px;
-    border-radius: 30px;
-    cursor: pointer;
-    backdrop-filter: blur(6px);
-    transition: background 0.2s, color 0.2s, border-color 0.2s;
-    z-index: 2;
-}
-#introSkipBtn:hover { background: rgba(245,158,11,0.15); color: #fff; border-color: rgba(245,158,11,0.5); }
-
-.intro-center { position: relative; text-align: center; padding: 24px; z-index: 1; max-width: 480px; width: 100%; }
-.intro-logo-wrap { opacity: 0; animation: introFadeUp 0.6s ease 0.15s forwards; }
-.intro-logo {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 44px;
-    font-weight: 800;
-    letter-spacing: -1.2px;
-    color: #f5f5f4;
-    margin: 0;
-    text-shadow: 0 0 24px rgba(245,158,11,0.35), 0 0 60px rgba(245,158,11,0.15);
-    animation: introLogoGlow 2.4s ease-in-out infinite 0.4s;
-}
-.intro-logo em {
-    font-style: normal;
-    background: linear-gradient(135deg, #f9d77a, #b4781a);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-.intro-tagline {
-    margin-top: 10px;
-    font-size: 14px;
-    letter-spacing: 0.2px;
-    text-transform: none;
-    color: rgba(245,197,109,0.8);
-    font-weight: 600;
-    opacity: 0;
-    animation: introFadeUp 0.6s ease 0.35s forwards;
-}
-@keyframes introFadeUp {
-    from { opacity: 0; transform: translateY(14px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes introLogoGlow {
-    0%, 100% { text-shadow: 0 0 24px rgba(245,158,11,0.35), 0 0 60px rgba(245,158,11,0.15); }
-    50%      { text-shadow: 0 0 34px rgba(245,158,11,0.55), 0 0 80px rgba(245,158,11,0.25); }
-}
-.intro-flow {
-    position: relative;
-    display: flex;
-    justify-content: space-between;
-    margin-top: 46px;
-    opacity: 0;
-    animation: introFadeUp 0.5s ease 0.6s forwards;
-}
-.intro-flow-line {
-    position: absolute;
-    top: 19px; left: 8%; right: 8%;
-    height: 2px;
-    background: rgba(255,255,255,0.08);
-    overflow: hidden;
-    border-radius: 2px;
-}
-.intro-flow-progress {
-    display: block;
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, #f59e0b, #d97706);
-    animation: introLineFill 1.6s ease 0.7s forwards;
-}
-@keyframes introLineFill { to { width: 100%; } }
-.intro-flow-step {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    flex: 1;
-    color: rgba(255,255,255,0.35);
-}
-.intro-flow-step svg {
-    width: 22px; height: 22px;
-    padding: 9px;
-    border-radius: 50%;
-    background: #14110d;
-    border: 1.5px solid rgba(255,255,255,0.12);
-    box-sizing: content-box;
-    transform: scale(0.85);
-    opacity: 0.5;
-}
-.intro-flow-step span { font-size: 11px; font-weight: 600; letter-spacing: 0.2px; text-transform: none; }
-.intro-flow-step[data-step="1"] svg { animation: introStepLight 0.35s ease 0.75s forwards; }
-.intro-flow-step[data-step="2"] svg { animation: introStepLight 0.35s ease 1.1s forwards; }
-.intro-flow-step[data-step="3"] svg { animation: introStepLight 0.35s ease 1.45s forwards; }
-.intro-flow-step[data-step="4"] svg { animation: introStepLight 0.35s ease 1.8s forwards; }
-@keyframes introStepLight {
-    0%   { transform: scale(0.85); opacity: 0.5; border-color: rgba(255,255,255,0.12); color: rgba(255,255,255,0.35); }
-    50%  { transform: scale(1.15); }
-    100% { transform: scale(1); opacity: 1; border-color: rgba(245,158,11,0.6); color: #f59e0b; box-shadow: 0 0 16px rgba(245,158,11,0.35); }
-}
-.intro-ready {
-    margin-top: 34px;
-    font-size: 14px;
-    color: rgba(255,255,255,0.55);
-    font-weight: 500;
-    opacity: 0;
-    animation: introFadeUp 0.5s ease 2.0s forwards;
-}
-@media (max-width: 480px) {
-    .intro-logo { font-size: 32px; }
-    .intro-flow-step span { display: none; }
-    .intro-flow { margin-top: 34px; }
+    .wrap { padding: 0 14px; }
+    .topbar-inner { height: 54px; }
+    .page-head { padding: 26px 0 20px; }
+    .card { padding: 18px 16px; }
+    .event-body { padding: 18px 16px 20px; }
+    .event-title { font-size: 19px; }
+    .secure-badge { font-size: 11px; }
+    .rib-box { flex-direction: column; align-items: stretch; text-align: left; }
+    .rib-box .btn-outline { width: 100%; }
+    input[type="text"], input[type="email"], input[type="tel"], select { font-size: 16px; }
 }
 @media (prefers-reduced-motion: reduce) {
-    #introOverlayGoldTix, #introOverlayGoldTix * { animation-duration: 0.01ms !important; animation-delay: 0s !important; }
+    .card { animation: none; }
+    .btn-submit:hover:not(:disabled) { transform: none; }
 }
-
-/* =============================================
-   RÉVÉLATION PROGRESSIVE
-============================================= */
-.gx-reveal {
-    opacity: 0;
-    transform: translateY(18px);
-    transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
-    will-change: opacity, transform;
-}
-.gx-reveal.gx-visible { opacity: 1; transform: translateY(0); }
-.gx-delay-1 { transition-delay: 0ms; }
-.gx-delay-2 { transition-delay: 70ms; }
-.gx-delay-3 { transition-delay: 140ms; }
-.gx-delay-4 { transition-delay: 210ms; }
-.gx-delay-5 { transition-delay: 280ms; }
-.gx-reveal:not(.gx-visible) { transition-delay: 0ms; }
-
-@media (prefers-reduced-motion: reduce) {
-    .gx-reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
-    #posterImgEl, .btn-submit::after { animation: none; }
-    .gx-title-ghost { visibility: visible; }
-    .gx-title-visible { display: none; }
-}
-
     </style>
 </head>
 <body>
 
-    <!-- OVERLAY D'INTRODUCTION -->
-    <div id="introOverlayGoldTix" aria-hidden="true">
-        <div class="intro-particles">
-            <span></span><span></span><span></span><span></span>
-            <span></span><span></span><span></span><span></span>
+    <header class="topbar">
+        <div class="wrap topbar-inner">
+            <a class="brand" href="#" aria-label="GoldTix">
+                <img src="images/logo.png" alt="" class="brand-logo" onerror="this.style.display='none'">
+                <span class="brand-name">Gold<em>Tix</em></span>
+            </a>
+            <span class="secure-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+                Billetterie sécurisée
+            </span>
         </div>
-        <button type="button" id="introSkipBtn" aria-label="Passer l'introduction">Passer</button>
-        <div class="intro-center">
-            <div class="intro-logo-wrap">
-                <h1 class="intro-logo">Gold<em>Tix</em></h1>
-                <p class="intro-tagline">Votre événement. Votre billetterie.</p>
-            </div>
-            <div class="intro-flow">
-                <div class="intro-flow-line"><span class="intro-flow-progress"></span></div>
-                <div class="intro-flow-step" data-step="1">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg>
-                    <span>Billet</span>
-                </div>
-                <div class="intro-flow-step" data-step="2">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><line x1="14" y1="14" x2="21" y2="14"/><line x1="14" y1="21" x2="21" y2="21"/><line x1="17.5" y1="14" x2="17.5" y2="21"/></svg>
-                    <span>QR Code</span>
-                </div>
-                <div class="intro-flow-step" data-step="3">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                    <span>Validation</span>
-                </div>
-                <div class="intro-flow-step" data-step="4">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-                    <span>Entrée</span>
-                </div>
-            </div>
-            <p class="intro-ready">Préparez-vous…</p>
+    </header>
+
+    <div class="wrap">
+        <div class="page-head">
+            <h1>Achetez votre billet</h1>
+            <p>Suivez les étapes ci-dessous pour acheter votre billet.</p>
+            <div class="rule"></div>
         </div>
-    </div>
-    <script>
-    (function() {
-        var overlay = document.getElementById('introOverlayGoldTix');
-        if (!overlay) return;
-        document.documentElement.style.overflowY = 'hidden';
-        var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        var DUREE_MIN = prefersReducedMotion ? 0 : 2000;
-        var DUREE_MAX = prefersReducedMotion ? 0 : 3200;
-        var donneesPretes = false, minimumEcoule = false, dejaFini = false;
 
-        function terminerIntro() {
-            if (dejaFini) return;
-            dejaFini = true;
-            document.documentElement.style.overflowY = '';
-            overlay.classList.add('intro-exit');
-            overlay.addEventListener('animationend', function gerer(e) {
-                if (e.target !== overlay) return;
-                overlay.removeEventListener('animationend', gerer);
-                overlay.classList.add('intro-hidden');
-            });
-            setTimeout(function() { overlay.classList.add('intro-hidden'); }, 650);
-        }
-        function tenterDeFinir() { if (donneesPretes && minimumEcoule) terminerIntro(); }
-        if (prefersReducedMotion) { terminerIntro(); return; }
-        setTimeout(function() { minimumEcoule = true; tenterDeFinir(); }, DUREE_MIN);
-        setTimeout(function() { donneesPretes = true; tenterDeFinir(); }, DUREE_MAX);
-        window.addEventListener('goldtix:donneesPretes', function() { donneesPretes = true; tenterDeFinir(); });
-        var skipBtn = document.getElementById('introSkipBtn');
-        if (skipBtn) skipBtn.addEventListener('click', terminerIntro);
-    })();
-    </script>
-
-    <!-- MOTEUR DE RÉVÉLATION PROGRESSIVE -->
-    <script>
-    (function() {
-        if (window.gxObserveReveal) return;
-
-        var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        var gxObserver = null;
-        var gxIntroDone = false;
-        var gxPendingRoots = [];
-        var introOverlayEl = document.getElementById('introOverlayGoldTix');
-
-        function gxEnsureObserver() {
-            if (gxObserver || prefersReducedMotion) return;
-            gxObserver = new IntersectionObserver(function(entries) {
-                entries.forEach(function(entry) {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('gx-visible');
-                        gxObserver.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
-        }
-
-        function gxObserveNow(root) {
-            var scope = root || document;
-            if (prefersReducedMotion) {
-                scope.querySelectorAll('.gx-reveal:not(.gx-visible)').forEach(function(el) {
-                    el.classList.add('gx-visible');
-                });
-                return;
-            }
-            gxEnsureObserver();
-            scope.querySelectorAll('.gx-reveal:not(.gx-visible)').forEach(function(el) {
-                gxObserver.observe(el);
-            });
-        }
-
-        function gxFlushPending() {
-            gxIntroDone = true;
-            gxPendingRoots.forEach(function(root) { gxObserveNow(root); });
-            gxPendingRoots = [];
-        }
-
-        if (!introOverlayEl || prefersReducedMotion) {
-            gxIntroDone = true;
-        } else {
-            var gxIntroWatcher = new MutationObserver(function() {
-                if (introOverlayEl.classList.contains('intro-exit') || introOverlayEl.classList.contains('intro-hidden')) {
-                    gxIntroWatcher.disconnect();
-                    gxFlushPending();
-                }
-            });
-            gxIntroWatcher.observe(introOverlayEl, { attributes: true, attributeFilter: ['class'] });
-        }
-
-        window.gxObserveReveal = function(root) {
-            if (gxIntroDone) {
-                gxObserveNow(root);
-            } else {
-                gxPendingRoots.push(root || document);
-            }
-        };
-    })();
-    </script>
-
-    <!-- NAVBAR -->
-    <nav class="navbar anim-1" style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 8px 12px; box-sizing: border-box; gap: 8px;">
-    <div class="brand" style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
-        <img src="images/logo.png" alt="GoldTix" class="brand-logo" style="height: 28px; width: auto; flex-shrink: 0;">
-        <div class="brand-name" style="font-size: 1.1rem; font-weight: bold; white-space: nowrap;">Gold<em>Tix</em></div>
-    </div>
-    <span class="secure-badge" style="display: flex; align-items: center; gap: 4px; font-size: 0.75rem; white-space: nowrap; flex-shrink: 1; min-width: 0;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-        </svg>
-        <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;">Billetterie Sécurisée</span>
-    </span>
-</nav>
-
-    <!-- MAIN -->
-    <main class="main-wrapper">
-        <div id="detailsEvenement" class="anim-2">
-            <div class="card loading-card">
-                <p class="loading-text">
-                    <span class="spinner"></span>
-                    Chargement de votre experience...
-                </p>
-            </div>
-        </div>
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="footer anim-3">
-    <p class="footer-brand">— La Billetterie en Or —</p>
-
-    <p class="footer-description">
-        GoldTix est une plateforme de billetterie en ligne conçue pour simplifier l'achat et la gestion des billets d'événements. Elle permet aux participants d'acheter facilement leurs billets depuis leur téléphone, et aux organisateurs de gérer efficacement leurs ventes, leurs participants et le contrôle des accès.
-    </p>
-
-    <div class="footer-about">
-        <span class="footer-about-title">À propos de nous</span>
-        <div class="footer-about-links">
-           <a href="conditions.html">Conditions d'utilisation</a>
-            <a href="contact.html">Contacts</a>
-            <a href="guide.html">Comment ça marche ?</a>
-            <a href="histoire.html">Histoire-GoldTix</a>
-        </div>
+        <main id="detailsEvenement">
+            <div class="card"><p class="loading-line"><span class="spinner"></span>Chargement de votre expérience…</p></div>
+        </main>
     </div>
 
-    <p class="footer-copy">© GoldTix — Tous droits réservés - 2026</p>
-</footer>
+    <footer class="footer">
+        <div class="wrap">
+            <p class="footer-brand">— La Billetterie en Or —</p>
+            <p class="footer-description">
+                GoldTix est une plateforme de billetterie en ligne conçue pour simplifier l'achat et la gestion des billets d'événements. Elle permet aux participants d'acheter facilement leurs billets depuis leur téléphone, et aux organisateurs de gérer efficacement leurs ventes, leurs participants et le contrôle des accès.
+            </p>
+            <div class="footer-links">
+                <a href="conditions.html">Conditions d'utilisation</a>
+                <a href="contact.html">Contacts</a>
+                <a href="guide.html">Comment ça marche ?</a>
+                <a href="histoire.html">Histoire-GoldTix</a>
+            </div>
+            <p class="footer-copy">© GoldTix — Tous droits réservés - 2026</p>
+        </div>
+    </footer>
 
     <script>
         /* =============================================================
            GOLDTIX — Page d'achat 100% "same-origin"
            Lecture  : GET  /api/tickets?event=ID
            Écriture : POST /api/tickets  (multipart/form-data)
-           (Logique inchangée — seul le design a été modifié.)
+           (Logique métier inchangée — seule l'interface a été refaite.)
         ============================================================= */
 
-        // ─── SVG ICONS ────────────────────────────────────────────────────────────
         const ICONS = {
             calendar: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
             clock:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
             pin:      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
-            ticket:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg>`,
             user:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
             phone:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.65 3.27 2 2 0 0 1 3.62 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.29 6.29l1.02-.88a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`,
-            mobile:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>`,
-            card:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>`,
+            ticket:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg>`,
+            wallet:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>`,
+            file:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`,
             upload:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>`,
             check:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
             image:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
-            mail:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`,
-            alertCircle: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+            alert:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
             download: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`,
+            x:        `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
         };
 
-        const TAILLE_MAX_FICHIER = 10 * 1024 * 1024; // 10 Mo
+        // Limite alignée sur les messages affichés à l'utilisateur (2 Mo)
+        const TAILLE_MAX_FICHIER = 2 * 1024 * 1024;
+        const TYPES_IMAGE_OK = ['image/jpeg', 'image/png', 'image/webp'];
 
         let chargementEnCours = false;
+        let evCourant = null;
+        let apercuUrl = null;
 
-        function gxAvertirAvantFermeture(e) {
-            e.preventDefault();
-            e.returnValue = '';
-            return '';
+        function esc(valeur) {
+            return String(valeur == null ? '' : valeur)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
 
-        function afficherErreurChargement(container, titre, message) {
-            container.innerHTML = `
-                <div class="card error-card">
-                    <h2>${titre}</h2>
-                    <p>${message}</p>
-                    <button class="btn-submit" style="margin-top: 20px;" onclick="chargerPageAchatUnique()">
-                        Réessayer
-                    </button>
-                </div>`;
-            window.dispatchEvent(new Event('goldtix:donneesPretes'));
-        }
+        function gxAvertirAvantFermeture(e) { e.preventDefault(); e.returnValue = ''; return ''; }
 
         async function fetchAvecTimeout(url, options, timeoutMs) {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
             try {
-                const reponse = await fetch(url, Object.assign({}, options, { signal: controller.signal }));
-                return reponse;
+                return await fetch(url, Object.assign({}, options, { signal: controller.signal }));
             } finally {
                 clearTimeout(timeoutId);
             }
         }
 
-        // ===== ANIMATION DU TITRE — LETTRE PAR LETTRE =====
-        const gxPrefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-        function gxAttendreFinIntroPourTitre(callback) {
-            const overlay = document.getElementById('introOverlayGoldTix');
-            if (!overlay || overlay.classList.contains('intro-exit') || overlay.classList.contains('intro-hidden')) {
-                callback();
-                return;
-            }
-            const observer = new MutationObserver(function() {
-                if (overlay.classList.contains('intro-exit') || overlay.classList.contains('intro-hidden')) {
-                    observer.disconnect();
-                    callback();
-                }
-            });
-            observer.observe(overlay, { attributes: true, attributeFilter: ['class'] });
+        function afficherErreurChargement(container, titre, message) {
+            container.innerHTML = `
+                <div class="card state-card">
+                    <h2>${esc(titre)}</h2>
+                    <p>${esc(message)}</p>
+                    <button class="btn-submit" onclick="chargerPageAchatUnique()">Réessayer</button>
+                </div>`;
         }
 
-        function demarrerAnimationTitreGoldTix(titreEl, texteComplet, repetitionsMax) {
-            if (!titreEl || !texteComplet) return;
-            repetitionsMax = repetitionsMax || 2;
-
-            if (gxPrefersReducedMotion) {
-                titreEl.textContent = texteComplet;
-                return;
-            }
-
-            const texteEchappe = texteComplet.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            titreEl.innerHTML =
-                '<span class="gx-title-ghost" aria-hidden="true">' + texteEchappe + '</span>' +
-                '<span class="gx-title-visible"></span>';
-
-            const visibleEl = titreEl.querySelector('.gx-title-visible');
-            if (!visibleEl) { titreEl.textContent = texteComplet; return; }
-
-            const vitesseMs = 110;
-            const pauseEntreRepetitionsMs = 900;
-            let repetitionActuelle = 0;
-
-            function taperUneFois(callback) {
-                let index = 0;
-                visibleEl.textContent = "";
-                const intervalId = setInterval(function() {
-                    index++;
-                    visibleEl.textContent = texteComplet.slice(0, index);
-                    if (index >= texteComplet.length) {
-                        clearInterval(intervalId);
-                        if (callback) callback();
-                    }
-                }, vitesseMs);
-            }
-
-            function lancerRepetition() {
-                taperUneFois(function() {
-                    setTimeout(lancerRepetition, pauseEntreRepetitionsMs);
-                });
-            }
-
-            lancerRepetition();
+        // ─── Validation en ligne ──────────────────────────────────────────────
+        function marquerInvalide(champEl, erreurEl, texte) {
+            if (!champEl || !erreurEl) return;
+            champEl.classList.add('field-invalid');
+            erreurEl.innerHTML = `${ICONS.alert}<span>${esc(texte || 'Ce champ est obligatoire.')}</span>`;
+            erreurEl.classList.add('visible');
+        }
+        function effacerInvalide(champEl, erreurEl) {
+            if (!champEl || !erreurEl) return;
+            champEl.classList.remove('field-invalid');
+            erreurEl.classList.remove('visible');
         }
 
-        // ─── VALIDATION EN LIGNE DES CHAMPS OBLIGATOIRES ───────────────────────────
-        function gxMarquerChampInvalide(champEl, erreurMsgEl, texte) {
-            if (!champEl || !erreurMsgEl) return;
-            champEl.classList.add('gx-field-invalid');
-            erreurMsgEl.innerHTML = `${ICONS.alertCircle} <span>${texte || 'Ce champ est obligatoire.'}</span>`;
-            erreurMsgEl.classList.add('gx-visible');
+        function formaterTaille(octets) {
+            if (octets < 1024 * 1024) return Math.max(1, Math.round(octets / 1024)) + ' Ko';
+            return (octets / (1024 * 1024)).toFixed(1).replace('.', ',') + ' Mo';
         }
 
-        function gxEffacerChampInvalide(champEl, erreurMsgEl) {
-            if (!champEl || !erreurMsgEl) return;
-            champEl.classList.remove('gx-field-invalid');
-            erreurMsgEl.classList.remove('gx-visible');
-        }
-
-        // ─── TÉLÉCHARGEMENT DU RIB ──────────────────────────────────────────────
+        // ─── Téléchargement du RIB ────────────────────────────────────────────
         function gxNomFichierDepuisUrl(url, nomParDefaut) {
             try {
-                const pathname = new URL(url, window.location.href).pathname;
-                const segment = pathname.split('/').pop() || "";
-                const correspondance = segment.match(/\.[a-zA-Z0-9]+$/);
-                const extension = correspondance ? correspondance[0] : ".png";
-                return nomParDefaut + extension;
-            } catch (e) {
-                return nomParDefaut + ".png";
-            }
+                const segment = new URL(url, window.location.href).pathname.split('/').pop() || '';
+                const m = segment.match(/\.[a-zA-Z0-9]+$/);
+                return nomParDefaut + (m ? m[0] : '.png');
+            } catch (e) { return nomParDefaut + '.png'; }
         }
 
         async function gxTelechargerRib(url, btnEl, statusEl) {
             if (!url || !btnEl) return;
-            const nomFichier = gxNomFichierDepuisUrl(url, "RIB du bénéficiaire");
-            const contenuOriginalBtn = btnEl.innerHTML;
+            const nomFichier = gxNomFichierDepuisUrl(url, 'RIB du bénéficiaire');
+            const contenuOriginal = btnEl.innerHTML;
             btnEl.disabled = true;
-            btnEl.innerHTML = `${ICONS.download} Téléchargement...`;
-            if (statusEl) {
-                statusEl.classList.remove("gx-visible");
-                statusEl.innerHTML = "";
-            }
+            btnEl.innerHTML = `${ICONS.download} Téléchargement…`;
+            if (statusEl) { statusEl.classList.remove('visible', 'warn'); statusEl.innerHTML = ''; }
             try {
                 const reponse = await fetchAvecTimeout(url, { mode: 'cors' }, 20000);
-                if (!reponse.ok) throw new Error("Réponse réseau invalide (" + reponse.status + ")");
+                if (!reponse.ok) throw new Error('Réponse réseau invalide (' + reponse.status + ')');
                 const blob = await reponse.blob();
                 const objectUrl = URL.createObjectURL(blob);
-                const lienTemp = document.createElement("a");
-                lienTemp.href = objectUrl;
-                lienTemp.download = nomFichier;
-                document.body.appendChild(lienTemp);
-                lienTemp.click();
-                document.body.removeChild(lienTemp);
-                setTimeout(function() { URL.revokeObjectURL(objectUrl); }, 4000);
+                const lien = document.createElement('a');
+                lien.href = objectUrl;
+                lien.download = nomFichier;
+                document.body.appendChild(lien);
+                lien.click();
+                document.body.removeChild(lien);
+                setTimeout(() => URL.revokeObjectURL(objectUrl), 4000);
                 if (statusEl) {
-                    statusEl.innerHTML = `${ICONS.check} <span>RIB enregistré dans vos téléchargements.</span>`;
-                    statusEl.classList.add("gx-visible");
-                    setTimeout(function() { statusEl.classList.remove("gx-visible"); }, 5000);
+                    statusEl.innerHTML = `${ICONS.check}<span>RIB enregistré dans vos téléchargements.</span>`;
+                    statusEl.classList.add('visible');
+                    setTimeout(() => statusEl.classList.remove('visible'), 5000);
                 }
             } catch (err) {
-                console.error("Téléchargement direct du RIB impossible, ouverture dans un nouvel onglet :", err);
-                window.open(url, "_blank", "noopener");
+                console.error('Téléchargement direct du RIB impossible, ouverture dans un nouvel onglet :', err);
+                window.open(url, '_blank', 'noopener');
                 if (statusEl) {
-                    statusEl.innerHTML = `${ICONS.alertCircle} <span>Le RIB s'est ouvert dans un nouvel onglet — enregistrez-le depuis là.</span>`;
-                    statusEl.classList.add("gx-visible");
-                    setTimeout(function() { statusEl.classList.remove("gx-visible"); }, 6000);
+                    statusEl.innerHTML = `${ICONS.alert}<span>Le RIB s'est ouvert dans un nouvel onglet — enregistrez-le depuis là.</span>`;
+                    statusEl.classList.add('visible', 'warn');
+                    setTimeout(() => statusEl.classList.remove('visible', 'warn'), 6000);
                 }
             } finally {
                 btnEl.disabled = false;
-                btnEl.innerHTML = contenuOriginalBtn;
+                btnEl.innerHTML = contenuOriginal;
             }
         }
 
-        // ─── MAIN LOADER ─────────────────────────────────────────────────────────
+        // ─── Catégories & récapitulatif ───────────────────────────────────────
+        function aDesCategories(ev) {
+            return !!(ev && Array.isArray(ev.categories_data) && ev.categories_data.length > 0);
+        }
+
+        function genererOptionsCategorieAchat(ev) {
+            if (!aDesCategories(ev)) return '';
+            return ev.categories_data.map(cat => {
+                const infoDispo = ev.disponibilites ? ev.disponibilites[cat.nom] : null;
+                const estEpuisee = !!(infoDispo && infoDispo.epuise);
+                const valeur = `${cat.nom} - ${cat.prix}`;
+                let libelle = `${cat.nom} — ${cat.prix}`;
+                if (infoDispo) {
+                    libelle += estEpuisee
+                        ? ' (Épuisé)'
+                        : ` (${infoDispo.restant} place${infoDispo.restant > 1 ? 's' : ''} disponible${infoDispo.restant > 1 ? 's' : ''})`;
+                }
+                return `<option value="${esc(valeur)}" data-nom="${esc(cat.nom)}" data-prix="${esc(cat.prix)}"${estEpuisee ? ' disabled' : ''}>${esc(libelle)}</option>`;
+            }).join('');
+        }
+
+        // Affiche le prix de la catégorie sélectionnée (formulaire + récapitulatif)
+        function mettreAJourRecap() {
+            const sel = document.getElementById('selectCategorie');
+            let nomCat = '—', prix = '—';
+            if (sel && sel.selectedOptions && sel.selectedOptions[0] && !sel.selectedOptions[0].disabled) {
+                nomCat = sel.selectedOptions[0].dataset.nom || '—';
+                prix = sel.selectedOptions[0].dataset.prix || '—';
+            } else if (!sel && evCourant) {
+                nomCat = 'Billet';
+                prix = evCourant.prix || 'Gratuit';
+            }
+            const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+            set('prixChoisiEl', prix);
+            set('recapCategorieEl', nomCat);
+            set('recapTotalEl', prix);
+        }
+
+        // ─── Aperçu de la preuve de paiement ──────────────────────────────────
+        function libererApercu() {
+            if (apercuUrl) { URL.revokeObjectURL(apercuUrl); apercuUrl = null; }
+        }
+
+        function reinitialiserFichier(inputEl, zoneEl) {
+            libererApercu();
+            inputEl.value = '';
+            zoneEl.classList.remove('has-file');
+        }
+
+        // ─── Chargement principal ─────────────────────────────────────────────
         async function chargerPageAchatUnique() {
             if (chargementEnCours) return;
             chargementEnCours = true;
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const eventId = urlParams.get("event");
-            const container = document.getElementById("detailsEvenement");
+            const eventId = new URLSearchParams(window.location.search).get('event');
+            const container = document.getElementById('detailsEvenement');
 
-            container.innerHTML = `
-                <div class="card loading-card">
-                    <p class="loading-text">
-                        <span class="spinner"></span>
-                        Chargement de votre experience...
-                    </p>
-                </div>`;
+            container.innerHTML = `<div class="card"><p class="loading-line"><span class="spinner"></span>Chargement de votre expérience…</p></div>`;
 
             const watchdog = setTimeout(function() {
-                if (container.querySelector(".loading-card")) {
-                    afficherErreurChargement(
-                        container,
-                        "Chargement trop long",
-                        "La connexion semble instable. Vérifiez votre réseau (Wi-Fi ou données mobiles) et réessayez."
-                    );
+                if (container.querySelector('.loading-line')) {
+                    afficherErreurChargement(container, 'Chargement trop long',
+                        'La connexion semble instable. Vérifiez votre réseau (Wi-Fi ou données mobiles) et réessayez.');
                 }
             }, 20000);
 
             try {
                 if (!eventId) {
-                    afficherErreurChargement(container, "Lien invalide", "Aucun evenement specifie dans ce lien.");
+                    afficherErreurChargement(container, 'Lien invalide', 'Aucun événement spécifié dans ce lien.');
                     return;
                 }
 
                 let ev;
                 try {
-                    const reponse = await fetchAvecTimeout(
-                        '/api/tickets?event=' + encodeURIComponent(eventId),
-                        { method: 'GET' },
-                        15000
-                    );
-
-                    if (!reponse.ok) {
-                        throw new Error("Erreur serveur (" + reponse.status + ")");
-                    }
-
+                    const reponse = await fetchAvecTimeout('/api/tickets?event=' + encodeURIComponent(eventId), { method: 'GET' }, 15000);
+                    if (!reponse.ok) throw new Error('Erreur serveur (' + reponse.status + ')');
                     const data = await reponse.json();
                     ev = data.event;
                 } catch (err) {
                     console.error("Erreur réseau lors du chargement de l'événement :", err);
-                    afficherErreurChargement(
-                        container,
-                        "Connexion impossible",
-                        "Le chargement a échoué (réseau instable ou trop lent). Vérifiez votre connexion et réessayez."
-                    );
+                    afficherErreurChargement(container, 'Connexion impossible',
+                        'Le chargement a échoué (réseau instable ou trop lent). Vérifiez votre connexion et réessayez.');
                     return;
                 }
 
                 if (!ev) {
-                    afficherErreurChargement(
-                        container,
-                        "Événement introuvable",
-                        "Cet événement a été supprimé ou n'existe plus."
-                    );
+                    afficherErreurChargement(container, 'Événement introuvable', 'Cet événement a été supprimé ou n\'existe plus.');
                     return;
                 }
 
-                // — Colonne droite ──────────────────────────────────────────────────
-let rightColumn = "";
-const categoriesToutesEpuisees =
-    ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_data.length > 0
-        ? ev.categories_data.every(cat => ev.disponibilites && ev.disponibilites[cat.nom] && ev.disponibilites[cat.nom].epuise)
-        : false;
+                evCourant = ev;
 
-if (ev.ventes_fermees) {
-    rightColumn = `
-        <div class="card anim-3">
-            <div class="closed-box gx-reveal gx-delay-2">
-                <div class="closed-box-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
-                    </svg>
-                </div>
-                <h3>Ventes Fermées</h3>
-                <p>Les ventes en ligne de billets pour cet évènement viennent d'être fermées par l'organisateur.</p>
-                <p>Merci pour votre intérêt et à bientôt !</p>
-            </div>
-        </div>`;
-} else if (categoriesToutesEpuisees) {
-    rightColumn = `
-        <div class="card anim-3">
-            <div class="closed-box gx-reveal gx-delay-2">
-                <div class="closed-box-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
-                    </svg>
-                </div>
-                <h3>Billets Épuisés</h3>
-                <p>Tous les billets disponibles pour cet évènement ont été vendus.</p>
-                <p>Merci pour votre intérêt et à bientôt !</p>
-            </div>
-        </div>`;
-} else {
-                    const infosCoordonnees = ev.beneficiaire_infos || 'Non renseigne';
+                const categoriesToutesEpuisees = aDesCategories(ev)
+                    ? ev.categories_data.every(cat => ev.disponibilites && ev.disponibilites[cat.nom] && ev.disponibilites[cat.nom].epuise)
+                    : false;
 
-                    let categorieHTML = "";
-if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_data.length > 0) {
-    const options = genererOptionsCategorieAchat(ev);
-    categorieHTML = `
-        <div class="form-group gx-reveal gx-delay-4">
-            <label for="selectCategorie">Catégorie de billet</label>
-            <select id="selectCategorie">${options}</select>
-        </div>`;
-}
+                // ── Colonne principale : les 3 blocs ou un état fermé ──────────────
+                let colonneEtapes = '';
 
-                    // QR / RIB
-                    const qrSection = (ev.rib_image_url || ev.qr_code_paiement) ? `
-                        <div class="qr-wrapper">
-                            <p class="qr-label">
-                                ${ICONS.card}
-                                RIB du bénéficiaire ci-dessous
-                            </p>
-                            <img src="${ev.rib_image_url || ev.qr_code_paiement}" alt="Support de paiement" class="qr-image" id="ribImageEl">
-                            <div>
-                                <button type="button" class="rib-download-btn" id="btnTelechargerRib">
-                                    ${ICONS.download}
-                                    Télécharger le RIB
-                                </button>
-                                <p class="rib-download-status" id="ribDownloadStatus"></p>
-                            </div>
-                        </div>` : "";
-
-                    rightColumn = `
-                        <div class="card anim-3">
-                            <p class="gx-reveal gx-delay-3" style="
-                                text-align:center;
-                                font-family:'Plus Jakarta Sans', sans-serif;
-                                font-size:13px;
-                                font-weight:600;
-                                letter-spacing:0.3px;
-                                color: #4a3b32;
-                                margin-bottom: 18px;
-                            ">
-                                Suivez les étapes ci-dessous pour acheter votre billet en quelques instants.
-                            </p>
-
-                            <!-- ETAPE 1 : PAIEMENT -->
-                            <div class="step-heading gx-reveal gx-delay-4">
-                                <span class="step-heading-number">1</span>
-                                <span class="step-heading-text">Choisissez votre catégorie de billet puis effectuez le paiement</span>
-                            </div>
-                            <div class="payment-box gx-reveal gx-delay-4">
-                                ${categorieHTML}
-
-                                <div class="info-rows">
-                                    <div class="info-row">
-                                        <span class="info-row-label">${ICONS.user} Bénéficiaire des paiements</span>
-                                      <span class="info-row-value" id="evBeneficiaireNomEl">${ev.beneficiaire_nom || 'Non renseigne'}</span>
-</div>
-<div class="info-row">
-    <span class="info-row-label">${ICONS.phone} Contact</span>
-    <span class="info-row-value" id="evBeneficiaireContactEl">${infosCoordonnees}</span>
-                                    </div>
-                                </div>
-                                ${qrSection}
-                            </div>
-
-                            <!-- ETAPE 2 : FORMULAIRE -->
-                            <div class="step-heading gx-reveal gx-delay-5">
-                                <span class="step-heading-number">2</span>
-                                <span class="step-heading-text">Confirmer mon paiement</span>
-                            </div>
-
-                            <div class="form-group gx-reveal gx-delay-5">
-                                <label for="nomParticipant">Nom et Prénom(s) <span class="required-mark" style="color: red;">*</span></label>
-                                <input type="text" id="nomParticipant" placeholder="ex : KONATE Jean">
-                                <p class="gx-field-error-msg" id="errNomParticipant"></p>
-                            </div>
-
-                            <div class="form-group gx-reveal gx-delay-5">
-                                <label for="emailParticipant">Adresse e-mail (optionnelle - réception lien du billet)</label>
-                                <input type="email" id="emailParticipant" placeholder="ex : nom@gmail.com">
-                                <p class="gx-field-error-msg" id="errEmailParticipant"></p>
-                            </div>
-
-                            <div class="form-group gx-reveal gx-delay-5">
-                                <label for="telParticipant">Contact WhatsApp <span class="required-mark" style="color: red;">*</span></label>
-                                <input type="tel" id="telParticipant" placeholder="ex : +226 ... / +212 ...">
-                                <p class="gx-field-error-msg" id="errTelParticipant"></p>
-                            </div>
-
-                            <div class="form-group gx-reveal gx-delay-5">
-                                <label>Preuve de paiement (Capture du reçu) <span class="required-mark" style="color: red;">*</span></label>
-                                <div class="file-input-wrapper" id="fileWrapper">
-                                    <input type="file" id="preuvePaiement" accept="image/*">
-                                    <div class="file-input-display">
-                                        ${ICONS.upload}
-                                        <span>Cliquez pour choisir un fichier</span>
-                                        <em>JPG, PNG, WEBP acceptés (2MB max)</em>
-                                        <span class="file-name-preview" id="fileNamePreview"></span>
-                                    </div>
-                                </div>
-                                <p class="gx-field-error-msg" id="errPreuvePaiement"></p>
-                            </div>
-
-                            <button class="btn-submit gx-reveal gx-delay-5" id="btnValiderAchat">
-                                <span class="btn-icon">${ICONS.check}</span>
-                                <div class="spinner"></div>
-                                Valider mon paiement et obtenir mon billet
-                            </button>
-
-                            <div class="trust-strip gx-reveal gx-delay-5">
-                                <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><line x1="14" y1="14" x2="21" y2="14"/><line x1="14" y1="21" x2="21" y2="21"/><line x1="17.5" y1="14" x2="17.5" y2="21"/></svg><span>Billet numérique avec QR code</span></div>
-                                <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg><span>Paiement vérifié par l'organisateur</span></div>
-                                <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg><span>Accessible depuis votre téléphone</span></div>
-                            </div>
-
+                if (ev.ventes_fermees || categoriesToutesEpuisees) {
+                    const titre = ev.ventes_fermees ? 'Ventes fermées' : 'Billets épuisés';
+                    const texte = ev.ventes_fermees
+                        ? "Les ventes en ligne de billets pour cet événement viennent d'être fermées par l'organisateur."
+                        : 'Tous les billets disponibles pour cet événement ont été vendus.';
+                    colonneEtapes = `
+                        <div class="card state-card">
+                            <div class="state-ico">${ICONS.x}</div>
+                            <h2>${titre}</h2>
+                            <p>${texte}</p>
+                            <p>Merci pour votre intérêt et à bientôt !</p>
                         </div>`;
-                }
-
-                // ── Prix HTML ───────────────────────────────────────────────────────
-                let prixHTML = "";
-                if (ev.categories_data && Array.isArray(ev.categories_data) && ev.categories_data.length > 0) {
-                    const lignes = ev.categories_data.map(c => `
-                        <div class="ticket-price-row">
-                            <span class="ticket-price-row-name">${ICONS.ticket} ${c.nom}</span>
-                            <span class="ticket-price-row-price">${c.prix}</span>
-                        </div>`).join("");
-                    prixHTML = `<div class="ticket-price-list">${lignes}</div>`;
                 } else {
-                    prixHTML = `<div class="ticket-price-single">${ICONS.card} Prix : ${ev.prix || 'Gratuit'}</div>`;
+                    const urlRib = ev.rib_image_url || ev.qr_code_paiement || '';
+
+                    // Étape 1 — catégorie / prix
+                    const blocPrix = aDesCategories(ev)
+                        ? `<div class="field">
+                               <label for="selectCategorie">Catégorie de billet</label>
+                               <select id="selectCategorie">${genererOptionsCategorieAchat(ev)}</select>
+                           </div>
+                           <div class="price-line"><span>Prix du billet</span><span id="prixChoisiEl">—</span></div>`
+                        : `<div class="price-single"><span>Prix du billet</span><span id="prixChoisiEl">${esc(ev.prix || 'Gratuit')}</span></div>`;
+
+                    // Bloc RIB : uniquement s'il existe réellement
+                    const blocRib = urlRib ? `
+                        <div class="rib-box">
+                            <div class="rib-ico">${ICONS.file}</div>
+                            <div class="rib-txt">
+                                <strong>RIB du bénéficiaire</strong>
+                                <span>Téléchargez-le pour effectuer votre virement depuis votre application bancaire.</span>
+                            </div>
+                            <button type="button" class="btn-outline" id="btnTelechargerRib">${ICONS.download} Télécharger le RIB</button>
+                            <p class="rib-status" id="ribDownloadStatus"></p>
+                        </div>` : '';
+
+                    colonneEtapes = `
+                        <section class="card" aria-labelledby="t1">
+                            <div class="card-head">
+                                <span class="step-num">1</span>
+                                <div>
+                                    <h2 class="card-title" id="t1">Choisissez votre billet</h2>
+                                    <p class="card-desc">Sélectionnez votre catégorie de billet, puis effectuez le paiement.</p>
+                                </div>
+                            </div>
+                            ${blocPrix}
+                        </section>
+
+                        <section class="card" aria-labelledby="t2">
+                            <div class="card-head">
+                                <span class="step-icon">${ICONS.wallet}</span>
+                                <div>
+                                    <h2 class="card-title" id="t2">Informations du bénéficiaire</h2>
+                                    <p class="card-desc">Effectuez le transfert vers les coordonnées ci-dessous.</p>
+                                </div>
+                            </div>
+                            <div class="info-list">
+                                <div class="info-item">
+                                    <span class="info-item-ico">${ICONS.user}</span>
+                                    <div class="info-item-txt">
+                                        <div class="info-item-label">Bénéficiaire des paiements</div>
+                                        <div class="info-item-value" id="evBeneficiaireNomEl">${esc(ev.beneficiaire_nom || 'Non renseigné')}</div>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-item-ico">${ICONS.phone}</span>
+                                    <div class="info-item-txt">
+                                        <div class="info-item-label">Contact / numéro de paiement</div>
+                                        <div class="info-item-value" id="evBeneficiaireContactEl">${esc(ev.beneficiaire_infos || 'Non renseigné')}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            ${blocRib}
+                        </section>
+
+                        <section class="card" aria-labelledby="t3">
+                            <div class="card-head">
+                                <span class="step-num">2</span>
+                                <div>
+                                    <h2 class="card-title" id="t3">Confirmer mon paiement</h2>
+                                    <p class="card-desc">Après avoir effectué le paiement, renseignez vos informations et transmettez votre preuve de paiement.</p>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label for="nomParticipant">Nom et prénom(s) <span class="req">*</span></label>
+                                <input type="text" id="nomParticipant" placeholder="ex : KONATE Jean" autocomplete="name">
+                                <p class="field-error" id="errNomParticipant"></p>
+                            </div>
+
+                            <div class="field">
+                                <label for="emailParticipant">Adresse e-mail <span class="hint">(optionnelle — pour recevoir le lien du billet)</span></label>
+                                <input type="email" id="emailParticipant" placeholder="ex : nom@gmail.com" autocomplete="email" inputmode="email">
+                                <p class="field-error" id="errEmailParticipant"></p>
+                            </div>
+
+                            <div class="field">
+                                <label for="telParticipant">Contact WhatsApp <span class="req">*</span></label>
+                                <input type="tel" id="telParticipant" placeholder="ex : +226 ... / +212 ..." autocomplete="tel" inputmode="tel">
+                                <p class="field-error" id="errTelParticipant"></p>
+                            </div>
+
+                            <div class="field">
+                                <span class="label">Preuve de paiement <span class="hint">(capture du reçu)</span> <span class="req">*</span></span>
+                                <div class="upload" id="fileWrapper">
+                                    <input type="file" id="preuvePaiement" accept="image/jpeg,image/png,image/webp,image/*" aria-label="Preuve de paiement">
+                                    <div class="upload-empty">
+                                        ${ICONS.upload}
+                                        <strong>Cliquez pour choisir un fichier</strong>
+                                        <span>JPG, PNG ou WEBP — 2 Mo maximum</span>
+                                    </div>
+                                    <div class="upload-file">
+                                        <img class="upload-thumb" id="fileThumb" alt="Aperçu de la preuve de paiement">
+                                        <div class="upload-meta">
+                                            <div class="upload-name" id="fileNamePreview"></div>
+                                            <div class="upload-size" id="fileSizePreview"></div>
+                                            <button type="button" class="upload-replace" id="btnRemplacerFichier">Remplacer le fichier</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="field-error" id="errPreuvePaiement"></p>
+                            </div>
+
+                            <button class="btn-submit" id="btnValiderAchat" type="button">
+                                ${ICONS.check} Valider mon paiement
+                            </button>
+                            <div id="zoneMessageAchat" aria-live="polite"></div>
+                            <p class="submit-note">Votre paiement sera vérifié par l'organisateur avant la validation de votre billet.</p>
+                        </section>`;
                 }
 
-                // ── Affiche HTML ────────────────────────────────────────────────────
+                // ── Colonne événement (affiche, infos, récapitulatif) ──────────────
                 const posterHTML = ev.affiche_url
-                  ? `<img id="posterImgEl" src="${ev.affiche_url}" alt="Affiche de l'événement">`
-                  : `<div class="poster-fallback">${ICONS.image}<p>Affiche non disponible</p></div>`;
-                // ── Injection ───────────────────────────────────────────────────────
+                    ? `<img id="posterImgEl" src="${esc(ev.affiche_url)}" alt="Affiche de l'événement">`
+                    : `<div class="poster-fallback">${ICONS.image}<span>Affiche non disponible</span></div>`;
+
+                const recapHTML = (!ev.ventes_fermees && !categoriesToutesEpuisees) ? `
+                    <div class="recap">
+                        <div class="recap-label">Récapitulatif</div>
+                        <div class="recap-row"><span>Catégorie</span><span id="recapCategorieEl">—</span></div>
+                        <div class="recap-total"><span>Total à payer</span><span id="recapTotalEl">—</span></div>
+                    </div>` : '';
+
                 container.innerHTML = `
-                    ${ev.affiche_url ? `<div class="hero-bg" aria-hidden="true" style="background-image:url('${String(ev.affiche_url).replace(/'/g, "%27").replace(/"/g, "%22")}')"></div>` : ''}
-                    <div class="grid">
-                        <div class="ticket-divider" aria-hidden="true">
-                            <span class="notch notch-top"></span>
-                            <span class="notch notch-bottom"></span>
-                        </div>
-                        <div class="card card--event">
-                            <div class="poster-wrapper gx-reveal gx-delay-1">${posterHTML}</div>
-                            <h1 class="event-title gx-reveal gx-delay-2" id="evTitreEl">${ev.titre}</h1>
-<div class="meta-chips gx-reveal gx-delay-2">
-    <span class="meta-chip">
-        ${ICONS.calendar}
-        <span><strong id="evDateEl">${ev.date}</strong></span>
-    </span>
-    <span class="meta-chip">
-        ${ICONS.clock}
-        <span><strong id="evHeureEl">${(ev.heure || '').slice(0, 5)}</strong></span>
-    </span>
-    <span class="meta-chip">
-        ${ICONS.pin}
-        <span><strong id="evLieuEl">${ev.lieu}</strong></span>
-    </span>
-</div>
-                            <div class="gx-reveal gx-delay-3">
-                                <span class="ticket-avail-label">Tarif(s) billet(s)</span>
-                                ${prixHTML}
+                    <div class="layout">
+                        <aside class="col-event">
+                            <div class="card event-card">
+                                <div class="poster">${posterHTML}</div>
+                                <div class="event-body">
+                                    <h2 class="event-title" id="evTitreEl">${esc(ev.titre)}</h2>
+                                    <div class="event-meta">
+                                        <div class="meta-row">${ICONS.calendar}<strong id="evDateEl">${esc(ev.date)}</strong></div>
+                                        <div class="meta-row">${ICONS.clock}<strong id="evHeureEl">${esc((ev.heure || '').slice(0, 5))}</strong></div>
+                                        <div class="meta-row">${ICONS.pin}<strong id="evLieuEl">${esc(ev.lieu)}</strong></div>
+                                    </div>
+                                    ${recapHTML}
+                                </div>
                             </div>
-                        </div>
-                        <div>${rightColumn}</div>
+                        </aside>
+                        <div class="col-steps">${colonneEtapes}</div>
                     </div>`;
 
-                if (window.gxObserveReveal) window.gxObserveReveal(container);
-
-                const evTitreElPourAnim = document.getElementById("evTitreEl");
-                if (evTitreElPourAnim) {
-                    const texteTitreCourant = ev.titre || "";
-                    gxAttendreFinIntroPourTitre(function() {
-                        demarrerAnimationTitreGoldTix(evTitreElPourAnim, texteTitreCourant, 2);
-                    });
-                }
-
-                const posterImage = container.querySelector(".poster-wrapper img");
+                const posterImage = container.querySelector('.poster img');
                 if (posterImage) {
-                    posterImage.addEventListener("error", function() {
-                        const wrapper = this.closest(".poster-wrapper");
-                        if (wrapper) {
-                            wrapper.innerHTML = `<div class="poster-fallback">${ICONS.image}<p>Affiche non disponible</p></div>`;
-                        }
+                    posterImage.addEventListener('error', function() {
+                        const wrapper = this.closest('.poster');
+                        if (wrapper) wrapper.innerHTML = `<div class="poster-fallback">${ICONS.image}<span>Affiche non disponible</span></div>`;
                     });
                 }
 
-                // ── File input preview ──────────────────────────────────────────────
                 if (!ev.ventes_fermees && !categoriesToutesEpuisees) {
-                    const fileInput = document.getElementById("preuvePaiement");
-                    const filePreview = document.getElementById("fileNamePreview");
-                    const fileWrapperEl = document.getElementById("fileWrapper");
-                    const errPreuvePaiementEl = document.getElementById("errPreuvePaiement");
-
-                    const btnTelechargerRib = document.getElementById("btnTelechargerRib");
-                    if (btnTelechargerRib) {
-                        const urlRib = ev.rib_image_url || ev.qr_code_paiement;
-                        const ribDownloadStatusEl = document.getElementById("ribDownloadStatus");
-                        btnTelechargerRib.addEventListener("click", function() {
-                            gxTelechargerRib(urlRib, btnTelechargerRib, ribDownloadStatusEl);
-                        });
-                    }
-
-                    ["nomParticipant", "telParticipant"].forEach(function(champId) {
-                        const champEl = document.getElementById(champId);
-                        const erreurEl = document.getElementById("err" + champId.charAt(0).toUpperCase() + champId.slice(1));
-                        if (champEl) {
-                            champEl.addEventListener("input", function() {
-                                if (this.value.trim()) {
-                                    gxEffacerChampInvalide(champEl, erreurEl);
-                                }
-                            });
-                        }
-                    });
-
-                    fileInput.addEventListener("change", function() {
-                        if (this.files && this.files[0]) {
-                            const fichier = this.files[0];
-
-                            if (fichier.size > TAILLE_MAX_FICHIER) {
-                                alert("Ce fichier dépasse la taille maximale autorisée (2 Mo). Choisissez une image plus légère.");
-                                this.value = "";
-                                filePreview.style.display = "none";
-                                document.getElementById("fileWrapper").style.borderColor = "";
-                                document.getElementById("fileWrapper").style.background = "";
-                                return;
-                            }
-
-                            filePreview.textContent = fichier.name;
-                            filePreview.style.display = "block";
-                            document.getElementById("fileWrapper").style.borderColor = "var(--gold-2)";
-                            document.getElementById("fileWrapper").style.background = "#fffdf5";
-
-                            gxEffacerChampInvalide(fileWrapperEl, errPreuvePaiementEl);
-                        }
-                    });
-
-                    // ── Soumission — tout passe par POST /api/tickets ────────────────
-                    const btnValiderAchat = document.getElementById("btnValiderAchat");
-                    const btnHTMLOriginal = btnValiderAchat.innerHTML;
-
-                    btnValiderAchat.onclick = async function() {
-                        const nomEl = document.getElementById("nomParticipant");
-                        const telEl = document.getElementById("telParticipant");
-                        const emailEl = document.getElementById("emailParticipant");
-                        const errNomEl = document.getElementById("errNomParticipant");
-                        const errTelEl = document.getElementById("errTelParticipant");
-                        const errEmailEl = document.getElementById("errEmailParticipant");
-                        const fileWrapperEl2 = document.getElementById("fileWrapper");
-                        const errPreuveEl = document.getElementById("errPreuvePaiement");
-
-                        const nom   = nomEl.value.trim();
-                        const email = emailEl.value.trim();
-                        const tel   = telEl.value.trim();
-                        const fichierPreuve = document.getElementById("preuvePaiement").files[0];
-
-                        let typeBilletChoisi = "Standard";
-                        const selectCat = document.getElementById("selectCategorie");
-                        if (selectCat) {
-                            typeBilletChoisi = selectCat.value;
-                        } else if (typeof ev !== 'undefined' && ev.prix) {
-                            typeBilletChoisi = String(ev.prix);
-                        }
-
-                        gxEffacerChampInvalide(nomEl, errNomEl);
-                        gxEffacerChampInvalide(telEl, errTelEl);
-                        gxEffacerChampInvalide(fileWrapperEl2, errPreuveEl);
-
-                        let formulaireValide = true;
-
-                        if (!nom) {
-                            gxMarquerChampInvalide(nomEl, errNomEl);
-                            formulaireValide = false;
-                        }
-                        if (!tel) {
-                            gxMarquerChampInvalide(telEl, errTelEl);
-                            formulaireValide = false;
-                        }
-                        if (!fichierPreuve) {
-                            gxMarquerChampInvalide(fileWrapperEl2, errPreuveEl, "Une preuve de paiement est obligatoire.");
-                            formulaireValide = false;
-                        }
-
-                        if (!formulaireValide) {
-                            const premierChampInvalide = document.querySelector(".gx-field-invalid");
-                            if (premierChampInvalide) {
-                                premierChampInvalide.scrollIntoView({ behavior: "smooth", block: "center" });
-                            }
-                            return;
-                        }
-
-                        if (fichierPreuve.size > TAILLE_MAX_FICHIER) {
-                            alert("Le fichier de preuve de paiement dépasse 2 Mo. Choisissez une image plus légère.");
-                            return;
-                        }
-
-                        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                            gxMarquerChampInvalide(emailEl, errEmailEl, "Cette adresse e-mail ne semble pas valide.");
-                            emailEl.scrollIntoView({ behavior: "smooth", block: "center" });
-                            return;
-                        }
-
-                        if (btnValiderAchat.disabled) return;
-                        btnValiderAchat.disabled = true;
-
-                        window.addEventListener('beforeunload', gxAvertirAvantFermeture);
-
-                        btnValiderAchat.innerHTML = `<div class="spinner"></div> Validation en cours... Ne fermez pas cette page.`;
-
-                        try {
-                            const formData = new FormData();
-                            formData.append("event", ev.id);
-                            formData.append("nom_participant", nom);
-                            formData.append("email", email || "");
-                            formData.append("telephone", tel);
-                            formData.append("type_billet", typeBilletChoisi);
-                            formData.append("preuve", fichierPreuve);
-
-                            const reponseAchat = await fetchAvecTimeout(
-                                '/api/tickets',
-                                { method: 'POST', body: formData },
-                                30000
-                            );
-
-                            let resultatAchat;
-                            try {
-                                resultatAchat = await reponseAchat.json();
-                            } catch (e) {
-                                resultatAchat = null;
-                            }
-
-                            if (!reponseAchat.ok || !resultatAchat || !resultatAchat.success) {
-                                const messageErreur = (resultatAchat && resultatAchat.error)
-                                    ? resultatAchat.error
-                                    : "Erreur lors de l'enregistrement du billet.";
-                                window.removeEventListener('beforeunload', gxAvertirAvantFermeture);
-                                alert(messageErreur);
-                                btnValiderAchat.disabled = false;
-                                btnValiderAchat.innerHTML = btnHTMLOriginal;
-                                return;
-                            }
-
-                            window.removeEventListener('beforeunload', gxAvertirAvantFermeture);
-
-                            window.location.href = `billet.html?id=${encodeURIComponent(resultatAchat.code_public)}`;
-
-                        } catch (err) {
-                            console.error("Erreur inattendue :", err);
-                            const messageErreur = (err && err.name === "AbortError")
-                                ? "La connexion met trop de temps à répondre. Vérifiez votre réseau puis réessayez."
-                                : "Une erreur inattendue est survenue lors du traitement.";
-                            window.removeEventListener('beforeunload', gxAvertirAvantFermeture);
-                            alert(messageErreur);
-                            btnValiderAchat.disabled = false;
-                            btnValiderAchat.innerHTML = btnHTMLOriginal;
-                        }
-                    };
+                    brancherFormulaire(ev);
                 }
+
                 derniereSignatureAchat = signatureEvenementAchat(ev);
                 demarrerVerificationPeriodiqueAchat();
-                window.dispatchEvent(new Event('goldtix:donneesPretes'));
 
             } catch (err) {
                 console.error("Erreur inattendue lors de l'affichage de l'événement :", err);
-                afficherErreurChargement(
-                    container,
-                    "Une erreur est survenue",
-                    "Impossible d'afficher les informations de l'événement. Réessayez."
-                );
+                afficherErreurChargement(container, 'Une erreur est survenue',
+                    "Impossible d'afficher les informations de l'événement. Réessayez.");
             } finally {
                 clearTimeout(watchdog);
                 chargementEnCours = false;
             }
         }
 
-        let derniereSignatureAchat = "";
-let intervalMiseAJourAchatDemarre = false;
+        // ─── Branchement du formulaire ────────────────────────────────────────
+        function brancherFormulaire(ev) {
+            const fileInput = document.getElementById('preuvePaiement');
+            const fileWrapperEl = document.getElementById('fileWrapper');
+            const errPreuveEl = document.getElementById('errPreuvePaiement');
+            const selectCat = document.getElementById('selectCategorie');
 
-function signatureEvenementAchat(ev) {
-    if (!ev) return "";
-    return [
-        ev.titre || "", ev.date || "", ev.heure || "", ev.lieu || "",
-        ev.affiche_url || "", ev.beneficiaire_nom || "", ev.beneficiaire_infos || "",
-        JSON.stringify(ev.categories_data || []),
-        JSON.stringify(ev.disponibilites || {}),  
-        ev.prix || "",
-        ev.ventes_fermees ? "1" : "0"
-    ].join("|");
-}
+            if (selectCat) selectCat.addEventListener('change', mettreAJourRecap);
+            mettreAJourRecap();
 
-async function verifierMiseAJourAchat() {
-    const eventIdCourant = new URLSearchParams(window.location.search).get("event");
-    if (!eventIdCourant) return;
-    try {
-        const reponse = await fetchAvecTimeout('/api/tickets?event=' + encodeURIComponent(eventIdCourant), { method: 'GET' }, 15000);
-        if (!reponse.ok) return;
-        const data = await reponse.json();
-        const ev = data.event;
-        if (!ev) return;
-        const nouvelleSignature = signatureEvenementAchat(ev);
-        if (nouvelleSignature === derniereSignatureAchat) return;
-        derniereSignatureAchat = nouvelleSignature;
+            const btnRib = document.getElementById('btnTelechargerRib');
+            if (btnRib) {
+                const urlRib = ev.rib_image_url || ev.qr_code_paiement;
+                const statutRib = document.getElementById('ribDownloadStatus');
+                btnRib.addEventListener('click', () => gxTelechargerRib(urlRib, btnRib, statutRib));
+            }
 
-        const btnValider = document.getElementById("btnValiderAchat");
-        if (ev.ventes_fermees && btnValider && !document.getElementById("ventesFermeesAlerte")) {
-            const alerteEl = document.createElement("p");
-            alerteEl.id = "ventesFermeesAlerte";
-            alerteEl.style.cssText = "color:#dc2626;font-weight:700;font-size:13px;margin-top:10px;text-align:center;";
-            alerteEl.textContent = "Les ventes viennent d'être fermées par l'organisateur. Aucun achat n’est possible pour le moment. Contactez le bénéficiaire pour toute réclamation.";
-            btnValider.insertAdjacentElement("beforebegin", alerteEl);
-            btnValider.disabled = true;
-            btnValider.style.opacity = "0.6";
+            [['nomParticipant', 'errNomParticipant'], ['telParticipant', 'errTelParticipant'], ['emailParticipant', 'errEmailParticipant']]
+                .forEach(function(paire) {
+                    const champ = document.getElementById(paire[0]);
+                    const erreur = document.getElementById(paire[1]);
+                    if (champ) champ.addEventListener('input', function() {
+                        if (this.value.trim() || this.id === 'emailParticipant') effacerInvalide(champ, erreur);
+                    });
+                });
+
+            fileInput.addEventListener('change', function() {
+                const fichier = this.files && this.files[0];
+                if (!fichier) return;
+
+                const typeOk = TYPES_IMAGE_OK.includes(fichier.type);
+                if (!typeOk) {
+                    reinitialiserFichier(fileInput, fileWrapperEl);
+                    marquerInvalide(fileWrapperEl, errPreuveEl, 'Format non accepté. Utilisez une image JPG, PNG ou WEBP.');
+                    return;
+                }
+                if (fichier.size > TAILLE_MAX_FICHIER) {
+                    reinitialiserFichier(fileInput, fileWrapperEl);
+                    marquerInvalide(fileWrapperEl, errPreuveEl, 'Ce fichier dépasse 2 Mo. Choisissez une image plus légère.');
+                    return;
+                }
+
+                libererApercu();
+                apercuUrl = URL.createObjectURL(fichier);
+                document.getElementById('fileThumb').src = apercuUrl;
+                document.getElementById('fileNamePreview').textContent = fichier.name;
+                document.getElementById('fileSizePreview').textContent = formaterTaille(fichier.size);
+                fileWrapperEl.classList.add('has-file');
+                effacerInvalide(fileWrapperEl, errPreuveEl);
+            });
+
+            document.getElementById('btnRemplacerFichier').addEventListener('click', function() {
+                reinitialiserFichier(fileInput, fileWrapperEl);
+                fileInput.click();
+            });
+
+            const btn = document.getElementById('btnValiderAchat');
+            const btnHTMLOriginal = btn.innerHTML;
+            const zoneMsg = document.getElementById('zoneMessageAchat');
+
+            btn.onclick = async function() {
+                const nomEl = document.getElementById('nomParticipant');
+                const telEl = document.getElementById('telParticipant');
+                const emailEl = document.getElementById('emailParticipant');
+                const errNomEl = document.getElementById('errNomParticipant');
+                const errTelEl = document.getElementById('errTelParticipant');
+                const errEmailEl = document.getElementById('errEmailParticipant');
+
+                const nom = nomEl.value.trim();
+                const email = emailEl.value.trim();
+                const tel = telEl.value.trim();
+                const fichierPreuve = fileInput.files[0];
+
+                // Catégorie réellement choisie (valeur "nom - prix" enregistrée côté serveur)
+                let typeBilletChoisi = 'Standard';
+                const sel = document.getElementById('selectCategorie');
+                if (sel) {
+                    if (!sel.value || (sel.selectedOptions[0] && sel.selectedOptions[0].disabled)) {
+                        zoneMsg.innerHTML = `<div class="notice error">${ICONS.alert}<span>Cette catégorie n'est plus disponible. Choisissez-en une autre.</span></div>`;
+                        return;
+                    }
+                    typeBilletChoisi = sel.value;
+                } else if (ev.prix) {
+                    typeBilletChoisi = String(ev.prix);
+                }
+
+                zoneMsg.innerHTML = '';
+                effacerInvalide(nomEl, errNomEl);
+                effacerInvalide(telEl, errTelEl);
+                effacerInvalide(emailEl, errEmailEl);
+                effacerInvalide(fileWrapperEl, errPreuveEl);
+
+                let valide = true;
+                if (!nom) { marquerInvalide(nomEl, errNomEl); valide = false; }
+                if (!tel) {
+                    marquerInvalide(telEl, errTelEl); valide = false;
+                } else if (tel.replace(/\D/g, '').length < 8) {
+                    marquerInvalide(telEl, errTelEl, 'Ce numéro semble trop court.'); valide = false;
+                }
+                if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    marquerInvalide(emailEl, errEmailEl, 'Cette adresse e-mail ne semble pas valide.'); valide = false;
+                }
+                if (!fichierPreuve) {
+                    marquerInvalide(fileWrapperEl, errPreuveEl, 'Une preuve de paiement est obligatoire.'); valide = false;
+                } else if (!TYPES_IMAGE_OK.includes(fichierPreuve.type)) {
+                    marquerInvalide(fileWrapperEl, errPreuveEl, 'Format non accepté. Utilisez une image JPG, PNG ou WEBP.'); valide = false;
+                } else if (fichierPreuve.size > TAILLE_MAX_FICHIER) {
+                    marquerInvalide(fileWrapperEl, errPreuveEl, 'Ce fichier dépasse 2 Mo. Choisissez une image plus légère.'); valide = false;
+                }
+
+                if (!valide) {
+                    const premier = document.querySelector('.field-invalid');
+                    if (premier) premier.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    return;
+                }
+
+                if (btn.disabled) return;
+                btn.disabled = true;
+                window.addEventListener('beforeunload', gxAvertirAvantFermeture);
+                btn.innerHTML = `<span class="spinner"></span> Envoi en cours… Ne fermez pas cette page.`;
+
+                try {
+                    const formData = new FormData();
+                    formData.append('event', ev.id);
+                    formData.append('nom_participant', nom);
+                    formData.append('email', email || '');
+                    formData.append('telephone', tel);
+                    formData.append('type_billet', typeBilletChoisi);
+                    formData.append('preuve', fichierPreuve);
+
+                    const reponseAchat = await fetchAvecTimeout('/api/tickets', { method: 'POST', body: formData }, 30000);
+
+                    let resultat;
+                    try { resultat = await reponseAchat.json(); } catch (e) { resultat = null; }
+
+                    if (!reponseAchat.ok || !resultat || !resultat.success) {
+                        const message = (resultat && resultat.error) ? resultat.error : "Erreur lors de l'enregistrement du billet.";
+                        window.removeEventListener('beforeunload', gxAvertirAvantFermeture);
+                        zoneMsg.innerHTML = `<div class="notice error">${ICONS.alert}<span>${esc(message)}</span></div>`;
+                        btn.disabled = false;
+                        btn.innerHTML = btnHTMLOriginal;
+                        return;
+                    }
+
+                    // Informations reçues — paiement en attente de vérification (jamais « confirmé » ici)
+                    zoneMsg.innerHTML = `<div class="notice success">${ICONS.check}<span>Vos informations ont bien été reçues. Votre paiement est en attente de vérification par l'organisateur.</span></div>`;
+                    btn.innerHTML = `${ICONS.check} Informations envoyées`;
+                    window.removeEventListener('beforeunload', gxAvertirAvantFermeture);
+
+                    setTimeout(function() {
+                        window.location.href = `billet.html?id=${encodeURIComponent(resultat.code_public)}`;
+                    }, 1500);
+
+                } catch (err) {
+                    console.error('Erreur inattendue :', err);
+                    const message = (err && err.name === 'AbortError')
+                        ? 'La connexion met trop de temps à répondre. Vérifiez votre réseau puis réessayez.'
+                        : 'Une erreur inattendue est survenue lors du traitement.';
+                    window.removeEventListener('beforeunload', gxAvertirAvantFermeture);
+                    zoneMsg.innerHTML = `<div class="notice error">${ICONS.alert}<span>${esc(message)}</span></div>`;
+                    btn.disabled = false;
+                    btn.innerHTML = btnHTMLOriginal;
+                }
+            };
         }
 
-        const titreEl = document.getElementById("evTitreEl");
-        if (titreEl) titreEl.textContent = ev.titre;
-        const dateEl = document.getElementById("evDateEl");
-        if (dateEl) dateEl.textContent = ev.date;
-        const heureEl = document.getElementById("evHeureEl");
-        if (heureEl) heureEl.textContent = (ev.heure || '').slice(0, 5);
-        const lieuEl = document.getElementById("evLieuEl");
-        if (lieuEl) lieuEl.textContent = ev.lieu;
-        const posterImgEl = document.getElementById("posterImgEl");
-        if (posterImgEl && ev.affiche_url && posterImgEl.src !== ev.affiche_url) {
-            posterImgEl.src = ev.affiche_url;
+        // ─── Mise à jour périodique (inchangée dans son principe) ─────────────
+        let derniereSignatureAchat = '';
+        let intervalMiseAJourAchatDemarre = false;
+
+        function signatureEvenementAchat(ev) {
+            if (!ev) return '';
+            return [
+                ev.titre || '', ev.date || '', ev.heure || '', ev.lieu || '',
+                ev.affiche_url || '', ev.beneficiaire_nom || '', ev.beneficiaire_infos || '',
+                JSON.stringify(ev.categories_data || []),
+                JSON.stringify(ev.disponibilites || {}),
+                ev.prix || '',
+                ev.ventes_fermees ? '1' : '0'
+            ].join('|');
         }
-        const beneficiaireNomEl = document.getElementById("evBeneficiaireNomEl");
-        if (beneficiaireNomEl) beneficiaireNomEl.textContent = ev.beneficiaire_nom || 'Non renseigne';
-        const beneficiaireContactEl = document.getElementById("evBeneficiaireContactEl");
-        if (beneficiaireContactEl) beneficiaireContactEl.textContent = ev.beneficiaire_infos || 'Non renseigne';
-        const selectCategorieEl = document.getElementById("selectCategorie");
-        if (selectCategorieEl) {
-            const valeurSelectionnee = selectCategorieEl.value;
-            selectCategorieEl.innerHTML = genererOptionsCategorieAchat(ev);
-            const optionExisteEncore = Array.from(selectCategorieEl.options)
-                .some(o => o.value === valeurSelectionnee && !o.disabled);
-            if (optionExisteEncore) {
-                selectCategorieEl.value = valeurSelectionnee;
-            } else if (valeurSelectionnee) {
-                alert("Pour toute réclamation, contactez le bénéficiaire des paiements.");
+
+        async function verifierMiseAJourAchat() {
+            const eventIdCourant = new URLSearchParams(window.location.search).get('event');
+            if (!eventIdCourant) return;
+            try {
+                const reponse = await fetchAvecTimeout('/api/tickets?event=' + encodeURIComponent(eventIdCourant), { method: 'GET' }, 15000);
+                if (!reponse.ok) return;
+                const data = await reponse.json();
+                const ev = data.event;
+                if (!ev) return;
+                const nouvelleSignature = signatureEvenementAchat(ev);
+                if (nouvelleSignature === derniereSignatureAchat) return;
+                derniereSignatureAchat = nouvelleSignature;
+                evCourant = ev;
+
+                const btnValider = document.getElementById('btnValiderAchat');
+                if (ev.ventes_fermees && btnValider && !document.getElementById('ventesFermeesAlerte')) {
+                    const alerteEl = document.createElement('div');
+                    alerteEl.id = 'ventesFermeesAlerte';
+                    alerteEl.className = 'notice error';
+                    alerteEl.innerHTML = `${ICONS.alert}<span>Les ventes viennent d'être fermées par l'organisateur. Aucun achat n'est possible pour le moment. Contactez le bénéficiaire pour toute réclamation.</span>`;
+                    btnValider.insertAdjacentElement('beforebegin', alerteEl);
+                    btnValider.disabled = true;
+                    btnValider.style.opacity = '0.6';
+                }
+
+                const maj = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+                maj('evTitreEl', ev.titre);
+                maj('evDateEl', ev.date);
+                maj('evHeureEl', (ev.heure || '').slice(0, 5));
+                maj('evLieuEl', ev.lieu);
+                maj('evBeneficiaireNomEl', ev.beneficiaire_nom || 'Non renseigné');
+                maj('evBeneficiaireContactEl', ev.beneficiaire_infos || 'Non renseigné');
+
+                const posterImgEl = document.getElementById('posterImgEl');
+                if (posterImgEl && ev.affiche_url && posterImgEl.getAttribute('src') !== ev.affiche_url) {
+                    posterImgEl.src = ev.affiche_url;
+                }
+
+                const selectCategorieEl = document.getElementById('selectCategorie');
+                if (selectCategorieEl) {
+                    const valeurSelectionnee = selectCategorieEl.value;
+                    selectCategorieEl.innerHTML = genererOptionsCategorieAchat(ev);
+                    const existeEncore = Array.from(selectCategorieEl.options)
+                        .some(o => o.value === valeurSelectionnee && !o.disabled);
+                    if (existeEncore) {
+                        selectCategorieEl.value = valeurSelectionnee;
+                    } else if (valeurSelectionnee) {
+                        alert('Pour toute réclamation, contactez le bénéficiaire des paiements.');
+                    }
+                    mettreAJourRecap();
+                } else if (!aDesCategories(ev)) {
+                    mettreAJourRecap();
+                }
+            } catch (err) {
+                console.error('Erreur vérification mise à jour (achat) :', err);
             }
         }
-    } catch (err) {
-        console.error("Erreur vérification mise à jour (achat) :", err);
-    }
-}
 
-function genererOptionsCategorieAchat(ev) {
-    if (!ev.categories_data || !Array.isArray(ev.categories_data) || ev.categories_data.length === 0) {
-        return "";
-    }
-    return ev.categories_data.map(cat => {
-        const infoDispo = ev.disponibilites ? ev.disponibilites[cat.nom] : null;
-        const estEpuisee = !!(infoDispo && infoDispo.epuise);
-        const valeur = `${cat.nom} - ${cat.prix}`;
-        let libelle = `${cat.nom} (${cat.prix})`;
-        if (infoDispo) {
-            libelle += estEpuisee
-                ? " — Épuisé"
-                : ` — ${infoDispo.restant} place${infoDispo.restant > 1 ? 's' : ''} disponible${infoDispo.restant > 1 ? 's' : ''}`;
+        function demarrerVerificationPeriodiqueAchat() {
+            if (intervalMiseAJourAchatDemarre) return;
+            intervalMiseAJourAchatDemarre = true;
+            setInterval(() => { if (!document.hidden) verifierMiseAJourAchat(); }, 9000);
         }
-        return `<option value="${valeur}"${estEpuisee ? " disabled" : ""}>${libelle}</option>`;
-    }).join("");
-}
 
-function demarrerVerificationPeriodiqueAchat() {
-    if (intervalMiseAJourAchatDemarre) return;
-    intervalMiseAJourAchatDemarre = true;
-    setInterval(() => {
-        if (!document.hidden) verifierMiseAJourAchat();
-    }, 9000);
-}
-
-        document.addEventListener('DOMContentLoaded', function() {
-            chargerPageAchatUnique();
-        });
+        document.addEventListener('DOMContentLoaded', chargerPageAchatUnique);
     </script>
 </body>
 </html>
