@@ -509,14 +509,51 @@ function emailBilletHtml(nom, lien) {
   </div>`;
 }
 
-function emailRefusHtml(nom) {
+
+function emailRefusHtml(nom, lienWhatsApp) {
   return `
-  <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:24px;background:#fffbeb;">
-    <h2 style="color:#b45309;margin:0 0 16px;">GoldTix 🎫</h2>
+  <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:24px;background:#ffffff;border:1px solid #e5e7eb;border-radius:14px;">
+    <h2 style="color:#b45309;margin:0 0 24px;">GoldTix 🎫</h2>
+
+    <h3 style="color:#111827;">Paiement non confirmé</h3>
+
     <p>Bonjour <strong>${nom}</strong>,</p>
+
     <p>Nous n'avons pas pu confirmer la réception de votre paiement.</p>
-    <p>Merci de vérifier votre transfert et de contacter l'organisateur si vous pensez qu'il s'agit d'une erreur.</p>
+
+    <p>Si vous avez déjà effectué le transfert, contactez directement le bénéficiaire de l'événement afin de vérifier votre transaction.</p>
+
+    ${
+      lienWhatsApp
+        ? `<div style="text-align:center;margin:28px 0;">
+            <a href="${lienWhatsApp}"
+               style="display:inline-block;background:#25D366;color:#ffffff;padding:14px 20px;border-radius:10px;text-decoration:none;font-weight:bold;">
+              Contacter le bénéficiaire sur WhatsApp
+            </a>
+          </div>`
+        : `<p>Veuillez contacter directement le bénéficiaire de l'événement pour vérifier votre paiement.</p>`
+    }
+
+    <p style="font-size:12px;color:#64748b;margin-top:24px;">
+      Ce message a été envoyé automatiquement par GoldTix.
+    </p>
   </div>`;
+}
+
+function creerLienWhatsApp(beneficiaireInfos) {
+  const numero = String(beneficiaireInfos || "")
+    .replace(/[^\d+]/g, "")
+    .replace(/^\+/, "");
+
+  // Pour le Burkina Faso : indicatif 226 + 8 chiffres
+  if (!/^226\d{8}$/.test(numero)) {
+    return null;
+  }
+
+  const message =
+    "Bonjour, je vous contacte concernant mon paiement pour votre événement sur GoldTix. Pouvez-vous m'aider à vérifier ma transaction ?";
+
+  return `https://wa.me/${numero}?text=${encodeURIComponent(message)}`;
 }
 
 async function changerStatut(supabase, payload, res) {
@@ -561,13 +598,32 @@ async function changerStatut(supabase, payload, res) {
           subject: "Votre billet GoldTix est prêt 🎫",
           html: emailBilletHtml(nom, lien),
         });
-      } else {
-        emailEnvoye = await envoyerEmailResend({
-          to: b.email,
-          subject: "Paiement non reçu - GoldTix",
-          html: emailRefusHtml(nom),
-        });
-      }
+      
+} else {
+  const { data: evenement, error: erreurEvenement } =
+    await supabase
+      .from("evenements")
+      .select("beneficiaire_infos")
+      .eq("id", evenementId)
+      .maybeSingle();
+
+  if (erreurEvenement) {
+    console.error(
+      "Erreur récupération bénéficiaire :",
+      erreurEvenement.message
+    );
+  }
+
+  const lienWhatsApp = creerLienWhatsApp(
+    evenement?.beneficiaire_infos
+  );
+
+  emailEnvoye = await envoyerEmailResend({
+    to: b.email,
+    subject: "Paiement non reçu - GoldTix",
+    html: emailRefusHtml(nom, lienWhatsApp),
+  });
+}
     }
   }
 
