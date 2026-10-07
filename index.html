@@ -61,28 +61,7 @@ button { font-family: inherit; }
 .page-head { padding: 30px 0 22px; text-align: left; }
 .page-head h1 { font-size: clamp(24px, 4.2vw, 30px); font-weight: 800; letter-spacing: -0.5px; line-height: 1.2; }
 .page-head p { margin-top: 6px; font-size: 15px; color: var(--ink-sub); }
-.page-head .rule { width: 36px; height: 3px; border-radius: 3px; background: linear-gradient(90deg, #f5d36b, #d9a520); margin: 14px 0 0; }
 
-/* ---------- Bandeau événement (date + titre + lieu) ---------- */
-.event-banner { background: var(--ink); color: #fff; border-bottom: 3px solid var(--gold); }
-.banner-inner { display: flex; align-items: center; gap: 22px; padding-top: 26px; padding-bottom: 26px; }
-.date-block { flex-shrink: 0; min-width: 76px; padding: 4px 18px 4px 0; border-right: 1px solid rgba(255,255,255,0.18); text-align: center; line-height: 1.05; }
-.date-block .d { display: block; font-size: 44px; font-weight: 800; letter-spacing: -1px; }
-.date-block .m { display: block; margin-top: 4px; font-size: 19px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: var(--gold); }
-.date-block .y { display: block; margin-top: 4px; font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.75); }
-.date-raw { font-size: 16px; font-weight: 700; }
-.banner-txt { min-width: 0; }
-.banner-title { font-size: clamp(21px, 3.6vw, 30px); font-weight: 800; letter-spacing: -0.5px; line-height: 1.2; word-break: break-word; }
-.banner-meta { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14.5px; color: rgba(255,255,255,0.78); }
-.banner-meta span { display: inline-flex; align-items: center; gap: 7px; }
-.banner-meta svg { width: 15px; height: 15px; color: var(--gold); flex-shrink: 0; }
-@media (max-width: 600px) {
-    .banner-inner { gap: 14px; padding-top: 20px; padding-bottom: 20px; }
-    .date-block { min-width: 62px; padding-right: 14px; }
-    .date-block .d { font-size: 34px; }
-    .date-block .m { font-size: 15px; }
-    .date-block .y { font-size: 12px; }
-}
 
 /* ---------- Mise en page ---------- */
 .layout { display: grid; grid-template-columns: 340px 1fr; gap: 24px; align-items: start; padding-bottom: 60px; }
@@ -109,9 +88,15 @@ button { font-family: inherit; }
 .poster-fallback { line-height: 1.5; min-height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--ink-muted); font-size: 13px; font-weight: 600; }
 .poster-fallback svg { width: 30px; height: 30px; opacity: 0.6; }
 
-/* Catégories disponibles (juste après l'affiche) */
-.cat-card { padding: 20px 20px 18px; }
-.cat-card h3 { font-size: 16px; font-weight: 800; letter-spacing: -0.2px; margin-bottom: 14px; }
+/* Carte sous l'affiche : titre, date, lieu, catégories */
+.info-card { padding: 22px 20px 20px; }
+.info-card .event-title { font-size: 22px; font-weight: 800; letter-spacing: -0.4px; line-height: 1.25; margin-bottom: 14px; word-break: break-word; }
+.event-meta { display: flex; flex-direction: column; gap: 10px; padding-bottom: 18px; margin-bottom: 18px; border-bottom: 1px solid var(--line); }
+.meta-row { display: flex; align-items: center; gap: 10px; font-size: 14.5px; color: var(--ink); font-weight: 500; }
+.meta-row svg { width: 17px; height: 17px; color: var(--ink-sub); flex-shrink: 0; }
+
+/* Catégories disponibles */
+.cat-title { font-size: 16px; font-weight: 800; letter-spacing: -0.2px; margin-bottom: 14px; }
 .cat-list { display: flex; flex-direction: column; gap: 10px; }
 .cat-row { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 14px; background: #f6f5f2; border-radius: var(--radius-sm); overflow: hidden; }
 .cat-row.epuise { opacity: 0.55; }
@@ -261,13 +246,10 @@ input:focus, select:focus { border-color: var(--ink); box-shadow: 0 0 0 4px rgba
         </div>
     </header>
 
-    <section class="event-banner" id="bandeauEvenement" hidden></section>
-
     <div class="wrap">
         <div class="page-head">
             <h1>Achetez votre billet</h1>
             <p>Suivez les étapes ci-dessous pour acheter votre billet.</p>
-            <div class="rule"></div>
         </div>
 
         <main id="detailsEvenement">
@@ -466,37 +448,26 @@ input:focus, select:focus { border-color: var(--ink); box-shadow: 0 0 0 4px rgba
             set('prixChoisiEl', prix);
         }
 
-        // ─── Bandeau événement : date, titre, lieu, heure ─────────────────────
-        function decouperDate(texte) {
-            const mois = ['JAN', 'FÉV', 'MAR', 'AVR', 'MAI', 'JUIN', 'JUIL', 'AOÛT', 'SEP', 'OCT', 'NOV', 'DÉC'];
+        // ─── Carte sous l'affiche : titre, date, heure, lieu ───────────────────
+        function formaterDateLongue(texte) {
+            const mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
             const t = String(texte || '').trim();
             let y, m, d, r;
             if ((r = t.match(/^(\d{4})-(\d{2})-(\d{2})/))) { y = r[1]; m = +r[2]; d = +r[3]; }
             else if ((r = t.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/))) { d = +r[1]; m = +r[2]; y = r[3]; }
-            if (!y || m < 1 || m > 12) return null;
-            return { jour: String(d).padStart(2, '0'), mois: mois[m - 1], annee: y };
+            if (!y || m < 1 || m > 12) return t;
+            return d + ' ' + mois[m - 1] + ' ' + y;
         }
 
-        function rendreBandeau(ev) {
-            const bandeau = document.getElementById('bandeauEvenement');
-            if (!bandeau || !ev) return;
-            const dt = decouperDate(ev.date);
-            const blocDate = dt
-                ? `<div class="date-block"><span class="d">${esc(dt.jour)}</span><span class="m">${esc(dt.mois)}</span><span class="y">${esc(dt.annee)}</span></div>`
-                : (ev.date ? `<div class="date-block"><span class="date-raw">${esc(ev.date)}</span></div>` : '');
+        function htmlInfosEvenement(ev) {
             const heure = (ev.heure || '').slice(0, 5);
-            bandeau.innerHTML = `
-                <div class="wrap banner-inner">
-                    ${blocDate}
-                    <div class="banner-txt">
-                        <h2 class="banner-title">${esc(ev.titre)}</h2>
-                        <div class="banner-meta">
-                            ${ev.lieu ? `<span>${ICONS.pin}${esc(ev.lieu)}</span>` : ''}
-                            ${heure ? `<span>${ICONS.clock}${esc(heure)}</span>` : ''}
-                        </div>
-                    </div>
+            return `
+                <h2 class="event-title">${esc(ev.titre)}</h2>
+                <div class="event-meta">
+                    ${ev.date ? `<div class="meta-row">${ICONS.calendar}<span>${esc(formaterDateLongue(ev.date))}</span></div>` : ''}
+                    ${heure ? `<div class="meta-row">${ICONS.clock}<span>${esc(heure)}</span></div>` : ''}
+                    ${ev.lieu ? `<div class="meta-row">${ICONS.pin}<span>${esc(ev.lieu)}</span></div>` : ''}
                 </div>`;
-            bandeau.hidden = false;
         }
 
         // ─── Aperçu de la preuve de paiement ──────────────────────────────────
@@ -703,15 +674,14 @@ input:focus, select:focus { border-color: var(--ink); box-shadow: 0 0 0 4px rgba
                     <div class="layout">
                         <aside class="col-event">
                             <div class="poster">${posterHTML}</div>
-                            <div class="card cat-card">
-                                <h3>Catégories disponibles</h3>
+                            <div class="card info-card">
+                                <div id="infosEvenementEl">${htmlInfosEvenement(ev)}</div>
+                                <h3 class="cat-title">Catégories disponibles</h3>
                                 <div class="cat-list" id="listeCategoriesEl">${lignesCat}</div>
                             </div>
                         </aside>
                         <div class="col-steps">${colonneEtapes}</div>
                     </div>`;
-
-                rendreBandeau(ev);
 
                 const posterImage = container.querySelector('.poster img');
                 if (posterImage) {
@@ -946,7 +916,8 @@ input:focus, select:focus { border-color: var(--ink); box-shadow: 0 0 0 4px rgba
                 }
 
                 const maj = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-                rendreBandeau(ev);
+                const infosEl = document.getElementById('infosEvenementEl');
+                if (infosEl) infosEl.innerHTML = htmlInfosEvenement(ev);
                 const listeCatEl = document.getElementById('listeCategoriesEl');
                 if (listeCatEl) listeCatEl.innerHTML = htmlLignesCategories(ev);
                 maj('evBeneficiaireNomEl', ev.beneficiaire_nom || 'Non renseigné');
