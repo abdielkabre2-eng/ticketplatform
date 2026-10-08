@@ -159,7 +159,7 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
 </head>
 <body>
 
-<!-- ═══════════ INTRO ANIMÉE (v3) — début ═══════════ -->
+<!-- ═══════════ INTRO ANIMÉE (v4) — début ═══════════ -->
 <script>
 (function () {
 'use strict';
@@ -188,35 +188,37 @@ var css = ''
 
 /* ── Bloc central : une seule colonne centrée ── */
 + '#gi-root .gi-page{position:relative;z-index:1;width:var(--W);margin:0 auto}'
-+ '#gi-root .gi-stage{--pw:calc(var(--u) * 59.2);--tw:min(calc(var(--pw) * 1.6893),calc(var(--u) * 108));--k:calc(var(--tw) / 1240);position:relative;display:flex;flex-direction:column;align-items:center;min-height:calc(100vh - var(--bar));min-height:calc(100svh - var(--bar));overflow:hidden;padding:calc(var(--u) * 10.5) 0 calc(var(--u) * 3.4 + env(safe-area-inset-bottom,0px))}'
++ '#gi-root .gi-stage{--pw:calc(var(--u) * 59.2);position:relative;display:flex;flex-direction:column;align-items:center;min-height:calc(100vh - var(--bar));min-height:calc(100svh - var(--bar));padding:calc(var(--u) * 5.5) 0 calc(var(--u) * 3.4 + env(safe-area-inset-bottom,0px))}'
 + '#gi-root .gi-posterwrap{position:relative;width:var(--pw)}'
 
-/* ── Tracé du billet : taille/position/finesse d\'origine, centré sur l\'affiche ── */
-+ '#gi-root .gi-ticket{position:absolute;z-index:0;width:var(--tw);height:auto;overflow:visible;pointer-events:none;left:calc(50% + var(--pw) * .0341 - var(--k) * 615);top:calc(50% - var(--pw) * .0286 - var(--k) * 657)}'
-+ '#gi-root .gi-ticket path{fill:none;stroke:var(--line);stroke-width:9;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}'
-
+/* ── Ornement au-dessus de l'affiche ── */
++ '#gi-root .gi-orn{display:block;width:calc(var(--u) * 43);height:auto;margin:0 auto calc(var(--u) * 3.6);color:#111}'
 + '#gi-root .gi-poster{position:relative;z-index:1;overflow:hidden;line-height:0;border-radius:max(18px,calc(var(--u) * 4.8));background:#e4e3df;aspect-ratio:734 / 896;--dy:calc(var(--u) * 3.5)}'
 + '#gi-root .gi-poster.gi-loaded{aspect-ratio:auto}'
 + '#gi-root .gi-poster img{display:block;width:100%;height:auto;max-width:none}'
-+ '#gi-root .gi-title{margin-top:calc(var(--u) * 2);padding:0 calc(var(--u) * 4);font-family:"Abril Fatface","Playfair Display",Georgia,serif;font-weight:400;font-size:max(26px,calc(var(--u) * var(--tm,9.3)));line-height:1.1;text-align:center;text-wrap:balance;overflow-wrap:anywhere}'
++ '#gi-root .gi-title{margin-top:calc(var(--u) * 2);padding:0 calc(var(--u) * 2);font-family:"Abril Fatface","Playfair Display",Georgia,serif;font-weight:400;font-size:max(26px,calc(var(--u) * var(--tm,10.6)));line-height:1.1;text-align:center;text-wrap:balance;overflow-wrap:anywhere}'
 + '#gi-root .gi-sub{margin-top:calc(var(--u) * 3.4);padding:0 calc(var(--u) * 5);font-size:max(15px,calc(var(--u) * 4.4));line-height:1.35;text-align:center}'
-+ '#gi-root .gi-cta{margin-top:calc(var(--u) * 7);display:inline-flex;align-items:center;justify-content:center;min-width:calc(var(--u) * 40);min-height:max(52px,calc(var(--u) * 11.4));padding:0 calc(var(--u) * 3.7);border:0;border-radius:999px;background:#000;color:#fff;font-family:inherit;font-size:max(16px,calc(var(--u) * 3.7));font-weight:300;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .25s ease}'
++ '#gi-root .gi-tk{--r:calc(var(--u) * 1.7);--bw:max(2px,calc(var(--u) * .45));--tkc:#9d9c97;position:relative;display:inline-flex;margin-top:calc(var(--u) * 4.5);padding:calc(var(--u) * 3.4) calc(var(--u) * 4.2);border:var(--bw) solid var(--tkc);border-radius:calc(var(--u) * 3.2)}'
++ '#gi-root .gi-tk::before,#gi-root .gi-tk::after{content:"";position:absolute;top:50%;box-sizing:border-box;width:calc(var(--r) * 2);height:calc(var(--r) * 2);margin-top:calc(var(--r) * -1);border-radius:50%;border:var(--bw) solid var(--tkc);background:#f7f7f5}'
++ '#gi-root .gi-tk::before{left:calc(var(--r) * -1 - var(--bw) / 2);clip-path:inset(0 0 0 calc(50% - var(--bw) / 2))}'
++ '#gi-root .gi-tk::after{right:calc(var(--r) * -1 - var(--bw) / 2);clip-path:inset(0 calc(50% - var(--bw) / 2) 0 0)}'
++ '#gi-root .gi-tk i{position:absolute;left:50%;width:max(1.5px,calc(var(--u) * .35));height:calc(var(--u) * 1.8);margin-left:calc(var(--u) * -.17);background:var(--tkc)}'
++ '#gi-root .gi-tk i:first-child{top:calc(var(--u) * .9)}#gi-root .gi-tk i:last-child{bottom:calc(var(--u) * .9)}'
++ '#gi-root .gi-cta{display:inline-flex;align-items:center;justify-content:center;min-width:calc(var(--u) * 43);min-height:max(52px,calc(var(--u) * 12.2));padding:0 calc(var(--u) * 4);border:0;border-radius:999px;background:#000;color:#fff;font-family:inherit;font-size:max(16px,calc(var(--u) * 4.9));font-weight:300;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .25s ease}'
 + '#gi-root .gi-cta:hover{background:#1e1e1e}'
 + '#gi-root .gi-cta:focus-visible{outline:3px solid var(--orange);outline-offset:4px}'
-+ '#gi-root .gi-foot{margin-top:auto;padding-top:calc(var(--u) * 9);font-size:max(11px,calc(var(--u) * 2.1));text-align:center}'
++ '#gi-root .gi-foot{margin-top:auto;padding-top:calc(var(--u) * 7);font-size:max(11px,calc(var(--u) * 2.1));text-align:center}'
 
 /* ── Séquence d'animation : 1 fond → 2 en-tête → 3 affiche + billet → 4 textes → 5 bouton + texte secondaire ── */
 + '#gi-root .gi-a{opacity:0;visibility:hidden}'
 + '#gi-root.gi-go .gi-a{animation:gi-in .75s var(--ease) var(--d,0s) forwards}'
-+ '#gi-root.gi-go .gi-ticket path{animation:gi-draw 1.4s ease .7s forwards}'
 + '@keyframes gi-bg{from{background-color:#fff}to{background-color:#f7f7f5}}'
 + '@keyframes gi-fade{from{opacity:0}to{opacity:1}}'
-+ '@keyframes gi-draw{to{stroke-dashoffset:0}}'
 + '@keyframes gi-in{from{opacity:0;transform:translateY(var(--dy,calc(var(--u) * 2)));visibility:visible}to{opacity:1;transform:none;visibility:visible}}'
 
 /* ── Mobile ── */
-+ '@media(max-width:599px){#gi-root .gi-stage{--pw:calc(var(--u) * 68);padding-top:calc(var(--u) * 9)}#gi-root .gi-title{margin-top:calc(var(--u) * 4.5)}#gi-root .gi-sub{margin-top:calc(var(--u) * 3);font-size:max(15px,calc(var(--u) * 4.6))}#gi-root .gi-cta{margin-top:calc(var(--u) * 8);width:calc(var(--u) * 74);font-size:max(16px,calc(var(--u) * 4.4))}#gi-root .gi-foot{padding-top:calc(var(--u) * 11);font-size:max(11.5px,calc(var(--u) * 2.9))}}'
-+ '@media(prefers-reduced-motion:reduce){#gi-root,#gi-root::before{animation:none;transition:none}#gi-root .gi-ticket path{animation:none!important;stroke-dashoffset:0}#gi-root.gi-go .gi-a{animation:none;opacity:1;visibility:visible}}';
++ '@media(max-width:599px){#gi-root .gi-stage{--pw:calc(var(--u) * 68);padding-top:calc(var(--u) * 5.5)}#gi-root .gi-title{margin-top:calc(var(--u) * 2)}#gi-root .gi-sub{margin-top:calc(var(--u) * 3);font-size:max(15px,calc(var(--u) * 4.6))}#gi-root .gi-foot{padding-top:calc(var(--u) * 8);font-size:max(11.5px,calc(var(--u) * 2.9))}}'
++ '@media(prefers-reduced-motion:reduce){#gi-root,#gi-root::before{animation:none;transition:none}#gi-root.gi-go .gi-a{animation:none;opacity:1;visibility:visible}}';
 
 var style = document.createElement('style');
 style.textContent = css;
@@ -233,13 +235,13 @@ root.innerHTML = ''
 + '<span class="secure-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>Billetterie sécurisée</span>'
 + '</div></header>'
 + '<div class="gi-page"><div class="gi-stage">'
++ '<svg class="gi-orn gi-a" style="--d:.55s;--dy:-8px" viewBox="0 0 340 44" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 30H112" stroke-width="3.4"/><path d="M336 30H228" stroke-width="3.4"/><g stroke-width="3.2"><path id="o" d="M112 30C130 30 134 14 150 15C162 16 160 31 149 29C142 28 143 21 149 21"/><path d="M128 28C136 38 150 40 158 33"/><path d="M170 8C165 13 165 19 170 24C175 19 175 13 170 8Z"/><path d="M170 24V35"/></g><g stroke-width="3.2" transform="translate(340 0) scale(-1 1)"><path d="M112 30C130 30 134 14 150 15C162 16 160 31 149 29C142 28 143 21 149 21"/><path d="M128 28C136 38 150 40 158 33"/></g></svg>'
 + '<div class="gi-posterwrap">'
-+ '<svg class="gi-ticket" viewBox="0 0 1240 1400" aria-hidden="true" focusable="false"><g transform="translate(615 657) rotate(-32)"><path pathLength="1" d="M-517-201H517A50 50 0 0 1 567-151V-40A40 40 0 0 0 567 40V151A50 50 0 0 1 517 201H-517A50 50 0 0 1 -567 151V40A40 40 0 0 0 -567-40V-151A50 50 0 0 1 -517-201Z"/></g></svg>'
-+ '<figure class="gi-poster gi-a" style="--d:.7s"><img id="gi-img" alt="" decoding="async"></figure>'
++ '<figure class="gi-poster gi-a" style="--d:.75s"><img id="gi-img" alt="" decoding="async"></figure>'
 + '</div>'
 + '<h1 class="gi-title gi-a" id="gi-titre" style="--d:1.35s"></h1>'
 + '<p class="gi-sub gi-a" id="gi-sub" style="--d:1.6s">Un évènement à ne pas manquer</p>'
-+ '<button type="button" class="gi-cta gi-a" id="gi-btn" style="--d:1.95s">J’achète mon billet</button>'
++ '<div class="gi-tk gi-a" style="--d:1.95s"><i></i><button type="button" class="gi-cta" id="gi-btn">J’achète mon billet</button><i></i></div>'
 + '<p class="gi-foot gi-a" style="--d:2.15s">Plateforme de billetterie moderne</p>'
 + '</div></div>';
 document.body.insertBefore(root, document.body.firstChild);
@@ -286,7 +288,7 @@ function remplir(ev) {
 var titre = String(ev.titre || '').trim();
 var t = $('gi-titre');
 t.textContent = titre;
-t.style.setProperty('--tm', titre.length <= 17 ? 9.3 : Math.max(5.8, 158 / titre.length));
+t.style.setProperty('--tm', Math.min(10.6, Math.max(5.6, 180 / titre.length)));
 var st = String(ev.sous_titre || '').trim();
 if (st) $('gi-sub').textContent = st;
 }
@@ -317,7 +319,7 @@ charger()
 .catch(function () { fermer(true); });
 })();
 </script>
-<!-- ═══════════ INTRO ANIMÉE (v3) — fin ═══════════ -->
+<!-- ═══════════ INTRO ANIMÉE (v4) — fin ═══════════ -->
 
 <header class="topbar">
 <div class="wrap topbar-inner">
