@@ -159,7 +159,7 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
 </head>
 <body>
 
-<!-- ═══════════ INTRO ANIMÉE (v6) — début ═══════════ -->
+<!-- ═══════════ INTRO ANIMÉE (v7) — début ═══════════ -->
 <script>
 (function () {
 'use strict';
@@ -195,8 +195,8 @@ var css = ''
 + '#gi-root .gi-poster.gi-loaded{aspect-ratio:auto}'
 + '#gi-root .gi-poster img{display:block;width:100%;height:auto;max-width:none}'
 + '#gi-root .gi-title{margin-top:calc(var(--u) * 2);padding:0 calc(var(--u) * 2);font-family:"Abril Fatface","Playfair Display",Georgia,serif;font-weight:400;font-size:max(26px,calc(var(--u) * var(--tm,10.6)));line-height:1.1;text-align:center;text-wrap:balance;overflow-wrap:anywhere}'
-+ '#gi-root .gi-sub{margin-top:calc(var(--u) * 3.4);padding:0 calc(var(--u) * 5);font-size:max(15px,calc(var(--u) * 4.4));line-height:1.35;text-align:center}'
-+ '#gi-root .gi-tk{--r:calc(var(--u) * 1.15);--bw:max(1px,calc(var(--u) * .2));--tkc:#a9a8a3;position:relative;display:inline-flex;margin-top:calc(var(--u) * 4.5);padding:calc(var(--u) * 1.7) calc(var(--u) * 2.1);border:var(--bw) solid var(--tkc);border-radius:calc(var(--u) * 2.6)}'
++ '#gi-root .gi-sub{margin-top:calc(var(--u) * 3.4);padding:0 calc(var(--u) * 5) calc(var(--u) * 4.5);font-size:max(15px,calc(var(--u) * 4.4));line-height:1.35;text-align:center}'
++ '#gi-root .gi-tk{--r:calc(var(--u) * 1.15);--bw:max(1px,calc(var(--u) * .2));--tkc:#a9a8a3;position:relative;display:inline-flex;margin-top:auto;margin-bottom:auto;padding:calc(var(--u) * 1.7) calc(var(--u) * 2.1);border:var(--bw) solid var(--tkc);border-radius:calc(var(--u) * 2.6)}'
 + '#gi-root .gi-tk::before,#gi-root .gi-tk::after{content:"";position:absolute;top:50%;box-sizing:border-box;width:calc(var(--r) * 2);height:calc(var(--r) * 2);margin-top:calc(var(--r) * -1);border-radius:50%;border:var(--bw) solid var(--tkc);background:#f7f7f5}'
 + '#gi-root .gi-tk::before{left:calc(var(--r) * -1 - var(--bw) / 2);clip-path:inset(0 0 0 calc(50% - var(--bw) / 2))}'
 + '#gi-root .gi-tk::after{right:calc(var(--r) * -1 - var(--bw) / 2);clip-path:inset(0 calc(50% - var(--bw) / 2) 0 0)}'
@@ -205,7 +205,7 @@ var css = ''
 + '#gi-root .gi-cta{display:inline-flex;align-items:center;justify-content:center;min-width:calc(var(--u) * 43);min-height:max(52px,calc(var(--u) * 12.2));padding:0 calc(var(--u) * 4);border:0;border-radius:999px;background:#000;color:#fff;font-family:inherit;font-size:max(16px,calc(var(--u) * 4.9));font-weight:300;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .25s ease}'
 + '#gi-root .gi-cta:hover{background:#1e1e1e}'
 + '#gi-root .gi-cta:focus-visible{outline:3px solid var(--orange);outline-offset:4px}'
-+ '#gi-root .gi-foot{margin-top:auto;padding-top:calc(var(--u) * 7);font-size:max(11px,calc(var(--u) * 2.1));text-align:center}'
++ '#gi-root .gi-foot{padding-top:calc(var(--u) * 4.5);font-size:max(11px,calc(var(--u) * 2.1));text-align:center}'
 
 /* ── Séquence d'animation : 1 fond → 2 en-tête → 3 affiche + billet → 4 textes → 5 bouton + texte secondaire ── */
 + '#gi-root .gi-a{opacity:0;visibility:hidden}'
@@ -215,7 +215,7 @@ var css = ''
 + '@keyframes gi-in{from{opacity:0;transform:translateY(var(--dy,calc(var(--u) * 2)));visibility:visible}to{opacity:1;transform:none;visibility:visible}}'
 
 /* ── Mobile ── */
-+ '@media(max-width:599px){#gi-root .gi-stage{--pw:calc(var(--u) * 68);padding-top:calc(var(--u) * 8)}#gi-root .gi-title{margin-top:calc(var(--u) * 2)}#gi-root .gi-sub{margin-top:calc(var(--u) * 3);font-size:max(15px,calc(var(--u) * 4.6))}#gi-root .gi-foot{padding-top:calc(var(--u) * 8);font-size:max(11.5px,calc(var(--u) * 2.9))}}'
++ '@media(max-width:599px){#gi-root .gi-stage{--pw:calc(var(--u) * 68);padding-top:calc(var(--u) * 8)}#gi-root .gi-title{margin-top:calc(var(--u) * 2)}#gi-root .gi-sub{margin-top:calc(var(--u) * 3);font-size:max(15px,calc(var(--u) * 4.6))}#gi-root .gi-foot{padding-top:calc(var(--u) * 4.5);font-size:max(11.5px,calc(var(--u) * 2.9))}}'
 + '@media(prefers-reduced-motion:reduce){#gi-root,#gi-root::before{animation:none;transition:none}#gi-root.gi-go .gi-a{animation:none;opacity:1;visibility:visible}}';
 
 var style = document.createElement('style');
@@ -316,7 +316,7 @@ charger()
 .catch(function () { fermer(true); });
 })();
 </script>
-<!-- ═══════════ INTRO ANIMÉE (v6) — fin ═══════════ -->
+<!-- ═══════════ INTRO ANIMÉE (v7) — fin ═══════════ -->
 
 <header class="topbar">
 <div class="wrap topbar-inner">
