@@ -22,15 +22,20 @@ img{max-width:100%}button,input,select{font-family:inherit}button{-webkit-tap-hi
 .brand-name em{color:var(--gold);font-style:normal}
 .secure-badge{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border:1px solid var(--line);border-radius:999px;background:#fafaf9;color:var(--text);font-size:11.5px;font-weight:700}
 .secure-badge svg{width:14px;height:14px;color:var(--green);flex-shrink:0}
-.page-head{position:relative;padding:52px 0 30px}
-.page-head::before{content:"GOLDTIX  •  BILLETTERIE";display:block;margin-bottom:13px;color:var(--gold);font-size:10.5px;font-weight:800;letter-spacing:1.7px}
-.page-head h1{max-width:700px;font-size:clamp(30px,4vw,42px);font-weight:800;line-height:1.1;letter-spacing:-1.4px}
-.page-head p{max-width:620px;margin-top:11px;color:var(--text);font-size:15px;line-height:1.7}
+.page-head{position:relative;padding:48px 0 34px;text-align:center}
+.ph-eyebrow{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:15px;color:var(--gold);font-size:10.5px;font-weight:800;letter-spacing:2px}
+.ph-eyebrow span{width:34px;height:1px;background:var(--gold);opacity:.55}
+.page-head h1{max-width:700px;margin:0 auto;font-size:clamp(30px,4vw,42px);font-weight:800;line-height:1.1;letter-spacing:-1.4px}
+.page-head h1 em{font-style:normal;color:var(--gold)}
+.ph-sub{max-width:460px;margin:12px auto 0;color:var(--text);font-size:15px;line-height:1.7}
+.ph-chips{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:20px;list-style:none}
+.ph-chips li{display:inline-flex;align-items:center;gap:7px;padding:8px 13px;background:#fff;border:1px solid var(--line);border-radius:999px;box-shadow:var(--shadow-sm);color:var(--ink-2);font-size:12px;font-weight:600}
+.ph-chips svg{width:15px;height:15px;flex-shrink:0;color:var(--gold-dark)}
+.ph-chips li:first-child svg{color:var(--green)}
 .layout{display:grid;grid-template-columns:350px minmax(0,1fr);align-items:start;gap:28px;padding-bottom:70px}
 .col-event{position:sticky;top:22px;display:flex;flex-direction:column;gap:16px;min-width:0}
 .col-steps{display:flex;flex-direction:column;gap:16px;min-width:0}
-.card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:25px;animation:fadeUp .45s var(--ease) both}
-.col-steps .card:nth-child(1){animation-delay:.03s}.col-steps .card:nth-child(2){animation-delay:.08s}.col-steps .card:nth-child(3){animation-delay:.13s}
+.card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:25px}
 .card-head{display:flex;align-items:flex-start;gap:13px;margin-bottom:22px}
 .step-num,.step-icon{width:36px;height:36px;flex:0 0 36px;display:flex;align-items:center;justify-content:center;border-radius:11px}
 .step-num{background:var(--ink);color:#fff;font-size:12px;font-weight:800;box-shadow:inset 0 -2px 0 rgba(255,255,255,.08),0 5px 12px rgba(17,18,22,.13)}
@@ -106,7 +111,7 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
 .footer-links a:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
 .footer-copy{color:#a1a19c;font-size:9.5px}
 @media(max-width:920px){.layout{grid-template-columns:310px minmax(0,1fr);gap:20px}.card{padding:21px}.col-steps .card:not(.state-card)::before{left:21px}.rib-box{grid-template-columns:auto minmax(0,1fr)}.rib-box .btn-outline{grid-column:1/-1;width:100%}}
-@media(max-width:760px){.wrap{width:min(100% - 28px,600px)}.topbar-inner{height:58px}.brand-name{font-size:17px}.secure-badge{padding:6px 8px;font-size:9.5px}.secure-badge svg{width:13px;height:13px}.page-head{padding:35px 0 23px}.page-head::before{margin-bottom:10px;font-size:9px;letter-spacing:1.4px}.page-head h1{font-size:29px;letter-spacing:-1px}.page-head p{margin-top:8px;font-size:13px}.layout{grid-template-columns:1fr;gap:15px}.col-event{position:static;gap:13px}.col-steps{gap:13px}.poster{border-radius:17px}.info-card{padding:19px}.info-card .event-title{font-size:20px}.card{padding:20px 17px;border-radius:15px}.col-steps .card:not(.state-card)::before{left:17px}.card-head{gap:11px;margin-bottom:19px}.step-num,.step-icon{width:34px;height:34px;flex-basis:34px}.card-title{font-size:15px}.card-desc{font-size:11.5px}input[type=text],input[type=email],input[type=tel],select{min-height:51px;font-size:16px}.price-line{padding:14px}.price-line span:last-child{font-size:20px}.rib-box{padding:13px}.rib-txt span{font-size:10px}.upload-empty{min-height:135px}.btn-submit{min-height:55px;font-size:13px}.footer{padding:28px 0 24px}.footer-description{font-size:10px}}
+@media(max-width:760px){.wrap{width:min(100% - 28px,600px)}.topbar-inner{height:58px}.brand-name{font-size:17px}.secure-badge{padding:6px 8px;font-size:9.5px}.secure-badge svg{width:13px;height:13px}.page-head{padding:34px 0 24px}.ph-eyebrow{gap:9px;margin-bottom:12px;font-size:9px;letter-spacing:1.5px}.ph-eyebrow span{width:24px}.page-head h1{font-size:29px;letter-spacing:-1px}.ph-sub{max-width:300px;margin-top:9px;font-size:13px}.ph-chips{gap:6px;margin-top:16px}.ph-chips li{padding:7px 10px;font-size:11px}.ph-chips svg{width:14px;height:14px}.layout{grid-template-columns:1fr;gap:15px}.col-event{position:static;gap:13px}.col-steps{gap:13px}.poster{border-radius:17px}.info-card{padding:19px}.info-card .event-title{font-size:20px}.card{padding:20px 17px;border-radius:15px}.col-steps .card:not(.state-card)::before{left:17px}.card-head{gap:11px;margin-bottom:19px}.step-num,.step-icon{width:34px;height:34px;flex-basis:34px}.card-title{font-size:15px}.card-desc{font-size:11.5px}input[type=text],input[type=email],input[type=tel],select{min-height:51px;font-size:16px}.price-line{padding:14px}.price-line span:last-child{font-size:20px}.rib-box{padding:13px}.rib-txt span{font-size:10px}.upload-empty{min-height:135px}.btn-submit{min-height:55px;font-size:13px}.footer{padding:28px 0 24px}.footer-description{font-size:10px}}
 @media(max-width:390px){.wrap{width:min(100% - 22px,600px)}.topbar-inner{gap:8px}.brand{min-width:0;flex-shrink:1}.brand-name{font-size:16px}.brand-logo{height:22px}.secure-badge{gap:5px;padding:5px 8px;font-size:9px;white-space:nowrap;flex-shrink:0}.secure-badge svg{width:12px;height:12px}.page-head h1{font-size:27px}.card{padding:18px 15px}.info-card{padding:17px}.rib-box{grid-template-columns:1fr}.rib-ico{width:38px;height:38px}.rib-box .btn-outline{grid-column:auto}}
 @media(max-width:340px){.topbar-inner{gap:6px}.brand-name{font-size:14.5px;letter-spacing:-.4px}.brand-logo{height:20px}.secure-badge{gap:4px;padding:4px 6px;font-size:8px}.secure-badge svg{width:10px;height:10px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.card{animation:none}.poster img,.btn-submit,.btn-outline,.cat-row{transition:none}.btn-submit:hover:not(:disabled){transform:none}}
@@ -155,11 +160,16 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
 .steps-divider::before,.steps-divider::after{content:"";flex:1;height:2px;background:var(--gold);opacity:.55;border-radius:2px}
 .steps-divider span{color:var(--muted);font-size:13.5px;font-weight:600;text-align:center;line-height:1.4}
 @media(max-width:760px){.steps-divider{gap:10px;margin:4px 0}.steps-divider span{font-size:12px}}
+
+/* Apparition au scroll : chaque bloc se révèle une fois, puis reste figé */
+.rv{opacity:0;transform:translateY(28px);transition:opacity .8s var(--ease),transform .8s var(--ease);transition-delay:var(--rv-d,0s);will-change:opacity,transform}
+.rv.rv-in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
 </style>
 </head>
 <body>
 
-<!-- ═══════════ INTRO ANIMÉE (v9) — début ═══════════ -->
+<!-- ═══════════ INTRO ANIMÉE (v11) — début ═══════════ -->
 <script>
 (function () {
 'use strict';
@@ -248,6 +258,8 @@ function $(id) { return document.getElementById(id); }
 
 function fermer(immediat) {
 document.documentElement.classList.remove('gi-lock');
+window.__giFerme = true;
+document.dispatchEvent(new Event('goldtix:intro-ferme'));
 if (immediat) { root.remove(); return; }
 root.classList.add('gi-out');
 window.scrollTo(0, 0);
@@ -316,7 +328,7 @@ charger()
 .catch(function () { fermer(true); });
 })();
 </script>
-<!-- ═══════════ INTRO ANIMÉE (v9) — fin ═══════════ -->
+<!-- ═══════════ INTRO ANIMÉE (v11) — fin ═══════════ -->
 
 <header class="topbar">
 <div class="wrap topbar-inner">
@@ -333,8 +345,14 @@ Billetterie sécurisée
 
 <div class="wrap">
 <div class="page-head">
-<h1>Achetez votre billet</h1>
-<p>Une expérience simple et rapide pour obtenir votre billet.</p>
+<p class="ph-eyebrow"><span></span>VOTRE BILLET<span></span></p>
+<h1>Achetez votre <em>billet</em></h1>
+<p class="ph-sub">Simple, rapide et vérifié par l'organisateur.</p>
+<ul class="ph-chips">
+<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>Paiement vérifié</li>
+<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>Billet par e-mail</li>
+<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Rapide</li>
+</ul>
 </div>
 
 <main id="detailsEvenement">
@@ -585,6 +603,50 @@ inputEl.value = '';
 zoneEl.classList.remove('has-file');
 }
 
+// ─── Apparition au scroll (une seule fois, puis le bloc reste en place) ─
+function attendreFinIntro(cb) {
+if (document.getElementById('gi-root') && !window.__giFerme) {
+document.addEventListener('goldtix:intro-ferme', cb, { once: true });
+} else { cb(); }
+}
+
+function preparerReveal(liste) {
+const els = liste.filter(el => el && !el.dataset.rv);
+if (!els.length) return;
+if (!('IntersectionObserver' in window) || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
+els.forEach(el => { el.dataset.rv = '1'; el.classList.add('rv'); });
+
+attendreFinIntro(function() {
+const io = new IntersectionObserver(function(entrees) {
+entrees
+.filter(e => e.isIntersecting)
+.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
+.forEach(function(e, i) {
+const el = e.target;
+io.unobserve(el);
+el.style.setProperty('--rv-d', (i * 0.09) + 's');
+requestAnimationFrame(function() { el.classList.add('rv-in'); });
+let fini = false;
+const terminer = function() {
+if (fini) return;
+fini = true;
+el.classList.remove('rv', 'rv-in');
+el.style.removeProperty('--rv-d');
+};
+el.addEventListener('transitionend', function(ev) {
+if (ev.target === el && ev.propertyName === 'opacity') terminer();
+});
+setTimeout(terminer, 1800 + i * 90);
+});
+}, { threshold: 0.05, rootMargin: '0px 0px -6% 0px' });
+els.forEach(el => io.observe(el));
+});
+}
+
+function preparerRevealStatique() {
+preparerReveal(Array.from(document.querySelectorAll('.page-head, .footer-brand, .footer-description, .footer-links, .footer-copy')));
+}
+
 // ─── Chargement principal ─────────────────────────────────────────────
 async function chargerPageAchatUnique() {
 if (chargementEnCours) return;
@@ -592,6 +654,7 @@ chargementEnCours = true;
 
 const eventId = new URLSearchParams(window.location.search).get('event');
 const container = document.getElementById('detailsEvenement');
+preparerRevealStatique();
 
 container.innerHTML = `<div class="card"><p class="loading-line"><span class="spinner"></span>Chargement de votre expérience…</p></div>`;
 
@@ -775,6 +838,8 @@ ${ouvert ? `<div class="steps-divider"><span>Suivez les étapes ci-dessous afin 
 ${colonneEtapes}
 </div>
 </div>`;
+
+preparerReveal(Array.from(container.querySelectorAll('.poster, .info-card, .steps-divider, .col-steps > .card')));
 
 const posterImage = container.querySelector('.poster img');
 if (posterImage) {
