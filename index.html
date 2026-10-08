@@ -29,8 +29,7 @@ img{max-width:100%}button,input,select{font-family:inherit}button{-webkit-tap-hi
 .layout{display:grid;grid-template-columns:350px minmax(0,1fr);align-items:start;gap:28px;padding-bottom:70px}
 .col-event{position:sticky;top:22px;display:flex;flex-direction:column;gap:16px;min-width:0}
 .col-steps{display:flex;flex-direction:column;gap:16px;min-width:0}
-.card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:25px;animation:fadeUp .45s var(--ease) both}
-.col-steps .card:nth-child(1){animation-delay:.03s}.col-steps .card:nth-child(2){animation-delay:.08s}.col-steps .card:nth-child(3){animation-delay:.13s}
+.card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:25px}
 .card-head{display:flex;align-items:flex-start;gap:13px;margin-bottom:22px}
 .step-num,.step-icon{width:36px;height:36px;flex:0 0 36px;display:flex;align-items:center;justify-content:center;border-radius:11px}
 .step-num{background:var(--ink);color:#fff;font-size:12px;font-weight:800;box-shadow:inset 0 -2px 0 rgba(255,255,255,.08),0 5px 12px rgba(17,18,22,.13)}
@@ -155,11 +154,16 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
 .steps-divider::before,.steps-divider::after{content:"";flex:1;height:2px;background:var(--gold);opacity:.55;border-radius:2px}
 .steps-divider span{color:var(--muted);font-size:13.5px;font-weight:600;text-align:center;line-height:1.4}
 @media(max-width:760px){.steps-divider{gap:10px;margin:4px 0}.steps-divider span{font-size:12px}}
+
+/* Apparition au scroll : chaque bloc se révèle une fois, puis reste figé */
+.rv{opacity:0;transform:translateY(28px);transition:opacity .8s var(--ease),transform .8s var(--ease);transition-delay:var(--rv-d,0s);will-change:opacity,transform}
+.rv.rv-in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
 </style>
 </head>
 <body>
 
-<!-- ═══════════ INTRO ANIMÉE (v9) — début ═══════════ -->
+<!-- ═══════════ INTRO ANIMÉE (v10) — début ═══════════ -->
 <script>
 (function () {
 'use strict';
@@ -248,6 +252,8 @@ function $(id) { return document.getElementById(id); }
 
 function fermer(immediat) {
 document.documentElement.classList.remove('gi-lock');
+window.__giFerme = true;
+document.dispatchEvent(new Event('goldtix:intro-ferme'));
 if (immediat) { root.remove(); return; }
 root.classList.add('gi-out');
 window.scrollTo(0, 0);
@@ -316,7 +322,7 @@ charger()
 .catch(function () { fermer(true); });
 })();
 </script>
-<!-- ═══════════ INTRO ANIMÉE (v9) — fin ═══════════ -->
+<!-- ═══════════ INTRO ANIMÉE (v10) — fin ═══════════ -->
 
 <header class="topbar">
 <div class="wrap topbar-inner">
@@ -585,6 +591,50 @@ inputEl.value = '';
 zoneEl.classList.remove('has-file');
 }
 
+// ─── Apparition au scroll (une seule fois, puis le bloc reste en place) ─
+function attendreFinIntro(cb) {
+if (document.getElementById('gi-root') && !window.__giFerme) {
+document.addEventListener('goldtix:intro-ferme', cb, { once: true });
+} else { cb(); }
+}
+
+function preparerReveal(liste) {
+const els = liste.filter(el => el && !el.dataset.rv);
+if (!els.length) return;
+if (!('IntersectionObserver' in window) || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
+els.forEach(el => { el.dataset.rv = '1'; el.classList.add('rv'); });
+
+attendreFinIntro(function() {
+const io = new IntersectionObserver(function(entrees) {
+entrees
+.filter(e => e.isIntersecting)
+.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
+.forEach(function(e, i) {
+const el = e.target;
+io.unobserve(el);
+el.style.setProperty('--rv-d', (i * 0.09) + 's');
+requestAnimationFrame(function() { el.classList.add('rv-in'); });
+let fini = false;
+const terminer = function() {
+if (fini) return;
+fini = true;
+el.classList.remove('rv', 'rv-in');
+el.style.removeProperty('--rv-d');
+};
+el.addEventListener('transitionend', function(ev) {
+if (ev.target === el && ev.propertyName === 'opacity') terminer();
+});
+setTimeout(terminer, 1800 + i * 90);
+});
+}, { threshold: 0.05, rootMargin: '0px 0px -6% 0px' });
+els.forEach(el => io.observe(el));
+});
+}
+
+function preparerRevealStatique() {
+preparerReveal(Array.from(document.querySelectorAll('.page-head, .footer-brand, .footer-description, .footer-links, .footer-copy')));
+}
+
 // ─── Chargement principal ─────────────────────────────────────────────
 async function chargerPageAchatUnique() {
 if (chargementEnCours) return;
@@ -592,6 +642,7 @@ chargementEnCours = true;
 
 const eventId = new URLSearchParams(window.location.search).get('event');
 const container = document.getElementById('detailsEvenement');
+preparerRevealStatique();
 
 container.innerHTML = `<div class="card"><p class="loading-line"><span class="spinner"></span>Chargement de votre expérience…</p></div>`;
 
@@ -775,6 +826,8 @@ ${ouvert ? `<div class="steps-divider"><span>Suivez les étapes ci-dessous afin 
 ${colonneEtapes}
 </div>
 </div>`;
+
+preparerReveal(Array.from(container.querySelectorAll('.poster, .info-card, .steps-divider, .col-steps > .card')));
 
 const posterImage = container.querySelector('.poster img');
 if (posterImage) {
