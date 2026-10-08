@@ -1,960 +1,903 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Achat de Billet | GoldTix</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-/* =============================================
-   GOLDTIX — interface claire, noir + touches dorées
-============================================= */
-:root {
-    --bg: #fdfbf8;
-    --card: #ffffff;
-    --ink: #14161f;
-    --ink-sub: #4b4f5c;
-    --ink-muted: #8b8f9b;
-    --line: #ece9e3;
-    --line-strong: #dcd8cf;
-    --gold: #d97706;
-    --gold-text: #b45309;
-    --gold-soft: #fef3e2;
-    --green: #15803d;
-    --green-bg: #ecfdf3;
-    --red: #c62828;
-    --red-bg: #fdf0f0;
-    --radius: 14px;
-    --radius-sm: 10px;
-    --ease: cubic-bezier(0.16, 1, 0.3, 1);
-}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Achat de Billet | GoldTix</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f7f5;--surface:#fff;--surface-soft:#f4f3f0;--surface-gold:#fffbf0;--ink:#111216;--ink-2:#25262b;--text:#44464e;--muted:#85878f;--line:#e8e7e3;--line-strong:#d8d6d0;--gold:#d97706;--gold-dark:#b45309;--gold-soft:#fef3c7;--gold-bright:#f59e0b;--grad-gold:linear-gradient(135deg,#f59e0b 0%,#d97706 50%,#b45309 100%);--green:#16803c;--green-bg:#edf9f1;--red:#c62828;--red-bg:#fff1f1;--radius:18px;--radius-sm:12px;--shadow-sm:0 2px 8px rgba(17,18,22,.04),0 1px 2px rgba(17,18,22,.03);--shadow:0 12px 35px rgba(17,18,22,.07),0 2px 8px rgba(17,18,22,.04);--ease:cubic-bezier(.16,1,.3,1)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg);overflow-x:hidden;scroll-behavior:smooth}
+body{min-height:100vh;overflow-x:hidden;font-family:"Plus Jakarta Sans",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 85% 0%,rgba(217,119,6,.07),transparent 27rem),var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+img{max-width:100%}button,input,select{font-family:inherit}button{-webkit-tap-highlight-color:transparent}a{color:inherit}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.wrap{width:min(1120px,calc(100% - 40px));margin:0 auto}
+.topbar{position:relative;z-index:20;background:rgba(255,255,255,.94);border-bottom:1px solid rgba(232,231,227,.9);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.topbar-inner{height:68px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink)}
+.brand-name{font-size:19px;font-weight:800;letter-spacing:-.6px}
+.brand-name em{color:var(--gold);font-style:normal}
+.secure-badge{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border:1px solid var(--line);border-radius:999px;background:#fafaf9;color:var(--text);font-size:11.5px;font-weight:700}
+.secure-badge svg{width:14px;height:14px;color:var(--green);flex-shrink:0}
+.page-head{position:relative;padding:52px 0 30px}
+.page-head::before{content:"GOLDTIX  •  BILLETTERIE";display:block;margin-bottom:13px;color:var(--gold);font-size:10.5px;font-weight:800;letter-spacing:1.7px}
+.page-head h1{max-width:700px;font-size:clamp(30px,4vw,42px);font-weight:800;line-height:1.1;letter-spacing:-1.4px}
+.page-head p{max-width:620px;margin-top:11px;color:var(--text);font-size:15px;line-height:1.7}
+.layout{display:grid;grid-template-columns:350px minmax(0,1fr);align-items:start;gap:28px;padding-bottom:70px}
+.col-event{position:sticky;top:22px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.col-steps{display:flex;flex-direction:column;gap:16px;min-width:0}
+.card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:25px;animation:fadeUp .45s var(--ease) both}
+.col-steps .card:nth-child(1){animation-delay:.03s}.col-steps .card:nth-child(2){animation-delay:.08s}.col-steps .card:nth-child(3){animation-delay:.13s}
+.card-head{display:flex;align-items:flex-start;gap:13px;margin-bottom:22px}
+.step-num,.step-icon{width:36px;height:36px;flex:0 0 36px;display:flex;align-items:center;justify-content:center;border-radius:11px}
+.step-num{background:var(--ink);color:#fff;font-size:12px;font-weight:800;box-shadow:inset 0 -2px 0 rgba(255,255,255,.08),0 5px 12px rgba(17,18,22,.13)}
+.step-icon{background:var(--gold-soft);color:var(--gold-dark)}
+.step-icon svg{width:17px;height:17px}
+.card-title{font-size:16px;font-weight:800;line-height:1.35;letter-spacing:-.25px}
+.card-desc{margin-top:4px;color:var(--muted);font-size:12.5px;line-height:1.55}
+.poster{position:relative;overflow:hidden;min-height:180px;background:linear-gradient(145deg,#eeeae1,#f7f6f3);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);line-height:0}
+.poster::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.02) 0%,rgba(0,0,0,0) 55%,rgba(0,0,0,.08) 100%)}
+.poster img{display:block;width:100%;height:auto;object-fit:cover;transition:transform .6s var(--ease)}
+.poster:hover img{transform:scale(1.015)}
+.info-card{padding:22px}
+.info-card .event-title{margin-bottom:18px;font-size:21px;font-weight:800;line-height:1.25;letter-spacing:-.65px;word-break:break-word}
+.event-meta{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;padding-bottom:19px;border-bottom:1px solid var(--line)}
+.meta-row{display:flex;align-items:flex-start;gap:10px;color:var(--text);font-size:13px;font-weight:600}
+.meta-row svg{width:16px;height:16px;margin-top:2px;flex-shrink:0;color:var(--gold-dark)}
+.cat-title{margin-bottom:11px;font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase}
+.cat-list{display:flex;flex-direction:column;gap:7px}
+.cat-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 12px;background:var(--surface-soft);border:1px solid transparent;border-radius:10px;transition:background .2s ease,border-color .2s ease}
+.cat-row:hover{background:#f0eee9;border-color:var(--line)}
+.cat-row.epuise{opacity:.52}
+.cat-name{min-width:0;color:var(--ink-2);font-size:12.5px;font-weight:700;word-break:break-word}
+.cat-price{flex-shrink:0;padding:5px 9px;background:var(--ink);color:#fff;border-radius:7px;font-size:11.5px;font-weight:800;white-space:nowrap}
+.cat-row.epuise .cat-price{background:#cfcfc9}
+.field{margin-bottom:18px}.field:last-child{margin-bottom:0}
+.field label,.field .label{display:block;margin-bottom:7px;color:var(--ink-2);font-size:12.5px;font-weight:700}
+.field .hint{color:var(--muted);font-size:11px;font-weight:500}
+.req{color:var(--red)}
+input[type=text],input[type=email],input[type=tel],select{width:100%;min-height:52px;padding:13px 14px;background:#fff;color:var(--ink);border:1px solid var(--line-strong);border-radius:11px;outline:none;font-size:14px;font-weight:500;transition:border-color .2s ease,box-shadow .2s ease;-webkit-appearance:none;appearance:none}
+input:hover,select:hover{border-color:#bdbbb4}
+input::placeholder{color:#aaa9a3;font-weight:400}
+input:focus,select:focus{border-color:var(--ink);box-shadow:0 0 0 3px rgba(17,18,22,.07),0 2px 6px rgba(17,18,22,.04)}
+select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23111216' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 15px center;padding-right:42px}
+.price-line{position:relative;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:14px;padding:16px 17px;background:linear-gradient(135deg,#faf9f6,#f5f3ee);border:1px solid var(--line);border-radius:12px}
+.price-line span:first-child{color:var(--text);font-size:12px;font-weight:700}
+.price-line span:last-child{font-size:21px;font-weight:800;letter-spacing:-.5px}
+.info-list{overflow:hidden;background:#fff;border:1px solid var(--line);border-radius:13px}
+.info-item{display:flex;align-items:center;gap:12px;padding:13px 14px}
+.info-item+.info-item{border-top:1px solid var(--line)}
+.info-item-ico{width:36px;height:36px;flex:0 0 36px;display:flex;align-items:center;justify-content:center;background:#f5f4f1;border-radius:10px}
+.info-item-ico svg{width:16px;height:16px}
+.info-item-txt{min-width:0}
+.info-item-label{margin-bottom:1px;color:var(--muted);font-size:10.5px;font-weight:700;letter-spacing:.25px;text-transform:uppercase}
+.info-item-value{font-size:13.5px;font-weight:700;word-break:break-word}
+.rib-box{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:13px;margin-top:14px;padding:14px;background:var(--surface-gold);border:1px solid rgba(217,119,6,.20);border-radius:13px}
+.rib-ico{width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:var(--ink);color:#fff;border-radius:11px}
+.rib-ico svg{width:18px;height:18px}
+.rib-txt{min-width:0}
+.rib-txt strong{display:block;font-size:12.5px;font-weight:800}
+.rib-txt span{display:block;margin-top:2px;color:var(--text);font-size:10.5px;line-height:1.45}
+.btn-outline{min-height:40px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 13px;background:#fff;color:var(--ink);border:1px solid var(--ink);border-radius:9px;cursor:pointer;font-size:11.5px;font-weight:800;transition:background .2s ease,color .2s ease,transform .2s ease}
+.btn-outline svg{width:14px;height:14px}
+.btn-outline:hover:not(:disabled){background:var(--ink);color:#fff;transform:translateY(-1px)}
+.upload{position:relative;overflow:hidden;background:linear-gradient(135deg,#fbfaf8,#f7f5f1);border:1.5px dashed #c9c6bd;border-radius:13px;transition:border-color .2s ease,background .2s ease}
+.upload:hover{border-color:var(--ink);background:#f4f2ed}
+.upload input[type=file]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;z-index:2}
+.upload-empty{min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:24px 16px;text-align:center;pointer-events:none}
+.upload-empty svg{width:29px;height:29px;margin-bottom:3px;color:var(--gold-dark)}
+.upload-empty strong{font-size:12.5px;font-weight:800}
+.upload-empty span{color:var(--muted);font-size:10.5px}
+.btn-submit{position:relative;width:100%;min-height:56px;display:flex;align-items:center;justify-content:center;gap:9px;margin-top:10px;padding:15px 22px;overflow:hidden;background:var(--ink);color:#fff;border:0;border-radius:11px;box-shadow:0 7px 16px rgba(17,18,22,.12),inset 0 -3px 0 var(--gold-bright);cursor:pointer;font-size:13.5px;font-weight:800;transition:transform .2s var(--ease),background .2s ease,box-shadow .2s ease}
+.btn-submit::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.06) 50%,transparent 70%);transform:translateX(-100%);transition:transform .7s ease;pointer-events:none}
+.btn-submit:hover:not(:disabled){background:#202126;transform:translateY(-2px);box-shadow:0 11px 24px rgba(17,18,22,.15),inset 0 -3px 0 var(--gold-bright)}
+.btn-submit:hover:not(:disabled)::after{transform:translateX(100%)}
+.btn-submit:active:not(:disabled){transform:none}
+.btn-submit svg{width:17px;height:17px;flex-shrink:0}
+.submit-note{margin-top:10px;color:var(--muted);font-size:10.5px;line-height:1.6;text-align:center}
+.footer{margin-top:5px;background:#fff;border-top:1px solid var(--line);padding:34px 0 28px;text-align:center;color:var(--muted)}
+.footer-brand{margin-bottom:9px;color:var(--gold-dark);font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
+.footer-description{max-width:610px;margin:0 auto 18px;font-size:10.5px;line-height:1.7}
+.footer-links{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin-bottom:17px}
+.footer-links a{padding:7px 11px;background:#fafaf9;color:var(--text);border:1px solid var(--line);border-radius:999px;text-decoration:none;font-size:10.5px;font-weight:600;transition:border-color .2s ease,background .2s ease,color .2s ease}
+.footer-links a:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+.footer-copy{color:#a1a19c;font-size:9.5px}
+@media(max-width:920px){.layout{grid-template-columns:310px minmax(0,1fr);gap:20px}.card{padding:21px}.col-steps .card:not(.state-card)::before{left:21px}.rib-box{grid-template-columns:auto minmax(0,1fr)}.rib-box .btn-outline{grid-column:1/-1;width:100%}}
+@media(max-width:760px){.wrap{width:min(100% - 28px,600px)}.topbar-inner{height:58px}.brand-name{font-size:17px}.secure-badge{padding:6px 8px;font-size:9.5px}.secure-badge svg{width:13px;height:13px}.page-head{padding:35px 0 23px}.page-head::before{margin-bottom:10px;font-size:9px;letter-spacing:1.4px}.page-head h1{font-size:29px;letter-spacing:-1px}.page-head p{margin-top:8px;font-size:13px}.layout{grid-template-columns:1fr;gap:15px}.col-event{position:static;gap:13px}.col-steps{gap:13px}.poster{border-radius:17px}.info-card{padding:19px}.info-card .event-title{font-size:20px}.card{padding:20px 17px;border-radius:15px}.col-steps .card:not(.state-card)::before{left:17px}.card-head{gap:11px;margin-bottom:19px}.step-num,.step-icon{width:34px;height:34px;flex-basis:34px}.card-title{font-size:15px}.card-desc{font-size:11.5px}input[type=text],input[type=email],input[type=tel],select{min-height:51px;font-size:16px}.price-line{padding:14px}.price-line span:last-child{font-size:20px}.rib-box{padding:13px}.rib-txt span{font-size:10px}.upload-empty{min-height:135px}.btn-submit{min-height:55px;font-size:13px}.footer{padding:28px 0 24px}.footer-description{font-size:10px}}
+@media(max-width:390px){.wrap{width:min(100% - 22px,600px)}.topbar-inner{gap:8px}.brand{min-width:0;flex-shrink:1}.brand-name{font-size:16px}.brand-logo{height:22px}.secure-badge{gap:5px;padding:5px 8px;font-size:9px;white-space:nowrap;flex-shrink:0}.secure-badge svg{width:12px;height:12px}.page-head h1{font-size:27px}.card{padding:18px 15px}.info-card{padding:17px}.rib-box{grid-template-columns:1fr}.rib-ico{width:38px;height:38px}.rib-box .btn-outline{grid-column:auto}}
+@media(max-width:340px){.topbar-inner{gap:6px}.brand-name{font-size:14.5px;letter-spacing:-.4px}.brand-logo{height:20px}.secure-badge{gap:4px;padding:4px 6px;font-size:8px}.secure-badge svg{width:10px;height:10px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.card{animation:none}.poster img,.btn-submit,.btn-outline,.cat-row{transition:none}.btn-submit:hover:not(:disabled){transform:none}}
+.brand-logo{width:auto;height:28px;object-fit:contain}
+.poster-fallback{min-height:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--muted);font-size:12px;font-weight:700;line-height:1.5}
+.poster-fallback svg{width:32px;height:32px;opacity:.55}
+.field-invalid{border-color:var(--red)!important;box-shadow:0 0 0 3px rgba(198,40,40,.08)!important}
+.field-error{display:none;align-items:center;gap:6px;margin-top:7px;color:var(--red);font-size:11.5px;font-weight:600}
+.field-error.visible{display:flex}
+.field-error svg{width:14px;height:14px;flex-shrink:0}
+.btn-outline:disabled{opacity:.55;cursor:wait}
+.rib-status{display:none;grid-column:1/-1;align-items:center;gap:6px;color:var(--green);font-size:11px;font-weight:600}
+.rib-status.visible{display:flex}
+.rib-status svg{width:14px;height:14px;flex-shrink:0}
+.rib-status.warn{color:var(--text)}
+.upload.has-file{background:#fff;border-style:solid;border-color:var(--line)}
+.upload.has-file:hover{background:#fff;border-color:var(--line-strong)}
+.upload.has-file input[type=file],.upload.has-file .upload-empty{display:none}
+.upload-file{display:none;align-items:center;gap:12px;padding:12px}
+.upload.has-file .upload-file{display:flex}
+.upload-thumb{width:65px;height:65px;flex-shrink:0;object-fit:cover;background:#eee;border:1px solid var(--line);border-radius:9px}
+.upload-meta{min-width:0;flex:1}
+.upload-name{overflow:hidden;color:var(--ink);font-size:12px;font-weight:800;text-overflow:ellipsis;white-space:nowrap}
+.upload-size{margin-top:2px;color:var(--muted);font-size:10.5px}
+.upload-replace{margin-top:6px;padding:0;background:none;border:none;color:var(--ink);cursor:pointer;font-size:10.5px;font-weight:700;text-decoration:underline;text-underline-offset:2px}
+.upload.field-invalid{background:var(--red-bg)}
+.btn-submit:disabled{cursor:not-allowed;opacity:.68}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:18px;height:18px;flex-shrink:0;border:2.5px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+.notice{display:flex;align-items:flex-start;gap:9px;margin-top:12px;padding:12px 13px;border-radius:10px;font-size:11.5px;font-weight:600;line-height:1.5}
+.notice svg{width:17px;height:17px;flex-shrink:0;margin-top:1px}
+.notice.success{background:var(--green-bg);color:var(--green);border:1px solid #c5ebd2}
+.notice.error{background:var(--red-bg);color:var(--red);border:1px solid #f1caca}
+.state-card{padding:65px 30px;text-align:center}
+.state-ico{width:58px;height:58px;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;background:var(--red-bg);color:var(--red);border-radius:50%}
+.state-ico svg{width:25px;height:25px}
+.state-card h2{margin-bottom:8px;font-size:21px;font-weight:800}
+.state-card p{max-width:480px;margin:0 auto;color:var(--text);font-size:13px}
+.state-card p+p{margin-top:7px;color:var(--muted);font-size:11.5px;font-weight:600}
+.state-card .btn-submit{max-width:270px;margin:22px auto 0}
+.loading-line{min-height:130px;display:flex;align-items:center;justify-content:center;gap:10px;color:var(--text);font-size:12.5px;font-weight:600}
+.loading-line .spinner{width:19px;height:19px;border-color:#ddd;border-top-color:var(--gold)}
+@media(max-width:760px){.brand-logo{height:25px}}
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { overflow-x: hidden; background: var(--bg); }
-body {
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-    background: var(--bg);
-    color: var(--ink);
-    line-height: 1.55;
-    min-height: 100vh;
-    overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
-}
-img { max-width: 100%; }
-button { font-family: inherit; }
-
-@keyframes spin { to { transform: rotate(360deg); } }
-@keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-
-.wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
-
-/* ---------- En-tête ---------- */
-.topbar { background: var(--card); border-bottom: 1px solid var(--line); }
-.topbar-inner { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 60px; }
-.brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--ink); }
-.brand-logo { height: 26px; width: auto; }
-.brand-name { font-size: 19px; font-weight: 800; letter-spacing: -0.3px; }
-.brand-name em { font-style: normal; color: var(--gold); }
-.secure-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--ink-sub); white-space: nowrap; }
-.secure-badge svg { width: 14px; height: 14px; color: var(--ink); flex-shrink: 0; }
-
-.page-head { padding: 30px 0 22px; text-align: left; }
-.page-head h1 { font-size: clamp(24px, 4.2vw, 30px); font-weight: 800; letter-spacing: -0.5px; line-height: 1.2; }
-.page-head p { margin-top: 6px; font-size: 15px; color: var(--ink-sub); }
-
-
-/* ---------- Mise en page ---------- */
-.layout { display: grid; grid-template-columns: 340px 1fr; gap: 24px; align-items: start; padding-bottom: 60px; }
-.col-steps { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
-.col-event { position: sticky; top: 18px; min-width: 0; }
-@media (max-width: 880px) {
-    .layout { grid-template-columns: 1fr; gap: 18px; }
-    .col-event { position: static; }
-}
-
-/* ---------- Cartes ---------- */
-.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; animation: fadeUp 0.45s var(--ease) both; }
-.card-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 18px; }
-.step-num { width: 28px; height: 28px; border-radius: 50%; background: var(--ink); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
-.step-icon { width: 28px; height: 28px; border-radius: 50%; background: #efedf0; color: var(--ink); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
-.step-icon svg { width: 15px; height: 15px; }
-.card-title { font-size: 17px; font-weight: 700; letter-spacing: -0.2px; line-height: 1.3; }
-.card-desc { font-size: 13.5px; color: var(--ink-sub); margin-top: 3px; }
-
-/* ---------- Carte événement ---------- */
-.col-event { display: flex; flex-direction: column; gap: 18px; }
-.poster { border-radius: 22px; overflow: hidden; background: #f1efea; line-height: 0; }
-.poster img { display: block; width: 100%; height: auto; }
-.poster-fallback { line-height: 1.5; min-height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--ink-muted); font-size: 13px; font-weight: 600; }
-.poster-fallback svg { width: 30px; height: 30px; opacity: 0.6; }
-
-/* Carte sous l'affiche : titre, date, lieu, catégories */
-.info-card { padding: 22px 20px 20px; }
-.info-card .event-title { font-size: 22px; font-weight: 800; letter-spacing: -0.4px; line-height: 1.25; margin-bottom: 14px; word-break: break-word; }
-.event-meta { display: flex; flex-direction: column; gap: 10px; padding-bottom: 18px; margin-bottom: 18px; border-bottom: 1px solid var(--line); }
-.meta-row { display: flex; align-items: center; gap: 10px; font-size: 14.5px; color: var(--ink); font-weight: 500; }
-.meta-row svg { width: 17px; height: 17px; color: var(--ink-sub); flex-shrink: 0; }
-
-/* Catégories disponibles */
-.cat-title { font-size: 16px; font-weight: 800; letter-spacing: -0.2px; margin-bottom: 14px; }
-.cat-list { display: flex; flex-direction: column; gap: 10px; }
-.cat-row { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 14px; background: #f6f5f2; border-radius: var(--radius-sm); overflow: hidden; }
-.cat-row.epuise { opacity: 0.55; }
-.cat-name { font-size: 15px; font-weight: 700; min-width: 0; word-break: break-word; }
-.cat-price { flex-shrink: 0; padding: 5px 12px; font-size: 14px; font-weight: 800; color: #fff; background: var(--ink); border-radius: 6px; white-space: nowrap; }
-.cat-row.epuise .cat-price { background: #dcd8cf; }
-
-
-/* ---------- Formulaires ---------- */
-.field { margin-bottom: 18px; }
-.field:last-child { margin-bottom: 0; }
-.field label, .field .label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 7px; }
-.field .hint { font-weight: 500; color: var(--ink-muted); }
-.req { color: var(--red); }
-
-input[type="text"], input[type="email"], input[type="tel"], select {
-    width: 100%; min-height: 50px; padding: 13px 15px; font-size: 15px; font-family: inherit;
-    color: var(--ink); background: #fff; border: 1.5px solid var(--line-strong); border-radius: var(--radius-sm);
-    outline: none; transition: border-color 0.2s, box-shadow 0.2s; -webkit-appearance: none; appearance: none;
-}
-select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23111' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-    background-repeat: no-repeat; background-position: right 15px center; padding-right: 42px; cursor: pointer;
-}
-input::placeholder { color: #aaa7a0; }
-input:focus, select:focus { border-color: var(--ink); box-shadow: 0 0 0 4px rgba(20,22,31,0.08); }
-.field-invalid { border-color: var(--red) !important; box-shadow: 0 0 0 4px rgba(198,40,40,0.10) !important; }
-.field-error { display: none; align-items: center; gap: 6px; margin-top: 7px; font-size: 12.5px; font-weight: 600; color: var(--red); }
-.field-error.visible { display: flex; }
-.field-error svg { width: 14px; height: 14px; flex-shrink: 0; }
-
-.price-line { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; padding: 13px 16px; background: #f6f5f2; border-radius: var(--radius-sm); }
-.price-line span:first-child { font-size: 13px; font-weight: 600; color: var(--ink-sub); }
-.price-line span:last-child { font-size: 19px; font-weight: 800; }
-.price-single { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 16px; background: #f6f5f2; border-radius: var(--radius-sm); }
-.price-single span:first-child { font-size: 13px; font-weight: 600; color: var(--ink-sub); }
-.price-single span:last-child { font-size: 19px; font-weight: 800; }
-
-/* ---------- Bénéficiaire ---------- */
-.info-list { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; }
-.info-item { display: flex; align-items: center; gap: 13px; padding: 14px 16px; background: #fff; }
-.info-item + .info-item { border-top: 1px solid var(--line); }
-.info-item-ico { width: 34px; height: 34px; border-radius: 9px; background: #f1f0ed; color: var(--ink); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.info-item-ico svg { width: 17px; height: 17px; }
-.info-item-txt { min-width: 0; }
-.info-item-label { font-size: 12px; font-weight: 600; color: var(--ink-muted); }
-.info-item-value { font-size: 15.5px; font-weight: 700; word-break: break-word; }
-
-.rib-box { margin-top: 14px; display: flex; align-items: center; gap: 14px; padding: 16px; border: 1px dashed var(--line-strong); border-radius: var(--radius-sm); background: #fcfcfa; flex-wrap: wrap; }
-.rib-ico { width: 40px; height: 40px; border-radius: 10px; background: var(--ink); color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.rib-ico svg { width: 19px; height: 19px; }
-.rib-txt { flex: 1; min-width: 160px; }
-.rib-txt strong { display: block; font-size: 14.5px; }
-.rib-txt span { display: block; font-size: 12.5px; color: var(--ink-sub); margin-top: 2px; }
-.btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; padding: 10px 18px; font-size: 13.5px; font-weight: 700; color: var(--ink); background: #fff; border: 1.5px solid var(--ink); border-radius: var(--radius-sm); cursor: pointer; transition: background 0.2s, color 0.2s; }
-.btn-outline svg { width: 15px; height: 15px; }
-.btn-outline:hover:not(:disabled) { background: var(--ink); color: #fff; }
-.btn-outline:disabled { opacity: 0.6; cursor: wait; }
-.rib-status { display: none; width: 100%; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--green); }
-.rib-status.visible { display: flex; }
-.rib-status svg { width: 14px; height: 14px; flex-shrink: 0; }
-.rib-status.warn { color: var(--ink-sub); }
-
-/* ---------- Preuve de paiement ---------- */
-.upload { position: relative; border: 1.5px dashed var(--line-strong); border-radius: var(--radius-sm); background: #fcfcfa; transition: border-color 0.2s, background 0.2s; }
-.upload:hover { border-color: var(--ink); background: #f6f5f2; }
-.upload input[type="file"] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2; }
-.upload-empty { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 26px 16px; text-align: center; pointer-events: none; }
-.upload-empty svg { width: 28px; height: 28px; color: var(--ink-sub); }
-.upload-empty strong { font-size: 14px; }
-.upload-empty span { font-size: 12.5px; color: var(--ink-muted); }
-.upload.has-file { border-style: solid; border-color: var(--line-strong); background: #fff; cursor: default; }
-.upload.has-file:hover { background: #fff; border-color: var(--line-strong); }
-.upload.has-file input[type="file"] { display: none; }
-.upload.has-file .upload-empty { display: none; }
-.upload-file { display: none; align-items: center; gap: 14px; padding: 12px; }
-.upload.has-file .upload-file { display: flex; }
-.upload-thumb { width: 64px; height: 64px; border-radius: 8px; object-fit: cover; background: #eee; flex-shrink: 0; border: 1px solid var(--line); }
-.upload-meta { flex: 1; min-width: 0; }
-.upload-name { font-size: 13.5px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.upload-size { font-size: 12px; color: var(--ink-muted); margin-top: 1px; }
-.upload-replace { margin-top: 6px; padding: 0; background: none; border: none; font-size: 12.5px; font-weight: 700; color: var(--ink); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
-.upload.field-invalid { background: var(--red-bg); }
-
-.btn-submit { width: 100%; min-height: 54px; margin-top: 8px; padding: 15px 22px; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 15.5px; font-weight: 700; color: #fff; background: var(--ink); border: none; border-bottom: 3px solid var(--gold); border-radius: var(--radius-sm); cursor: pointer; transition: transform 0.2s, background 0.2s; }
-.btn-submit svg { width: 18px; height: 18px; }
-.btn-submit:hover:not(:disabled) { background: #2a2a2a; transform: translateY(-1px); }
-.btn-submit:disabled { cursor: not-allowed; opacity: 0.75; }
-.spinner { width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
-.submit-note { margin-top: 12px; text-align: center; font-size: 12.5px; color: var(--ink-muted); }
-
-.notice { display: flex; align-items: flex-start; gap: 10px; padding: 13px 15px; border-radius: var(--radius-sm); font-size: 13.5px; font-weight: 600; line-height: 1.45; margin-top: 12px; }
-.notice svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; }
-.notice.success { background: var(--green-bg); color: var(--green); border: 1px solid #bbf0cf; }
-.notice.error { background: var(--red-bg); color: var(--red); border: 1px solid #f3c6c6; }
-
-/* ---------- États ---------- */
-.state-card { text-align: center; padding: 56px 24px; }
-.state-card h2 { font-size: 21px; font-weight: 800; margin-bottom: 8px; }
-.state-card p { font-size: 14.5px; color: var(--ink-sub); }
-.state-card p + p { margin-top: 8px; font-size: 13px; color: var(--ink-muted); font-weight: 600; }
-.state-ico { width: 52px; height: 52px; border-radius: 50%; background: var(--red-bg); color: var(--red); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
-.state-ico svg { width: 24px; height: 24px; }
-.state-card .btn-submit { max-width: 260px; margin: 20px auto 0; }
-.loading-line { display: flex; align-items: center; justify-content: center; gap: 12px; color: var(--ink-sub); font-size: 14.5px; font-weight: 600; padding: 70px 0; }
-.loading-line .spinner { border-color: var(--line-strong); border-top-color: var(--gold); width: 20px; height: 20px; }
-
-/* ---------- Pied de page ---------- */
-.footer { border-top: 1px solid var(--line); background: var(--card); padding: 34px 0 28px; text-align: center; font-size: 13px; color: var(--ink-muted); }
-.footer-brand { font-size: 14px; font-weight: 700; color: var(--gold-text); margin-bottom: 10px; }
-.footer-description { max-width: 520px; margin: 0 auto 20px; font-size: 12.5px; line-height: 1.7; }
-.footer-links { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
-.footer-links a { font-size: 12.5px; font-weight: 600; color: var(--ink-sub); text-decoration: none; padding: 8px 14px; border: 1px solid var(--line); border-radius: 30px; transition: border-color 0.2s, color 0.2s; }
-.footer-links a:hover { color: var(--ink); border-color: var(--ink); }
-.footer-copy { font-size: 11.5px; }
-
-@media (max-width: 600px) {
-    .wrap { padding: 0 14px; }
-    .topbar-inner { height: 54px; }
-    .page-head { padding: 26px 0 20px; }
-    .card { padding: 18px 16px; }
-    .event-body { padding: 18px 16px 20px; }
-    .event-title { font-size: 19px; }
-    .secure-badge { font-size: 11px; }
-    .rib-box { flex-direction: column; align-items: stretch; text-align: left; }
-    .rib-box .btn-outline { width: 100%; }
-    input[type="text"], input[type="email"], input[type="tel"], select { font-size: 16px; }
-}
-@media (prefers-reduced-motion: reduce) {
-    .card { animation: none; }
-    .btn-submit:hover:not(:disabled) { transform: none; }
-}
-    </style>
+.steps-divider{display:flex;align-items:center;gap:16px;margin:2px 0 4px}
+.steps-divider::before,.steps-divider::after{content:"";flex:1;height:2px;background:var(--gold);opacity:.55;border-radius:2px}
+.steps-divider span{color:var(--muted);font-size:13.5px;font-weight:600;text-align:center;line-height:1.4}
+@media(max-width:760px){.steps-divider{gap:10px;margin:4px 0}.steps-divider span{font-size:12px}}
+</style>
 </head>
 <body>
 
-    <header class="topbar">
-        <div class="wrap topbar-inner">
-            <a class="brand" href="#" aria-label="GoldTix">
-                <img src="images/logo.png" alt="" class="brand-logo" onerror="this.style.display='none'">
-                <span class="brand-name">Gold<em>Tix</em></span>
-            </a>
-            <span class="secure-badge">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-                Billetterie sécurisée
-            </span>
-        </div>
-    </header>
-
-    <div class="wrap">
-        <div class="page-head">
-            <h1>Achetez votre billet</h1>
-            <p>Suivez les étapes ci-dessous pour acheter votre billet.</p>
-        </div>
-
-        <main id="detailsEvenement">
-            <div class="card"><p class="loading-line"><span class="spinner"></span>Chargement de votre expérience…</p></div>
-        </main>
-    </div>
-
-    <footer class="footer">
-        <div class="wrap">
-            <p class="footer-brand">— La Billetterie en Or —</p>
-            <p class="footer-description">
-                GoldTix est une plateforme de billetterie en ligne conçue pour simplifier l'achat et la gestion des billets d'événements. Elle permet aux participants d'acheter facilement leurs billets depuis leur téléphone, et aux organisateurs de gérer efficacement leurs ventes, leurs participants et le contrôle des accès.
-            </p>
-            <div class="footer-links">
-                <a href="conditions.html">Conditions d'utilisation</a>
-                <a href="contact.html">Contacts</a>
-                <a href="guide.html">Comment ça marche ?</a>
-                <a href="histoire.html">Histoire-GoldTix</a>
-            </div>
-            <p class="footer-copy">© GoldTix — Tous droits réservés - 2026</p>
-        </div>
-    </footer>
-
-    <script>
-        /* =============================================================
-           GOLDTIX — Page d'achat 100% "same-origin"
-           Lecture  : GET  /api/tickets?event=ID
-           Écriture : POST /api/tickets  (multipart/form-data)
-           (Logique métier inchangée — seule l'interface a été refaite.)
-        ============================================================= */
-
-        const ICONS = {
-            calendar: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
-            clock:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
-            pin:      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
-            user:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
-            phone:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.65 3.27 2 2 0 0 1 3.62 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.29 6.29l1.02-.88a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`,
-            ticket:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg>`,
-            wallet:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>`,
-            file:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`,
-            upload:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>`,
-            check:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
-            image:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
-            alert:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
-            download: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`,
-            x:        `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
-        };
-
-        // Limite alignée sur les messages affichés à l'utilisateur (2 Mo)
-        const TAILLE_MAX_FICHIER = 2 * 1024 * 1024;
-        const TYPES_IMAGE_OK = ['image/jpeg', 'image/png', 'image/webp'];
-
-        let chargementEnCours = false;
-        let evCourant = null;
-        let apercuUrl = null;
-
-        function esc(valeur) {
-            return String(valeur == null ? '' : valeur)
-                .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-        }
-
-        function gxAvertirAvantFermeture(e) { e.preventDefault(); e.returnValue = ''; return ''; }
-
-        async function fetchAvecTimeout(url, options, timeoutMs) {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-            try {
-                return await fetch(url, Object.assign({}, options, { signal: controller.signal }));
-            } finally {
-                clearTimeout(timeoutId);
-            }
-        }
-
-        function afficherErreurChargement(container, titre, message) {
-            container.innerHTML = `
-                <div class="card state-card">
-                    <h2>${esc(titre)}</h2>
-                    <p>${esc(message)}</p>
-                    <button class="btn-submit" onclick="chargerPageAchatUnique()">Réessayer</button>
-                </div>`;
-        }
-
-        // ─── Validation en ligne ──────────────────────────────────────────────
-        function marquerInvalide(champEl, erreurEl, texte) {
-            if (!champEl || !erreurEl) return;
-            champEl.classList.add('field-invalid');
-            erreurEl.innerHTML = `${ICONS.alert}<span>${esc(texte || 'Ce champ est obligatoire.')}</span>`;
-            erreurEl.classList.add('visible');
-        }
-        function effacerInvalide(champEl, erreurEl) {
-            if (!champEl || !erreurEl) return;
-            champEl.classList.remove('field-invalid');
-            erreurEl.classList.remove('visible');
-        }
-
-        function formaterTaille(octets) {
-            if (octets < 1024 * 1024) return Math.max(1, Math.round(octets / 1024)) + ' Ko';
-            return (octets / (1024 * 1024)).toFixed(1).replace('.', ',') + ' Mo';
-        }
-
-        // ─── Téléchargement du RIB ────────────────────────────────────────────
-        function gxNomFichierDepuisUrl(url, nomParDefaut) {
-            try {
-                const segment = new URL(url, window.location.href).pathname.split('/').pop() || '';
-                const m = segment.match(/\.[a-zA-Z0-9]+$/);
-                return nomParDefaut + (m ? m[0] : '.png');
-            } catch (e) { return nomParDefaut + '.png'; }
-        }
-
-        async function gxTelechargerRib(url, btnEl, statusEl) {
-            if (!url || !btnEl) return;
-            const nomFichier = gxNomFichierDepuisUrl(url, 'RIB du bénéficiaire');
-            const contenuOriginal = btnEl.innerHTML;
-            btnEl.disabled = true;
-            btnEl.innerHTML = `${ICONS.download} Téléchargement…`;
-            if (statusEl) { statusEl.classList.remove('visible', 'warn'); statusEl.innerHTML = ''; }
-            try {
-                const reponse = await fetchAvecTimeout(url, { mode: 'cors' }, 20000);
-                if (!reponse.ok) throw new Error('Réponse réseau invalide (' + reponse.status + ')');
-                const blob = await reponse.blob();
-                const objectUrl = URL.createObjectURL(blob);
-                const lien = document.createElement('a');
-                lien.href = objectUrl;
-                lien.download = nomFichier;
-                document.body.appendChild(lien);
-                lien.click();
-                document.body.removeChild(lien);
-                setTimeout(() => URL.revokeObjectURL(objectUrl), 4000);
-                if (statusEl) {
-                    statusEl.innerHTML = `${ICONS.check}<span>RIB enregistré dans vos téléchargements.</span>`;
-                    statusEl.classList.add('visible');
-                    setTimeout(() => statusEl.classList.remove('visible'), 5000);
-                }
-            } catch (err) {
-                console.error('Téléchargement direct du RIB impossible, ouverture dans un nouvel onglet :', err);
-                window.open(url, '_blank', 'noopener');
-                if (statusEl) {
-                    statusEl.innerHTML = `${ICONS.alert}<span>Le RIB s'est ouvert dans un nouvel onglet — enregistrez-le depuis là.</span>`;
-                    statusEl.classList.add('visible', 'warn');
-                    setTimeout(() => statusEl.classList.remove('visible', 'warn'), 6000);
-                }
-            } finally {
-                btnEl.disabled = false;
-                btnEl.innerHTML = contenuOriginal;
-            }
-        }
-
-        // ─── Catégories & récapitulatif ───────────────────────────────────────
-        function aDesCategories(ev) {
-            return !!(ev && Array.isArray(ev.categories_data) && ev.categories_data.length > 0);
-        }
-
-        function htmlLignesCategories(ev) {
-            if (aDesCategories(ev)) {
-                return ev.categories_data.map(c => {
-                    const dispo = ev.disponibilites ? ev.disponibilites[c.nom] : null;
-                    const epuise = !!(dispo && dispo.epuise);
-                    return `<div class="cat-row${epuise ? ' epuise' : ''}">
-                                <span class="cat-name">${esc(c.nom)}</span>
-                                <span class="cat-price">${epuise ? 'Épuisé' : esc(c.prix)}</span>
-                            </div>`;
-                }).join('');
-            }
-            return `<div class="cat-row"><span class="cat-name">Billet</span><span class="cat-price">${esc(ev.prix || 'Gratuit')}</span></div>`;
-        }
-
-        function genererOptionsCategorieAchat(ev) {
-            if (!aDesCategories(ev)) return '';
-            return ev.categories_data.map(cat => {
-                const infoDispo = ev.disponibilites ? ev.disponibilites[cat.nom] : null;
-                const estEpuisee = !!(infoDispo && infoDispo.epuise);
-                const valeur = `${cat.nom} - ${cat.prix}`;
-                let libelle = `${cat.nom} — ${cat.prix}`;
-                if (infoDispo) {
-                    libelle += estEpuisee
-                        ? ' (Épuisé)'
-                        : ` (${infoDispo.restant} place${infoDispo.restant > 1 ? 's' : ''} disponible${infoDispo.restant > 1 ? 's' : ''})`;
-                }
-                return `<option value="${esc(valeur)}" data-nom="${esc(cat.nom)}" data-prix="${esc(cat.prix)}"${estEpuisee ? ' disabled' : ''}>${esc(libelle)}</option>`;
-            }).join('');
-        }
-
-        // Affiche le prix de la catégorie sélectionnée (formulaire + récapitulatif)
-        function mettreAJourRecap() {
-            const sel = document.getElementById('selectCategorie');
-            let nomCat = '—', prix = '—';
-            if (sel && sel.selectedOptions && sel.selectedOptions[0] && !sel.selectedOptions[0].disabled) {
-                nomCat = sel.selectedOptions[0].dataset.nom || '—';
-                prix = sel.selectedOptions[0].dataset.prix || '—';
-            } else if (!sel && evCourant) {
-                nomCat = 'Billet';
-                prix = evCourant.prix || 'Gratuit';
-            }
-            const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-            set('prixChoisiEl', prix);
-        }
-
-        // ─── Carte sous l'affiche : titre, date, heure, lieu ───────────────────
-        function formaterDateLongue(texte) {
-            const mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
-            const t = String(texte || '').trim();
-            let y, m, d, r;
-            if ((r = t.match(/^(\d{4})-(\d{2})-(\d{2})/))) { y = r[1]; m = +r[2]; d = +r[3]; }
-            else if ((r = t.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/))) { d = +r[1]; m = +r[2]; y = r[3]; }
-            if (!y || m < 1 || m > 12) return t;
-            return d + ' ' + mois[m - 1] + ' ' + y;
-        }
-
-        function htmlInfosEvenement(ev) {
-            const heure = (ev.heure || '').slice(0, 5);
-            return `
-                <h2 class="event-title">${esc(ev.titre)}</h2>
-                <div class="event-meta">
-                    ${ev.date ? `<div class="meta-row">${ICONS.calendar}<span>${esc(formaterDateLongue(ev.date))}</span></div>` : ''}
-                    ${heure ? `<div class="meta-row">${ICONS.clock}<span>${esc(heure)}</span></div>` : ''}
-                    ${ev.lieu ? `<div class="meta-row">${ICONS.pin}<span>${esc(ev.lieu)}</span></div>` : ''}
-                </div>`;
-        }
-
-        // ─── Aperçu de la preuve de paiement ──────────────────────────────────
-        function libererApercu() {
-            if (apercuUrl) { URL.revokeObjectURL(apercuUrl); apercuUrl = null; }
-        }
-
-        function reinitialiserFichier(inputEl, zoneEl) {
-            libererApercu();
-            inputEl.value = '';
-            zoneEl.classList.remove('has-file');
-        }
-
-        // ─── Chargement principal ─────────────────────────────────────────────
-        async function chargerPageAchatUnique() {
-            if (chargementEnCours) return;
-            chargementEnCours = true;
-
-            const eventId = new URLSearchParams(window.location.search).get('event');
-            const container = document.getElementById('detailsEvenement');
-
-            container.innerHTML = `<div class="card"><p class="loading-line"><span class="spinner"></span>Chargement de votre expérience…</p></div>`;
-
-            const watchdog = setTimeout(function() {
-                if (container.querySelector('.loading-line')) {
-                    afficherErreurChargement(container, 'Chargement trop long',
-                        'La connexion semble instable. Vérifiez votre réseau (Wi-Fi ou données mobiles) et réessayez.');
-                }
-            }, 20000);
-
-            try {
-                if (!eventId) {
-                    afficherErreurChargement(container, 'Lien invalide', 'Aucun événement spécifié dans ce lien.');
-                    return;
-                }
-
-                let ev;
-                try {
-                    const reponse = await fetchAvecTimeout('/api/tickets?event=' + encodeURIComponent(eventId), { method: 'GET' }, 15000);
-                    if (!reponse.ok) throw new Error('Erreur serveur (' + reponse.status + ')');
-                    const data = await reponse.json();
-                    ev = data.event;
-                } catch (err) {
-                    console.error("Erreur réseau lors du chargement de l'événement :", err);
-                    afficherErreurChargement(container, 'Connexion impossible',
-                        'Le chargement a échoué (réseau instable ou trop lent). Vérifiez votre connexion et réessayez.');
-                    return;
-                }
-
-                if (!ev) {
-                    afficherErreurChargement(container, 'Événement introuvable', 'Cet événement a été supprimé ou n\'existe plus.');
-                    return;
-                }
-
-                evCourant = ev;
-
-                const categoriesToutesEpuisees = aDesCategories(ev)
-                    ? ev.categories_data.every(cat => ev.disponibilites && ev.disponibilites[cat.nom] && ev.disponibilites[cat.nom].epuise)
-                    : false;
-
-                // ── Colonne principale : les 3 blocs ou un état fermé ──────────────
-                let colonneEtapes = '';
-
-                if (ev.ventes_fermees || categoriesToutesEpuisees) {
-                    const titre = ev.ventes_fermees ? 'Ventes fermées' : 'Billets épuisés';
-                    const texte = ev.ventes_fermees
-                        ? "Les ventes en ligne de billets pour cet événement viennent d'être fermées par l'organisateur."
-                        : 'Tous les billets disponibles pour cet événement ont été vendus.';
-                    colonneEtapes = `
-                        <div class="card state-card">
-                            <div class="state-ico">${ICONS.x}</div>
-                            <h2>${titre}</h2>
-                            <p>${texte}</p>
-                            <p>Merci pour votre intérêt et à bientôt !</p>
-                        </div>`;
-                } else {
-                    const urlRib = ev.rib_image_url || ev.qr_code_paiement || '';
-
-                    // Étape 1 — catégorie / prix
-                    const blocPrix = aDesCategories(ev)
-                        ? `<div class="field">
-                               <label for="selectCategorie">Catégorie(s) de billet disponible(s)</label>
-                               <select id="selectCategorie">${genererOptionsCategorieAchat(ev)}</select>
-                           </div>
-                           <div class="price-line"><span>Total à payer</span><span id="prixChoisiEl">—</span></div>`
-                        : `<div class="price-single"><span>Total à payer</span><span id="prixChoisiEl">${esc(ev.prix || 'Gratuit')}</span></div>`;
-
-                    // Bloc RIB : uniquement s'il existe réellement
-                    const blocRib = urlRib ? `
-                        <div class="rib-box">
-                            <div class="rib-ico">${ICONS.file}</div>
-                            <div class="rib-txt">
-                                <strong>RIB du bénéficiaire</strong>
-                                <span>Téléchargez-le pour effectuer votre virement depuis votre application bancaire.</span>
-                            </div>
-                            <button type="button" class="btn-outline" id="btnTelechargerRib">${ICONS.download} Télécharger le RIB</button>
-                            <p class="rib-status" id="ribDownloadStatus"></p>
-                        </div>` : '';
-
-                    colonneEtapes = `
-                        <section class="card" aria-labelledby="t1">
-                            <div class="card-head">
-                                <span class="step-num">1</span>
-                                <div>
-                                    <h2 class="card-title" id="t1">Choisissez votre billet</h2>
-                                    <p class="card-desc">Sélectionnez votre catégorie de billet, puis effectuez le paiement.</p>
-                                </div>
-                            </div>
-                            ${blocPrix}
-                        </section>
-
-                        <section class="card" aria-labelledby="t2">
-                            <div class="card-head">
-                                <span class="step-icon">${ICONS.wallet}</span>
-                                <div>
-                                    <h2 class="card-title" id="t2">Informations du bénéficiaire</h2>
-                                    <p class="card-desc">Effectuez le transfert vers les coordonnées ci-dessous.</p>
-                                </div>
-                            </div>
-                            <div class="info-list">
-                                <div class="info-item">
-                                    <span class="info-item-ico">${ICONS.user}</span>
-                                    <div class="info-item-txt">
-                                        <div class="info-item-label">Bénéficiaire des paiements</div>
-                                        <div class="info-item-value" id="evBeneficiaireNomEl">${esc(ev.beneficiaire_nom || 'Non renseigné')}</div>
-                                    </div>
-                                </div>
-                                <div class="info-item">
-                                    <span class="info-item-ico">${ICONS.phone}</span>
-                                    <div class="info-item-txt">
-                                        <div class="info-item-label">Contact</div>
-                                        <div class="info-item-value" id="evBeneficiaireContactEl">${esc(ev.beneficiaire_infos || 'Non renseigné')}</div>
-                                    </div>
-                                </div>
-                            </div>
-                            ${blocRib}
-                        </section>
-
-                        <section class="card" aria-labelledby="t3">
-                            <div class="card-head">
-                                <span class="step-num">2</span>
-                                <div>
-                                    <h2 class="card-title" id="t3">Confirmer mon paiement</h2>
-                                    <p class="card-desc">Après avoir effectué le paiement, renseignez vos informations et transmettez votre preuve de paiement.</p>
-                                </div>
-                            </div>
-
-                            <div class="field">
-                                <label for="nomParticipant">Nom et prénom(s) <span class="req">*</span></label>
-                                <input type="text" id="nomParticipant" placeholder="ex : KONATE Jean" autocomplete="name">
-                                <p class="field-error" id="errNomParticipant"></p>
-                            </div>
-
-                            <div class="field">
-                                <label for="emailParticipant">Adresse e-mail <span class="hint">(Pour la réception du lien du billet)</span></label>
-                                <input type="email" id="emailParticipant" placeholder="ex : nom@gmail.com" autocomplete="email" inputmode="email">
-                                <p class="field-error" id="errEmailParticipant"></p>
-                            </div>
-
-                            <div class="field">
-                                <label for="telParticipant">Contact WhatsApp <span class="req">*</span></label>
-                                <input type="tel" id="telParticipant" placeholder="ex : +226 ... / +212 ..." autocomplete="tel" inputmode="tel">
-                                <p class="field-error" id="errTelParticipant"></p>
-                            </div>
-
-                            <div class="field">
-                                <span class="label">Preuve de paiement <span class="hint">(capture du reçu)</span> <span class="req">*</span></span>
-                                <div class="upload" id="fileWrapper">
-                                    <input type="file" id="preuvePaiement" accept="image/jpeg,image/png,image/webp,image/*" aria-label="Preuve de paiement">
-                                    <div class="upload-empty">
-                                        ${ICONS.upload}
-                                        <strong>Cliquez pour choisir un fichier</strong>
-                                        <span>JPG, PNG ou WEBP — 2 Mo maximum</span>
-                                    </div>
-                                    <div class="upload-file">
-                                        <img class="upload-thumb" id="fileThumb" alt="Aperçu de la preuve de paiement">
-                                        <div class="upload-meta">
-                                            <div class="upload-name" id="fileNamePreview"></div>
-                                            <div class="upload-size" id="fileSizePreview"></div>
-                                            <button type="button" class="upload-replace" id="btnRemplacerFichier">Remplacer le fichier</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <p class="field-error" id="errPreuvePaiement"></p>
-                            </div>
-
-                            <button class="btn-submit" id="btnValiderAchat" type="button">
-                                ${ICONS.check} Valider mon paiement
-                            </button>
-                            <div id="zoneMessageAchat" aria-live="polite"></div>
-                            <p class="submit-note">Votre paiement sera vérifié par le bénéficiare avant la validation  et obtention de votre billet.</p>
-                        </section>`;
-                }
-
-                // ── Colonne événement (affiche, infos, récapitulatif) ──────────────
-                const posterHTML = ev.affiche_url
-                    ? `<img id="posterImgEl" src="${esc(ev.affiche_url)}" alt="Affiche de l'événement">`
-                    : `<div class="poster-fallback">${ICONS.image}<span>Affiche non disponible</span></div>`;
-
-                // Catégories disponibles : liste informative, juste sous l'affiche
-                const lignesCat = htmlLignesCategories(ev);
-
-                container.innerHTML = `
-                    <div class="layout">
-                        <aside class="col-event">
-                            <div class="poster">${posterHTML}</div>
-                            <div class="card info-card">
-                                <div id="infosEvenementEl">${htmlInfosEvenement(ev)}</div>
-                                <h3 class="cat-title">Catégorie(s) disponible(s)</h3>
-                                <div class="cat-list" id="listeCategoriesEl">${lignesCat}</div>
-                            </div>
-                        </aside>
-                        <div class="col-steps">${colonneEtapes}</div>
-                    </div>`;
-
-                const posterImage = container.querySelector('.poster img');
-                if (posterImage) {
-                    posterImage.addEventListener('error', function() {
-                        const wrapper = this.closest('.poster');
-                        if (wrapper) wrapper.innerHTML = `<div class="poster-fallback">${ICONS.image}<span>Affiche non disponible</span></div>`;
-                    });
-                }
-
-                if (!ev.ventes_fermees && !categoriesToutesEpuisees) {
-                    brancherFormulaire(ev);
-                }
-
-                derniereSignatureAchat = signatureEvenementAchat(ev);
-                demarrerVerificationPeriodiqueAchat();
-
-            } catch (err) {
-                console.error("Erreur inattendue lors de l'affichage de l'événement :", err);
-                afficherErreurChargement(container, 'Une erreur est survenue',
-                    "Impossible d'afficher les informations de l'événement. Réessayez.");
-            } finally {
-                clearTimeout(watchdog);
-                chargementEnCours = false;
-            }
-        }
-
-        // ─── Branchement du formulaire ────────────────────────────────────────
-        function brancherFormulaire(ev) {
-            const fileInput = document.getElementById('preuvePaiement');
-            const fileWrapperEl = document.getElementById('fileWrapper');
-            const errPreuveEl = document.getElementById('errPreuvePaiement');
-            const selectCat = document.getElementById('selectCategorie');
-
-            if (selectCat) selectCat.addEventListener('change', mettreAJourRecap);
-            mettreAJourRecap();
-
-            const btnRib = document.getElementById('btnTelechargerRib');
-            if (btnRib) {
-                const urlRib = ev.rib_image_url || ev.qr_code_paiement;
-                const statutRib = document.getElementById('ribDownloadStatus');
-                btnRib.addEventListener('click', () => gxTelechargerRib(urlRib, btnRib, statutRib));
-            }
-
-            [['nomParticipant', 'errNomParticipant'], ['telParticipant', 'errTelParticipant'], ['emailParticipant', 'errEmailParticipant']]
-                .forEach(function(paire) {
-                    const champ = document.getElementById(paire[0]);
-                    const erreur = document.getElementById(paire[1]);
-                    if (champ) champ.addEventListener('input', function() {
-                        if (this.value.trim() || this.id === 'emailParticipant') effacerInvalide(champ, erreur);
-                    });
-                });
-
-            fileInput.addEventListener('change', function() {
-                const fichier = this.files && this.files[0];
-                if (!fichier) return;
-
-                const typeOk = TYPES_IMAGE_OK.includes(fichier.type);
-                if (!typeOk) {
-                    reinitialiserFichier(fileInput, fileWrapperEl);
-                    marquerInvalide(fileWrapperEl, errPreuveEl, 'Format non accepté. Utilisez une image JPG, PNG ou WEBP.');
-                    return;
-                }
-                if (fichier.size > TAILLE_MAX_FICHIER) {
-                    reinitialiserFichier(fileInput, fileWrapperEl);
-                    marquerInvalide(fileWrapperEl, errPreuveEl, 'Ce fichier dépasse 2 Mo. Choisissez une image plus légère.');
-                    return;
-                }
-
-                libererApercu();
-                apercuUrl = URL.createObjectURL(fichier);
-                document.getElementById('fileThumb').src = apercuUrl;
-                document.getElementById('fileNamePreview').textContent = fichier.name;
-                document.getElementById('fileSizePreview').textContent = formaterTaille(fichier.size);
-                fileWrapperEl.classList.add('has-file');
-                effacerInvalide(fileWrapperEl, errPreuveEl);
-            });
-
-            document.getElementById('btnRemplacerFichier').addEventListener('click', function() {
-                reinitialiserFichier(fileInput, fileWrapperEl);
-                fileInput.click();
-            });
-
-            const btn = document.getElementById('btnValiderAchat');
-            const btnHTMLOriginal = btn.innerHTML;
-            const zoneMsg = document.getElementById('zoneMessageAchat');
-
-            btn.onclick = async function() {
-                const nomEl = document.getElementById('nomParticipant');
-                const telEl = document.getElementById('telParticipant');
-                const emailEl = document.getElementById('emailParticipant');
-                const errNomEl = document.getElementById('errNomParticipant');
-                const errTelEl = document.getElementById('errTelParticipant');
-                const errEmailEl = document.getElementById('errEmailParticipant');
-
-                const nom = nomEl.value.trim();
-                const email = emailEl.value.trim();
-                const tel = telEl.value.trim();
-                const fichierPreuve = fileInput.files[0];
-
-                // Catégorie réellement choisie (valeur "nom - prix" enregistrée côté serveur)
-                let typeBilletChoisi = 'Standard';
-                const sel = document.getElementById('selectCategorie');
-                if (sel) {
-                    if (!sel.value || (sel.selectedOptions[0] && sel.selectedOptions[0].disabled)) {
-                        zoneMsg.innerHTML = `<div class="notice error">${ICONS.alert}<span>Cette catégorie n'est plus disponible. Choisissez-en une autre.</span></div>`;
-                        return;
-                    }
-                    typeBilletChoisi = sel.value;
-                } else if (ev.prix) {
-                    typeBilletChoisi = String(ev.prix);
-                }
-
-                zoneMsg.innerHTML = '';
-                effacerInvalide(nomEl, errNomEl);
-                effacerInvalide(telEl, errTelEl);
-                effacerInvalide(emailEl, errEmailEl);
-                effacerInvalide(fileWrapperEl, errPreuveEl);
-
-                let valide = true;
-                if (!nom) { marquerInvalide(nomEl, errNomEl); valide = false; }
-                if (!tel) {
-                    marquerInvalide(telEl, errTelEl); valide = false;
-                } else if (tel.replace(/\D/g, '').length < 8) {
-                    marquerInvalide(telEl, errTelEl, 'Ce numéro semble trop court.'); valide = false;
-                }
-                if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                    marquerInvalide(emailEl, errEmailEl, 'Cette adresse e-mail ne semble pas valide.'); valide = false;
-                }
-                if (!fichierPreuve) {
-                    marquerInvalide(fileWrapperEl, errPreuveEl, 'Une preuve de paiement est obligatoire.'); valide = false;
-                } else if (!TYPES_IMAGE_OK.includes(fichierPreuve.type)) {
-                    marquerInvalide(fileWrapperEl, errPreuveEl, 'Format non accepté. Utilisez une image JPG, PNG ou WEBP.'); valide = false;
-                } else if (fichierPreuve.size > TAILLE_MAX_FICHIER) {
-                    marquerInvalide(fileWrapperEl, errPreuveEl, 'Ce fichier dépasse 2 Mo. Choisissez une image plus légère.'); valide = false;
-                }
-
-                if (!valide) {
-                    const premier = document.querySelector('.field-invalid');
-                    if (premier) premier.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    return;
-                }
-
-                if (btn.disabled) return;
-                btn.disabled = true;
-                window.addEventListener('beforeunload', gxAvertirAvantFermeture);
-                btn.innerHTML = `<span class="spinner"></span> Envoi en cours… Ne fermez pas cette page.`;
-
-                try {
-                    const formData = new FormData();
-                    formData.append('event', ev.id);
-                    formData.append('nom_participant', nom);
-                    formData.append('email', email || '');
-                    formData.append('telephone', tel);
-                    formData.append('type_billet', typeBilletChoisi);
-                    formData.append('preuve', fichierPreuve);
-
-                    const reponseAchat = await fetchAvecTimeout('/api/tickets', { method: 'POST', body: formData }, 30000);
-
-                    let resultat;
-                    try { resultat = await reponseAchat.json(); } catch (e) { resultat = null; }
-
-                    if (!reponseAchat.ok || !resultat || !resultat.success) {
-                        const message = (resultat && resultat.error) ? resultat.error : "Erreur lors de l'enregistrement du billet.";
-                        window.removeEventListener('beforeunload', gxAvertirAvantFermeture);
-                        zoneMsg.innerHTML = `<div class="notice error">${ICONS.alert}<span>${esc(message)}</span></div>`;
-                        btn.disabled = false;
-                        btn.innerHTML = btnHTMLOriginal;
-                        return;
-                    }
-
-                    // Informations reçues — paiement en attente de vérification (jamais « confirmé » ici)
-                    zoneMsg.innerHTML = `<div class="notice success">${ICONS.check}<span>Vos informations ont bien été reçues. Votre paiement est en attente de vérification par l'organisateur.</span></div>`;
-                    btn.innerHTML = `${ICONS.check} Informations envoyées`;
-                    window.removeEventListener('beforeunload', gxAvertirAvantFermeture);
-
-                    setTimeout(function() {
-                        window.location.href = `billet.html?id=${encodeURIComponent(resultat.code_public)}`;
-                    }, 1500);
-
-                } catch (err) {
-                    console.error('Erreur inattendue :', err);
-                    const message = (err && err.name === 'AbortError')
-                        ? 'La connexion met trop de temps à répondre. Vérifiez votre réseau puis réessayez.'
-                        : 'Une erreur inattendue est survenue lors du traitement.';
-                    window.removeEventListener('beforeunload', gxAvertirAvantFermeture);
-                    zoneMsg.innerHTML = `<div class="notice error">${ICONS.alert}<span>${esc(message)}</span></div>`;
-                    btn.disabled = false;
-                    btn.innerHTML = btnHTMLOriginal;
-                }
-            };
-        }
-
-        // ─── Mise à jour périodique (inchangée dans son principe) ─────────────
-        let derniereSignatureAchat = '';
-        let intervalMiseAJourAchatDemarre = false;
-
-        function signatureEvenementAchat(ev) {
-            if (!ev) return '';
-            return [
-                ev.titre || '', ev.date || '', ev.heure || '', ev.lieu || '',
-                ev.affiche_url || '', ev.beneficiaire_nom || '', ev.beneficiaire_infos || '',
-                JSON.stringify(ev.categories_data || []),
-                JSON.stringify(ev.disponibilites || {}),
-                ev.prix || '',
-                ev.ventes_fermees ? '1' : '0'
-            ].join('|');
-        }
-
-        async function verifierMiseAJourAchat() {
-            const eventIdCourant = new URLSearchParams(window.location.search).get('event');
-            if (!eventIdCourant) return;
-            try {
-                const reponse = await fetchAvecTimeout('/api/tickets?event=' + encodeURIComponent(eventIdCourant), { method: 'GET' }, 15000);
-                if (!reponse.ok) return;
-                const data = await reponse.json();
-                const ev = data.event;
-                if (!ev) return;
-                const nouvelleSignature = signatureEvenementAchat(ev);
-                if (nouvelleSignature === derniereSignatureAchat) return;
-                derniereSignatureAchat = nouvelleSignature;
-                evCourant = ev;
-
-                const btnValider = document.getElementById('btnValiderAchat');
-                if (ev.ventes_fermees && btnValider && !document.getElementById('ventesFermeesAlerte')) {
-                    const alerteEl = document.createElement('div');
-                    alerteEl.id = 'ventesFermeesAlerte';
-                    alerteEl.className = 'notice error';
-                    alerteEl.innerHTML = `${ICONS.alert}<span>Les ventes viennent d'être fermées par l'organisateur. Aucun achat n'est possible pour le moment. Contactez le bénéficiaire pour toute réclamation.</span>`;
-                    btnValider.insertAdjacentElement('beforebegin', alerteEl);
-                    btnValider.disabled = true;
-                    btnValider.style.opacity = '0.6';
-                }
-
-                const maj = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-                const infosEl = document.getElementById('infosEvenementEl');
-                if (infosEl) infosEl.innerHTML = htmlInfosEvenement(ev);
-                const listeCatEl = document.getElementById('listeCategoriesEl');
-                if (listeCatEl) listeCatEl.innerHTML = htmlLignesCategories(ev);
-                maj('evBeneficiaireNomEl', ev.beneficiaire_nom || 'Non renseigné');
-                maj('evBeneficiaireContactEl', ev.beneficiaire_infos || 'Non renseigné');
-
-                const posterImgEl = document.getElementById('posterImgEl');
-                if (posterImgEl && ev.affiche_url && posterImgEl.getAttribute('src') !== ev.affiche_url) {
-                    posterImgEl.src = ev.affiche_url;
-                }
-
-                const selectCategorieEl = document.getElementById('selectCategorie');
-                if (selectCategorieEl) {
-                    const valeurSelectionnee = selectCategorieEl.value;
-                    selectCategorieEl.innerHTML = genererOptionsCategorieAchat(ev);
-                    const existeEncore = Array.from(selectCategorieEl.options)
-                        .some(o => o.value === valeurSelectionnee && !o.disabled);
-                    if (existeEncore) {
-                        selectCategorieEl.value = valeurSelectionnee;
-                    } else if (valeurSelectionnee) {
-                        alert('Pour toute réclamation, contactez le bénéficiaire des paiements.');
-                    }
-                    mettreAJourRecap();
-                } else if (!aDesCategories(ev)) {
-                    mettreAJourRecap();
-                }
-            } catch (err) {
-                console.error('Erreur vérification mise à jour (achat) :', err);
-            }
-        }
-
-        function demarrerVerificationPeriodiqueAchat() {
-            if (intervalMiseAJourAchatDemarre) return;
-            intervalMiseAJourAchatDemarre = true;
-            setInterval(() => { if (!document.hidden) verifierMiseAJourAchat(); }, 9000);
-        }
-
-        document.addEventListener('DOMContentLoaded', chargerPageAchatUnique);
-    </script>
+<header class="topbar">
+<div class="wrap topbar-inner">
+<a class="brand" href="#" aria-label="GoldTix">
+<img src="images/logo.png" alt="" class="brand-logo" onerror="this.style.display='none'">
+<span class="brand-name">Gold<em>Tix</em></span>
+</a>
+<span class="secure-badge">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+Billetterie sécurisée
+</span>
+</div>
+</header>
+
+<div class="wrap">
+<div class="page-head">
+<h1>Achetez votre billet</h1>
+<p>Une expérience simple et rapide pour obtenir votre billet.</p>
+</div>
+
+<main id="detailsEvenement">
+<div class="card"><p class="loading-line"><span class="spinner"></span>Chargement de votre expérience…</p></div>
+</main>
+</div>
+
+<footer class="footer">
+<div class="wrap">
+<p class="footer-brand">— La Billetterie en Or —</p>
+<p class="footer-description">GoldTix est une plateforme de billetterie en ligne conçue pour simplifier l'achat et la gestion des billets d'événements. Elle permet aux participants d'acheter facilement leurs billets depuis leur téléphone, et aux organisateurs de gérer efficacement leurs ventes, leurs participants et le contrôle des accès.</p>
+<div class="footer-links">
+<a href="conditions.html">Conditions d'utilisation</a>
+<a href="contact.html">Contacts</a>
+<a href="guide.html">Comment ça marche ?</a>
+<a href="histoire.html">Histoire-GoldTix</a>
+</div>
+<p class="footer-copy">© GoldTix — Tous droits réservés - 2026</p>
+</div>
+</footer>
+
+<script>
+/* GOLDTIX — Page d'achat. Lecture : GET /api/tickets?event=ID — Écriture : POST /api/tickets (multipart) */
+
+const S = (p, w = 2) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+const ICONS = {
+calendar: S('<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>'),
+clock: S('<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>'),
+pin: S('<path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>'),
+user: S('<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>'),
+phone: S('<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.65 3.27 2 2 0 0 1 3.62 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.29 6.29l1.02-.88a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>'),
+wallet: S('<rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/>'),
+file: S('<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/>'),
+upload: S('<path d="M16 16l-4-4-4 4M12 12v9"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>'),
+check: S('<path d="M20 6L9 17l-5-5"/>', 2.5),
+alert: S('<circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>'),
+download: S('<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>'),
+image: S('<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>'),
+x: S('<circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/>', 2.5),
+};
+
+// On accepte jusqu'à 10 Mo au choix ; l'image est compressée avant l'envoi (3 Mo max côté serveur)
+const TAILLE_MAX_FICHIER = 10 * 1024 * 1024;
+const TAILLE_MAX_ENVOI = 3 * 1024 * 1024;
+const TYPES_IMAGE_OK = ['image/jpeg', 'image/png', 'image/webp'];
+
+let chargementEnCours = false;
+let evCourant = null;
+let apercuUrl = null;
+let derniereSignatureAchat = '';
+let intervalMiseAJourAchatDemarre = false;
+
+function esc(valeur) {
+return String(valeur == null ? '' : valeur).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function gxAvertirAvantFermeture(e) { e.preventDefault(); e.returnValue = ''; return ''; }
+
+async function fetchAvecTimeout(url, options, timeoutMs) {
+const controller = new AbortController();
+const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+try {
+return await fetch(url, Object.assign({}, options, { signal: controller.signal }));
+} finally {
+clearTimeout(timeoutId);
+}
+}
+
+function afficherErreurChargement(container, titre, message) {
+container.innerHTML = `
+<div class="card state-card">
+<h2>${esc(titre)}</h2>
+<p>${esc(message)}</p>
+<button class="btn-submit" onclick="chargerPageAchatUnique()">Réessayer</button>
+</div>`;
+}
+
+// ─── Validation en ligne ──────────────────────────────────────────────
+function marquerInvalide(champEl, erreurEl, texte) {
+if (!champEl || !erreurEl) return;
+champEl.classList.add('field-invalid');
+erreurEl.innerHTML = `${ICONS.alert}<span>${esc(texte || 'Ce champ est obligatoire.')}</span>`;
+erreurEl.classList.add('visible');
+}
+function effacerInvalide(champEl, erreurEl) {
+if (!champEl || !erreurEl) return;
+champEl.classList.remove('field-invalid');
+erreurEl.classList.remove('visible');
+}
+
+function formaterTaille(octets) {
+if (octets < 1024 * 1024) return Math.max(1, Math.round(octets / 1024)) + ' Ko';
+return (octets / (1024 * 1024)).toFixed(1).replace('.', ',') + ' Mo';
+}
+
+// ─── Compression de la preuve avant envoi ─────────────────────────────
+async function compresserImage(fichier, largeurMax = 1280, qualite = 0.82) {
+try {
+if (fichier.size < 400 * 1024) return fichier;
+const bitmap = await createImageBitmap(fichier);
+const ratio = Math.min(1, largeurMax / bitmap.width);
+const canvas = document.createElement('canvas');
+canvas.width = Math.round(bitmap.width * ratio);
+canvas.height = Math.round(bitmap.height * ratio);
+const ctx = canvas.getContext('2d');
+ctx.fillStyle = '#fff';
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+if (bitmap.close) bitmap.close();
+const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', qualite));
+if (!blob || blob.size >= fichier.size) return fichier;
+return new File([blob], fichier.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' });
+} catch (e) { return fichier; }
+}
+
+// ─── Téléchargement du RIB ────────────────────────────────────────────
+function gxNomFichierDepuisUrl(url, nomParDefaut) {
+try {
+const segment = new URL(url, window.location.href).pathname.split('/').pop() || '';
+const m = segment.match(/\.[a-zA-Z0-9]+$/);
+return nomParDefaut + (m ? m[0] : '.png');
+} catch (e) { return nomParDefaut + '.png'; }
+}
+
+async function gxTelechargerRib(url, btnEl, statusEl) {
+if (!url || !btnEl) return;
+const nomFichier = gxNomFichierDepuisUrl(url, 'RIB du bénéficiaire');
+const contenuOriginal = btnEl.innerHTML;
+btnEl.disabled = true;
+btnEl.innerHTML = `${ICONS.download} Téléchargement…`;
+if (statusEl) { statusEl.classList.remove('visible', 'warn'); statusEl.innerHTML = ''; }
+try {
+const reponse = await fetchAvecTimeout(url, { mode: 'cors' }, 20000);
+if (!reponse.ok) throw new Error('Réponse réseau invalide (' + reponse.status + ')');
+const blob = await reponse.blob();
+const objectUrl = URL.createObjectURL(blob);
+const lien = document.createElement('a');
+lien.href = objectUrl;
+lien.download = nomFichier;
+document.body.appendChild(lien);
+lien.click();
+document.body.removeChild(lien);
+setTimeout(() => URL.revokeObjectURL(objectUrl), 4000);
+if (statusEl) {
+statusEl.innerHTML = `${ICONS.check}<span>RIB enregistré dans vos téléchargements.</span>`;
+statusEl.classList.add('visible');
+setTimeout(() => statusEl.classList.remove('visible'), 5000);
+}
+} catch (err) {
+console.error('Téléchargement direct du RIB impossible, ouverture dans un nouvel onglet :', err);
+window.open(url, '_blank', 'noopener');
+if (statusEl) {
+statusEl.innerHTML = `${ICONS.alert}<span>Le RIB s'est ouvert dans un nouvel onglet — enregistrez-le depuis là.</span>`;
+statusEl.classList.add('visible', 'warn');
+setTimeout(() => statusEl.classList.remove('visible', 'warn'), 6000);
+}
+} finally {
+btnEl.disabled = false;
+btnEl.innerHTML = contenuOriginal;
+}
+}
+
+// ─── Catégories & récapitulatif ───────────────────────────────────────
+function aDesCategories(ev) {
+return !!(ev && Array.isArray(ev.categories_data) && ev.categories_data.length > 0);
+}
+
+function toutesCategoriesEpuisees(ev) {
+return aDesCategories(ev) && ev.categories_data.every(c => ev.disponibilites && ev.disponibilites[c.nom] && ev.disponibilites[c.nom].epuise);
+}
+
+function achatOuvert(ev) {
+return !ev.ventes_fermees && !toutesCategoriesEpuisees(ev);
+}
+
+function htmlLignesCategories(ev) {
+if (aDesCategories(ev)) {
+return ev.categories_data.map(c => {
+const dispo = ev.disponibilites ? ev.disponibilites[c.nom] : null;
+const epuise = !!(dispo && dispo.epuise);
+return `<div class="cat-row${epuise ? ' epuise' : ''}">
+<span class="cat-name">${esc(c.nom)}</span>
+<span class="cat-price">${epuise ? 'Épuisé' : esc(c.prix)}</span>
+</div>`;
+}).join('');
+}
+return `<div class="cat-row"><span class="cat-name">Billet</span><span class="cat-price">${esc(ev.prix || 'Gratuit')}</span></div>`;
+}
+
+function genererOptionsCategorieAchat(ev) {
+if (!aDesCategories(ev)) return '';
+return ev.categories_data.map(cat => {
+const infoDispo = ev.disponibilites ? ev.disponibilites[cat.nom] : null;
+const estEpuisee = !!(infoDispo && infoDispo.epuise);
+const valeur = `${cat.nom} - ${cat.prix}`;
+let libelle = `${cat.nom} — ${cat.prix}`;
+if (infoDispo) {
+libelle += estEpuisee
+? ' (Épuisé)'
+: ` (${infoDispo.restant} place${infoDispo.restant > 1 ? 's' : ''} disponible${infoDispo.restant > 1 ? 's' : ''})`;
+}
+return `<option value="${esc(valeur)}" data-nom="${esc(cat.nom)}" data-prix="${esc(cat.prix)}"${estEpuisee ? ' disabled' : ''}>${esc(libelle)}</option>`;
+}).join('');
+}
+
+function mettreAJourRecap() {
+const sel = document.getElementById('selectCategorie');
+let prix = '—';
+if (sel && sel.selectedOptions && sel.selectedOptions[0] && !sel.selectedOptions[0].disabled) {
+prix = sel.selectedOptions[0].dataset.prix || '—';
+} else if (!sel && evCourant) {
+prix = evCourant.prix || 'Gratuit';
+}
+const el = document.getElementById('prixChoisiEl');
+if (el) el.textContent = prix;
+}
+
+// ─── Carte sous l'affiche : titre, date, heure, lieu ───────────────────
+function formaterDateLongue(texte) {
+const mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+const t = String(texte || '').trim();
+let y, m, d, r;
+if ((r = t.match(/^(\d{4})-(\d{2})-(\d{2})/))) { y = r[1]; m = +r[2]; d = +r[3]; }
+else if ((r = t.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/))) { d = +r[1]; m = +r[2]; y = r[3]; }
+if (!y || m < 1 || m > 12) return t;
+return d + ' ' + mois[m - 1] + ' ' + y;
+}
+
+function htmlInfosEvenement(ev) {
+const heure = (ev.heure || '').slice(0, 5);
+return `
+<h2 class="event-title">${esc(ev.titre)}</h2>
+<div class="event-meta">
+${ev.date ? `<div class="meta-row">${ICONS.calendar}<span>${esc(formaterDateLongue(ev.date))}</span></div>` : ''}
+${heure ? `<div class="meta-row">${ICONS.clock}<span>${esc(heure)}</span></div>` : ''}
+${ev.lieu ? `<div class="meta-row">${ICONS.pin}<span>${esc(ev.lieu)}</span></div>` : ''}
+</div>`;
+}
+
+// ─── Aperçu de la preuve de paiement ──────────────────────────────────
+function libererApercu() {
+if (apercuUrl) { URL.revokeObjectURL(apercuUrl); apercuUrl = null; }
+}
+
+function reinitialiserFichier(inputEl, zoneEl) {
+libererApercu();
+inputEl.value = '';
+zoneEl.classList.remove('has-file');
+}
+
+// ─── Chargement principal ─────────────────────────────────────────────
+async function chargerPageAchatUnique() {
+if (chargementEnCours) return;
+chargementEnCours = true;
+
+const eventId = new URLSearchParams(window.location.search).get('event');
+const container = document.getElementById('detailsEvenement');
+
+container.innerHTML = `<div class="card"><p class="loading-line"><span class="spinner"></span>Chargement de votre expérience…</p></div>`;
+
+const watchdog = setTimeout(function() {
+if (container.querySelector('.loading-line')) {
+afficherErreurChargement(container, 'Chargement trop long',
+'La connexion semble instable. Vérifiez votre réseau (Wi-Fi ou données mobiles) et réessayez.');
+}
+}, 20000);
+
+try {
+if (!eventId) {
+afficherErreurChargement(container, 'Lien invalide', 'Aucun événement spécifié dans ce lien.');
+return;
+}
+
+let ev;
+try {
+const reponse = await fetchAvecTimeout('/api/tickets?event=' + encodeURIComponent(eventId), { method: 'GET' }, 15000);
+if (!reponse.ok) throw new Error('Erreur serveur (' + reponse.status + ')');
+const data = await reponse.json();
+ev = data.event;
+} catch (err) {
+console.error("Erreur réseau lors du chargement de l'événement :", err);
+afficherErreurChargement(container, 'Connexion impossible',
+'Le chargement a échoué (réseau instable ou trop lent). Vérifiez votre connexion et réessayez.');
+return;
+}
+
+if (!ev) {
+afficherErreurChargement(container, 'Événement introuvable', 'Cet événement a été supprimé ou n\'existe plus.');
+return;
+}
+
+evCourant = ev;
+const ouvert = achatOuvert(ev);
+
+let colonneEtapes = '';
+
+if (!ouvert) {
+const titre = ev.ventes_fermees ? 'Ventes fermées' : 'Billets épuisés';
+const texte = ev.ventes_fermees
+? "Les ventes en ligne de billets pour cet événement viennent d'être fermées par l'organisateur."
+: 'Tous les billets disponibles pour cet événement ont été vendus.';
+colonneEtapes = `
+<div class="card state-card">
+<div class="state-ico">${ICONS.x}</div>
+<h2>${titre}</h2>
+<p>${texte}</p>
+<p>Merci pour votre intérêt et à bientôt !</p>
+</div>`;
+} else {
+const urlRib = ev.rib_image_url || ev.qr_code_paiement || '';
+
+const blocPrix = aDesCategories(ev)
+? `<div class="field">
+<label for="selectCategorie">Catégorie(s) de billet disponible(s)</label>
+<select id="selectCategorie">${genererOptionsCategorieAchat(ev)}</select>
+</div>
+<div class="price-line"><span>Total à payer</span><span id="prixChoisiEl">—</span></div>`
+: `<div class="price-single"><span>Total à payer</span><span id="prixChoisiEl">${esc(ev.prix || 'Gratuit')}</span></div>`;
+
+const blocRib = urlRib ? `
+<div class="rib-box">
+<div class="rib-ico">${ICONS.file}</div>
+<div class="rib-txt">
+<strong>RIB du bénéficiaire</strong>
+<span>Téléchargez-le pour effectuer votre virement depuis votre application bancaire.</span>
+</div>
+<button type="button" class="btn-outline" id="btnTelechargerRib">${ICONS.download} Télécharger le RIB</button>
+<p class="rib-status" id="ribDownloadStatus"></p>
+</div>` : '';
+
+colonneEtapes = `
+<section class="card" aria-labelledby="t1">
+<div class="card-head">
+<span class="step-num">1</span>
+<div>
+<h2 class="card-title" id="t1">Choisissez votre billet</h2>
+<p class="card-desc">Sélectionnez votre catégorie de billet, puis effectuez le paiement.</p>
+</div>
+</div>
+${blocPrix}
+</section>
+
+<section class="card" aria-labelledby="t2">
+<div class="card-head">
+<span class="step-icon">${ICONS.wallet}</span>
+<div>
+<h2 class="card-title" id="t2">Coordonnées de paiement</h2>
+<p class="card-desc">Effectuez le transfert vers les coordonnées ci-dessous.</p>
+</div>
+</div>
+<div class="info-list">
+<div class="info-item">
+<span class="info-item-ico">${ICONS.user}</span>
+<div class="info-item-txt">
+<div class="info-item-label">Bénéficiaire des paiements</div>
+<div class="info-item-value" id="evBeneficiaireNomEl">${esc(ev.beneficiaire_nom || 'Non renseigné')}</div>
+</div>
+</div>
+<div class="info-item">
+<span class="info-item-ico">${ICONS.phone}</span>
+<div class="info-item-txt">
+<div class="info-item-label">Contact WhatsApp</div>
+<div class="info-item-value" id="evBeneficiaireContactEl">${esc(ev.beneficiaire_infos || 'Non renseigné')}</div>
+</div>
+</div>
+</div>
+${blocRib}
+</section>
+
+<section class="card" aria-labelledby="t3">
+<div class="card-head">
+<span class="step-num">2</span>
+<div>
+<h2 class="card-title" id="t3">Confirmer mon paiement</h2>
+<p class="card-desc">Après avoir effectué le paiement, renseignez vos informations et transmettez votre preuve de paiement.</p>
+</div>
+</div>
+
+<div class="field">
+<label for="nomParticipant">Nom et prénom(s) <span class="req">*</span></label>
+<input type="text" id="nomParticipant" placeholder="ex : KONATE Jean" autocomplete="name">
+<p class="field-error" id="errNomParticipant"></p>
+</div>
+
+<div class="field">
+<label for="emailParticipant">Adresse e-mail <span class="hint">(Pour la réception du lien du billet)</span></label>
+<input type="email" id="emailParticipant" placeholder="ex : nom@gmail.com" autocomplete="email" inputmode="email">
+<p class="field-error" id="errEmailParticipant"></p>
+</div>
+
+<div class="field">
+<label for="telParticipant">Contact WhatsApp <span class="req">*</span></label>
+<input type="tel" id="telParticipant" placeholder="ex : +226 ... / +212 ..." autocomplete="tel" inputmode="tel">
+<p class="field-error" id="errTelParticipant"></p>
+</div>
+
+<div class="field">
+<span class="label">Preuve de paiement <span class="hint">(capture du reçu)</span> <span class="req">*</span></span>
+<div class="upload" id="fileWrapper">
+<input type="file" id="preuvePaiement" accept="image/jpeg,image/png,image/webp,image/*" aria-label="Preuve de paiement">
+<div class="upload-empty">
+${ICONS.upload}
+<strong>Cliquez pour choisir un fichier</strong>
+<span>JPG, PNG ou WEBP — 10 Mo maximum</span>
+</div>
+<div class="upload-file">
+<img class="upload-thumb" id="fileThumb" alt="Aperçu de la preuve de paiement">
+<div class="upload-meta">
+<div class="upload-name" id="fileNamePreview"></div>
+<div class="upload-size" id="fileSizePreview"></div>
+<button type="button" class="upload-replace" id="btnRemplacerFichier">Remplacer le fichier</button>
+</div>
+</div>
+</div>
+<p class="field-error" id="errPreuvePaiement"></p>
+</div>
+
+<button class="btn-submit" id="btnValiderAchat" type="button">
+${ICONS.check} Valider mon paiement
+</button>
+<div id="zoneMessageAchat" aria-live="polite"></div>
+<p class="submit-note">Votre paiement sera vérifié par le bénéficiare avant la validation  et obtention de votre billet.</p>
+</section>`;
+}
+
+container.innerHTML = `
+<div class="layout">
+<aside class="col-event">
+<div class="poster">${ev.affiche_url ? `<img id="posterImgEl" src="${esc(ev.affiche_url)}" alt="Affiche de l'événement">` : `<div class="poster-fallback">${ICONS.image}<span>Affiche non disponible</span></div>`}</div>
+<div class="card info-card">
+<div id="infosEvenementEl">${htmlInfosEvenement(ev)}</div>
+<h3 class="cat-title">Catégorie(s) disponible(s)</h3>
+<div class="cat-list" id="listeCategoriesEl">${htmlLignesCategories(ev)}</div>
+</div>
+</aside>
+<div class="col-steps">
+${ouvert ? `<div class="steps-divider"><span>Suivez les étapes ci-dessous afin d'obtenir votre billet</span></div>` : ''}
+${colonneEtapes}
+</div>
+</div>`;
+
+const posterImage = container.querySelector('.poster img');
+if (posterImage) {
+posterImage.addEventListener('error', function() {
+const wrapper = this.closest('.poster');
+if (wrapper) wrapper.innerHTML = `<div class="poster-fallback">${ICONS.image}<span>Affiche non disponible</span></div>`;
+});
+}
+
+if (ouvert) {
+brancherFormulaire(ev);
+derniereSignatureAchat = signatureEvenementAchat(ev);
+demarrerVerificationPeriodiqueAchat();
+}
+
+} catch (err) {
+console.error("Erreur inattendue lors de l'affichage de l'événement :", err);
+afficherErreurChargement(container, 'Une erreur est survenue',
+"Impossible d'afficher les informations de l'événement. Réessayez.");
+} finally {
+clearTimeout(watchdog);
+chargementEnCours = false;
+}
+}
+
+// ─── Branchement du formulaire ────────────────────────────────────────
+function brancherFormulaire(ev) {
+const fileInput = document.getElementById('preuvePaiement');
+const fileWrapperEl = document.getElementById('fileWrapper');
+const errPreuveEl = document.getElementById('errPreuvePaiement');
+const selectCat = document.getElementById('selectCategorie');
+
+if (selectCat) selectCat.addEventListener('change', mettreAJourRecap);
+mettreAJourRecap();
+
+const btnRib = document.getElementById('btnTelechargerRib');
+if (btnRib) {
+const urlRib = ev.rib_image_url || ev.qr_code_paiement;
+const statutRib = document.getElementById('ribDownloadStatus');
+btnRib.addEventListener('click', () => gxTelechargerRib(urlRib, btnRib, statutRib));
+}
+
+[['nomParticipant', 'errNomParticipant'], ['telParticipant', 'errTelParticipant'], ['emailParticipant', 'errEmailParticipant']]
+.forEach(function(paire) {
+const champ = document.getElementById(paire[0]);
+const erreur = document.getElementById(paire[1]);
+if (champ) champ.addEventListener('input', function() {
+if (this.value.trim() || this.id === 'emailParticipant') effacerInvalide(champ, erreur);
+});
+});
+
+fileInput.addEventListener('change', function() {
+const fichier = this.files && this.files[0];
+if (!fichier) return;
+
+if (!TYPES_IMAGE_OK.includes(fichier.type)) {
+reinitialiserFichier(fileInput, fileWrapperEl);
+marquerInvalide(fileWrapperEl, errPreuveEl, 'Format non accepté. Utilisez une image JPG, PNG ou WEBP.');
+return;
+}
+if (fichier.size > TAILLE_MAX_FICHIER) {
+reinitialiserFichier(fileInput, fileWrapperEl);
+marquerInvalide(fileWrapperEl, errPreuveEl, 'Ce fichier dépasse 10 Mo. Choisissez une image plus légère.');
+return;
+}
+
+libererApercu();
+apercuUrl = URL.createObjectURL(fichier);
+document.getElementById('fileThumb').src = apercuUrl;
+document.getElementById('fileNamePreview').textContent = fichier.name;
+document.getElementById('fileSizePreview').textContent = formaterTaille(fichier.size);
+fileWrapperEl.classList.add('has-file');
+effacerInvalide(fileWrapperEl, errPreuveEl);
+});
+
+document.getElementById('btnRemplacerFichier').addEventListener('click', function() {
+reinitialiserFichier(fileInput, fileWrapperEl);
+fileInput.click();
+});
+
+const btn = document.getElementById('btnValiderAchat');
+const btnHTMLOriginal = btn.innerHTML;
+const zoneMsg = document.getElementById('zoneMessageAchat');
+
+btn.onclick = async function() {
+const nomEl = document.getElementById('nomParticipant');
+const telEl = document.getElementById('telParticipant');
+const emailEl = document.getElementById('emailParticipant');
+const errNomEl = document.getElementById('errNomParticipant');
+const errTelEl = document.getElementById('errTelParticipant');
+const errEmailEl = document.getElementById('errEmailParticipant');
+
+const nom = nomEl.value.trim();
+const email = emailEl.value.trim();
+const tel = telEl.value.trim();
+const fichierPreuve = fileInput.files[0];
+
+// Catégorie réellement choisie (valeur "nom - prix" enregistrée côté serveur)
+let typeBilletChoisi = 'Standard';
+const sel = document.getElementById('selectCategorie');
+if (sel) {
+if (!sel.value || (sel.selectedOptions[0] && sel.selectedOptions[0].disabled)) {
+zoneMsg.innerHTML = `<div class="notice error">${ICONS.alert}<span>Cette catégorie n'est plus disponible. Choisissez-en une autre.</span></div>`;
+return;
+}
+typeBilletChoisi = sel.value;
+} else if (ev.prix) {
+typeBilletChoisi = String(ev.prix);
+}
+
+zoneMsg.innerHTML = '';
+effacerInvalide(nomEl, errNomEl);
+effacerInvalide(telEl, errTelEl);
+effacerInvalide(emailEl, errEmailEl);
+effacerInvalide(fileWrapperEl, errPreuveEl);
+
+let valide = true;
+if (!nom) { marquerInvalide(nomEl, errNomEl); valide = false; }
+if (!tel) {
+marquerInvalide(telEl, errTelEl); valide = false;
+} else if (tel.replace(/\D/g, '').length < 8) {
+marquerInvalide(telEl, errTelEl, 'Ce numéro semble trop court.'); valide = false;
+}
+if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+marquerInvalide(emailEl, errEmailEl, 'Cette adresse e-mail ne semble pas valide.'); valide = false;
+}
+if (!fichierPreuve) {
+marquerInvalide(fileWrapperEl, errPreuveEl, 'Une preuve de paiement est obligatoire.'); valide = false;
+} else if (!TYPES_IMAGE_OK.includes(fichierPreuve.type)) {
+marquerInvalide(fileWrapperEl, errPreuveEl, 'Format non accepté. Utilisez une image JPG, PNG ou WEBP.'); valide = false;
+} else if (fichierPreuve.size > TAILLE_MAX_FICHIER) {
+marquerInvalide(fileWrapperEl, errPreuveEl, 'Ce fichier dépasse 10 Mo. Choisissez une image plus légère.'); valide = false;
+}
+
+if (!valide) {
+const premier = document.querySelector('.field-invalid');
+if (premier) premier.scrollIntoView({ behavior: 'smooth', block: 'center' });
+return;
+}
+
+if (btn.disabled) return;
+btn.disabled = true;
+window.addEventListener('beforeunload', gxAvertirAvantFermeture);
+btn.innerHTML = `<span class="spinner"></span> Envoi en cours… Ne fermez pas cette page.`;
+
+try {
+const preuve = await compresserImage(fichierPreuve);
+if (preuve.size > TAILLE_MAX_ENVOI) {
+window.removeEventListener('beforeunload', gxAvertirAvantFermeture);
+marquerInvalide(fileWrapperEl, errPreuveEl, "Cette image reste trop lourde. Choisissez une capture d'écran plus légère.");
+fileWrapperEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+btn.disabled = false;
+btn.innerHTML = btnHTMLOriginal;
+return;
+}
+
+const formData = new FormData();
+formData.append('event', ev.id);
+formData.append('nom_participant', nom);
+formData.append('email', email || '');
+formData.append('telephone', tel);
+formData.append('type_billet', typeBilletChoisi);
+formData.append('preuve', preuve);
+
+const reponseAchat = await fetchAvecTimeout('/api/tickets', { method: 'POST', body: formData }, 30000);
+
+let resultat;
+try { resultat = await reponseAchat.json(); } catch (e) { resultat = null; }
+
+if (!reponseAchat.ok || !resultat || !resultat.success) {
+const message = (resultat && resultat.error) ? resultat.error : "Erreur lors de l'enregistrement du billet.";
+window.removeEventListener('beforeunload', gxAvertirAvantFermeture);
+zoneMsg.innerHTML = `<div class="notice error">${ICONS.alert}<span>${esc(message)}</span></div>`;
+btn.disabled = false;
+btn.innerHTML = btnHTMLOriginal;
+return;
+}
+
+// Paiement en attente de vérification (jamais « confirmé » ici)
+zoneMsg.innerHTML = `<div class="notice success">${ICONS.check}<span>Vos informations ont bien été reçues. Votre paiement est en attente de vérification par l'organisateur.</span></div>`;
+btn.innerHTML = `${ICONS.check} Informations envoyées`;
+window.removeEventListener('beforeunload', gxAvertirAvantFermeture);
+
+setTimeout(function() {
+window.location.href = `billet.html?id=${encodeURIComponent(resultat.code_public)}`;
+}, 1500);
+
+} catch (err) {
+console.error('Erreur inattendue :', err);
+const message = (err && err.name === 'AbortError')
+? 'La connexion met trop de temps à répondre. Vérifiez votre réseau puis réessayez.'
+: 'Une erreur inattendue est survenue lors du traitement.';
+window.removeEventListener('beforeunload', gxAvertirAvantFermeture);
+zoneMsg.innerHTML = `<div class="notice error">${ICONS.alert}<span>${esc(message)}</span></div>`;
+btn.disabled = false;
+btn.innerHTML = btnHTMLOriginal;
+}
+};
+}
+
+// ─── Mise à jour périodique (30 s, arrêtée quand les ventes ferment) ──
+function signatureEvenementAchat(ev) {
+if (!ev) return '';
+return [
+ev.titre || '', ev.date || '', ev.heure || '', ev.lieu || '',
+ev.affiche_url || '', ev.beneficiaire_nom || '', ev.beneficiaire_infos || '',
+JSON.stringify(ev.categories_data || []),
+JSON.stringify(ev.disponibilites || {}),
+ev.prix || '',
+ev.ventes_fermees ? '1' : '0'
+].join('|');
+}
+
+async function verifierMiseAJourAchat() {
+const eventIdCourant = new URLSearchParams(window.location.search).get('event');
+if (!eventIdCourant) return;
+try {
+const reponse = await fetchAvecTimeout('/api/tickets?event=' + encodeURIComponent(eventIdCourant), { method: 'GET' }, 15000);
+if (!reponse.ok) return;
+const data = await reponse.json();
+const ev = data.event;
+if (!ev) return;
+const nouvelleSignature = signatureEvenementAchat(ev);
+if (nouvelleSignature === derniereSignatureAchat) return;
+derniereSignatureAchat = nouvelleSignature;
+evCourant = ev;
+
+const btnValider = document.getElementById('btnValiderAchat');
+if (ev.ventes_fermees && btnValider && !document.getElementById('ventesFermeesAlerte')) {
+const alerteEl = document.createElement('div');
+alerteEl.id = 'ventesFermeesAlerte';
+alerteEl.className = 'notice error';
+alerteEl.innerHTML = `${ICONS.alert}<span>Les ventes viennent d'être fermées par l'organisateur. Aucun achat n'est possible pour le moment. Contactez le bénéficiaire pour toute réclamation.</span>`;
+btnValider.insertAdjacentElement('beforebegin', alerteEl);
+btnValider.disabled = true;
+btnValider.style.opacity = '0.6';
+}
+
+const infosEl = document.getElementById('infosEvenementEl');
+if (infosEl) infosEl.innerHTML = htmlInfosEvenement(ev);
+const posterImgEl = document.getElementById('posterImgEl');
+if (posterImgEl && ev.affiche_url && posterImgEl.getAttribute('src') !== ev.affiche_url) posterImgEl.src = ev.affiche_url;
+const maj = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+const listeCatEl = document.getElementById('listeCategoriesEl');
+if (listeCatEl) listeCatEl.innerHTML = htmlLignesCategories(ev);
+maj('evBeneficiaireNomEl', ev.beneficiaire_nom || 'Non renseigné');
+maj('evBeneficiaireContactEl', ev.beneficiaire_infos || 'Non renseigné');
+
+const selectCategorieEl = document.getElementById('selectCategorie');
+if (selectCategorieEl) {
+const valeurSelectionnee = selectCategorieEl.value;
+selectCategorieEl.innerHTML = genererOptionsCategorieAchat(ev);
+const existeEncore = Array.from(selectCategorieEl.options).some(o => o.value === valeurSelectionnee && !o.disabled);
+if (existeEncore) {
+selectCategorieEl.value = valeurSelectionnee;
+} else if (valeurSelectionnee) {
+const zone = document.getElementById('zoneMessageAchat');
+if (zone) zone.innerHTML = `<div class="notice error">${ICONS.alert}<span>La catégorie choisie n'est plus disponible. Choisissez-en une autre. Pour toute réclamation, contactez le bénéficiaire.</span></div>`;
+}
+mettreAJourRecap();
+} else if (!aDesCategories(ev)) {
+mettreAJourRecap();
+}
+} catch (err) {
+console.error('Erreur vérification mise à jour (achat) :', err);
+}
+}
+
+function demarrerVerificationPeriodiqueAchat() {
+if (intervalMiseAJourAchatDemarre) return;
+intervalMiseAJourAchatDemarre = true;
+const timer = setInterval(() => {
+if (document.hidden) return;
+if (evCourant && evCourant.ventes_fermees) { clearInterval(timer); return; }
+verifierMiseAJourAchat();
+}, 30000);
+document.addEventListener('visibilitychange', () => {
+if (!document.hidden && evCourant && !evCourant.ventes_fermees) verifierMiseAJourAchat();
+});
+}
+
+document.addEventListener('DOMContentLoaded', chargerPageAchatUnique);
+</script>
 </body>
 </html>

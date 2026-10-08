@@ -159,6 +159,136 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
 </head>
 <body>
 
+<!-- ═══════════ INTRO ANIMÉE (ajoutée) — début ═══════════ -->
+<script>
+(function () {
+  'use strict';
+
+  var eventId = new URLSearchParams(window.location.search).get('event');
+  if (!eventId) return;
+
+  var reduit = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var debut = Date.now();
+
+  var css = ''
+    + 'html.gi-lock,html.gi-lock body{overflow:hidden!important}'
+    + '#gi-root{position:fixed;inset:0;z-index:99999;background:#f0efec;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;font-family:"Outfit",system-ui,-apple-system,"Segoe UI",sans-serif;font-weight:300;color:#0a0a0a;-webkit-font-smoothing:antialiased;animation:gi-bg .9s ease both;transition:opacity .55s ease,visibility .55s}'
+    + '#gi-root.gi-out{opacity:0;visibility:hidden;pointer-events:none}'
+    + '#gi-root *,#gi-root *::before,#gi-root *::after{box-sizing:border-box;margin:0;padding:0}'
+    + '.gi-page{container-type:inline-size;position:relative;width:min(100%,560px);min-height:100%;margin:0 auto;padding:max(3.2cqw,env(safe-area-inset-top,0px)) 0 max(6cqw,env(safe-area-inset-bottom,0px));overflow:hidden;display:flex;flex-direction:column;align-items:center}'
+    + '.gi-ticket{position:absolute;left:0;top:0;width:100%;height:auto;pointer-events:none}'
+    + '.gi-ticket path{fill:none;stroke:#b3b2ad;stroke-width:9;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;animation:gi-draw 1.5s .25s ease forwards}'
+    + '.gi-head{position:relative;align-self:flex-start;display:flex;align-items:center;gap:3.4cqw;padding-left:3.2cqw;opacity:0;animation:gi-rise .7s .95s cubic-bezier(.22,1,.36,1) forwards}'
+    + '.gi-logo{width:4.8cqw;min-width:30px;aspect-ratio:1;border-radius:2px;object-fit:cover;background:#000}'
+    + '.gi-brand{font-size:max(4.2cqw,22px);font-weight:300;letter-spacing:-.01em;line-height:1}'
+    + '.gi-brand span{color:#f5a623}'
+    + '.gi-poster{position:relative;width:59.2cqw;margin-top:10.5cqw;border-radius:6.6cqw;overflow:hidden;line-height:0;background:#e4e3df;opacity:0;transform:scale(.94) translateY(3cqw)}'
+    + '.gi-poster img{display:block;width:100%;height:auto}'
+    + '.gi-title{position:relative;margin-top:2cqw;padding:0 4cqw;font-family:"Abril Fatface","Playfair Display",Georgia,serif;font-weight:400;font-size:9.3cqw;line-height:1.1;text-align:center;text-wrap:balance;opacity:0;transform:translateY(3cqw)}'
+    + '.gi-sub{position:relative;margin-top:3.4cqw;font-size:4.3cqw;text-align:center;opacity:0}'
+    + '.gi-cta{position:relative;margin-top:7.5cqw;display:inline-flex;align-items:center;justify-content:center;min-width:40cqw;padding:3.9cqw 6cqw;border:0;border-radius:999px;background:#000;color:#fff;font-family:inherit;font-size:4cqw;font-weight:300;cursor:pointer;opacity:0;transform:translateY(3cqw) scale(.96);-webkit-tap-highlight-color:transparent;transition:background .25s ease}'
+    + '.gi-cta:hover{background:#1c1c1c}'
+    + '.gi-cta:focus-visible{outline:3px solid #f5a623;outline-offset:4px}'
+    + '.gi-foot{position:relative;margin-top:auto;padding-top:9cqw;font-size:2.3cqw;text-align:center;opacity:0}'
+    + '#gi-root.gi-go .gi-poster{animation:gi-pop .9s 0s cubic-bezier(.22,1,.36,1) forwards}'
+    + '#gi-root.gi-go .gi-title{animation:gi-rise .8s .85s cubic-bezier(.22,1,.36,1) forwards}'
+    + '#gi-root.gi-go .gi-sub,#gi-root.gi-go .gi-foot{animation:gi-rise .7s 1.5s cubic-bezier(.22,1,.36,1) forwards}'
+    + '#gi-root.gi-go .gi-cta{animation:gi-rise .8s 2.3s cubic-bezier(.22,1,.36,1) forwards}'
+    + '@keyframes gi-bg{from{background-color:#fff}to{background-color:#f0efec}}'
+    + '@keyframes gi-draw{to{stroke-dashoffset:0}}'
+    + '@keyframes gi-rise{to{opacity:1;transform:none}}'
+    + '@keyframes gi-pop{to{opacity:1;transform:none}}'
+    + '@media(max-width:380px){.gi-foot{font-size:9px}}'
+    + '@media(prefers-reduced-motion:reduce){#gi-root,#gi-root *{animation:none!important;transition:none!important;opacity:1!important;transform:none!important;stroke-dashoffset:0!important}}';
+
+  var style = document.createElement('style');
+  style.textContent = css;
+  document.head.appendChild(style);
+
+  var police = document.createElement('link');
+  police.rel = 'stylesheet';
+  police.href = 'https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Outfit:wght@300;400&display=swap';
+  police.media = 'print';
+  police.onload = function () { police.media = 'all'; };
+  document.head.appendChild(police);
+
+  var root = document.createElement('div');
+  root.id = 'gi-root';
+  root.setAttribute('role', 'dialog');
+  root.setAttribute('aria-label', 'Présentation de l\u2019événement');
+  root.innerHTML = ''
+    + '<div class="gi-page">'
+    + '<svg class="gi-ticket" viewBox="0 0 1240 1400" preserveAspectRatio="xMidYMin meet" aria-hidden="true">'
+    + '<g transform="translate(615 657) rotate(-32)"><path pathLength="1" d="M-517-201H517A50 50 0 0 1 567-151V-40A40 40 0 0 0 567 40V151A50 50 0 0 1 517 201H-517A50 50 0 0 1 -567 151V40A40 40 0 0 0 -567-40V-151A50 50 0 0 1 -517-201Z"/></g>'
+    + '</svg>'
+    + '<div class="gi-head"><img class="gi-logo" src="images/logo.png" alt="" onerror="this.style.visibility=\'hidden\'"><span class="gi-brand">Gold<span>tix</span></span></div>'
+    + '<div class="gi-poster"><img id="gi-img" alt=""></div>'
+    + '<h2 class="gi-title" id="gi-titre"></h2>'
+    + '<p class="gi-sub">Un \u00e9v\u00e8nement \u00e0 ne pas manquer</p>'
+    + '<button type="button" class="gi-cta" id="gi-btn">J\u2019ach\u00e8te mon billet</button>'
+    + '<p class="gi-foot">Plateforme de billetterie moderne</p>'
+    + '</div>';
+
+  document.body.insertBefore(root, document.body.firstChild);
+  document.documentElement.classList.add('gi-lock');
+
+  function fermer(immediat) {
+    document.documentElement.classList.remove('gi-lock');
+    if (immediat) { root.remove(); return; }
+    root.classList.add('gi-out');
+    window.scrollTo(0, 0);
+    setTimeout(function () { root.remove(); }, 650);
+  }
+
+  document.getElementById('gi-btn').addEventListener('click', function () { fermer(false); });
+
+  var lance = false;
+  function lancer() {
+    if (lance) return;
+    lance = true;
+    var attente = reduit ? 0 : Math.max(0, 1500 - (Date.now() - debut));
+    setTimeout(function () {
+      root.classList.add('gi-go');
+      setTimeout(function () {
+        var b = document.getElementById('gi-btn');
+        if (b && document.getElementById('gi-root')) b.focus({ preventScroll: true });
+      }, reduit ? 0 : 3200);
+    }, attente);
+  }
+
+  function afficher(ev) {
+    var titre = String(ev.titre || '');
+    var t = document.getElementById('gi-titre');
+    t.textContent = titre;
+    var taille = titre.length <= 17 ? 9.3 : Math.max(5, 158 / titre.length);
+    t.style.fontSize = taille + 'cqw';
+
+    var img = document.getElementById('gi-img');
+    var cadre = img.parentNode;
+    if (ev.affiche_url) {
+      img.alt = 'Affiche : ' + titre;
+      img.onload = lancer;
+      img.onerror = function () { cadre.style.display = 'none'; lancer(); };
+      img.src = ev.affiche_url;
+      setTimeout(lancer, 5000);
+    } else {
+      cadre.style.display = 'none';
+      lancer();
+    }
+  }
+
+  var ctrl = new AbortController();
+  var minuteur = setTimeout(function () { ctrl.abort(); }, 10000);
+
+  fetch('/api/tickets?event=' + encodeURIComponent(eventId), { method: 'GET', signal: ctrl.signal })
+    .then(function (r) { if (!r.ok) throw new Error('http'); return r.json(); })
+    .then(function (d) { if (!d || !d.event) throw new Error('vide'); afficher(d.event); })
+    .catch(function () { fermer(true); })
+    .then(function () { clearTimeout(minuteur); });
+})();
+</script>
+<!-- ═══════════ INTRO ANIMÉE (ajoutée) — fin ═══════════ -->
+
 <header class="topbar">
 <div class="wrap topbar-inner">
 <a class="brand" href="#" aria-label="GoldTix">
