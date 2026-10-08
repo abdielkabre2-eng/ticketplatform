@@ -493,11 +493,6 @@ document.body.appendChild(lien);
 lien.click();
 document.body.removeChild(lien);
 setTimeout(() => URL.revokeObjectURL(objectUrl), 4000);
-if (statusEl) {
-statusEl.innerHTML = `${ICONS.check}<span>RIB enregistré dans vos téléchargements.</span>`;
-statusEl.classList.add('visible');
-setTimeout(() => statusEl.classList.remove('visible'), 5000);
-}
 } catch (err) {
 console.error('Téléchargement direct du RIB impossible, ouverture dans un nouvel onglet :', err);
 window.open(url, '_blank', 'noopener');
