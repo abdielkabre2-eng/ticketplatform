@@ -159,7 +159,7 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
 </head>
 <body>
 
-<!-- ═══════════ INTRO ANIMÉE (v4) — début ═══════════ -->
+<!-- ═══════════ INTRO ANIMÉE (v5) — début ═══════════ -->
 <script>
 (function () {
 'use strict';
@@ -188,11 +188,9 @@ var css = ''
 
 /* ── Bloc central : une seule colonne centrée ── */
 + '#gi-root .gi-page{position:relative;z-index:1;width:var(--W);margin:0 auto}'
-+ '#gi-root .gi-stage{--pw:calc(var(--u) * 59.2);position:relative;display:flex;flex-direction:column;align-items:center;min-height:calc(100vh - var(--bar));min-height:calc(100svh - var(--bar));padding:calc(var(--u) * 5.5) 0 calc(var(--u) * 3.4 + env(safe-area-inset-bottom,0px))}'
++ '#gi-root .gi-stage{--pw:calc(var(--u) * 59.2);position:relative;display:flex;flex-direction:column;align-items:center;min-height:calc(100vh - var(--bar));min-height:calc(100svh - var(--bar));padding:calc(var(--u) * 9) 0 calc(var(--u) * 3.4 + env(safe-area-inset-bottom,0px))}'
 + '#gi-root .gi-posterwrap{position:relative;width:var(--pw)}'
 
-/* ── Ornement au-dessus de l'affiche ── */
-+ '#gi-root .gi-orn{display:block;width:calc(var(--u) * 43);height:auto;margin:0 auto calc(var(--u) * 3.6);color:#111}'
 + '#gi-root .gi-poster{position:relative;z-index:1;overflow:hidden;line-height:0;border-radius:max(18px,calc(var(--u) * 4.8));background:#e4e3df;aspect-ratio:734 / 896;--dy:calc(var(--u) * 3.5)}'
 + '#gi-root .gi-poster.gi-loaded{aspect-ratio:auto}'
 + '#gi-root .gi-poster img{display:block;width:100%;height:auto;max-width:none}'
@@ -217,7 +215,7 @@ var css = ''
 + '@keyframes gi-in{from{opacity:0;transform:translateY(var(--dy,calc(var(--u) * 2)));visibility:visible}to{opacity:1;transform:none;visibility:visible}}'
 
 /* ── Mobile ── */
-+ '@media(max-width:599px){#gi-root .gi-stage{--pw:calc(var(--u) * 68);padding-top:calc(var(--u) * 5.5)}#gi-root .gi-title{margin-top:calc(var(--u) * 2)}#gi-root .gi-sub{margin-top:calc(var(--u) * 3);font-size:max(15px,calc(var(--u) * 4.6))}#gi-root .gi-foot{padding-top:calc(var(--u) * 8);font-size:max(11.5px,calc(var(--u) * 2.9))}}'
++ '@media(max-width:599px){#gi-root .gi-stage{--pw:calc(var(--u) * 68);padding-top:calc(var(--u) * 8)}#gi-root .gi-title{margin-top:calc(var(--u) * 2)}#gi-root .gi-sub{margin-top:calc(var(--u) * 3);font-size:max(15px,calc(var(--u) * 4.6))}#gi-root .gi-foot{padding-top:calc(var(--u) * 8);font-size:max(11.5px,calc(var(--u) * 2.9))}}'
 + '@media(prefers-reduced-motion:reduce){#gi-root,#gi-root::before{animation:none;transition:none}#gi-root.gi-go .gi-a{animation:none;opacity:1;visibility:visible}}';
 
 var style = document.createElement('style');
@@ -235,7 +233,6 @@ root.innerHTML = ''
 + '<span class="secure-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>Billetterie sécurisée</span>'
 + '</div></header>'
 + '<div class="gi-page"><div class="gi-stage">'
-+ '<svg class="gi-orn gi-a" style="--d:.55s;--dy:-8px" viewBox="0 0 340 44" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 30H112" stroke-width="3.4"/><path d="M336 30H228" stroke-width="3.4"/><g stroke-width="3.2"><path id="o" d="M112 30C130 30 134 14 150 15C162 16 160 31 149 29C142 28 143 21 149 21"/><path d="M128 28C136 38 150 40 158 33"/><path d="M170 8C165 13 165 19 170 24C175 19 175 13 170 8Z"/><path d="M170 24V35"/></g><g stroke-width="3.2" transform="translate(340 0) scale(-1 1)"><path d="M112 30C130 30 134 14 150 15C162 16 160 31 149 29C142 28 143 21 149 21"/><path d="M128 28C136 38 150 40 158 33"/></g></svg>'
 + '<div class="gi-posterwrap">'
 + '<figure class="gi-poster gi-a" style="--d:.75s"><img id="gi-img" alt="" decoding="async"></figure>'
 + '</div>'
@@ -319,7 +316,7 @@ charger()
 .catch(function () { fermer(true); });
 })();
 </script>
-<!-- ═══════════ INTRO ANIMÉE (v4) — fin ═══════════ -->
+<!-- ═══════════ INTRO ANIMÉE (v5) — fin ═══════════ -->
 
 <header class="topbar">
 <div class="wrap topbar-inner">
