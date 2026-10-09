@@ -49,7 +49,7 @@ img{max-width:100%}button,input,select{font-family:inherit}button{-webkit-tap-hi
 .poster img{display:block;width:100%;height:auto;object-fit:cover;transition:transform .6s var(--ease)}
 .poster:hover img{transform:scale(1.015)}
 .info-card{padding:22px}
-.info-card .event-title{margin-bottom:18px;font-size:21px;font-weight:800;line-height:1.25;letter-spacing:-.65px;word-break:break-word}
+.event-head .event-title{margin-bottom:14px;font-size:21px;font-weight:800;line-height:1.25;letter-spacing:-.65px;word-break:break-word}
 .event-meta{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;padding-bottom:19px;border-bottom:1px solid var(--line)}
 .meta-row{display:flex;align-items:flex-start;gap:10px;color:var(--text);font-size:13px;font-weight:600}
 .meta-row svg{width:16px;height:16px;margin-top:2px;flex-shrink:0;color:var(--gold-dark)}
@@ -112,10 +112,10 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
 .footer-links a:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
 .footer-copy{color:#a1a19c;font-size:9.5px}
 @media(max-width:920px){.layout{grid-template-columns:310px minmax(0,1fr);gap:20px}.card{padding:21px}.col-steps .card:not(.state-card)::before{left:21px}.rib-box{grid-template-columns:auto minmax(0,1fr)}.rib-box .btn-outline{grid-column:1/-1;width:100%}}
-@media(max-width:760px){.wrap{width:min(100% - 28px,600px)}.topbar-inner{height:58px}.brand-name{font-size:17px}.secure-badge{padding:6px 8px;font-size:9.5px}.secure-badge svg{width:13px;height:13px}.page-head{padding:34px 0 24px}.ph-eyebrow{gap:9px;margin-bottom:12px;font-size:9px;letter-spacing:1.5px}.ph-eyebrow span{width:24px}.page-head h1{font-size:29px;letter-spacing:-1px}.ph-sub{max-width:300px;margin-top:9px;font-size:13px}.ph-chips{gap:6px;margin-top:16px}.ph-chips li{padding:7px 10px;font-size:11px}.ph-chips svg{width:14px;height:14px}.layout{grid-template-columns:1fr;gap:15px}.col-event{position:static;gap:13px}.col-steps{gap:13px}.poster{border-radius:17px}.info-card{padding:19px}.info-card .event-title{font-size:20px}.card{padding:20px 17px;border-radius:15px}.col-steps .card:not(.state-card)::before{left:17px}.card-head{gap:11px;margin-bottom:19px}.step-num,.step-icon{width:34px;height:34px;flex-basis:34px}.card-title{font-size:15px}.card-desc{font-size:11.5px}input[type=text],input[type=email],input[type=tel],select{min-height:51px;font-size:16px}.price-line{padding:14px}.price-line span:last-child{font-size:20px}.rib-box{padding:13px}.rib-txt span{font-size:10px}.upload-empty{min-height:135px}.btn-submit{min-height:55px;font-size:13px}.footer{padding:28px 0 24px}.footer-description{font-size:10px}}
+@media(max-width:760px){.wrap{width:min(100% - 28px,600px)}.topbar-inner{height:58px}.brand-name{font-size:17px}.secure-badge{padding:6px 8px;font-size:9.5px}.secure-badge svg{width:13px;height:13px}.page-head{padding:34px 0 24px}.ph-eyebrow{gap:9px;margin-bottom:12px;font-size:9px;letter-spacing:1.5px}.ph-eyebrow span{width:24px}.page-head h1{font-size:29px;letter-spacing:-1px}.ph-sub{max-width:300px;margin-top:9px;font-size:13px}.ph-chips{gap:6px;margin-top:16px}.ph-chips li{padding:7px 10px;font-size:11px}.ph-chips svg{width:14px;height:14px}.layout{grid-template-columns:1fr;gap:15px}.col-event{position:static;gap:13px}.col-steps{gap:13px}.poster{border-radius:17px}.info-card{padding:19px}.event-head .event-title{font-size:20px}.card{padding:20px 17px;border-radius:15px}.col-steps .card:not(.state-card)::before{left:17px}.card-head{gap:11px;margin-bottom:19px}.step-num,.step-icon{width:34px;height:34px;flex-basis:34px}.card-title{font-size:15px}.card-desc{font-size:11.5px}input[type=text],input[type=email],input[type=tel],select{min-height:51px;font-size:16px}.price-line{padding:14px}.price-line span:last-child{font-size:20px}.rib-box{padding:13px}.rib-txt span{font-size:10px}.upload-empty{min-height:135px}.btn-submit{min-height:55px;font-size:13px}.footer{padding:28px 0 24px}.footer-description{font-size:10px}}
 @media(max-width:390px){.wrap{width:min(100% - 22px,600px)}.topbar-inner{gap:8px}.brand{min-width:0;flex-shrink:1}.brand-name{font-size:16px}.brand-logo{height:22px}.secure-badge{gap:5px;padding:5px 8px;font-size:9px;white-space:nowrap;flex-shrink:0}.secure-badge svg{width:12px;height:12px}.page-head h1{font-size:27px}.card{padding:18px 15px}.info-card{padding:17px}.rib-box{grid-template-columns:1fr}.rib-ico{width:38px;height:38px}.rib-box .btn-outline{grid-column:auto}}
 @media(max-width:340px){.topbar-inner{gap:6px}.brand-name{font-size:14.5px;letter-spacing:-.4px}.brand-logo{height:20px}.secure-badge{gap:4px;padding:4px 6px;font-size:8px}.secure-badge svg{width:10px;height:10px}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.card{animation:none}.poster img,.btn-submit,.btn-outline,.cat-row{transition:none}.btn-submit:hover:not(:disabled){transform:none}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.card,.plain{animation:none}.poster img,.btn-submit,.btn-outline,.cat-row{transition:none}.btn-submit:hover:not(:disabled){transform:none}}
 .brand-logo{width:auto;height:28px;object-fit:contain}
 .poster-fallback{min-height:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--muted);font-size:12px;font-weight:700;line-height:1.5}
 .poster-fallback svg{width:32px;height:32px;opacity:.55}
@@ -162,6 +162,24 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
 .steps-divider span{color:var(--muted);font-size:13.5px;font-weight:600;text-align:center;line-height:1.4}
 @media(max-width:760px){.steps-divider{gap:10px;margin:4px 0}.steps-divider span{font-size:12px}}
 
+/* ── Infos de l'événement : écrites directement sur le fond, centrées ── */
+.event-head{padding:6px 4px 2px;text-align:center;animation:fadeUp .45s var(--ease) both}
+.event-head .event-meta{align-items:center;gap:8px;margin-bottom:0;padding-bottom:0;border-bottom:0}
+.event-head .meta-row{justify-content:center;align-items:center;text-align:center}
+.event-head .meta-row svg{margin-top:0}
+
+/* ── Coordonnées de paiement : écrites directement sur le fond, centrées ── */
+.plain{padding:8px 4px;text-align:center;animation:fadeUp .45s var(--ease) .08s both}
+.plain-head{display:flex;flex-direction:column;align-items:center;margin-bottom:20px}
+.plain-head .step-icon{margin-bottom:11px}
+.plain-head .card-title{font-size:18px}
+.plain-head .card-desc{max-width:420px}
+.info-list.plain-list{display:flex;flex-wrap:wrap;justify-content:center;gap:20px 44px;overflow:visible;background:none;border:0;border-radius:0}
+.plain-list .info-item{flex-direction:column;gap:7px;padding:0;text-align:center}
+.plain-list .info-item+.info-item{border-top:0}
+.plain-list .info-item-ico{background:var(--gold-soft);color:var(--gold-dark);border-radius:50%}
+.plain-list .info-item-value{font-size:15px}
+.plain .rib-box{margin-top:24px;text-align:left}
 </style>
 </head>
 <body>
@@ -562,7 +580,7 @@ const el = document.getElementById('prixChoisiEl');
 if (el) el.textContent = prix;
 }
 
-// ─── Carte sous l'affiche : titre, date, heure, lieu ───────────────────
+// ─── Infos de l'événement (écrites directement sur le fond) : titre, date, heure, lieu ───
 function formaterDateLongue(texte) {
 const mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 const t = String(texte || '').trim();
@@ -687,15 +705,13 @@ colonneEtapes = `
 ${blocPrix}
 </section>
 
-<section class="card" aria-labelledby="t2">
-<div class="card-head">
+<section class="plain" aria-labelledby="t2">
+<div class="plain-head">
 <span class="step-icon">${ICONS.wallet}</span>
-<div>
 <h2 class="card-title" id="t2">Coordonnées de paiement</h2>
 <p class="card-desc">Effectuez le transfert vers les coordonnées ci-dessous.</p>
 </div>
-</div>
-<div class="info-list">
+<div class="info-list plain-list">
 <div class="info-item">
 <span class="info-item-ico">${ICONS.user}</span>
 <div class="info-item-txt">
@@ -774,8 +790,8 @@ container.innerHTML = `
 <div class="layout">
 <aside class="col-event">
 <div class="poster">${ev.affiche_url ? `<img id="posterImgEl" src="${esc(ev.affiche_url)}" alt="Affiche de l'événement">` : `<div class="poster-fallback">${ICONS.image}<span>Affiche non disponible</span></div>`}</div>
+<div class="event-head" id="infosEvenementEl">${htmlInfosEvenement(ev)}</div>
 <div class="card info-card">
-<div id="infosEvenementEl">${htmlInfosEvenement(ev)}</div>
 <h3 class="cat-title">Catégorie(s) disponible(s)</h3>
 <div class="cat-list" id="listeCategoriesEl">${htmlLignesCategories(ev)}</div>
 </div>
