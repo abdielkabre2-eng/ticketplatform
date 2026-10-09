@@ -6,7 +6,7 @@
 <title>Achat de Billet | GoldTix</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@1,500&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#f7f7f5;--surface:#fff;--surface-soft:#f4f3f0;--surface-gold:#fffbf0;--ink:#111216;--ink-2:#25262b;--text:#44464e;--muted:#85878f;--line:#e8e7e3;--line-strong:#d8d6d0;--gold:#d97706;--gold-dark:#b45309;--gold-soft:#fef3c7;--gold-bright:#f59e0b;--grad-gold:linear-gradient(135deg,#f59e0b 0%,#d97706 50%,#b45309 100%);--green:#16803c;--green-bg:#edf9f1;--red:#c62828;--red-bg:#fff1f1;--radius:18px;--radius-sm:12px;--shadow-sm:0 2px 8px rgba(17,18,22,.04),0 1px 2px rgba(17,18,22,.03);--shadow:0 12px 35px rgba(17,18,22,.07),0 2px 8px rgba(17,18,22,.04);--ease:cubic-bezier(.16,1,.3,1)}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -205,9 +205,260 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
 .pay-hint{margin-bottom:9px;color:var(--muted);font-size:11.5px;line-height:1.5}
 .pay-block .rib-status{margin-top:8px}
 @media(max-width:390px){.pay-value{font-size:21px}}
+
+/* ── Sélecteur de langue ── */
+.topbar-right{display:flex;align-items:center;gap:10px;min-width:0}
+.lang-sw{display:inline-flex;gap:2px;padding:3px;background:#fafaf9;border:1px solid var(--line);border-radius:999px;flex-shrink:0}
+.lang-sw button{border:0;background:transparent;color:var(--text);font-size:11px;font-weight:800;line-height:1.2;padding:5px 10px;border-radius:999px;cursor:pointer;transition:background .2s ease,color .2s ease}
+.lang-sw button:hover{background:#efede8}
+.lang-sw button.on{background:var(--ink);color:#fff}
+@media(max-width:760px){.topbar-right{gap:6px}.lang-sw button{font-size:10px;padding:4px 8px}}
+@media(max-width:430px){.sb-txt{display:none}.secure-badge{padding:6px 8px}}
+
+/* ── Arabe : lecture de droite à gauche ── */
+html[lang=ar] *{letter-spacing:0!important}
+html[lang=ar] body,html[lang=ar] button,html[lang=ar] input,html[lang=ar] select{font-family:"Cairo","Plus Jakarta Sans",system-ui,sans-serif}
+html[lang=ar] .gx-footer__slogan{font-family:"Cairo",serif;font-style:normal;font-weight:600}
+[dir=rtl] .pay-block{padding:2px 14px 2px 0;border-left:0;border-right:3px solid var(--ink)}
+[dir=rtl] .pay-block-rib{border-right-color:var(--line-strong)}
+[dir=rtl] .ev-cell+.ev-cell{border-left:0;border-right:1px solid var(--line-strong)}
+[dir=rtl] select{background-position:left 15px center;padding-right:14px;padding-left:42px}
+[dir=rtl] input[type=email],[dir=rtl] input[type=tel]{direction:ltr;text-align:right}
+[dir=rtl] .gx-footer__secu{margin-left:0;margin-right:auto}
+[dir=rtl] .gx-footer__paiement-label{margin-right:0;margin-left:6px}
 </style>
 </head>
 <body>
+
+<!-- ═══════════ TRADUCTION FR / EN / AR — début ═══════════ -->
+<script>
+(function () {
+'use strict';
+/* Dictionnaire : "texte français" : ["English", "العربية"] */
+var D = {
+"Achat de Billet | GoldTix": ["Ticket Purchase | GoldTix", "شراء تذكرة | GoldTix"],
+"Billetterie sécurisée": ["Secure ticketing", "تذاكر آمنة"],
+"PLATFORME MODERNE": ["MODERN PLATFORM", "منصة عصرية"],
+"Achetez votre": ["Buy your", "اشترِ"],
+"billet": ["ticket", "تذكرتك"],
+"En toute simplicité, reçevez le avec un qr code unique qui sera scanné à l'entrée.": ["Simply receive it with a unique QR code that will be scanned at the entrance.", "بكل بساطة، استلم تذكرتك برمز QR فريد سيتم مسحه عند الدخول."],
+"Paiement vérifié": ["Verified payment", "دفع موثّق"],
+"Billet par e-mail": ["Ticket by e-mail", "التذكرة عبر البريد الإلكتروني"],
+"Achat rapide": ["Fast purchase", "شراء سريع"],
+"Chargement de votre expérience…": ["Loading your experience…", "جارٍ تحميل تجربتك…"],
+
+"Un évènement à ne pas manquer": ["An event not to be missed", "فعالية لا يجب أن تفوتها"],
+"J'achète mon billet": ["I buy my ticket", "أشتري تذكرتي"],
+"Plateforme de billetterie moderne": ["Modern ticketing platform", "منصة تذاكر عصرية"],
+
+"— La billetterie en or —": ["— The golden ticketing —", "— التذاكر الذهبية —"],
+"GoldTix est une plateforme de billetterie en ligne conçue pour simplifier l'achat et la gestion des billets d'événements. Elle permet aux participants d'acheter facilement leurs billets depuis leur téléphone, et aux organisateurs de gérer efficacement leurs ventes, leurs participants et le contrôle des accès.": ["GoldTix is an online ticketing platform designed to simplify the purchase and management of event tickets. It allows attendees to easily buy their tickets from their phone, and organizers to efficiently manage their sales, their attendees and access control.", "GoldTix منصة إلكترونية لبيع التذاكر صُمّمت لتبسيط شراء تذاكر الفعاليات وإدارتها. تتيح للمشاركين شراء تذاكرهم بسهولة من هواتفهم، وللمنظّمين إدارة مبيعاتهم ومشاركيهم والتحكم في الدخول بكفاءة."],
+"DÉCOUVRIR": ["DISCOVER", "اكتشف"],
+"Comment ça marche ?": ["How does it work?", "كيف تعمل المنصة؟"],
+"Histoire-GoldTix": ["GoldTix Story", "قصة GoldTix"],
+"AIDE": ["HELP", "المساعدة"],
+"Contacts": ["Contact", "اتصل بنا"],
+"Conditions d'utilisation": ["Terms of use", "شروط الاستخدام"],
+"INFORMATIONS LÉGALES": ["LEGAL INFORMATION", "معلومات قانونية"],
+"CGV": ["Terms of sale", "شروط البيع"],
+"Mentions légales": ["Legal notice", "الإشعار القانوني"],
+"Politique de confidentialité": ["Privacy policy", "سياسة الخصوصية"],
+"Politique de remboursement": ["Refund policy", "سياسة الاسترداد"],
+"Confidentialité": ["Privacy", "الخصوصية"],
+"Paiement :": ["Payment:", "الدفع:"],
+"Virement (RIB)": ["Bank transfer (RIB)", "تحويل بنكي (RIB)"],
+"Preuve de paiement": ["Proof of payment", "إثبات الدفع"],
+"Données protégées": ["Data protected", "بياناتك محمية"],
+"© GoldTix — Tous droits réservés - 2026": ["© GoldTix — All rights reserved - 2026", "© GoldTix — جميع الحقوق محفوظة - 2026"],
+
+"DATE": ["DATE", "التاريخ"],
+"HEURE": ["TIME", "الوقت"],
+"LIEU": ["PLACE", "المكان"],
+"Catégorie(s) disponible(s)": ["Available category(ies)", "الفئات المتاحة"],
+"Billet": ["Ticket", "تذكرة"],
+"Épuisé": ["Sold out", "نفدت"],
+"Gratuit": ["Free", "مجاني"],
+"Affiche non disponible": ["Poster not available", "الملصق غير متاح"],
+"Affiche de l'événement": ["Event poster", "ملصق الفعالية"],
+"Procédure de paiement ci-dessous": ["Payment procedure below", "إجراءات الدفع أدناه"],
+
+"Choisissez votre billet": ["Choose your ticket", "اختر تذكرتك"],
+"Sélectionnez votre catégorie de billet, puis effectuez le paiement.": ["Select your ticket category, then make the payment.", "اختر فئة تذكرتك ثم قم بالدفع."],
+"Catégorie(s) de billet disponible(s)": ["Available ticket category(ies)", "فئات التذاكر المتاحة"],
+"Total à payer": ["Total to pay", "المبلغ الإجمالي"],
+"Coordonnées de paiement": ["Payment details", "معلومات الدفع"],
+"Effectuez le transfert vers les coordonnées ci-dessous.": ["Make the transfer to the details below.", "قم بالتحويل إلى المعلومات أدناه."],
+"Bénéficiaire des paiements": ["Payment beneficiary", "المستفيد من الدفعات"],
+"Contact WhatsApp": ["WhatsApp contact", "رقم واتساب"],
+"Non renseigné": ["Not provided", "غير محدد"],
+"RIB du bénéficiaire": ["Beneficiary's RIB", "الحساب البنكي للمستفيد (RIB)"],
+"Téléchargez-le pour effectuer votre virement depuis votre application bancaire.": ["Download it to make your transfer from your banking app.", "حمّله لإجراء التحويل من تطبيق البنك الخاص بك."],
+"Télécharger le RIB": ["Download the RIB", "تحميل الـ RIB"],
+"Téléchargement…": ["Downloading…", "جارٍ التحميل…"],
+"Le RIB s'est ouvert dans un nouvel onglet — enregistrez-le depuis là.": ["The RIB opened in a new tab — save it from there.", "تم فتح الـ RIB في تبويب جديد — احفظه من هناك."],
+
+"Confirmer mon paiement": ["Confirm my payment", "تأكيد دفعتي"],
+"Après avoir effectué le paiement, renseignez vos informations et transmettez votre preuve de paiement.": ["After making the payment, fill in your details and send your proof of payment.", "بعد إتمام الدفع، أدخل معلوماتك وأرسل إثبات الدفع."],
+"Nom et prénom(s)": ["Full name", "الاسم الكامل"],
+"Adresse e-mail": ["E-mail address", "البريد الإلكتروني"],
+"(Pour la réception du lien du billet)": ["(To receive the ticket link)", "(لاستلام رابط التذكرة)"],
+"(capture du reçu)": ["(screenshot of the receipt)", "(لقطة شاشة للإيصال)"],
+"Cliquez pour choisir un fichier": ["Click to choose a file", "انقر لاختيار ملف"],
+"JPG, PNG ou WEBP — 10 Mo maximum": ["JPG, PNG or WEBP — 10 MB maximum", "JPG أو PNG أو WEBP — الحد الأقصى 10 ميغابايت"],
+"Remplacer le fichier": ["Replace the file", "استبدال الملف"],
+"Valider mon paiement": ["Submit my payment", "إرسال الدفع"],
+"Votre paiement sera vérifié par le bénéficiaire avant la validation et l'obtention de votre billet.": ["Your payment will be verified by the beneficiary before validation and before you receive your ticket.", "سيتحقق المستفيد من دفعتك قبل اعتمادها وإصدار تذكرتك."],
+"ex : KONATE Jean": ["e.g. SMITH John", "مثال: محمد أمين"],
+"ex : nom@gmail.com": ["e.g. name@gmail.com", "مثال: name@gmail.com"],
+"ex : +226 ... / +212 ...": ["e.g. +226 ... / +212 ...", "مثال: +226 ... / +212 ..."],
+"Aperçu de la preuve de paiement": ["Preview of the proof of payment", "معاينة إثبات الدفع"],
+
+"Ce champ est obligatoire.": ["This field is required.", "هذا الحقل مطلوب."],
+"Ce numéro semble trop court.": ["This number seems too short.", "هذا الرقم يبدو قصيراً جداً."],
+"Cette adresse e-mail ne semble pas valide.": ["This e-mail address doesn't seem valid.", "عنوان البريد الإلكتروني هذا غير صالح."],
+"Une preuve de paiement est obligatoire.": ["A proof of payment is required.", "إثبات الدفع مطلوب."],
+"Format non accepté. Utilisez une image JPG, PNG ou WEBP.": ["Format not accepted. Use a JPG, PNG or WEBP image.", "الصيغة غير مقبولة. استخدم صورة بصيغة JPG أو PNG أو WEBP."],
+"Ce fichier dépasse 10 Mo. Choisissez une image plus légère.": ["This file exceeds 10 MB. Choose a lighter image.", "هذا الملف يتجاوز 10 ميغابايت. اختر صورة أخف."],
+"Cette image reste trop lourde. Choisissez une capture d'écran plus légère.": ["This image is still too heavy. Choose a lighter screenshot.", "هذه الصورة ما زالت ثقيلة جداً. اختر لقطة شاشة أخف."],
+"Cette catégorie n'est plus disponible. Choisissez-en une autre.": ["This category is no longer available. Choose another one.", "هذه الفئة لم تعد متاحة. اختر فئة أخرى."],
+"La catégorie choisie n'est plus disponible. Choisissez-en une autre. Pour toute réclamation, contactez le bénéficiaire.": ["The chosen category is no longer available. Choose another one. For any complaint, contact the beneficiary.", "الفئة المختارة لم تعد متاحة. اختر فئة أخرى. لأي شكوى، تواصل مع المستفيد."],
+"Les ventes viennent d'être fermées par l'organisateur. Aucun achat n'est possible pour le moment. Contactez le bénéficiaire pour toute réclamation.": ["Sales have just been closed by the organizer. No purchase is possible at the moment. Contact the beneficiary for any complaint.", "أغلق المنظّم المبيعات للتو. لا يمكن الشراء حالياً. تواصل مع المستفيد لأي شكوى."],
+
+"Envoi en cours… Ne fermez pas cette page.": ["Sending… Do not close this page.", "جارٍ الإرسال… لا تغلق هذه الصفحة."],
+"Informations envoyées": ["Information sent", "تم إرسال المعلومات"],
+"Vos informations et votre preuve de paiement ont été envoyées. Votre paiement est en attente de vérification par le bénéficiaire.": ["Your information and proof of payment have been sent. Your payment is awaiting verification by the beneficiary.", "تم إرسال معلوماتك وإثبات الدفع. دفعتك بانتظار التحقق من قِبل المستفيد."],
+"La connexion met trop de temps à répondre. Vérifiez votre réseau puis réessayez.": ["The connection is taking too long to respond. Check your network and try again.", "الاتصال بطيء جداً. تحقق من شبكتك ثم أعد المحاولة."],
+"Une erreur inattendue est survenue lors du traitement.": ["An unexpected error occurred during processing.", "حدث خطأ غير متوقع أثناء المعالجة."],
+"Erreur lors de l'enregistrement du billet.": ["Error while saving the ticket.", "حدث خطأ أثناء تسجيل التذكرة."],
+
+"Ventes fermées": ["Sales closed", "المبيعات مغلقة"],
+"Billets épuisés": ["Tickets sold out", "نفدت التذاكر"],
+"Les ventes en ligne de billets pour cet événement viennent d'être fermées par l'organisateur.": ["Online ticket sales for this event have just been closed by the organizer.", "أغلق المنظّم للتو بيع التذاكر عبر الإنترنت لهذه الفعالية."],
+"Tous les billets disponibles pour cet événement ont été vendus.": ["All available tickets for this event have been sold.", "تم بيع جميع التذاكر المتاحة لهذه الفعالية."],
+"Merci pour votre intérêt et à bientôt !": ["Thank you for your interest and see you soon!", "شكراً لاهتمامك، ونراك قريباً!"],
+
+"Réessayer": ["Try again", "إعادة المحاولة"],
+"Chargement trop long": ["Loading is taking too long", "التحميل يستغرق وقتاً طويلاً"],
+"La connexion semble instable. Vérifiez votre réseau (Wi-Fi ou données mobiles) et réessayez.": ["The connection seems unstable. Check your network (Wi-Fi or mobile data) and try again.", "يبدو أن الاتصال غير مستقر. تحقق من شبكتك (واي فاي أو بيانات الهاتف) ثم أعد المحاولة."],
+"Lien invalide": ["Invalid link", "رابط غير صالح"],
+"Aucun événement spécifié dans ce lien.": ["No event specified in this link.", "لم يتم تحديد أي فعالية في هذا الرابط."],
+"Connexion impossible": ["Unable to connect", "تعذّر الاتصال"],
+"Le chargement a échoué (réseau instable ou trop lent). Vérifiez votre connexion et réessayez.": ["Loading failed (unstable or too slow network). Check your connection and try again.", "فشل التحميل (شبكة غير مستقرة أو بطيئة جداً). تحقق من اتصالك ثم أعد المحاولة."],
+"Événement introuvable": ["Event not found", "الفعالية غير موجودة"],
+"Cet événement a été supprimé ou n'existe plus.": ["This event has been deleted or no longer exists.", "تم حذف هذه الفعالية أو لم تعد موجودة."],
+"Une erreur est survenue": ["An error occurred", "حدث خطأ"],
+"Impossible d'afficher les informations de l'événement. Réessayez.": ["Unable to display the event information. Try again.", "تعذّر عرض معلومات الفعالية. أعد المحاولة."]
+};
+var MONTHS_FR = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+var MONTHS_EN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+var MONTHS_AR = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+var LANGS = ['fr', 'en', 'ar'];
+var ATTRS = ['placeholder', 'alt', 'aria-label'];
+var lang = 'fr';
+try { var sv = localStorage.getItem('goldtix_lang'); if (LANGS.indexOf(sv) >= 0) lang = sv; } catch (e) {}
+
+function norm(s) { return String(s).replace(/[’‘]/g, "'").replace(/\s+/g, ' ').trim(); }
+var M = {}, R = {};
+Object.keys(D).forEach(function (k) {
+var nk = norm(k); M[nk] = D[k];
+R[norm(D[k][0])] = nk; R[norm(D[k][1])] = nk;
+});
+var DATE_RE = /^(\d{1,2}) (janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre) (\d{4})$/;
+var OPT_RE = /\((\d+) places? disponibles?\)/;
+
+function tr(src, l) {
+if (l === 'fr') return src;
+var m = /^(\s*)([\s\S]*?)(\s*)$/.exec(src), core = m[2];
+if (!core) return src;
+var i = l === 'en' ? 0 : 1, key = norm(core), e = M[key];
+if (e) return m[1] + e[i] + m[3];
+var d = DATE_RE.exec(key);
+if (d) {
+var mi = MONTHS_FR.indexOf(d[2]);
+return m[1] + (l === 'en' ? MONTHS_EN[mi] + ' ' + d[1] + ', ' + d[3] : d[1] + ' ' + MONTHS_AR[mi] + ' ' + d[3]) + m[3];
+}
+var out = core.replace(OPT_RE, function (x, n) {
+return l === 'en' ? '(' + n + ' spot' + (+n > 1 ? 's' : '') + ' available)' : '(' + n + ' مقعد متاح)';
+}).replace('(Épuisé)', l === 'en' ? '(Sold out)' : '(نفدت)');
+return out !== core ? m[1] + out + m[3] : src;
+}
+function toFr(s) {
+var m = /^(\s*)([\s\S]*?)(\s*)$/.exec(s), key = norm(m[2]);
+if (!key || M[key]) return s;
+return R[key] ? m[1] + R[key] + m[3] : s;
+}
+
+function pt(n) {
+var p = n.parentNode;
+if (!p) return;
+var tag = p.nodeName;
+if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'TITLE' || tag === 'TEXTAREA') return;
+var cur = n.data, src = (n.__o !== undefined && cur === n.__o) ? n.__s : toFr(cur), out = tr(src, lang);
+n.__s = src; n.__o = out;
+if (out !== cur) n.data = out;
+}
+function pa(el, a) {
+var cur = el.getAttribute(a);
+if (cur == null) return;
+var st = el.__i18n || (el.__i18n = {}), rec = st[a];
+var src = (rec && cur === rec.o) ? rec.s : toFr(cur), out = tr(src, lang);
+st[a] = { s: src, o: out };
+if (out !== cur) el.setAttribute(a, out);
+}
+function walk(root) {
+if (!root) return;
+if (root.nodeType === 3) { pt(root); return; }
+if (root.nodeType !== 1 && root.nodeType !== 9) return;
+var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null), n, list = [];
+while ((n = w.nextNode())) list.push(n);
+list.forEach(pt);
+var els = [].slice.call(root.querySelectorAll('[placeholder],[alt],[aria-label]'));
+if (root.nodeType === 1) els.unshift(root);
+els.forEach(function (el) { ATTRS.forEach(function (a) { if (el.hasAttribute && el.hasAttribute(a)) pa(el, a); }); });
+}
+function marquerBoutons() {
+[].forEach.call(document.querySelectorAll('[data-lang]'), function (b) {
+var on = b.getAttribute('data-lang') === lang;
+b.classList.toggle('on', on);
+b.setAttribute('aria-pressed', on ? 'true' : 'false');
+});
+}
+function appliquerDocument() {
+var h = document.documentElement;
+h.lang = lang;
+h.dir = lang === 'ar' ? 'rtl' : 'ltr';
+document.title = tr('Achat de Billet | GoldTix', lang);
+}
+function setLang(l) {
+if (LANGS.indexOf(l) < 0) l = 'fr';
+lang = l;
+try { localStorage.setItem('goldtix_lang', l); } catch (e) {}
+appliquerDocument();
+walk(document.documentElement);
+marquerBoutons();
+}
+window.gxSetLang = setLang;
+
+appliquerDocument();
+
+var mo = new MutationObserver(function (recs) {
+recs.forEach(function (r) {
+if (r.type === 'childList') { [].forEach.call(r.addedNodes, function (nd) { walk(nd); }); }
+else if (r.type === 'characterData') { pt(r.target); }
+else if (r.type === 'attributes') { pa(r.target, r.attributeName); }
+});
+marquerBoutons();
+});
+mo.observe(document.documentElement, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ATTRS });
+
+document.addEventListener('click', function (e) {
+var b = e.target.closest && e.target.closest('[data-lang]');
+if (b) setLang(b.getAttribute('data-lang'));
+});
+document.addEventListener('DOMContentLoaded', function () { setLang(lang); });
+})();
+</script>
+<!-- ═══════════ TRADUCTION FR / EN / AR — fin ═══════════ -->
 
 <!-- ═══════════ INTRO ANIMÉE (v11) — début ═══════════ -->
 <script>
@@ -280,7 +531,8 @@ root.innerHTML = ''
 /* En-tête : copie exacte de celui de la page d'achat */
 + '<header class="topbar gi-a" style="--d:.3s;--dy:-12px"><div class="wrap topbar-inner">'
 + '<a class="brand" href="#" aria-label="GoldTix" onclick="return false"><img src="images/logo.png" alt="" class="brand-logo" onerror="this.style.display=\'none\'"><span class="brand-name">Gold<em>Tix</em></span></a>'
-+ '<span class="secure-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>Billetterie sécurisée</span>'
++ '<div class="topbar-right"><div class="lang-sw" role="group" aria-label="Langue / Language / اللغة"><button type="button" data-lang="fr">FR</button><button type="button" data-lang="en">EN</button><button type="button" data-lang="ar">AR</button></div>'
++ '<span class="secure-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg><span class="sb-txt">Billetterie sécurisée</span></span></div>'
 + '</div></header>'
 + '<div class="gi-page"><div class="gi-stage">'
 + '<div class="gi-posterwrap">'
@@ -376,10 +628,13 @@ charger()
 <img src="images/logo.png" alt="" class="brand-logo" onerror="this.style.display='none'">
 <span class="brand-name">Gold<em>Tix</em></span>
 </a>
+<div class="topbar-right">
+<div class="lang-sw" role="group" aria-label="Langue / Language / اللغة"><button type="button" data-lang="fr">FR</button><button type="button" data-lang="en">EN</button><button type="button" data-lang="ar">AR</button></div>
 <span class="secure-badge">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
-Billetterie sécurisée
+<span class="sb-txt">Billetterie sécurisée</span>
 </span>
+</div>
 </div>
 </header>
 
