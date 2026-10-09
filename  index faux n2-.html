@@ -1,903 +1,1769 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Achat de Billet | GoldTix</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#f7f7f5;--surface:#fff;--surface-soft:#f4f3f0;--surface-gold:#fffbf0;--ink:#111216;--ink-2:#25262b;--text:#44464e;--muted:#85878f;--line:#e8e7e3;--line-strong:#d8d6d0;--gold:#d97706;--gold-dark:#b45309;--gold-soft:#fef3c7;--gold-bright:#f59e0b;--grad-gold:linear-gradient(135deg,#f59e0b 0%,#d97706 50%,#b45309 100%);--green:#16803c;--green-bg:#edf9f1;--red:#c62828;--red-bg:#fff1f1;--radius:18px;--radius-sm:12px;--shadow-sm:0 2px 8px rgba(17,18,22,.04),0 1px 2px rgba(17,18,22,.03);--shadow:0 12px 35px rgba(17,18,22,.07),0 2px 8px rgba(17,18,22,.04);--ease:cubic-bezier(.16,1,.3,1)}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{background:var(--bg);overflow-x:hidden;scroll-behavior:smooth}
-body{min-height:100vh;overflow-x:hidden;font-family:"Plus Jakarta Sans",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 85% 0%,rgba(217,119,6,.07),transparent 27rem),var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
-img{max-width:100%}button,input,select{font-family:inherit}button{-webkit-tap-highlight-color:transparent}a{color:inherit}
-@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-.wrap{width:min(1120px,calc(100% - 40px));margin:0 auto}
-.topbar{position:relative;z-index:20;background:rgba(255,255,255,.94);border-bottom:1px solid rgba(232,231,227,.9);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
-.topbar-inner{height:68px;display:flex;align-items:center;justify-content:space-between;gap:16px}
-.brand{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink)}
-.brand-name{font-size:19px;font-weight:800;letter-spacing:-.6px}
-.brand-name em{color:var(--gold);font-style:normal}
-.secure-badge{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border:1px solid var(--line);border-radius:999px;background:#fafaf9;color:var(--text);font-size:11.5px;font-weight:700}
-.secure-badge svg{width:14px;height:14px;color:var(--green);flex-shrink:0}
-.page-head{position:relative;padding:52px 0 30px}
-.page-head::before{content:"GOLDTIX  •  BILLETTERIE";display:block;margin-bottom:13px;color:var(--gold);font-size:10.5px;font-weight:800;letter-spacing:1.7px}
-.page-head h1{max-width:700px;font-size:clamp(30px,4vw,42px);font-weight:800;line-height:1.1;letter-spacing:-1.4px}
-.page-head p{max-width:620px;margin-top:11px;color:var(--text);font-size:15px;line-height:1.7}
-.layout{display:grid;grid-template-columns:350px minmax(0,1fr);align-items:start;gap:28px;padding-bottom:70px}
-.col-event{position:sticky;top:22px;display:flex;flex-direction:column;gap:16px;min-width:0}
-.col-steps{display:flex;flex-direction:column;gap:16px;min-width:0}
-.card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:25px;animation:fadeUp .45s var(--ease) both}
-.col-steps .card:nth-child(1){animation-delay:.03s}.col-steps .card:nth-child(2){animation-delay:.08s}.col-steps .card:nth-child(3){animation-delay:.13s}
-.card-head{display:flex;align-items:flex-start;gap:13px;margin-bottom:22px}
-.step-num,.step-icon{width:36px;height:36px;flex:0 0 36px;display:flex;align-items:center;justify-content:center;border-radius:11px}
-.step-num{background:var(--ink);color:#fff;font-size:12px;font-weight:800;box-shadow:inset 0 -2px 0 rgba(255,255,255,.08),0 5px 12px rgba(17,18,22,.13)}
-.step-icon{background:var(--gold-soft);color:var(--gold-dark)}
-.step-icon svg{width:17px;height:17px}
-.card-title{font-size:16px;font-weight:800;line-height:1.35;letter-spacing:-.25px}
-.card-desc{margin-top:4px;color:var(--muted);font-size:12.5px;line-height:1.55}
-.poster{position:relative;overflow:hidden;min-height:180px;background:linear-gradient(145deg,#eeeae1,#f7f6f3);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);line-height:0}
-.poster::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.02) 0%,rgba(0,0,0,0) 55%,rgba(0,0,0,.08) 100%)}
-.poster img{display:block;width:100%;height:auto;object-fit:cover;transition:transform .6s var(--ease)}
-.poster:hover img{transform:scale(1.015)}
-.info-card{padding:22px}
-.info-card .event-title{margin-bottom:18px;font-size:21px;font-weight:800;line-height:1.25;letter-spacing:-.65px;word-break:break-word}
-.event-meta{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;padding-bottom:19px;border-bottom:1px solid var(--line)}
-.meta-row{display:flex;align-items:flex-start;gap:10px;color:var(--text);font-size:13px;font-weight:600}
-.meta-row svg{width:16px;height:16px;margin-top:2px;flex-shrink:0;color:var(--gold-dark)}
-.cat-title{margin-bottom:11px;font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase}
-.cat-list{display:flex;flex-direction:column;gap:7px}
-.cat-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 12px;background:var(--surface-soft);border:1px solid transparent;border-radius:10px;transition:background .2s ease,border-color .2s ease}
-.cat-row:hover{background:#f0eee9;border-color:var(--line)}
-.cat-row.epuise{opacity:.52}
-.cat-name{min-width:0;color:var(--ink-2);font-size:12.5px;font-weight:700;word-break:break-word}
-.cat-price{flex-shrink:0;padding:5px 9px;background:var(--ink);color:#fff;border-radius:7px;font-size:11.5px;font-weight:800;white-space:nowrap}
-.cat-row.epuise .cat-price{background:#cfcfc9}
-.field{margin-bottom:18px}.field:last-child{margin-bottom:0}
-.field label,.field .label{display:block;margin-bottom:7px;color:var(--ink-2);font-size:12.5px;font-weight:700}
-.field .hint{color:var(--muted);font-size:11px;font-weight:500}
-.req{color:var(--red)}
-input[type=text],input[type=email],input[type=tel],select{width:100%;min-height:52px;padding:13px 14px;background:#fff;color:var(--ink);border:1px solid var(--line-strong);border-radius:11px;outline:none;font-size:14px;font-weight:500;transition:border-color .2s ease,box-shadow .2s ease;-webkit-appearance:none;appearance:none}
-input:hover,select:hover{border-color:#bdbbb4}
-input::placeholder{color:#aaa9a3;font-weight:400}
-input:focus,select:focus{border-color:var(--ink);box-shadow:0 0 0 3px rgba(17,18,22,.07),0 2px 6px rgba(17,18,22,.04)}
-select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23111216' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 15px center;padding-right:42px}
-.price-line{position:relative;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:14px;padding:16px 17px;background:linear-gradient(135deg,#faf9f6,#f5f3ee);border:1px solid var(--line);border-radius:12px}
-.price-line span:first-child{color:var(--text);font-size:12px;font-weight:700}
-.price-line span:last-child{font-size:21px;font-weight:800;letter-spacing:-.5px}
-.info-list{overflow:hidden;background:#fff;border:1px solid var(--line);border-radius:13px}
-.info-item{display:flex;align-items:center;gap:12px;padding:13px 14px}
-.info-item+.info-item{border-top:1px solid var(--line)}
-.info-item-ico{width:36px;height:36px;flex:0 0 36px;display:flex;align-items:center;justify-content:center;background:#f5f4f1;border-radius:10px}
-.info-item-ico svg{width:16px;height:16px}
-.info-item-txt{min-width:0}
-.info-item-label{margin-bottom:1px;color:var(--muted);font-size:10.5px;font-weight:700;letter-spacing:.25px;text-transform:uppercase}
-.info-item-value{font-size:13.5px;font-weight:700;word-break:break-word}
-.rib-box{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:13px;margin-top:14px;padding:14px;background:var(--surface-gold);border:1px solid rgba(217,119,6,.20);border-radius:13px}
-.rib-ico{width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:var(--ink);color:#fff;border-radius:11px}
-.rib-ico svg{width:18px;height:18px}
-.rib-txt{min-width:0}
-.rib-txt strong{display:block;font-size:12.5px;font-weight:800}
-.rib-txt span{display:block;margin-top:2px;color:var(--text);font-size:10.5px;line-height:1.45}
-.btn-outline{min-height:40px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 13px;background:#fff;color:var(--ink);border:1px solid var(--ink);border-radius:9px;cursor:pointer;font-size:11.5px;font-weight:800;transition:background .2s ease,color .2s ease,transform .2s ease}
-.btn-outline svg{width:14px;height:14px}
-.btn-outline:hover:not(:disabled){background:var(--ink);color:#fff;transform:translateY(-1px)}
-.upload{position:relative;overflow:hidden;background:linear-gradient(135deg,#fbfaf8,#f7f5f1);border:1.5px dashed #c9c6bd;border-radius:13px;transition:border-color .2s ease,background .2s ease}
-.upload:hover{border-color:var(--ink);background:#f4f2ed}
-.upload input[type=file]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;z-index:2}
-.upload-empty{min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:24px 16px;text-align:center;pointer-events:none}
-.upload-empty svg{width:29px;height:29px;margin-bottom:3px;color:var(--gold-dark)}
-.upload-empty strong{font-size:12.5px;font-weight:800}
-.upload-empty span{color:var(--muted);font-size:10.5px}
-.btn-submit{position:relative;width:100%;min-height:56px;display:flex;align-items:center;justify-content:center;gap:9px;margin-top:10px;padding:15px 22px;overflow:hidden;background:var(--ink);color:#fff;border:0;border-radius:11px;box-shadow:0 7px 16px rgba(17,18,22,.12),inset 0 -3px 0 var(--gold-bright);cursor:pointer;font-size:13.5px;font-weight:800;transition:transform .2s var(--ease),background .2s ease,box-shadow .2s ease}
-.btn-submit::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.06) 50%,transparent 70%);transform:translateX(-100%);transition:transform .7s ease;pointer-events:none}
-.btn-submit:hover:not(:disabled){background:#202126;transform:translateY(-2px);box-shadow:0 11px 24px rgba(17,18,22,.15),inset 0 -3px 0 var(--gold-bright)}
-.btn-submit:hover:not(:disabled)::after{transform:translateX(100%)}
-.btn-submit:active:not(:disabled){transform:none}
-.btn-submit svg{width:17px;height:17px;flex-shrink:0}
-.submit-note{margin-top:10px;color:var(--muted);font-size:10.5px;line-height:1.6;text-align:center}
-.footer{margin-top:5px;background:#fff;border-top:1px solid var(--line);padding:34px 0 28px;text-align:center;color:var(--muted)}
-.footer-brand{margin-bottom:9px;color:var(--gold-dark);font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
-.footer-description{max-width:610px;margin:0 auto 18px;font-size:10.5px;line-height:1.7}
-.footer-links{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin-bottom:17px}
-.footer-links a{padding:7px 11px;background:#fafaf9;color:var(--text);border:1px solid var(--line);border-radius:999px;text-decoration:none;font-size:10.5px;font-weight:600;transition:border-color .2s ease,background .2s ease,color .2s ease}
-.footer-links a:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
-.footer-copy{color:#a1a19c;font-size:9.5px}
-@media(max-width:920px){.layout{grid-template-columns:310px minmax(0,1fr);gap:20px}.card{padding:21px}.col-steps .card:not(.state-card)::before{left:21px}.rib-box{grid-template-columns:auto minmax(0,1fr)}.rib-box .btn-outline{grid-column:1/-1;width:100%}}
-@media(max-width:760px){.wrap{width:min(100% - 28px,600px)}.topbar-inner{height:58px}.brand-name{font-size:17px}.secure-badge{padding:6px 8px;font-size:9.5px}.secure-badge svg{width:13px;height:13px}.page-head{padding:35px 0 23px}.page-head::before{margin-bottom:10px;font-size:9px;letter-spacing:1.4px}.page-head h1{font-size:29px;letter-spacing:-1px}.page-head p{margin-top:8px;font-size:13px}.layout{grid-template-columns:1fr;gap:15px}.col-event{position:static;gap:13px}.col-steps{gap:13px}.poster{border-radius:17px}.info-card{padding:19px}.info-card .event-title{font-size:20px}.card{padding:20px 17px;border-radius:15px}.col-steps .card:not(.state-card)::before{left:17px}.card-head{gap:11px;margin-bottom:19px}.step-num,.step-icon{width:34px;height:34px;flex-basis:34px}.card-title{font-size:15px}.card-desc{font-size:11.5px}input[type=text],input[type=email],input[type=tel],select{min-height:51px;font-size:16px}.price-line{padding:14px}.price-line span:last-child{font-size:20px}.rib-box{padding:13px}.rib-txt span{font-size:10px}.upload-empty{min-height:135px}.btn-submit{min-height:55px;font-size:13px}.footer{padding:28px 0 24px}.footer-description{font-size:10px}}
-@media(max-width:390px){.wrap{width:min(100% - 22px,600px)}.topbar-inner{gap:8px}.brand{min-width:0;flex-shrink:1}.brand-name{font-size:16px}.brand-logo{height:22px}.secure-badge{gap:5px;padding:5px 8px;font-size:9px;white-space:nowrap;flex-shrink:0}.secure-badge svg{width:12px;height:12px}.page-head h1{font-size:27px}.card{padding:18px 15px}.info-card{padding:17px}.rib-box{grid-template-columns:1fr}.rib-ico{width:38px;height:38px}.rib-box .btn-outline{grid-column:auto}}
-@media(max-width:340px){.topbar-inner{gap:6px}.brand-name{font-size:14.5px;letter-spacing:-.4px}.brand-logo{height:20px}.secure-badge{gap:4px;padding:4px 6px;font-size:8px}.secure-badge svg{width:10px;height:10px}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.card{animation:none}.poster img,.btn-submit,.btn-outline,.cat-row{transition:none}.btn-submit:hover:not(:disabled){transform:none}}
-.brand-logo{width:auto;height:28px;object-fit:contain}
-.poster-fallback{min-height:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--muted);font-size:12px;font-weight:700;line-height:1.5}
-.poster-fallback svg{width:32px;height:32px;opacity:.55}
-.field-invalid{border-color:var(--red)!important;box-shadow:0 0 0 3px rgba(198,40,40,.08)!important}
-.field-error{display:none;align-items:center;gap:6px;margin-top:7px;color:var(--red);font-size:11.5px;font-weight:600}
-.field-error.visible{display:flex}
-.field-error svg{width:14px;height:14px;flex-shrink:0}
-.btn-outline:disabled{opacity:.55;cursor:wait}
-.rib-status{display:none;grid-column:1/-1;align-items:center;gap:6px;color:var(--green);font-size:11px;font-weight:600}
-.rib-status.visible{display:flex}
-.rib-status svg{width:14px;height:14px;flex-shrink:0}
-.rib-status.warn{color:var(--text)}
-.upload.has-file{background:#fff;border-style:solid;border-color:var(--line)}
-.upload.has-file:hover{background:#fff;border-color:var(--line-strong)}
-.upload.has-file input[type=file],.upload.has-file .upload-empty{display:none}
-.upload-file{display:none;align-items:center;gap:12px;padding:12px}
-.upload.has-file .upload-file{display:flex}
-.upload-thumb{width:65px;height:65px;flex-shrink:0;object-fit:cover;background:#eee;border:1px solid var(--line);border-radius:9px}
-.upload-meta{min-width:0;flex:1}
-.upload-name{overflow:hidden;color:var(--ink);font-size:12px;font-weight:800;text-overflow:ellipsis;white-space:nowrap}
-.upload-size{margin-top:2px;color:var(--muted);font-size:10.5px}
-.upload-replace{margin-top:6px;padding:0;background:none;border:none;color:var(--ink);cursor:pointer;font-size:10.5px;font-weight:700;text-decoration:underline;text-underline-offset:2px}
-.upload.field-invalid{background:var(--red-bg)}
-.btn-submit:disabled{cursor:not-allowed;opacity:.68}
-@keyframes spin{to{transform:rotate(360deg)}}
-.spinner{width:18px;height:18px;flex-shrink:0;border:2.5px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
-.notice{display:flex;align-items:flex-start;gap:9px;margin-top:12px;padding:12px 13px;border-radius:10px;font-size:11.5px;font-weight:600;line-height:1.5}
-.notice svg{width:17px;height:17px;flex-shrink:0;margin-top:1px}
-.notice.success{background:var(--green-bg);color:var(--green);border:1px solid #c5ebd2}
-.notice.error{background:var(--red-bg);color:var(--red);border:1px solid #f1caca}
-.state-card{padding:65px 30px;text-align:center}
-.state-ico{width:58px;height:58px;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;background:var(--red-bg);color:var(--red);border-radius:50%}
-.state-ico svg{width:25px;height:25px}
-.state-card h2{margin-bottom:8px;font-size:21px;font-weight:800}
-.state-card p{max-width:480px;margin:0 auto;color:var(--text);font-size:13px}
-.state-card p+p{margin-top:7px;color:var(--muted);font-size:11.5px;font-weight:600}
-.state-card .btn-submit{max-width:270px;margin:22px auto 0}
-.loading-line{min-height:130px;display:flex;align-items:center;justify-content:center;gap:10px;color:var(--text);font-size:12.5px;font-weight:600}
-.loading-line .spinner{width:19px;height:19px;border-color:#ddd;border-top-color:var(--gold)}
-@media(max-width:760px){.brand-logo{height:25px}}
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Mon Billet - GoldTix</title>
 
-.steps-divider{display:flex;align-items:center;gap:16px;margin:2px 0 4px}
-.steps-divider::before,.steps-divider::after{content:"";flex:1;height:2px;background:var(--gold);opacity:.55;border-radius:2px}
-.steps-divider span{color:var(--muted);font-size:13.5px;font-weight:600;text-align:center;line-height:1.4}
-@media(max-width:760px){.steps-divider{gap:10px;margin:4px 0}.steps-divider span{font-size:12px}}
+<!-- Police d'accent premium (Syne), déjà utilisée sur la page d'achat GoldTix -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&display=swap" rel="stylesheet">
+
+<!-- 3. Enfin, les autres bibliothèques -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+<style>
+:root {
+--gold-100: #fef3c7;
+--gold-200: #fde68a;
+--gold-300: #fcd34d;
+--gold-400: #fbbf24;
+--gold-500: #f59e0b;
+--gold-600: #d97706;
+--gold-700: #b45309;
+--gold-800: #92400e;
+--gold-900: #78350f;
+
+--t0-a: #f59e0b; --t0-b: #d97706; --t0-c: #92400e; --t0-glow: rgba(245,158,11,.28);
+--t1-a: #facc15; --t1-b: #eab308; --t1-c: #713f12; --t1-glow: rgba(250,204,21,.28);
+--t2-a: #10b981; --t2-b: #059669; --t2-c: #064e3b; --t2-glow: rgba(16,185,129,.26);
+--t3-a: #f43f5e; --t3-b: #e11d48; --t3-c: #881337; --t3-glow: rgba(244,63,94,.26);
+
+--bg-page:   #f5f3ef;
+--bg-card:   #ffffff;
+--bg-cell:   #f6f4f0;
+--border:    #ece8e0;
+--text-hi:   #1c1917;
+--text-mid:  #6b6459;
+--text-lo:   #a39c8d;
+--radius-lg: 24px;
+--radius-md: 14px;
+--radius-sm: 8px;
+--shadow-ticket: 0 24px 60px rgba(28,25,23,.10), 0 0 0 1px rgba(28,25,23,.04);
+--font: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+--font-accent: 'Syne', var(--font);
+    }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+@font-face {
+font-family: 'Plus Jakarta Sans';
+src: local('Plus Jakarta Sans'), local('PlusJakartaSans');
+    }
+
+html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+}
+
+body {
+    font-family: var(--font);
+    background: var(--bg-page);
+    color: var(--text-hi);
+    min-height: 100dvh;
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+img, svg, video, canvas {
+    max-width: 100%;
+}
+
+body::before {
+content: '';
+position: fixed; inset: 0;
+background:
+radial-gradient(ellipse 60% 35% at 50% -5%, rgba(245,158,11,.08) 0%, transparent 70%),
+radial-gradient(ellipse 40% 25% at 90% 80%, rgba(217,119,6,.05) 0%, transparent 60%);
+pointer-events: none; z-index: 0;
+    }
+
+body::after {
+content: '';
+position: fixed; inset: 0;
+background: none;
+pointer-events: none; z-index: 0;
+    }
+
+.top-navbar {
+position: sticky; top: 0; z-index: 100;
+width: 100%; height: 60px;
+display: flex; align-items: center; justify-content: space-between; gap: 12px;
+padding: 0 max(20px, calc((100% - 1040px) / 2));
+background: #ffffff;
+border-bottom: 1px solid #ece9e3;
+    }
+
+.navbar-brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: #14161f; }
+.navbar-logo { height: 26px; width: auto; filter: none; }
+.navbar-name {
+  font-family: 'Plus Jakarta Sans', var(--font-accent), system-ui, sans-serif;
+  font-size: 19px; font-weight: 800;
+  letter-spacing: -.3px; text-transform: none;
+  color: #14161f;
+    }
+.navbar-name .navbar-name-accent {
+  background: none; -webkit-background-clip: border-box; -webkit-text-fill-color: currentColor;
+  background-clip: border-box;
+  color: #d97706; font-style: normal;
+}
+.navbar-badge {
+display: inline-flex; align-items: center; gap: 6px;
+padding: 0; border-radius: 0; background: none; border: none;
+font-size: 12px; font-weight: 600;
+letter-spacing: 0; text-transform: none; white-space: nowrap;
+color: #4b4f5c;
+    }
+.navbar-badge svg { width: 14px; height: 14px; color: #14161f; flex-shrink: 0; }
+@media (max-width: 600px) {
+.top-navbar { height: 54px; padding: 0 14px; }
+.navbar-badge { font-size: 11px; }
+    }
+@keyframes pulse-dot {
+0%,100% { opacity:1; transform:scale(1); }
+50%      { opacity:.5; transform:scale(.7); }
+    }
+
+.state-screen {
+flex: 1; display: flex; flex-direction: column;
+align-items: center; justify-content: center;
+gap: 20px; padding: 40px 24px;
+z-index: 1; position: relative;
+animation: fadeUp .6s ease both;
+    }
+.loader-ring {
+width: 56px; height: 56px; border-radius: 50%;
+border: 3px solid rgba(217,119,6,.12);
+border-top-color: var(--gold-500);
+animation: spin 1s linear infinite;
+    }
+@keyframes spin { to { transform: rotate(360deg); } }
+.state-screen .state-title { font-size: 1rem; font-weight: 700; color: var(--text-mid); text-align: center; }
+.state-screen .state-sub { font-size: .8rem; color: var(--text-lo); text-align: center; max-width: 260px; line-height: 1.6; }
+.error-icon {
+width: 56px; height: 56px; display: flex; align-items: center; justify-content: center;
+border-radius: 50%; background: rgba(244,63,94,.12); border: 1px solid rgba(244,63,94,.3);
+    }
+
+.ticket-wrapper {
+flex: 1; width: 100%; max-width: 440px;
+padding: 28px 16px 24px;
+display: flex; flex-direction: column;
+align-items: center; gap: 16px;
+position: relative; z-index: 1;
+animation: fadeUp .7s cubic-bezier(.22,1,.36,1) both;
+    }
+@keyframes fadeUp {
+from { opacity:0; transform:translateY(24px); }
+to   { opacity:1; transform:translateY(0); }
+    }
+
+.ticket {
+width: 100%; border-radius: var(--radius-lg);
+background: var(--bg-card); box-shadow: var(--shadow-ticket);
+overflow: visible; position: relative;
+animation: ticketReveal .9s cubic-bezier(.22,1,.36,1) .1s both;
+--notch-r: 11px;
+--notch-y: 0px;
+    }
+@keyframes ticketReveal {
+from { opacity:0; transform:translateY(32px) scale(.97); }
+to   { opacity:1; transform:translateY(0) scale(1); }
+    }
+.ticket::before {
+content: ''; position: absolute; inset: -1px;
+border-radius: calc(var(--radius-lg) + 1px);
+background: var(--tier-gradient, linear-gradient(135deg, var(--gold-500), var(--gold-700)));
+z-index: -1; opacity: .35;
+    }
+.ticket::after {
+content: ''; position: absolute; inset: 0; border-radius: var(--radius-lg);
+background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,.04) 50%, transparent 60%);
+background-size: 200% 100%;
+animation: shimmer 4s ease-in-out infinite;
+pointer-events: none; z-index: 10;
+    }
+@keyframes shimmer {
+0%   { background-position: 200% 0; }
+50%  { background-position: -200% 0; }
+100% { background-position: 200% 0; }
+    }
+
+/* ===== Encoches semi-circulaires (perforation type "vrai billet") =====
+   Découpe réelle de la silhouette du ticket via un masque CSS, au niveau
+   de la séparation entre le corps du billet et le bloc QR code.
+   Le masque (mask-image) complet — y compris la position verticale — est
+   injecté directement en style inline par le JS (voir positionnerEncoches),
+   avec des valeurs en pixels "en dur" plutôt que des var() à l'intérieur
+   du radial-gradient : certains moteurs de rendu n'interpolent pas
+   correctement une variable CSS dans un gradient utilisé comme masque,
+   ce qui peut rendre l'encoche invisible sans erreur. Ici, seules les
+   propriétés statiques (taille/position/repeat des calques) restent en
+   CSS ; mask-image lui-même est toujours défini par le JS.
+   Astuce : chaque encoche est un radial-gradient limité à SA moitié de
+   largeur (mask-size: 50% 100%) => pas besoin de mask-composite, donc
+   compatible avec un maximum de navigateurs. */
+.ticket--notched {
+  -webkit-mask-size: 50% 100%, 50% 100%, 50% 100%, 50% 100%;
+  mask-size: 50% 100%, 50% 100%, 50% 100%, 50% 100%;
+  -webkit-mask-position: left top, right top, left top, right top;
+  mask-position: left top, right top, left top, right top;
+  -webkit-mask-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+  mask-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+}
+
+.ticket.tier-0 { --tier-gradient: linear-gradient(145deg, var(--t0-a), var(--t0-b), var(--t0-c)); --tier-a: var(--t0-a); --tier-b: var(--t0-b); --tier-glow: var(--t0-glow); }
+.ticket.tier-1 { --tier-gradient: linear-gradient(145deg, var(--t1-a), var(--t1-b), #854d0e, var(--t1-c)); --tier-a: var(--t1-a); --tier-b: var(--t1-b); --tier-glow: var(--t1-glow); }
+.ticket.tier-2 { --tier-gradient: linear-gradient(145deg, var(--t2-a), var(--t2-b), #065f46, var(--t2-c)); --tier-a: var(--t2-a); --tier-b: var(--t2-b); --tier-glow: var(--t2-glow); }
+.ticket.tier-3 { --tier-gradient: linear-gradient(145deg, var(--t3-a), var(--t3-b), #9f1239, var(--t3-c)); --tier-a: var(--t3-a); --tier-b: var(--t3-b); --tier-glow: var(--t3-glow); }
+
+.ticket-wrapper .ticket-glow {
+position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+width: 80%; height: 100%; border-radius: 50%;
+filter: blur(60px); opacity: .25; pointer-events: none; z-index: -1;
+    }
+
+.ticket-header {
+position: relative; border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+overflow: hidden; min-height: 190px;
+    }
+#event-bg-img {
+position: absolute; inset: 0; width: 100%; height: 100%;
+object-fit: cover; object-position: center top;
+transform: scale(1.04); transition: transform 8s ease;
+    }
+.ticket:hover #event-bg-img { transform: scale(1); }
+.header-scrim {
+position: absolute; inset: 0;
+background:
+linear-gradient(0deg, rgba(12,10,9,.85) 0%, rgba(12,10,9,.55) 35%, rgba(12,10,9,.15) 70%, rgba(12,10,9,.02) 100%),
+linear-gradient(180deg, rgba(0,0,0,.35) 0%, transparent 40%);
+}
+.header-color-wash { position: absolute; inset: 0; opacity: .10; mix-blend-mode: color; }
+.ticket.tier-0 .header-color-wash { background: var(--t0-a); }
+.ticket.tier-1 .header-color-wash { background: var(--t1-a); }
+.ticket.tier-2 .header-color-wash { background: var(--t2-a); }
+.ticket.tier-3 .header-color-wash { background: var(--t3-a); }
+
+.ticket-brand-topleft {
+position: absolute; top: 14px; left: 16px; z-index: 3;
+display: flex; align-items: center; gap: 7px;
+    }
+.ticket-brand-topleft .ticket-brand-logo {
+height: 20px; width: auto; display: block;
+filter: drop-shadow(0 1px 3px rgba(0,0,0,.6));
+    }
+.ticket-brand-topleft .ticket-brand-word {
+font-family: var(--font-accent);
+font-size: .78rem; font-weight: 800; letter-spacing: .06em;
+color: #ffffff; text-shadow: 0 1px 6px rgba(0,0,0,.7);
+    }
+.ticket-brand-topleft .ticket-brand-word b { color: var(--gold-400); }
+
+#ticketHeaderBlock {
+position: relative; z-index: 2; padding: 18px 20px 22px;
+display: flex; flex-direction: column; gap: 10px;
+justify-content: flex-end;
+    }
+.category-badge {
+display: inline-flex; align-items: center; gap: 7px;
+align-self: flex-start; padding: 5px 13px 5px 7px; border-radius: 99px;
+backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+font-size: .7rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+animation: badgePop .5s cubic-bezier(.34,1.56,.64,1) .3s both;
+    }
+@keyframes badgePop {
+from { opacity:0; transform:scale(.7) translateY(-6px); }
+to   { opacity:1; transform:scale(1) translateY(0); }
+    }
+.badge-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+.event-title-h {
+font-family: var(--font-accent);
+font-size: 1.35rem; font-weight: 800; line-height: 1.2; color: var(--text-hi);
+text-shadow: 0 2px 12px rgba(0,0,0,.8); letter-spacing: -.01em;
+animation: fadeUp .6s ease .2s both;
+    }
+.event-meta-pill {
+display: inline-flex; align-items: center; gap: 6px;
+background: rgba(12,10,9,.72); backdrop-filter: blur(8px);
+-webkit-backdrop-filter: blur(8px);
+border: 1px solid rgba(255,255,255,.35);
+border-radius: 99px;
+padding: 4px 10px; font-size: .72rem; font-weight: 600; color: #ffffff;
+box-shadow: 0 2px 10px rgba(0,0,0,.4), 0 0 0 1px rgba(0,0,0,.2);
+animation: fadeUp .6s ease .35s both;
+}
+.meta-icon { width: 12px; height: 12px; opacity: .8; }
+
+.status-banner {
+display: flex; align-items: center; gap: 10px;
+padding: 13px 18px; font-size: .82rem; font-weight: 700; letter-spacing: .02em;
+    }
+.status-banner.attente {
+background: linear-gradient(90deg, rgba(245,158,11,.12), rgba(217,119,6,.06));
+border-bottom: 1px solid rgba(245,158,11,.2); color: var(--gold-400);
+    }
+.status-banner.refuse {
+background: linear-gradient(90deg, rgba(244,63,94,.12), rgba(225,29,72,.06));
+border-bottom: 1px solid rgba(244,63,94,.2); color: #fb7185;
+    }
+.status-icon {
+width: 28px; height: 28px; border-radius: 50%;
+display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+.attente .status-icon { background: rgba(245,158,11,.2); }
+.refuse .status-icon  { background: rgba(244,63,94,.2); }
+.status-pulse {
+width: 8px; height: 8px; border-radius: 50%;
+background: currentColor; box-shadow: 0 0 0 0 currentColor;
+animation: ripple 2s ease-in-out infinite;
+    }
+@keyframes ripple {
+0%,100% { box-shadow: 0 0 0 0 currentColor; opacity:1; }
+60%      { box-shadow: 0 0 0 8px transparent; opacity:.3; }
+    }
+
+.status-panel {
+position: relative; z-index: 1;
+padding: 20px;
+background: var(--bg-card);
+border-bottom: 1px solid var(--border);
+border-left: none;
+    }
+
+.sp-head { display: flex; align-items: flex-start; gap: 12px; }
+.sp-icon-wrap {
+position: relative; flex-shrink: 0;
+width: 40px; height: 40px; border-radius: 50%;
+display: flex; align-items: center; justify-content: center;
+    }
+.sp-icon-wrap.pending { background: rgba(16,185,129,.12); color: #10b981; }
+.sp-icon-wrap.refuse  { background: rgba(244,63,94,.12); color: #e11d48; }
+.sp-icon-wrap.done    { background: rgba(16,185,129,.12); color: #10b981; }
+.sp-icon-wrap svg { width: 19px; height: 19px; }
+.sp-icon-ring { display: none; }
+
+.sp-head-text { min-width: 0; flex: 1; padding-top: 2px; }
+.sp-title {
+font-family: var(--font);
+font-size: .92rem; font-weight: 700; letter-spacing: -.005em;
+color: var(--text-hi); line-height: 1.35;
+    }
+.sp-sub {
+margin-top: 4px; font-size: .76rem; font-weight: 400; line-height: 1.55;
+color: var(--text-mid);
+    }
+
+.sp-steps { margin-top: 18px; position: relative; display: flex; justify-content: space-between; }
+.sp-steps-line {
+position: absolute; top: 13px; left: 8%; right: 8%; height: 2px;
+background: var(--border); border-radius: 2px; overflow: hidden;
+    }
+.sp-steps-line-fill {
+display: block; height: 100%;
+background: #10b981;
+transition: width .4s ease;
+    }
+
+.sp-step {
+position: relative; display: flex; flex-direction: column; align-items: center;
+gap: 7px; flex: 1; min-width: 0;
+    }
+.sp-step-dot {
+width: 26px; height: 26px; border-radius: 50%;
+display: flex; align-items: center; justify-content: center;
+background: var(--bg-cell); border: 1.5px solid var(--border);
+color: var(--text-lo); flex-shrink: 0;
+    }
+.sp-step-dot svg { width: 12px; height: 12px; }
+.sp-step.is-done .sp-step-dot {
+background: rgba(16,185,129,.10); border-color: rgba(16,185,129,.35); color: #10b981;
+    }
+.sp-step.is-error .sp-step-dot {
+background: rgba(244,63,94,.10); border-color: rgba(225,29,72,.4); color: #e11d48;
+    }
+.sp-step.is-active .sp-step-dot {
+background: var(--gold-500); border-color: var(--gold-500); color: #ffffff;
+box-shadow: 0 0 0 4px rgba(245,158,11,.15);
+    }
+.sp-step-pulse {
+display: block; width: 6px; height: 6px; border-radius: 50%;
+background: currentColor;
+    }
+.sp-step-label {
+font-size: .6rem; font-weight: 600; letter-spacing: .01em;
+color: var(--text-lo); text-align: center; line-height: 1.25;
+    }
+.sp-step.is-done .sp-step-label,
+.sp-step.is-active .sp-step-label { color: var(--text-mid); }
+.sp-step.is-error .sp-step-label { color: #e11d48; }
+
+.sp-reassure {
+display: flex; align-items: flex-start; gap: 8px;
+margin-top: 16px; padding: 12px 14px; border-radius: var(--radius-md);
+background: var(--bg-cell); border: 1px solid var(--border);
+font-size: .72rem; font-weight: 400; line-height: 1.5; color: var(--text-mid);
+    }
+.sp-reassure svg { width: 15px; height: 15px; flex-shrink: 0; margin-top: 1px; color: var(--text-lo); }
+.status-panel--refuse .sp-reassure svg { color: var(--text-lo); }
+
+.sp-note {
+display: flex; align-items: flex-start; gap: 8px;
+margin-top: 12px; padding: 12px 14px; border-radius: var(--radius-md);
+background: var(--bg-cell); border: 1px solid var(--border);
+font-size: .7rem; font-weight: 400; font-style: normal;
+line-height: 1.5; color: var(--text-mid);
+    }
+.sp-note svg { width: 15px; height: 15px; flex-shrink: 0; margin-top: 1px; color: var(--text-lo); opacity: 1; }
+.sp-note a.beneficiaire-whatsapp-link { font-style: normal; }
+
+@media (max-width: 360px) {
+.sp-step-label { display: none; }
+    }
+
+.ticket-body { padding: 14px 14px 0; position: relative; background: var(--bg-card); }
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.info-cell {
+background: var(--bg-cell); border: 1px solid var(--border);
+border-radius: var(--radius-md); padding: 8px 10px;
+display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto;
+column-gap: 6px; row-gap: 3px; align-items: center; align-content: center;
+position: relative; overflow: visible;
+animation: cellReveal .5s ease both;
+transition: border-color .25s, box-shadow .25s;
+    }
+.info-cell:hover { border-color: rgba(217,119,6,.25); box-shadow: 0 4px 14px rgba(28,25,23,.06); }
+.info-cell.full {
+grid-column: 1 / -1;
+padding: 8px 30px 8px 10px;
+    }
+@keyframes cellReveal {
+from { opacity:0; transform:translateY(8px); }
+to   { opacity:1; transform:translateY(0); }
+    }
+.info-cell:nth-child(1) { animation-delay: .25s; }
+.info-cell:nth-child(2) { animation-delay: .30s; }
+.info-cell:nth-child(3) { animation-delay: .35s; }
+.info-cell:nth-child(4) { animation-delay: .40s; }
+.info-cell:nth-child(5) { animation-delay: .45s; }
+.info-cell:nth-child(6) { animation-delay: .50s; }
+.info-cell::before { content: none; }
+.cell-icon { grid-column: 1; grid-row: 1; display: flex; align-items: center; justify-content: center; width: 14px; height: 14px; flex-shrink: 0; background: none; }
+.cell-icon svg { width: 12px; height: 12px; stroke: var(--gold-600) !important; stroke-width: 2; }
+.cell-label { grid-column: 2; grid-row: 1; font-size: .52rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-lo); line-height: 1; }
+.cell-value { grid-column: 1 / -1; grid-row: 2; font-size: .7rem; font-weight: 700; color: var(--text-hi); line-height: 1.25; word-break: break-word; }
+#cellBeneficiaire { padding-right: 30px; }
+#cellBeneficiaire::after {
+content: '›'; position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+font-size: 1.15rem; color: var(--text-lo); font-weight: 400; line-height: 1;
+    }
+
+.beneficiaire-whatsapp-link {
+    color: #25D366;
+    font-weight: 800;
+    text-decoration: underline;
+    text-decoration-color: rgba(37,211,102,.5);
+    text-underline-offset: 3px;
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+    transition: color .2s, text-decoration-color .2s;
+}
+.beneficiaire-whatsapp-link:hover,
+.beneficiaire-whatsapp-link:focus-visible {
+    color: #1ebe5b;
+    text-decoration-color: #1ebe5b;
+}
+.beneficiaire-whatsapp-link .wa-icon {
+    flex-shrink: 0;
+    color: #25D366;
+}
+
+.tear-separator {
+  position: relative;
+  padding: 14px 14px 0;   /* ← 14px en haut intégrés au padding, plus de margin */
+  display: flex; align-items: center;
+  background: var(--bg-card);
+}
+.tear-separator hr.dashed-line {
+flex: 1; height: 0; margin: 0; padding: 0; border: none;
+border-top: 2px dashed rgba(217,119,6,.4);
+    }
+.tear-separator hr.dashed-line + hr.dashed-line { display: none; }
+
+.qr-section {
+padding: 18px 16px; display: flex; align-items: center; gap: 14px;
+animation: fadeUp .6s ease .55s both; background: var(--bg-card);
+overflow: hidden;
+}
+.qr-frame {
+position: relative; z-index: 11;
+width: 108px; height: 108px;
+padding: 8px; border-radius: var(--radius-md); background: #fff;
+display: flex; align-items: center; justify-content: center;
+flex-shrink: 0;
+box-shadow:
+0 0 0 1px var(--border),
+0 8px 24px rgba(28,25,23,.10),
+0 0 30px var(--tier-glow, var(--t0-glow));
+transition: box-shadow .3s, transform .3s;
+    }
+.qr-frame:hover {
+transform: scale(1.02);
+box-shadow:
+0 0 0 1px var(--border),
+0 10px 28px rgba(28,25,23,.12),
+0 0 40px var(--tier-glow, var(--t0-glow));
+    }
+
+#qrcode {
+width: 92px !important;
+height: 92px !important;
+display: flex !important;
+align-items: center !important;
+justify-content: center !important;
+margin: 0 !important;
+background: #fff !important;
+overflow: hidden !important;
+    }
+
+#qrcode canvas,
+#qrcode img {
+display: block !important;
+width: 92px !important;
+height: 92px !important;
+max-width: 92px !important;
+max-height: 92px !important;
+margin: 0 auto !important;
+border-radius: 4px;
+    }
+
+.qr-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.qr-cta-label {
+font-size: .78rem; font-weight: 800; letter-spacing: .02em;
+color: var(--text-hi); line-height: 1.3;
+    }
+.qr-cta-sub {
+font-size: .68rem; font-weight: 500; color: var(--text-mid); line-height: 1.35;
+margin-bottom: 4px;
+    }
+.qr-info-text { font-size: .74rem; font-weight: 600; color: var(--text-mid); line-height: 1.35; }
+.qr-info-brand {
+font-family: var(--font-accent); font-size: 1.05rem; font-weight: 800; font-style: italic;
+background: linear-gradient(135deg, var(--gold-500), var(--gold-700));
+-webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.qr-security-row {
+display: flex; align-items: center; gap: 6px; padding-top: 8px;
+border-top: 1px dashed var(--border);
+font-size: .6rem; font-weight: 700; letter-spacing: .03em; text-transform: none;
+color: var(--text-mid);
+}
+.qr-security-row svg { width: 14px; height: 14px; color: #10b981; flex-shrink: 0; }
+
+.qr-divider { width: 1px; align-self: stretch; margin: 2px 0; border-left: 1px dashed rgba(217,119,6,.3); flex-shrink: 0; }
+.qr-security-badge {
+flex-shrink: 0; width: 62px;
+display: flex; flex-direction: column; align-items: center; gap: 5px;
+text-align: center;
+    }
+.qr-security-badge .qsb-icon {
+width: 26px; height: 26px; border-radius: 50%;
+display: flex; align-items: center; justify-content: center;
+background: rgba(16,185,129,.12); border: 1px solid rgba(16,185,129,.35);
+    }
+.qr-security-badge .qsb-icon svg { width: 14px; height: 14px; color: #10b981; }
+.qr-security-badge span {
+font-size: .5rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+color: var(--text-mid); line-height: 1.35;
+    }
+
+.qr-corner { position: absolute; width: 14px; height: 14px; border-color: var(--tier-a, var(--gold-500)); border-style: solid; border-width: 0; }
+.qr-corner.tl { top: -2px; left: -2px; border-top-width: 3px; border-left-width: 3px; border-radius: 4px 0 0 0; }
+.qr-corner.tr { top: -2px; right: -2px; border-top-width: 3px; border-right-width: 3px; border-radius: 0 4px 0 0; }
+.qr-corner.bl { bottom: -2px; left: -2px; border-bottom-width: 3px; border-left-width: 3px; border-radius: 0 0 0 4px; }
+.qr-corner.br { bottom: -2px; right: -2px; border-bottom-width: 3px; border-right-width: 3px; border-radius: 0 0 4px 0; }
+
+.qr-ref-label { font-size: .58rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-lo); }
+.qr-ref-value { font-size: .68rem; font-weight: 800; color: var(--text-mid); font-variant-numeric: tabular-nums; letter-spacing: .05em; }
+
+.ticket-footer-strip {
+display: flex; align-items: center; justify-content: space-between;
+padding: 12px 18px;
+border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+background: linear-gradient(135deg, #14110f 0%, #0c0a09 100%);
+gap: 8px;
+    }
+.tf-brand-group { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.tf-logo { height: 18px; width: auto; display: block; flex-shrink: 0; }
+.tf-brand {
+  font-family: var(--font-accent);
+  font-size: .85rem; font-weight: 800; letter-spacing: -.01em; text-transform: none;
+  color: #ffffff;
+  flex-shrink: 0;
+    }
+.tf-brand .tf-brand-accent {
+  background: linear-gradient(135deg, var(--gold-300), var(--gold-500));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.tf-tagline {
+font-size: .55rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase;
+color: rgba(255,255,255,.55); text-align: right; white-space: nowrap;
+    }
+.tf-valid { display: none; }
+
+.tf-reload-btn {
+display: none;
+align-items: center; gap: 5px;
+padding: 5px 12px;
+border-radius: 99px;
+background: rgba(217,119,6,.08);
+border: 1px solid rgba(217,119,6,.3);
+color: var(--gold-600);
+font-family: var(--font);
+font-size: .58rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+cursor: pointer;
+transition: background .2s, border-color .2s, transform .2s, color .2s;
+white-space: nowrap;
+    }
+.tf-reload-btn svg { width: 11px; height: 11px; transition: transform .4s ease; flex-shrink: 0; }
+.tf-reload-btn:hover {
+background: rgba(217,119,6,.14);
+border-color: rgba(217,119,6,.5);
+color: var(--gold-700);
+    }
+.tf-reload-btn:hover svg { transform: rotate(180deg); }
+.tf-reload-btn:active { transform: scale(.96); }
+
+#downloadTicket {
+width: 100%; max-width: 320px; padding: 12px 22px;
+border: none; cursor: pointer; border-radius: 99px;
+background: linear-gradient(135deg, var(--gold-400) 0%, var(--gold-600) 60%, var(--gold-700) 100%);
+color: #0c0a09; font-family: var(--font);
+font-size: .76rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase;
+display: flex; align-items: center; justify-content: center; gap: 8px;
+box-shadow:
+0 3px 18px rgba(217,119,6,.4),
+0 0 0 1px rgba(245,158,11,.3),
+inset 0 1px 0 rgba(255,255,255,.25);
+transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s;
+animation: fadeUp .6s ease .65s both; position: relative; overflow: hidden;
+    }
+#downloadTicket::before {
+content: ''; position: absolute; inset: 0;
+background: linear-gradient(135deg, rgba(255,255,255,.2), transparent 50%); border-radius: inherit;
+    }
+#downloadTicket:hover {
+transform: translateY(-2px) scale(1.02);
+box-shadow: 0 6px 28px rgba(217,119,6,.5), 0 0 0 1px rgba(245,158,11,.5), inset 0 1px 0 rgba(255,255,255,.3);
+    }
+#downloadTicket:active {
+transform: translateY(0) scale(.99);
+box-shadow: 0 2px 10px rgba(217,119,6,.3);
+    }
+.creator-footer {
+width: 100%; z-index: 1; position: relative;
+padding: 16px 20px; border-top: 1px solid var(--border);
+margin-top: auto; animation: fadeUp .6s ease .7s both;
+    }
+.footer-inner { max-width: 440px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.footer-brand { display: flex; align-items: center; gap: 6px; }
+.footer-logo-wrap {
+width: 22px; height: 22px; border-radius: 7px;
+background: linear-gradient(135deg, var(--gold-500), var(--gold-700));
+display: flex; align-items: center; justify-content: center;
+font-size: .56rem; font-weight: 900; color: #0c0a09; letter-spacing: -.02em;
+    }
+.footer-wordmark { font-size: .66rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--text-mid); }
+.footer-tagline { font-size: .56rem; color: var(--text-lo); letter-spacing: .07em; text-transform: uppercase; font-weight: 600; margin-bottom: 6px; }
+.footer-contacts { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.footer-contact-item { font-size: .6rem; color: var(--text-lo); font-weight: 500; }
+.footer-contact-item a { color: var(--gold-600); text-decoration: none; transition: color .2s; }
+.footer-contact-item a:hover { color: var(--gold-700); }
+.footer-dev { font-size: .54rem; color: var(--text-lo); text-align: center; border-top: 1px solid var(--border); padding-top: 10px; width: 100%; margin-top: 8px; }
+
+.tier-pattern { position: absolute; inset: 0; border-radius: var(--radius-sm); pointer-events: none; z-index: 0; opacity: .03; }
+.ticket-body > *:not(.tier-pattern) { position: relative; z-index: 1; }
+
+@media print {
+body { background: #fff !important; }
+.top-navbar, #downloadTicket, .creator-footer { display:none !important; }
+.ticket-wrapper { padding: 0; }
+    }
+@media (min-width: 480px) {
+.ticket-wrapper { padding: 36px 24px 56px; }
+.event-title-h { font-size: 1.5rem; }
+    }
+
+@media (max-width: 370px) {
+.qr-security-badge { display: none; }
+.qr-divider { display: none; }
+    }
+
+.sp-confirmed-badge {
+display: inline-block; margin-bottom: 4px;
+padding: 3px 10px; border-radius: 99px;
+background: rgba(16,185,129,.10); border: 1px solid rgba(16,185,129,.35);
+color: #10b981; font-size: .6rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+}
+.status-panel--done { padding: 16px 20px; }
+
+.info-icon {
+  font-size: 18px;
+  line-height: 1;
+  flex-shrink: 0;
+}
 </style>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<header class="topbar">
-<div class="wrap topbar-inner">
-<a class="brand" href="#" aria-label="GoldTix">
-<img src="images/logo.png" alt="" class="brand-logo" onerror="this.style.display='none'">
-<span class="brand-name">Gold<em>Tix</em></span>
+<nav class="top-navbar">
+<a class="navbar-brand" href="#">
+<img src="images/logo.png" alt="GoldTix" class="navbar-logo" />
+<span class="navbar-name">Gold<span class="navbar-name-accent">Tix</span></span>
 </a>
-<span class="secure-badge">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
-Billetterie sécurisée
-</span>
-</div>
-</header>
+<span class="navbar-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>Billetterie sécurisée</span>
+</nav>
 
-<div class="wrap">
-<div class="page-head">
-<h1>Achetez votre billet</h1>
-<p>Une expérience simple et rapide pour obtenir votre billet.</p>
+<div id="loadingScreen" class="state-screen">
+<div class="loader-ring"></div>
+<p class="state-title">Chargement de votre billet…</p>
+<p class="state-sub">Récupération des données en cours, veuillez patienter.</p>
 </div>
 
-<main id="detailsEvenement">
-<div class="card"><p class="loading-line"><span class="spinner"></span>Chargement de votre expérience…</p></div>
-</main>
+<div id="errorScreen" class="state-screen" style="display:none;">
+<div class="error-icon">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2" stroke-linecap="round">
+<circle cx="12" cy="12" r="10"/>
+<line x1="15" y1="9" x2="9" y2="15"/>
+<line x1="9" y1="9" x2="15" y2="15"/>
+</svg>
+</div>
+<p class="state-title" id="errorMessage">Billet introuvable</p>
+<p class="state-sub">Vérifiez que le lien est correct ou contactez l'organisateur.</p>
 </div>
 
-<footer class="footer">
-<div class="wrap">
-<p class="footer-brand">— La Billetterie en Or —</p>
-<p class="footer-description">GoldTix est une plateforme de billetterie en ligne conçue pour simplifier l'achat et la gestion des billets d'événements. Elle permet aux participants d'acheter facilement leurs billets depuis leur téléphone, et aux organisateurs de gérer efficacement leurs ventes, leurs participants et le contrôle des accès.</p>
-<div class="footer-links">
-<a href="conditions.html">Conditions d'utilisation</a>
-<a href="contact.html">Contacts</a>
-<a href="guide.html">Comment ça marche ?</a>
-<a href="histoire.html">Histoire-GoldTix</a>
+<div class="ticket-wrapper" id="ticketWrapper" style="display:none;">
+<div class="ticket-glow" id="ticketGlow"></div>
+
+<div class="ticket" id="ticketContent">
+<div class="ticket-header" id="ticketHeaderOuter">
+<img id="event-bg-img" src="" alt="Affiche" style="display:none;" />
+<div class="header-scrim"></div>
+<div class="header-color-wash"></div>
+<div id="ticketHeaderBlock"><!-- injecté par JS --></div>
 </div>
-<p class="footer-copy">© GoldTix — Tous droits réservés - 2026</p>
+
+<div id="statusBannerZone"></div>
+
+<div class="ticket-body">
+<svg class="tier-pattern" id="tierPattern" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+<defs>
+<pattern id="hex" x="0" y="0" width="40" height="35" patternUnits="userSpaceOnUse">
+<polygon points="20,2 38,11 38,29 20,38 2,29 2,11" fill="none" stroke="white" stroke-width="1"/>
+</pattern>
+</defs>
+<rect width="100%" height="100%" fill="url(#hex)"/>
+</svg>
+<div class="info-grid" id="infoGrid"></div>
+</div>
+
+<div class="tear-separator">
+<hr class="dashed-line" />
+<hr class="dashed-line" />
+</div>
+
+<div class="qr-section">
+<div class="qr-frame">
+<div class="qr-corner tl"></div>
+<div class="qr-corner tr"></div>
+<div class="qr-corner bl"></div>
+<div class="qr-corner br"></div>
+<div id="qrcode"></div>
+</div>
+<div class="qr-info">
+<p class="qr-cta-label">Veuillez présenter ce QR code à l'entrée</p>
+<p class="qr-cta-sub">Nous vous souhaitons un excellent événement!</p>
+</div>
+<div class="qr-divider"></div>
+<div class="qr-security-badge">
+<div class="qsb-icon">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+</div>
+<span>Billet unique et sécurisé</span>
+</div>
+<div class="qr-ref-label" style="display:none;">Code QR </div>
+<div class="qr-ref-value" id="billetRef" style="display:none;">—</div>
+</div>
+
+<div class="ticket-footer-strip">
+<div class="tf-brand-group">
+<img src="images/logo.png" alt="GoldTix" class="tf-logo" />
+<span class="tf-brand">Gold<span class="tf-brand-accent">Tix</span></span>
+</div>
+<div class="tf-valid">
+<svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+<circle cx="5" cy="5" r="4.5" stroke="#d97706" stroke-width="1"/>
+<path d="M3 5l1.3 1.4L7 3.5" stroke="#d97706" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+</div>
+</div>
+</div>
+
+<button id="downloadTicket">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+<polyline points="7 10 12 15 17 10"/>
+<line x1="12" y1="15" x2="12" y2="3"/>
+</svg>
+      Télécharger mon billet en PDF
+</button>
+</div>
+
+<footer class="creator-footer">
+<p class="footer-tagline" align="center">La Billetterie en Or</p>
+<div class="footer-contacts">
+<p class="footer-contact-item">E-mail : <a href="mailto:goldtixbilletterie@gmail.com">goldtixbilletterie@gmail.com</a></p>
+<p class="footer-contact-item">WhatsApp : <a href="https://wa.me/22653107345">+226 53 10 73 45</a></p>
+</div>
+<p class="footer-dev">Développée par <strong style="color:var(--text-mid)">Abdiel KABRE</strong> · GoldTix &copy; 2026</p>
 </div>
 </footer>
 
 <script>
-/* GOLDTIX — Page d'achat. Lecture : GET /api/tickets?event=ID — Écriture : POST /api/tickets (multipart) */
+document.addEventListener('DOMContentLoaded', async () => {
+function showLoading(v) { document.getElementById('loadingScreen').style.display = v ? 'flex' : 'none'; }
+function showError(msg) {
+document.getElementById('loadingScreen').style.display = 'none';
+document.getElementById('errorScreen').style.display = 'flex';
+if (msg) document.getElementById('errorMessage').textContent = msg;
+      }
+function showTicket() {
+document.getElementById('loadingScreen').style.display = 'none';
+document.getElementById('ticketWrapper').style.display = 'flex';
+      }
 
-const S = (p, w = 2) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
-const ICONS = {
-calendar: S('<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>'),
-clock: S('<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>'),
-pin: S('<path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>'),
-user: S('<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>'),
-phone: S('<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.65 3.27 2 2 0 0 1 3.62 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.29 6.29l1.02-.88a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>'),
-wallet: S('<rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/>'),
-file: S('<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/>'),
-upload: S('<path d="M16 16l-4-4-4 4M12 12v9"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>'),
-check: S('<path d="M20 6L9 17l-5-5"/>', 2.5),
-alert: S('<circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>'),
-download: S('<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>'),
-image: S('<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>'),
-x: S('<circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/>', 2.5),
-};
+const params   = new URLSearchParams(window.location.search);
+const billetId = params.get('id');
+if (!billetId) { showError('Aucun identifiant de billet fourni.'); return; }
 
-// On accepte jusqu'à 10 Mo au choix ; l'image est compressée avant l'envoi (3 Mo max côté serveur)
-const TAILLE_MAX_FICHIER = 10 * 1024 * 1024;
-const TAILLE_MAX_ENVOI = 3 * 1024 * 1024;
-const TYPES_IMAGE_OK = ['image/jpeg', 'image/png', 'image/webp'];
+      let dernierSignatureAffichee = null;
+      let verificationEnCours = false;
+      let pollingBilletIntervalId = null;
+      let pollingBilletActif = false;
+      const POLLING_BILLET_INTERVAL_MS = 4500;
 
-let chargementEnCours = false;
-let evCourant = null;
-let apercuUrl = null;
-let derniereSignatureAchat = '';
-let intervalMiseAJourAchatDemarre = false;
+      // ===== Encoches semi-circulaires du billet (perforation) =====
+      // Calcule la position verticale de la séparation (.tear-separator)
+      // par rapport au haut du ticket, puis injecte DIRECTEMENT le
+      // mask-image (avec des valeurs en px, sans var() dans le gradient)
+      // en style inline sur #ticketContent. C'est plus robuste que de
+      // passer par une variable CSS lue à l'intérieur du radial-gradient.
+           const NOTCH_RADIUS_PX = 14; // rayon de l'encoche ; augmente si besoin
 
-function esc(valeur) {
-return String(valeur == null ? '' : valeur).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      function positionnerEncoches() {
+        const ticket = document.getElementById('ticketContent');
+        if (!ticket) return;
+        const ticketRect = ticket.getBoundingClientRect();
+        if (!ticketRect.height) return;
+
+        const r = NOTCH_RADIUS_PX;
+        const positionsY = [];
+
+        // Encoche du haut : juste sous la bannière de statut
+        const statusPanel = document.querySelector('.status-panel');
+        if (statusPanel) {
+          const spRect = statusPanel.getBoundingClientRect();
+          positionsY.push(Math.round(spRect.bottom - ticketRect.top));
+        }
+
+        // Encoche du bas : au niveau de la séparation avant le QR code
+        const separateur = document.querySelector('.tear-separator');
+        if (separateur) {
+          const sepRect = separateur.getBoundingClientRect();
+          positionsY.push(Math.round((sepRect.top + sepRect.height / 2) - ticketRect.top));
+        }
+
+        if (!positionsY.length) return;
+
+        const maskLayers = [];
+        positionsY.forEach((notchY) => {
+          maskLayers.push(`radial-gradient(circle ${r}px at 0 ${notchY}px, transparent ${r}px, #000 ${r + 1}px)`);
+          maskLayers.push(`radial-gradient(circle ${r}px at 100% ${notchY}px, transparent ${r}px, #000 ${r + 1}px)`);
+        });
+        const maskValue = maskLayers.join(', ');
+
+        ticket.style.setProperty('-webkit-mask-image', maskValue);
+        ticket.style.setProperty('mask-image', maskValue);
+
+        // eslint-disable-next-line no-console
+        console.debug('[GoldTix] encoches positionnées à', positionsY.join('px, '), 'px, rayon', r, 'px');
+      }
+
+      function activerEncoches() {
+        const ticket = document.getElementById('ticketContent');
+        if (!ticket) return;
+        ticket.classList.add('ticket--notched');
+        // Plusieurs relances : on laisse le DOM/les polices/les images se
+        // stabiliser avant de mesurer (une seule frame n'est parfois pas
+        // suffisante si la police Syne ou l'affiche chargent en différé).
+        requestAnimationFrame(() => requestAnimationFrame(positionnerEncoches));
+        setTimeout(positionnerEncoches, 250);
+        setTimeout(positionnerEncoches, 800);
+      }
+
+      function desactiverEncoches() {
+        const ticket = document.getElementById('ticketContent');
+        if (!ticket) return;
+        ticket.classList.remove('ticket--notched');
+        ticket.style.removeProperty('-webkit-mask-image');
+        ticket.style.removeProperty('mask-image');
+      }
+
+      let resizeNotchTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeNotchTimeout);
+        resizeNotchTimeout = setTimeout(() => {
+          const ticket = document.getElementById('ticketContent');
+          if (ticket && ticket.classList.contains('ticket--notched')) positionnerEncoches();
+        }, 120);
+      });
+
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+          const ticket = document.getElementById('ticketContent');
+          if (ticket && ticket.classList.contains('ticket--notched')) positionnerEncoches();
+        });
+      }
+
+      function demarrerPollingBillet() {
+        if (pollingBilletActif) return;
+        pollingBilletActif = true;
+        if (pollingBilletIntervalId) clearInterval(pollingBilletIntervalId);
+        pollingBilletIntervalId = setInterval(() => {
+          if (document.hidden) return;
+          verifierMiseAJour(false);
+        }, POLLING_BILLET_INTERVAL_MS);
+      }
+
+      function arreterPollingBillet() {
+        pollingBilletActif = false;
+        if (pollingBilletIntervalId) {
+          clearInterval(pollingBilletIntervalId);
+          pollingBilletIntervalId = null;
+        }
+      }
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          arreterPollingBillet();
+        } else {
+          demarrerPollingBillet();
+          verifierMiseAJour(false);
+        }
+      });
+      window.addEventListener('pagehide', arreterPollingBillet);
+
+      const tfReloadBtn = document.getElementById('tfReloadBtn');
+      if (tfReloadBtn) {
+        tfReloadBtn.addEventListener('click', () => {
+          verifierMiseAJour(true);
+        });
+      }
+
+function updateFooterReloadButton(statut) {
+const btn = document.getElementById('tfReloadBtn');
+const label = document.getElementById('tfReloadLabel');
+if (!btn || !label) return;
+
+const enAttente = (statut === 'attente' || statut === 'en_attente' || statut === 'pending');
+const refuse    = (statut === 'refuse' || statut === 'rejected' || statut === 'annule');
+
+if (enAttente) {
+label.textContent = 'Rafraîchir';
+btn.style.display = 'inline-flex';
+        } else if (refuse) {
+label.textContent = 'Réessayer';
+btn.style.display = 'inline-flex';
+        } else {
+btn.style.display = 'none';
+        }
+      }
+
+      function statusBannerHTML(statut) {
+        // Icônes SVG réutilisées dans le panneau de statut (purement visuel).
+        const svgClock  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>`;
+        const svgCheck  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+        const svgCross  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+        const svgTicket = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg>`;
+        const svgShield = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" style="display:none"/><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`;
+        const svgInfo   = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="10.5" x2="12" y2="16"/><circle cx="12" cy="7.5" r=".5" fill="currentColor" stroke="none"/></svg>`;
+
+        if (statut === 'attente' || statut === 'en_attente') {
+          return `<div class="status-panel status-panel--pending">
+                <div class="sp-head">
+                  <div class="sp-icon-wrap pending"><span class="sp-icon-ring"></span>${svgClock}</div>
+                  <div class="sp-head-text">
+                    <div class="sp-title">Paiement en cours de vérification</div>
+                    <div class="sp-sub">Vos informations et votre preuve de paiement ont bien été reçues. Veillez patienter que le bénéficiaire confirme votre paiement.</div>
+                  </div>
+                </div>
+                <div class="sp-steps">
+                  <div class="sp-steps-line"><span class="sp-steps-line-fill" style="width:66%;"></span></div>
+                  <div class="sp-step is-done"><span class="sp-step-dot">${svgCheck}</span><span class="sp-step-label">Infos reçues</span></div>
+                  <div class="sp-step is-done"><span class="sp-step-dot">${svgCheck}</span><span class="sp-step-label">Preuve reçue</span></div>
+                  <div class="sp-step is-active"><span class="sp-step-dot"><span class="sp-step-pulse"></span></span><span class="sp-step-label">Vérification</span></div>
+                  <div class="sp-step"><span class="sp-step-dot">${svgTicket}</span><span class="sp-step-label">Billet prêt</span></div>
+                </div>
+                <div class="sp-note">${svgInfo}<span>Toujours en attente après 1 heure ? Contactez le bénéficiaire pour vérifier la réception de votre paiement.</span></div>
+              </div>`;
+        } else if (statut === 'refuse' || statut === 'annule') {
+          return `<div class="status-panel status-panel--refuse">
+                <div class="sp-head">
+                  <div class="sp-icon-wrap refuse">${svgCross}</div>
+                  <div class="sp-head-text">
+                    <div class="sp-title">Paiement non reçu</div>
+                    <div class="sp-sub">Votre paiement n'a pas été reçu par le bénéficiaire.</div>
+                  </div>
+                </div>
+                <div class="sp-steps">
+                  <div class="sp-steps-line"><span class="sp-steps-line-fill" style="width:66%;"></span></div>
+                  <div class="sp-step is-done"><span class="sp-step-dot">${svgCheck}</span><span class="sp-step-label">Infos reçues</span></div>
+                  <div class="sp-step is-done"><span class="sp-step-dot">${svgCheck}</span><span class="sp-step-label">Preuve reçue</span></div>
+                  <div class="sp-step is-error"><span class="sp-step-dot">${svgCross}</span><span class="sp-step-label">Paiement non reçu</span></div>
+                  <div class="sp-step"><span class="sp-step-dot">${svgTicket}</span><span class="sp-step-label">Billet prêt</span></div>
+                </div>
+                <div class="sp-reassure">
+                  <span class="info-icon">ⓘ</span>
+                      <span>Contactez le bénéficiaire pour confirmer votre paiement. Votre billet sera disponible dès validation.</span>
+                </div>
+              </div>`;
+        }
+        return `<div class="status-panel status-panel--done">
+        <div class="sp-head" style="align-items:center;">
+          <div class="sp-icon-wrap done">${svgCheck}</div>
+          <div class="sp-head-text">
+            <span class="sp-confirmed-badge">Billet valide</span>
+            <div class="sp-title">Paiement validé</div>
+            <div class="sp-sub">Votre billet est à présent actif. Vous pouvez si vous le souhaité le télécharger en version réduite.</div>
+          </div>
+        </div>
+      </div>`;
+      }
+
+      async function recupererDonneesBillet() {
+       const reponse = await fetch('/api/tickets?id=' + encodeURIComponent(billetId));
+        if (!reponse.ok) return null;
+        return await reponse.json();
+      }
+
+      function formatNumeroWhatsApp(numero) {
+        if (!numero) return '';
+        return String(numero).replace(/[^\d]/g, '');
+      }
+
+      function renderValeurBeneficiaire(nom, infos, statut) {
+        const texteComplet = (nom || '') + (infos ? ' · ' + infos : '');
+        const estAttenteOuRefuse = (
+          statut === 'attente' || statut === 'en_attente' || statut === 'pending' ||
+          statut === 'refuse'  || statut === 'rejected'   || statut === 'annule'
+        );
+
+        if (estAttenteOuRefuse && infos) {
+          const numeroWa = formatNumeroWhatsApp(infos);
+          if (numeroWa) {
+            return `<a href="https://wa.me/${numeroWa}" target="_blank" rel="noopener noreferrer" class="beneficiaire-whatsapp-link">
+              <span>${escHTML(texteComplet)}</span>
+              <svg class="wa-icon" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.71 14.14c-.24.68-1.4 1.3-1.93 1.38-.5.08-1.13.11-1.82-.11-.42-.13-.96-.31-1.65-.6-2.9-1.25-4.8-4.16-4.94-4.35-.14-.19-1.18-1.57-1.18-3s.75-2.13 1.02-2.42c.27-.29.58-.36.78-.36.19 0 .39 0 .56.01.18.01.42-.07.66.5.24.58.83 2 .9 2.15.07.15.12.32.02.51-.1.19-.15.31-.29.47-.15.17-.31.37-.44.5-.15.14-.3.3-.13.58.17.29.76 1.25 1.63 2.03 1.12 1 2.06 1.31 2.35 1.46.29.14.46.12.63-.07.17-.19.72-.84.92-1.13.19-.29.38-.24.64-.14.26.1 1.66.78 1.94.93.29.14.48.21.55.33.07.12.07.7-.17 1.38z"/></svg>
+            </a>`;
+          }
+        }
+
+        return escHTML(texteComplet);
+      }
+
+      async function chargerBillet() {
+        try {
+          const data = await recupererDonneesBillet();
+
+          if (!data) {
+            showError('Billet introuvable.');
+            return;
+          }
+
+          const billet = data.ticket;
+          const ev     = data.event;
+
+          if (!billet) { showError('Billet introuvable.'); return; }
+          if (!ev)     { showError("Événement introuvable."); return; }
+
+          let categories_data = [];
+          if (ev.categories_data) {
+            try { categories_data = typeof ev.categories_data === 'string' ? JSON.parse(ev.categories_data) : ev.categories_data; }
+            catch(e) { categories_data = []; }
+          }
+
+          let nomCategorie = billet.nom_categorie || billet.type_billet || 'Standard';
+          let categorieIndex = 0;
+          let totalCategories = categories_data.length;
+
+          if (categories_data.length > 0) {
+            let foundIndex = -1;
+            if (billet.categorie_id) {
+              foundIndex = categories_data.findIndex(c => String(c.id) === String(billet.categorie_id));
+            }
+            if (foundIndex === -1 && billet.nom_categorie) {
+              foundIndex = categories_data.findIndex(c => c.nom === billet.nom_categorie || c.name === billet.nom_categorie);
+            }
+            if (foundIndex === -1 && billet.type_billet) {
+              foundIndex = categories_data.findIndex(c => c.nom === billet.type_billet || c.name === billet.type_billet);
+            }
+            if (foundIndex !== -1) {
+              categorieIndex = foundIndex;
+              const cat = categories_data[foundIndex];
+              nomCategorie = cat.nom || cat.name || nomCategorie;
+            }
+          }
+
+          let tierClass = 'tier-0';
+          if (totalCategories <= 1) { tierClass = 'tier-0'; }
+          else if (totalCategories === 2) { tierClass = categorieIndex === 0 ? 'tier-1' : 'tier-0'; }
+          else if (totalCategories === 3) {
+            if (categorieIndex === 0) tierClass = 'tier-1';
+            else if (categorieIndex === 1) tierClass = 'tier-2';
+            else tierClass = 'tier-0';
+          } else {
+            if (categorieIndex === 0) tierClass = 'tier-1';
+            else if (categorieIndex === 1) tierClass = 'tier-2';
+            else if (categorieIndex === 2) tierClass = 'tier-3';
+            else tierClass = 'tier-0';
+          }
+
+          const tierStyles = {
+            'tier-0': { badgeBg:'rgba(180,83,9,.38)', badgeBdr:'rgba(245,158,11,.5)', badgeClr:'#fcd34d', dotClr:'#f59e0b', glowClr:'rgba(245,158,11,.22)', label:'Standard' },
+            'tier-1': { badgeBg:'rgba(161,98,7,.38)', badgeBdr:'rgba(250,204,21,.55)', badgeClr:'#fef08a', dotClr:'#facc15', glowClr:'rgba(250,204,21,.24)', label:'Premium' },
+            'tier-2': { badgeBg:'rgba(6,95,70,.38)', badgeBdr:'rgba(16,185,129,.5)', badgeClr:'#6ee7b7', dotClr:'#10b981', glowClr:'rgba(16,185,129,.22)', label:'Émeraude' },
+            'tier-3': { badgeBg:'rgba(159,18,57,.38)', badgeBdr:'rgba(244,63,94,.5)', badgeClr:'#fda4af', dotClr:'#f43f5e', glowClr:'rgba(244,63,94,.22)', label:'Rubis' }
+          };
+          const ts = tierStyles[tierClass];
+          const badgeBgStyle  = `background:${ts.badgeBg}; border:1px solid ${ts.badgeBdr}; color:var(--text-hi);`;
+          const passCardStyle = `box-shadow: 0 0 0 2px ${ts.badgeBdr}, 0 24px 64px rgba(0,0,0,.7), 0 0 80px ${ts.glowClr};`;
+
+          const ticketEl = document.getElementById('ticketContent');
+          ticketEl.classList.add(tierClass);
+          ticketEl.style.cssText += passCardStyle;
+
+          const glowEl = document.getElementById('ticketGlow');
+          glowEl.style.cssText = `background: radial-gradient(ellipse, ${ts.dotClr} 0%, transparent 70%); width:120%; height:60%; top:10%; left:50%; transform:translateX(-50%); position:absolute; opacity:.10; filter:blur(40px);`;
+
+          const imgUrl = ev.affiche_url || ev.image_url || ev.affiche || null;
+          const bgImg = document.getElementById('event-bg-img');
+          if (imgUrl) {
+            bgImg.crossOrigin = 'anonymous';
+            bgImg.src = imgUrl;
+            bgImg.style.display = 'block';
+            bgImg.onerror = () => { bgImg.style.display = 'none'; applyHeaderFallback(ts.dotClr); };
+          } else { applyHeaderFallback(ts.dotClr); }
+
+          function applyHeaderFallback(color) {
+            const hdr = document.querySelector('.ticket-header');
+            if (hdr) { hdr.style.background = `linear-gradient(160deg, ${color}22 0%, #0c0a09 100%)`; hdr.style.minHeight = '140px'; }
+          }
+
+          const dateStr = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' }) : '—';
+          const headerEl = document.getElementById('ticketHeaderBlock');
+          headerEl.innerHTML = `
+  <div class="category-badge" style="${badgeBgStyle} display:none;">
+    <span class="badge-dot" style="background:${ts.dotClr}; box-shadow:0 0 6px ${ts.dotClr};"></span>
+     ${escHTML(nomCategorie)}
+  </div>
+  <h1 class="event-title-h" id="evTitreH" style="display:none;">${escHTML(ev.titre || 'Événement')}</h1>
+  <div style="display:flex; gap:8px; flex-wrap:wrap;">
+    <div class="event-meta-pill">
+      <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="${ts.dotClr}" stroke-width="2" stroke-linecap="round">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/>
+        <line x1="8"  y1="2" x2="8"  y2="6"/>
+        <line x1="3"  y1="10" x2="21" y2="10"/>
+      </svg>
+      <span id="evDateH">${escHTML(dateStr)}</span>
+    </div>
+${ev.heure ? `<div class="event-meta-pill">
+      <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="${ts.dotClr}" stroke-width="2" stroke-linecap="round">
+        <circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 12"/>
+      </svg><span id="evHeureH">${escHTML((ev.heure || '').slice(0, 5))}</span></div>` : ''}
+  </div>`;
+
+          const statut = (billet.statut || 'attente').trim().toLowerCase();
+          const statusZone = document.getElementById('statusBannerZone');
+          const isConfirmed = (statut === 'confirme' || statut === 'valide');
+
+          if (!isConfirmed) {
+              const dlBtn = document.getElementById('downloadTicket');
+               if (dlBtn) dlBtn.style.display = 'none';
+            }
+
+          updateFooterReloadButton(statut);
+
+          statusZone.innerHTML = statusBannerHTML(statut);
+
+          const infoGrid = document.getElementById('infoGrid');
+          const cells = [
+            { label:'Titulaire', value: billet.nom_participant || '—', icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`, full:false },
+            { label:'Téléphone', value: billet.telephone || '—', icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><rect x="7" y="2" width="10" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>`, full:false },
+            { label:'Catégorie', value: nomCategorie, icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`, full:false, accent:true },
+            { label:'Lieu', value: ev.lieu || '—', icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>`, full:false },
+            ...(ev.beneficiaire_nom ? [{ label:'Bénéficiaire_paiements', value: renderValeurBeneficiaire(ev.beneficiaire_nom, ev.beneficiaire_infos, statut), icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`, full:true, rawHtml:true }] : []),
+            ...(isConfirmed ? [{ label:'ID-billet', value: billet.numero_billet || billet.id || '—', icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg>`, full:true }] : [])
+          ];
+          cells.forEach((cell, i) => {
+            const div = document.createElement('div');
+            div.className = 'info-cell' + (cell.full ? ' full' : '');
+            if (cell.label === 'ID-billet') div.id = 'cellIdBillet';
+            if (cell.label === 'Lieu') div.id = 'cellLieu';
+            if (cell.label === 'Bénéficiaire_paiements') div.id = 'cellBeneficiaire';
+            div.style.animationDelay = (0.25 + i * 0.055) + 's';
+            const valueStyle = cell.accent ? `color:var(--text-hi); font-weight:800; display:inline-flex; align-items:center; gap:6px;` : '';
+            const accentDot = cell.accent ? `<span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:${ts.dotClr}; box-shadow:0 0 5px ${ts.dotClr}; flex-shrink:0;"></span>` : '';
+            const valueContent = cell.rawHtml ? cell.value : (accentDot + escHTML(String(cell.value)));
+            div.innerHTML = `<span class="cell-label">${cell.label}</span><span class="cell-value" style="${valueStyle}">${valueContent}</span><span class="cell-icon">${cell.icon}</span>`;
+            infoGrid.appendChild(div);
+          });
+
+          if (!isConfirmed) {
+            const qrWrapper = document.getElementById('qrcode');
+            if (qrWrapper && qrWrapper.parentElement) qrWrapper.parentElement.style.display = 'none';
+            const refEl = document.getElementById('billetRef');
+            if (refEl && refEl.parentElement) refEl.parentElement.style.display = 'none';
+            desactiverEncoches();
+          } else {
+            document.getElementById('billetRef').textContent = billet.numero_billet || billet.id || '—';
+
+            const qrData = String(billet.code_public);
+
+            const qrContainerElement = document.getElementById('qrcode');
+            qrContainerElement.innerHTML = '';
+            qrContainerElement.style.width = '150px';
+            qrContainerElement.style.height = '150px';
+            qrContainerElement.style.margin = '0 auto';
+
+            new QRCode(qrContainerElement, {
+              text: qrData,
+              width: 150,
+              height: 150,
+              colorDark: '#000000',
+              colorLight: '#ffffff',
+              correctLevel: QRCode.CorrectLevel.M
+            });
+
+            const qrNodes = qrContainerElement.querySelectorAll('canvas, img');
+            if (qrNodes.length > 1) {
+              Array.from(qrNodes).slice(1).forEach(node => node.remove());
+            }
+
+            qrContainerElement.dataset.genere = String(billet.id);
+
+            activerEncoches();
+          }
+
+          dernierSignatureAffichee = `${statut}|${billet.numero_billet || ''}|${billet.id || ''}`;
+          dernierSignatureEvenementAffiche = `${ev.titre||''}|${ev.date||''}|${ev.heure||''}|${ev.lieu||''}|${ev.affiche_url||ev.image_url||ev.affiche||''}`;
+
+          showTicket();
+          demarrerPollingBillet();
+          activerEncoches();
+
+        } catch(err) {
+          console.error('Erreur chargerBillet:', err);
+          showError('Une erreur est survenue. Veuillez réessayer.');
+        }
+      }
+
+      async function verifierMiseAJour(forcerErreur) {
+        if (verificationEnCours) return;
+        verificationEnCours = true;
+
+        try {
+          const data = await recupererDonneesBillet();
+          if (!data) { if (forcerErreur) showError('Billet introuvable.'); return; }
+
+          const billet = data.ticket;
+          const ev = data.event;
+          if (!billet) { if (forcerErreur) showError('Billet introuvable.'); return; }
+          if (!ev)     { if (forcerErreur) showError("Événement introuvable."); return; }
+
+         const statut = (billet.statut || 'attente').trim().toLowerCase();
+const signature = `${statut}|${billet.numero_billet || ''}|${billet.id || ''}`;
+const signatureEv = `${ev.titre||''}|${ev.date||''}|${ev.heure||''}|${ev.lieu||''}|${ev.affiche_url||ev.image_url||ev.affiche||''}`;
+
+let quelqueChoseAChange = false;
+
+if (signature !== dernierSignatureAffichee) {
+    dernierSignatureAffichee = signature;
+    mettreAJourStatutAffiche(billet, statut, ev);
+    quelqueChoseAChange = true;
 }
 
-function gxAvertirAvantFermeture(e) { e.preventDefault(); e.returnValue = ''; return ''; }
-
-async function fetchAvecTimeout(url, options, timeoutMs) {
-const controller = new AbortController();
-const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-try {
-return await fetch(url, Object.assign({}, options, { signal: controller.signal }));
-} finally {
-clearTimeout(timeoutId);
-}
+if (signatureEv !== dernierSignatureEvenementAffiche) {
+    dernierSignatureEvenementAffiche = signatureEv;
+    appliquerMiseAJourEvenement(ev);
+    quelqueChoseAChange = true;
 }
 
-function afficherErreurChargement(container, titre, message) {
-container.innerHTML = `
-<div class="card state-card">
-<h2>${esc(titre)}</h2>
-<p>${esc(message)}</p>
-<button class="btn-submit" onclick="chargerPageAchatUnique()">Réessayer</button>
-</div>`;
+if (!quelqueChoseAChange) return;
+
+        } catch (err) {
+          console.error('Erreur verifierMiseAJour:', err);
+          if (forcerErreur) showError('Une erreur est survenue. Veuillez réessayer.');
+        } finally {
+          verificationEnCours = false;
+        }
+      }
+
+let dernierSignatureEvenementAffiche = null;
+
+function appliquerMiseAJourEvenement(ev) {
+    const titreEl = document.getElementById('evTitreH');
+    if (titreEl) titreEl.textContent = ev.titre || 'Événement';
+    const dateEl = document.getElementById('evDateH');
+    if (dateEl) {
+        dateEl.textContent = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' }) : '—';
+    }
+    const heureEl = document.getElementById('evHeureH');
+    if (heureEl && ev.heure) heureEl.textContent = (ev.heure || '').slice(0, 5);
+    const lieuCell = document.getElementById('cellLieu');
+    if (lieuCell) {
+        const v = lieuCell.querySelector('.cell-value');
+        if (v) v.textContent = ev.lieu || '—';
+    }
+    const bgImg = document.getElementById('event-bg-img');
+    const imgUrl = ev.affiche_url || ev.image_url || ev.affiche || null;
+    if (bgImg && imgUrl && bgImg.src !== imgUrl) {
+        bgImg.crossOrigin = 'anonymous';
+        bgImg.src = imgUrl;
+        bgImg.style.display = 'block';
+    }
+    const ticket = document.getElementById('ticketContent');
+    if (ticket && ticket.classList.contains('ticket--notched')) positionnerEncoches();
 }
 
-// ─── Validation en ligne ──────────────────────────────────────────────
-function marquerInvalide(champEl, erreurEl, texte) {
-if (!champEl || !erreurEl) return;
-champEl.classList.add('field-invalid');
-erreurEl.innerHTML = `${ICONS.alert}<span>${esc(texte || 'Ce champ est obligatoire.')}</span>`;
-erreurEl.classList.add('visible');
+      function mettreAJourStatutAffiche(billet, statut, ev) {
+        const isConfirmed = (statut === 'confirme' || statut === 'valide');
+
+        updateFooterReloadButton(statut);
+
+        const statusZone = document.getElementById('statusBannerZone');
+        if (statusZone) statusZone.innerHTML = statusBannerHTML(statut);
+
+        const dlBtn = document.getElementById('downloadTicket');
+        if (dlBtn) dlBtn.style.display = isConfirmed ? 'flex' : 'none';
+
+        const beneficiaireCell = document.getElementById('cellBeneficiaire');
+        if (beneficiaireCell && ev && ev.beneficiaire_nom) {
+          const valueEl = beneficiaireCell.querySelector('.cell-value');
+          if (valueEl) valueEl.innerHTML = renderValeurBeneficiaire(ev.beneficiaire_nom, ev.beneficiaire_infos, statut);
+        }
+
+        const infoGrid = document.getElementById('infoGrid');
+        let idCell = document.getElementById('cellIdBillet');
+        if (isConfirmed && !idCell && infoGrid) {
+          idCell = document.createElement('div');
+          idCell.className = 'info-cell full';
+          idCell.id = 'cellIdBillet';
+          idCell.innerHTML = `<span class="cell-label">ID-billet</span><span class="cell-value">${escHTML(String(billet.numero_billet || billet.id || '—'))}</span><span class="cell-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg></span>`;
+          infoGrid.appendChild(idCell);
+        } else if (!isConfirmed && idCell) {
+          idCell.remove();
+        }
+
+        const qrSection = document.querySelector('.qr-section');
+        const qrFrame = document.querySelector('.qr-frame');
+        const qrContainerElement = document.getElementById('qrcode');
+
+        if (isConfirmed) {
+          if (qrSection) qrSection.style.display = '';
+          if (qrFrame) qrFrame.style.display = '';
+          const refEl = document.getElementById('billetRef');
+          if (refEl) refEl.textContent = billet.numero_billet || billet.code_public || '—';
+
+          if (qrContainerElement && qrContainerElement.dataset.genere !== String(billet.code_public)) {
+            qrContainerElement.innerHTML = '';
+            qrContainerElement.style.width = '150px';
+            qrContainerElement.style.height = '150px';
+            qrContainerElement.style.margin = '0 auto';
+
+            new QRCode(qrContainerElement, {
+              text: String(billet.code_public),
+              width: 150,
+              height: 150,
+              colorDark: '#000000',
+              colorLight: '#ffffff',
+              correctLevel: QRCode.CorrectLevel.M
+            });
+
+            const qrNodes = qrContainerElement.querySelectorAll('canvas, img');
+            if (qrNodes.length > 1) {
+              Array.from(qrNodes).slice(1).forEach(node => node.remove());
+            }
+
+            qrContainerElement.dataset.genere = String(billet.code_public);
+          }
+
+          activerEncoches();
+        } else {
+          if (qrSection) qrSection.style.display = 'none';
+          desactiverEncoches();
+        }
+      }
+
+      // ---------------------------------------------------------------
+      // Chargement paresseux des librairies lourdes (html2canvas, jsPDF,
+      // sweetalert2) : elles ne servent qu'au moment du téléchargement du
+      // PDF, donc on ne les charge plus dans le <head> (ça ralentissait
+      // le chargement initial de la page pour rien). On les charge une
+      // seule fois, à la demande, quand l'utilisateur clique sur le
+      // bouton de téléchargement.
+      // ---------------------------------------------------------------
+      let libsTelechargementChargees = false;
+
+      function chargerScript(src) {
+        return new Promise((resolve, reject) => {
+          const existant = document.querySelector(`script[src="${src}"]`);
+          if (existant) { resolve(); return; }
+          const s = document.createElement('script');
+          s.src = src;
+          s.onload = () => resolve();
+          s.onerror = () => reject(new Error('Échec de chargement : ' + src));
+          document.head.appendChild(s);
+        });
+      }
+
+      async function chargerLibsTelechargementSiBesoin() {
+        if (libsTelechargementChargees) return;
+        await Promise.all([
+          chargerScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'),
+          chargerScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'),
+          chargerScript('https://cdn.jsdelivr.net/npm/sweetalert2@11')
+        ]);
+        libsTelechargementChargees = true;
+      }
+
+      async function demanderConfirmationTelechargement() {
+        const dlBtn = document.getElementById('downloadTicket');
+        const original = dlBtn ? dlBtn.innerHTML : null;
+
+        try {
+          if (!libsTelechargementChargees) {
+            if (dlBtn) {
+              dlBtn.disabled = true;
+              dlBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9" stroke-dasharray="56" style="animation:spin 1s linear infinite;"/></svg> Préparation…`;
+            }
+            await chargerLibsTelechargementSiBesoin();
+          }
+        } catch (err) {
+          console.error('Erreur chargement librairies PDF:', err);
+          if (dlBtn) { dlBtn.innerHTML = original; dlBtn.disabled = false; }
+          alert("Impossible de préparer le téléchargement. Vérifiez votre connexion et réessayez.");
+          return;
+        }
+
+        if (dlBtn) { dlBtn.innerHTML = original; dlBtn.disabled = false; }
+
+        Swal.fire({
+          icon: 'info',
+          title: 'Téléchargement du billet',
+          text: "Le billet que vous aurez en PDF est une version optimisée et simplifiée",
+          confirmButtonText: 'Télécharger',
+          confirmButtonColor: '#d97706',
+          background: '#111010',
+          color: '#fafaf9',
+          buttonsStyling: true
+        }).then((result) => {
+          if (result.isConfirmed) {
+            telechargerPDF();
+          }
+        });
+      }
+
+     function telechargerPDF() {
+  const filename = 'billet-goldtix-' + (new URLSearchParams(window.location.search).get('id') || 'ticket') + '.pdf';
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+  let pdfWindow = null;
+  if (isMobile) {
+    pdfWindow = window.open('', '_blank');
+    if (pdfWindow) {
+      pdfWindow.document.write(
+        '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Billet GoldTix</title>' +
+        '<style>body{margin:0;display:flex;align-items:center;justify-content:center;' +
+        'height:100vh;background:#0c0a09;color:#a8a29e;font-family:sans-serif;font-size:14px;}</style>' +
+        '</head><body>Génération de votre billet…</body></html>'
+      );
+    }
+  }
+
+  const btn = document.getElementById('downloadTicket');
+  const original = btn.innerHTML;
+  btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9" stroke-dasharray="56" style="animation:spin 1s linear infinite;"/></svg> Génération du PDF…`;
+  btn.disabled = true;
+  btn.style.opacity = '.7';
+
+  function resetButton() {
+    btn.innerHTML = original;
+    btn.disabled = false;
+    btn.style.opacity = '1';
+  }
+
+  const eventTitle   = document.querySelector('.event-title-h')?.textContent.trim() || 'Événement';
+  const categoryText = document.querySelector('.category-badge')?.textContent.trim() || 'Standard';
+  const metaPills    = Array.from(document.querySelectorAll('.event-meta-pill')).map(p => p.textContent.trim());
+  const cellValues   = Array.from(document.querySelectorAll('.info-cell')).map(c => ({
+    label: c.querySelector('.cell-label')?.textContent.trim() || '',
+    value: c.querySelector('.cell-value')?.textContent.trim() || ''
+  }));
+  const billetRef    = document.getElementById('billetRef')?.textContent.trim() || '';
+  const accentColorA = getComputedStyle(document.getElementById('ticketContent')).getPropertyValue('--tier-a').trim() || '#f59e0b';
+  const accentColorB = getComputedStyle(document.getElementById('ticketContent')).getPropertyValue('--tier-b').trim() || '#d97706';
+
+  const getCell = (label) => cellValues.find(c => c.label === label)?.value || '—';
+  const categorieValue = getCell('Catégorie');
+  const lieuValue = getCell('Lieu');
+  const titulaireValue = getCell('Titulaire');
+  const telephoneValue = getCell('Téléphone');
+  const dateValue = document.getElementById('evDateH')?.textContent.trim() || metaPills[0] || '—';
+  const heureValue = document.getElementById('evHeureH')?.textContent.trim() || metaPills[1] || '—';
+
+  const qrSourceEl = document.querySelector('#qrcode canvas, #qrcode img');
+  let qrDataUrl = null;
+  if (qrSourceEl) {
+    if (qrSourceEl.tagName === 'CANVAS') {
+      qrDataUrl = qrSourceEl.toDataURL('image/png');
+    } else if (qrSourceEl.tagName === 'IMG') {
+      qrDataUrl = qrSourceEl.src;
+    }
+  }
+
+  // ---------------------------------------------------------------
+  // NOUVEAU : chargement sécurisé d'images additionnelles (logo,
+  // affiche) pour le PDF uniquement. Chaque image est chargée dans
+  // un <img> détaché, crossOrigin posé AVANT src (même règle que
+  // pour l'image de fond du billet écran), avec un timeout de
+  // sécurité : si l'image ne charge pas à temps ou échoue (CORS,
+  // 404...), on continue sans elle plutôt que de bloquer ou de
+  // faire échouer la génération du PDF.
+  // ---------------------------------------------------------------
+  function chargerImageSecurisee(url, timeoutMs) {
+    return new Promise((resolve) => {
+      if (!url) { resolve(null); return; }
+      const img = new Image();
+      let reglee = false;
+      const finir = (resultat) => {
+        if (reglee) return;
+        reglee = true;
+        resolve(resultat);
+      };
+      const minuteur = setTimeout(() => finir(null), timeoutMs);
+      img.crossOrigin = 'anonymous';
+      img.onload  = () => { clearTimeout(minuteur); finir(img.src); };
+      img.onerror = () => { clearTimeout(minuteur); finir(null); };
+      img.src = url;
+    });
+  }
+
+  const posterImgEl = document.getElementById('event-bg-img');
+  const posterUrl = (posterImgEl && posterImgEl.style.display !== 'none') ? posterImgEl.src : null;
+  const logoUrl = document.querySelector('.navbar-logo')?.getAttribute('src') || 'images/logo.png';
+
+  Promise.all([
+    chargerImageSecurisee(logoUrl, 2500),
+    chargerImageSecurisee(posterUrl, 3000)
+  ]).then(([logoDataUrl, posterDataUrl]) => {
+    genererCanvasEtPDF(logoDataUrl, posterDataUrl);
+  });
+
+  function genererCanvasEtPDF(logoDataUrl, posterDataUrl) {
+    // Couleur neutre et élégante (gris chaud/graphite), fixe, indépendante
+    // du tier/de la couleur de l'événement — remplace l'ancien accent doré.
+    const neutralAccent = '#8a8478';
+    const neutralAccentSoft = '#c9c3b6';
+
+    const pdfContainer = document.createElement('div');
+    pdfContainer.style.cssText = `
+      position: fixed; left: -9999px; top: 0;
+      width: 380px;
+      background: #ffffff; color: #1c1917;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    `;
+
+    pdfContainer.innerHTML = `
+      <div style="border-radius:20px; overflow:hidden; background:#ffffff; box-shadow:0 0 0 1px #ece7dd;">
+
+        <!-- ===== AFFICHE (poster) ===== -->
+        <div style="width:100%; height:170px; overflow:hidden; line-height:0; position:relative; background:linear-gradient(120deg, ${neutralAccentSoft}, ${neutralAccent});">
+          ${posterDataUrl ? `
+            <img src="${posterDataUrl}" style="width:100%; height:100%; object-fit:cover; display:block;" />
+          ` : `
+            <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; padding:18px; box-sizing:border-box;">
+              <div style="font-size:22px; font-weight:800; color:#fff; text-align:center; letter-spacing:.01em; line-height:1.3;">${escHTML(eventTitle)}</div>
+            </div>
+          `}
+        </div>
+
+        <div style="padding:18px 22px 0;">
+
+          <!-- ===== LABEL + TITRE ===== -->
+          <div style="text-align:center; margin-bottom:14px;">
+            <div style="font-size:12px; font-weight:400; color:#1c1917; margin-bottom:6px;">
+              Billet Officiel &middot; GoldTix
+            </div>
+            <div style="font-size:20px; font-weight:800; color:#1c1917; line-height:1.25; letter-spacing:-.01em;">
+              ${escHTML(eventTitle)}
+            </div>
+          </div>
+
+          <!-- ===== BLOC INFOS (neutre, sans liseré coloré) ===== -->
+          <div style="background:#faf8f4; border-radius:14px; padding:2px 18px; margin-bottom:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid #efece4;">
+              <span style="color:#1c1917; font-weight:400; font-size:13px;">Date &amp; Heure</span>
+              <span style="font-weight:700; color:#1c1917; font-size:14px; text-align:right;">${escHTML(dateValue)} &middot; ${escHTML(heureValue)}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid #efece4;">
+              <span style="color:#1c1917; font-weight:400; font-size:13px;">Lieu</span>
+              <span style="font-weight:700; color:#1c1917; font-size:14px; text-align:right;">${escHTML(lieuValue)}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 0; ${telephoneValue && telephoneValue !== '—' ? 'border-bottom:1px solid #efece4;' : ''}">
+              <span style="color:#1c1917; font-weight:400; font-size:13px;">Participant</span>
+              <span style="font-weight:700; color:#1c1917; font-size:14px; text-align:right;">${escHTML(titulaireValue)}</span>
+            </div>
+            ${telephoneValue && telephoneValue !== '—' ? `
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 0;">
+              <span style="color:#1c1917; font-weight:400; font-size:13px;">Téléphone</span>
+              <span style="font-weight:700; color:#1c1917; font-size:14px; text-align:right;">${escHTML(telephoneValue)}</span>
+            </div>` : ''}
+          </div>
+
+                   <!-- ===== BADGE CATÉGORIE (doré) ===== -->
+          <div style="text-align:center; margin-bottom:16px;">
+            <span style="display:inline-block; background:linear-gradient(135deg, #fef3c7, #fde68a); color:#92400e; font-weight:800; font-size:13px; letter-spacing:.05em; padding:8px 24px; border-radius:999px; border:1.5px solid #d97706; box-shadow:0 4px 14px rgba(217,119,6,.22);">
+              ${escHTML(categorieValue)}
+            </span>
+          </div>
+
+                            <!-- ===== SÉPARATEUR TICKET (effet détachable) ===== -->
+          <div style="position:relative; display:flex; align-items:center; margin:0 -22px 16px;">
+            <div style="width:18px; height:18px; border-radius:50%; background:#ffffff; box-shadow:inset 0 0 0 2px #1c1917; margin-left:-9px; flex-shrink:0;"></div>
+            <div style="flex:1; border-top:2px dashed #1c1917;"></div>
+            <div style="width:18px; height:18px; border-radius:50%; background:#ffffff; box-shadow:inset 0 0 0 2px #1c1917; margin-right:-9px; flex-shrink:0;"></div>
+          </div>
+
+          <!-- ===== QR CODE + ID BILLET (centré) ===== -->
+          <div style="text-align:center; padding-bottom:16px;">
+            ${qrDataUrl ? `
+              <div style="display:inline-block; padding:10px; border-radius:14px; box-shadow:0 0 0 1px #ece7dd, 0 6px 16px rgba(0,0,0,.08);">
+                <img src="${qrDataUrl}" style="width:128px; height:128px; display:block;" />
+              </div>
+            ` : ''}
+            <div style="font-size:10px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:#a8a29e; margin-top:10px;">
+              ID Billet
+            </div>
+            <div style="font-size:18px; font-weight:800; letter-spacing:.04em; color:#1c1917; font-family:monospace; margin-top:2px;">
+              ${escHTML(billetRef)}
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== FOOTER ===== -->
+        <div style="border-top:1px solid #f1f0ef; padding:10px 18px; display:flex; align-items:center; justify-content:center; gap:8px; background:#faf8f4;">
+          ${logoDataUrl
+                        ? `<img src="${logoDataUrl}" style="height:16px; width:auto; display:block;" />`
+            : `<span style="font-family:'Plus Jakarta Sans', sans-serif; font-size:11px; font-weight:800; letter-spacing:-.01em; color:#1c1917;">Gold<span style="color:#d97706;">Tix</span></span>`}
+          <span style="font-size:10px; color:#1c1917;">&bull;</span>
+          <span style="font-size:10px; font-weight:400; color:#1c1917;">Plateforme de billetterie sécurisée</span>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(pdfContainer);
+
+    html2canvas(pdfContainer, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      logging: false
+    })
+      .then((canvas) => {
+        document.body.removeChild(pdfContainer);
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        const { jsPDF } = window.jspdf;
+
+        const marginMm = 5;
+        const maxWidthMm = 105;
+        const pxToMm = maxWidthMm / canvas.width;
+        const imgWidthMm = canvas.width * pxToMm;
+        const imgHeightMm = canvas.height * pxToMm;
+        const pageWidth = imgWidthMm + marginMm * 2;
+        const pageHeight = imgHeightMm + marginMm * 2;
+
+        const pdf = new jsPDF({
+          unit: 'mm',
+          format: [pageWidth, pageHeight],
+          orientation: pageWidth >= pageHeight ? 'landscape' : 'portrait'
+        });
+
+        pdf.addImage(imgData, 'JPEG', marginMm, marginMm, imgWidthMm, imgHeightMm, undefined, 'FAST');
+        return pdf.output('blob');
+      })
+      .then((pdfBlob) => {
+        const blobURL = URL.createObjectURL(pdfBlob);
+
+        if (isMobile) {
+          if (pdfWindow) {
+            pdfWindow.location.href = blobURL;
+          } else {
+            window.location.href = blobURL;
+          }
+        } else {
+          const downloadLink = document.createElement('a');
+          downloadLink.href = blobURL;
+          downloadLink.download = filename;
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+          document.body.removeChild(downloadLink);
+        }
+
+        setTimeout(() => URL.revokeObjectURL(blobURL), 60000);
+
+        resetButton();
+      })
+      .catch((err) => {
+        if (document.body.contains(pdfContainer)) document.body.removeChild(pdfContainer);
+        if (pdfWindow) pdfWindow.close();
+        console.error("Erreur PDF:", err);
+        alert("Erreur lors de la génération du PDF. Veuillez réessayer.");
+        resetButton();
+      });
+  }
 }
-function effacerInvalide(champEl, erreurEl) {
-if (!champEl || !erreurEl) return;
-champEl.classList.remove('field-invalid');
-erreurEl.classList.remove('visible');
-}
-
-function formaterTaille(octets) {
-if (octets < 1024 * 1024) return Math.max(1, Math.round(octets / 1024)) + ' Ko';
-return (octets / (1024 * 1024)).toFixed(1).replace('.', ',') + ' Mo';
-}
-
-// ─── Compression de la preuve avant envoi ─────────────────────────────
-async function compresserImage(fichier, largeurMax = 1280, qualite = 0.82) {
-try {
-if (fichier.size < 400 * 1024) return fichier;
-const bitmap = await createImageBitmap(fichier);
-const ratio = Math.min(1, largeurMax / bitmap.width);
-const canvas = document.createElement('canvas');
-canvas.width = Math.round(bitmap.width * ratio);
-canvas.height = Math.round(bitmap.height * ratio);
-const ctx = canvas.getContext('2d');
-ctx.fillStyle = '#fff';
-ctx.fillRect(0, 0, canvas.width, canvas.height);
-ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-if (bitmap.close) bitmap.close();
-const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', qualite));
-if (!blob || blob.size >= fichier.size) return fichier;
-return new File([blob], fichier.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' });
-} catch (e) { return fichier; }
-}
-
-// ─── Téléchargement du RIB ────────────────────────────────────────────
-function gxNomFichierDepuisUrl(url, nomParDefaut) {
-try {
-const segment = new URL(url, window.location.href).pathname.split('/').pop() || '';
-const m = segment.match(/\.[a-zA-Z0-9]+$/);
-return nomParDefaut + (m ? m[0] : '.png');
-} catch (e) { return nomParDefaut + '.png'; }
-}
-
-async function gxTelechargerRib(url, btnEl, statusEl) {
-if (!url || !btnEl) return;
-const nomFichier = gxNomFichierDepuisUrl(url, 'RIB du bénéficiaire');
-const contenuOriginal = btnEl.innerHTML;
-btnEl.disabled = true;
-btnEl.innerHTML = `${ICONS.download} Téléchargement…`;
-if (statusEl) { statusEl.classList.remove('visible', 'warn'); statusEl.innerHTML = ''; }
-try {
-const reponse = await fetchAvecTimeout(url, { mode: 'cors' }, 20000);
-if (!reponse.ok) throw new Error('Réponse réseau invalide (' + reponse.status + ')');
-const blob = await reponse.blob();
-const objectUrl = URL.createObjectURL(blob);
-const lien = document.createElement('a');
-lien.href = objectUrl;
-lien.download = nomFichier;
-document.body.appendChild(lien);
-lien.click();
-document.body.removeChild(lien);
-setTimeout(() => URL.revokeObjectURL(objectUrl), 4000);
-if (statusEl) {
-statusEl.innerHTML = `${ICONS.check}<span>RIB enregistré dans vos téléchargements.</span>`;
-statusEl.classList.add('visible');
-setTimeout(() => statusEl.classList.remove('visible'), 5000);
-}
-} catch (err) {
-console.error('Téléchargement direct du RIB impossible, ouverture dans un nouvel onglet :', err);
-window.open(url, '_blank', 'noopener');
-if (statusEl) {
-statusEl.innerHTML = `${ICONS.alert}<span>Le RIB s'est ouvert dans un nouvel onglet — enregistrez-le depuis là.</span>`;
-statusEl.classList.add('visible', 'warn');
-setTimeout(() => statusEl.classList.remove('visible', 'warn'), 6000);
-}
-} finally {
-btnEl.disabled = false;
-btnEl.innerHTML = contenuOriginal;
-}
-}
-
-// ─── Catégories & récapitulatif ───────────────────────────────────────
-function aDesCategories(ev) {
-return !!(ev && Array.isArray(ev.categories_data) && ev.categories_data.length > 0);
-}
-
-function toutesCategoriesEpuisees(ev) {
-return aDesCategories(ev) && ev.categories_data.every(c => ev.disponibilites && ev.disponibilites[c.nom] && ev.disponibilites[c.nom].epuise);
-}
-
-function achatOuvert(ev) {
-return !ev.ventes_fermees && !toutesCategoriesEpuisees(ev);
-}
-
-function htmlLignesCategories(ev) {
-if (aDesCategories(ev)) {
-return ev.categories_data.map(c => {
-const dispo = ev.disponibilites ? ev.disponibilites[c.nom] : null;
-const epuise = !!(dispo && dispo.epuise);
-return `<div class="cat-row${epuise ? ' epuise' : ''}">
-<span class="cat-name">${esc(c.nom)}</span>
-<span class="cat-price">${epuise ? 'Épuisé' : esc(c.prix)}</span>
-</div>`;
-}).join('');
-}
-return `<div class="cat-row"><span class="cat-name">Billet</span><span class="cat-price">${esc(ev.prix || 'Gratuit')}</span></div>`;
-}
-
-function genererOptionsCategorieAchat(ev) {
-if (!aDesCategories(ev)) return '';
-return ev.categories_data.map(cat => {
-const infoDispo = ev.disponibilites ? ev.disponibilites[cat.nom] : null;
-const estEpuisee = !!(infoDispo && infoDispo.epuise);
-const valeur = `${cat.nom} - ${cat.prix}`;
-let libelle = `${cat.nom} — ${cat.prix}`;
-if (infoDispo) {
-libelle += estEpuisee
-? ' (Épuisé)'
-: ` (${infoDispo.restant} place${infoDispo.restant > 1 ? 's' : ''} disponible${infoDispo.restant > 1 ? 's' : ''})`;
-}
-return `<option value="${esc(valeur)}" data-nom="${esc(cat.nom)}" data-prix="${esc(cat.prix)}"${estEpuisee ? ' disabled' : ''}>${esc(libelle)}</option>`;
-}).join('');
-}
-
-function mettreAJourRecap() {
-const sel = document.getElementById('selectCategorie');
-let prix = '—';
-if (sel && sel.selectedOptions && sel.selectedOptions[0] && !sel.selectedOptions[0].disabled) {
-prix = sel.selectedOptions[0].dataset.prix || '—';
-} else if (!sel && evCourant) {
-prix = evCourant.prix || 'Gratuit';
-}
-const el = document.getElementById('prixChoisiEl');
-if (el) el.textContent = prix;
-}
-
-// ─── Carte sous l'affiche : titre, date, heure, lieu ───────────────────
-function formaterDateLongue(texte) {
-const mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
-const t = String(texte || '').trim();
-let y, m, d, r;
-if ((r = t.match(/^(\d{4})-(\d{2})-(\d{2})/))) { y = r[1]; m = +r[2]; d = +r[3]; }
-else if ((r = t.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/))) { d = +r[1]; m = +r[2]; y = r[3]; }
-if (!y || m < 1 || m > 12) return t;
-return d + ' ' + mois[m - 1] + ' ' + y;
-}
-
-function htmlInfosEvenement(ev) {
-const heure = (ev.heure || '').slice(0, 5);
-return `
-<h2 class="event-title">${esc(ev.titre)}</h2>
-<div class="event-meta">
-${ev.date ? `<div class="meta-row">${ICONS.calendar}<span>${esc(formaterDateLongue(ev.date))}</span></div>` : ''}
-${heure ? `<div class="meta-row">${ICONS.clock}<span>${esc(heure)}</span></div>` : ''}
-${ev.lieu ? `<div class="meta-row">${ICONS.pin}<span>${esc(ev.lieu)}</span></div>` : ''}
-</div>`;
-}
-
-// ─── Aperçu de la preuve de paiement ──────────────────────────────────
-function libererApercu() {
-if (apercuUrl) { URL.revokeObjectURL(apercuUrl); apercuUrl = null; }
-}
-
-function reinitialiserFichier(inputEl, zoneEl) {
-libererApercu();
-inputEl.value = '';
-zoneEl.classList.remove('has-file');
-}
-
-// ─── Chargement principal ─────────────────────────────────────────────
-async function chargerPageAchatUnique() {
-if (chargementEnCours) return;
-chargementEnCours = true;
-
-const eventId = new URLSearchParams(window.location.search).get('event');
-const container = document.getElementById('detailsEvenement');
-
-container.innerHTML = `<div class="card"><p class="loading-line"><span class="spinner"></span>Chargement de votre expérience…</p></div>`;
-
-const watchdog = setTimeout(function() {
-if (container.querySelector('.loading-line')) {
-afficherErreurChargement(container, 'Chargement trop long',
-'La connexion semble instable. Vérifiez votre réseau (Wi-Fi ou données mobiles) et réessayez.');
-}
-}, 20000);
-
-try {
-if (!eventId) {
-afficherErreurChargement(container, 'Lien invalide', 'Aucun événement spécifié dans ce lien.');
-return;
-}
-
-let ev;
-try {
-const reponse = await fetchAvecTimeout('/api/tickets?event=' + encodeURIComponent(eventId), { method: 'GET' }, 15000);
-if (!reponse.ok) throw new Error('Erreur serveur (' + reponse.status + ')');
-const data = await reponse.json();
-ev = data.event;
-} catch (err) {
-console.error("Erreur réseau lors du chargement de l'événement :", err);
-afficherErreurChargement(container, 'Connexion impossible',
-'Le chargement a échoué (réseau instable ou trop lent). Vérifiez votre connexion et réessayez.');
-return;
-}
-
-if (!ev) {
-afficherErreurChargement(container, 'Événement introuvable', 'Cet événement a été supprimé ou n\'existe plus.');
-return;
-}
-
-evCourant = ev;
-const ouvert = achatOuvert(ev);
-
-let colonneEtapes = '';
-
-if (!ouvert) {
-const titre = ev.ventes_fermees ? 'Ventes fermées' : 'Billets épuisés';
-const texte = ev.ventes_fermees
-? "Les ventes en ligne de billets pour cet événement viennent d'être fermées par l'organisateur."
-: 'Tous les billets disponibles pour cet événement ont été vendus.';
-colonneEtapes = `
-<div class="card state-card">
-<div class="state-ico">${ICONS.x}</div>
-<h2>${titre}</h2>
-<p>${texte}</p>
-<p>Merci pour votre intérêt et à bientôt !</p>
-</div>`;
-} else {
-const urlRib = ev.rib_image_url || ev.qr_code_paiement || '';
-
-const blocPrix = aDesCategories(ev)
-? `<div class="field">
-<label for="selectCategorie">Catégorie(s) de billet disponible(s)</label>
-<select id="selectCategorie">${genererOptionsCategorieAchat(ev)}</select>
-</div>
-<div class="price-line"><span>Total à payer</span><span id="prixChoisiEl">—</span></div>`
-: `<div class="price-single"><span>Total à payer</span><span id="prixChoisiEl">${esc(ev.prix || 'Gratuit')}</span></div>`;
-
-const blocRib = urlRib ? `
-<div class="rib-box">
-<div class="rib-ico">${ICONS.file}</div>
-<div class="rib-txt">
-<strong>RIB du bénéficiaire</strong>
-<span>Téléchargez-le pour effectuer votre virement depuis votre application bancaire.</span>
-</div>
-<button type="button" class="btn-outline" id="btnTelechargerRib">${ICONS.download} Télécharger le RIB</button>
-<p class="rib-status" id="ribDownloadStatus"></p>
-</div>` : '';
-
-colonneEtapes = `
-<section class="card" aria-labelledby="t1">
-<div class="card-head">
-<span class="step-num">1</span>
-<div>
-<h2 class="card-title" id="t1">Choisissez votre billet</h2>
-<p class="card-desc">Sélectionnez votre catégorie de billet, puis effectuez le paiement.</p>
-</div>
-</div>
-${blocPrix}
-</section>
-
-<section class="card" aria-labelledby="t2">
-<div class="card-head">
-<span class="step-icon">${ICONS.wallet}</span>
-<div>
-<h2 class="card-title" id="t2">Coordonnées de paiement</h2>
-<p class="card-desc">Effectuez le transfert vers les coordonnées ci-dessous.</p>
-</div>
-</div>
-<div class="info-list">
-<div class="info-item">
-<span class="info-item-ico">${ICONS.user}</span>
-<div class="info-item-txt">
-<div class="info-item-label">Bénéficiaire des paiements</div>
-<div class="info-item-value" id="evBeneficiaireNomEl">${esc(ev.beneficiaire_nom || 'Non renseigné')}</div>
-</div>
-</div>
-<div class="info-item">
-<span class="info-item-ico">${ICONS.phone}</span>
-<div class="info-item-txt">
-<div class="info-item-label">Contact WhatsApp</div>
-<div class="info-item-value" id="evBeneficiaireContactEl">${esc(ev.beneficiaire_infos || 'Non renseigné')}</div>
-</div>
-</div>
-</div>
-${blocRib}
-</section>
-
-<section class="card" aria-labelledby="t3">
-<div class="card-head">
-<span class="step-num">2</span>
-<div>
-<h2 class="card-title" id="t3">Confirmer mon paiement</h2>
-<p class="card-desc">Après avoir effectué le paiement, renseignez vos informations et transmettez votre preuve de paiement.</p>
-</div>
-</div>
-
-<div class="field">
-<label for="nomParticipant">Nom et prénom(s) <span class="req">*</span></label>
-<input type="text" id="nomParticipant" placeholder="ex : KONATE Jean" autocomplete="name">
-<p class="field-error" id="errNomParticipant"></p>
-</div>
-
-<div class="field">
-<label for="emailParticipant">Adresse e-mail <span class="hint">(Pour la réception du lien du billet)</span></label>
-<input type="email" id="emailParticipant" placeholder="ex : nom@gmail.com" autocomplete="email" inputmode="email">
-<p class="field-error" id="errEmailParticipant"></p>
-</div>
-
-<div class="field">
-<label for="telParticipant">Contact WhatsApp <span class="req">*</span></label>
-<input type="tel" id="telParticipant" placeholder="ex : +226 ... / +212 ..." autocomplete="tel" inputmode="tel">
-<p class="field-error" id="errTelParticipant"></p>
-</div>
-
-<div class="field">
-<span class="label">Preuve de paiement <span class="hint">(capture du reçu)</span> <span class="req">*</span></span>
-<div class="upload" id="fileWrapper">
-<input type="file" id="preuvePaiement" accept="image/jpeg,image/png,image/webp,image/*" aria-label="Preuve de paiement">
-<div class="upload-empty">
-${ICONS.upload}
-<strong>Cliquez pour choisir un fichier</strong>
-<span>JPG, PNG ou WEBP — 10 Mo maximum</span>
-</div>
-<div class="upload-file">
-<img class="upload-thumb" id="fileThumb" alt="Aperçu de la preuve de paiement">
-<div class="upload-meta">
-<div class="upload-name" id="fileNamePreview"></div>
-<div class="upload-size" id="fileSizePreview"></div>
-<button type="button" class="upload-replace" id="btnRemplacerFichier">Remplacer le fichier</button>
-</div>
-</div>
-</div>
-<p class="field-error" id="errPreuvePaiement"></p>
-</div>
-
-<button class="btn-submit" id="btnValiderAchat" type="button">
-${ICONS.check} Valider mon paiement
-</button>
-<div id="zoneMessageAchat" aria-live="polite"></div>
-<p class="submit-note">Votre paiement sera vérifié par le bénéficiare avant la validation  et obtention de votre billet.</p>
-</section>`;
-}
-
-container.innerHTML = `
-<div class="layout">
-<aside class="col-event">
-<div class="poster">${ev.affiche_url ? `<img id="posterImgEl" src="${esc(ev.affiche_url)}" alt="Affiche de l'événement">` : `<div class="poster-fallback">${ICONS.image}<span>Affiche non disponible</span></div>`}</div>
-<div class="card info-card">
-<div id="infosEvenementEl">${htmlInfosEvenement(ev)}</div>
-<h3 class="cat-title">Catégorie(s) disponible(s)</h3>
-<div class="cat-list" id="listeCategoriesEl">${htmlLignesCategories(ev)}</div>
-</div>
-</aside>
-<div class="col-steps">
-${ouvert ? `<div class="steps-divider"><span>Suivez les étapes ci-dessous afin d'obtenir votre billet</span></div>` : ''}
-${colonneEtapes}
-</div>
-</div>`;
-
-const posterImage = container.querySelector('.poster img');
-if (posterImage) {
-posterImage.addEventListener('error', function() {
-const wrapper = this.closest('.poster');
-if (wrapper) wrapper.innerHTML = `<div class="poster-fallback">${ICONS.image}<span>Affiche non disponible</span></div>`;
-});
-}
-
-if (ouvert) {
-brancherFormulaire(ev);
-derniereSignatureAchat = signatureEvenementAchat(ev);
-demarrerVerificationPeriodiqueAchat();
-}
-
-} catch (err) {
-console.error("Erreur inattendue lors de l'affichage de l'événement :", err);
-afficherErreurChargement(container, 'Une erreur est survenue',
-"Impossible d'afficher les informations de l'événement. Réessayez.");
-} finally {
-clearTimeout(watchdog);
-chargementEnCours = false;
-}
-}
-
-// ─── Branchement du formulaire ────────────────────────────────────────
-function brancherFormulaire(ev) {
-const fileInput = document.getElementById('preuvePaiement');
-const fileWrapperEl = document.getElementById('fileWrapper');
-const errPreuveEl = document.getElementById('errPreuvePaiement');
-const selectCat = document.getElementById('selectCategorie');
-
-if (selectCat) selectCat.addEventListener('change', mettreAJourRecap);
-mettreAJourRecap();
-
-const btnRib = document.getElementById('btnTelechargerRib');
-if (btnRib) {
-const urlRib = ev.rib_image_url || ev.qr_code_paiement;
-const statutRib = document.getElementById('ribDownloadStatus');
-btnRib.addEventListener('click', () => gxTelechargerRib(urlRib, btnRib, statutRib));
-}
-
-[['nomParticipant', 'errNomParticipant'], ['telParticipant', 'errTelParticipant'], ['emailParticipant', 'errEmailParticipant']]
-.forEach(function(paire) {
-const champ = document.getElementById(paire[0]);
-const erreur = document.getElementById(paire[1]);
-if (champ) champ.addEventListener('input', function() {
-if (this.value.trim() || this.id === 'emailParticipant') effacerInvalide(champ, erreur);
-});
-});
-
-fileInput.addEventListener('change', function() {
-const fichier = this.files && this.files[0];
-if (!fichier) return;
-
-if (!TYPES_IMAGE_OK.includes(fichier.type)) {
-reinitialiserFichier(fileInput, fileWrapperEl);
-marquerInvalide(fileWrapperEl, errPreuveEl, 'Format non accepté. Utilisez une image JPG, PNG ou WEBP.');
-return;
-}
-if (fichier.size > TAILLE_MAX_FICHIER) {
-reinitialiserFichier(fileInput, fileWrapperEl);
-marquerInvalide(fileWrapperEl, errPreuveEl, 'Ce fichier dépasse 10 Mo. Choisissez une image plus légère.');
-return;
-}
-
-libererApercu();
-apercuUrl = URL.createObjectURL(fichier);
-document.getElementById('fileThumb').src = apercuUrl;
-document.getElementById('fileNamePreview').textContent = fichier.name;
-document.getElementById('fileSizePreview').textContent = formaterTaille(fichier.size);
-fileWrapperEl.classList.add('has-file');
-effacerInvalide(fileWrapperEl, errPreuveEl);
-});
-
-document.getElementById('btnRemplacerFichier').addEventListener('click', function() {
-reinitialiserFichier(fileInput, fileWrapperEl);
-fileInput.click();
-});
-
-const btn = document.getElementById('btnValiderAchat');
-const btnHTMLOriginal = btn.innerHTML;
-const zoneMsg = document.getElementById('zoneMessageAchat');
-
-btn.onclick = async function() {
-const nomEl = document.getElementById('nomParticipant');
-const telEl = document.getElementById('telParticipant');
-const emailEl = document.getElementById('emailParticipant');
-const errNomEl = document.getElementById('errNomParticipant');
-const errTelEl = document.getElementById('errTelParticipant');
-const errEmailEl = document.getElementById('errEmailParticipant');
-
-const nom = nomEl.value.trim();
-const email = emailEl.value.trim();
-const tel = telEl.value.trim();
-const fichierPreuve = fileInput.files[0];
-
-// Catégorie réellement choisie (valeur "nom - prix" enregistrée côté serveur)
-let typeBilletChoisi = 'Standard';
-const sel = document.getElementById('selectCategorie');
-if (sel) {
-if (!sel.value || (sel.selectedOptions[0] && sel.selectedOptions[0].disabled)) {
-zoneMsg.innerHTML = `<div class="notice error">${ICONS.alert}<span>Cette catégorie n'est plus disponible. Choisissez-en une autre.</span></div>`;
-return;
-}
-typeBilletChoisi = sel.value;
-} else if (ev.prix) {
-typeBilletChoisi = String(ev.prix);
-}
-
-zoneMsg.innerHTML = '';
-effacerInvalide(nomEl, errNomEl);
-effacerInvalide(telEl, errTelEl);
-effacerInvalide(emailEl, errEmailEl);
-effacerInvalide(fileWrapperEl, errPreuveEl);
-
-let valide = true;
-if (!nom) { marquerInvalide(nomEl, errNomEl); valide = false; }
-if (!tel) {
-marquerInvalide(telEl, errTelEl); valide = false;
-} else if (tel.replace(/\D/g, '').length < 8) {
-marquerInvalide(telEl, errTelEl, 'Ce numéro semble trop court.'); valide = false;
-}
-if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-marquerInvalide(emailEl, errEmailEl, 'Cette adresse e-mail ne semble pas valide.'); valide = false;
-}
-if (!fichierPreuve) {
-marquerInvalide(fileWrapperEl, errPreuveEl, 'Une preuve de paiement est obligatoire.'); valide = false;
-} else if (!TYPES_IMAGE_OK.includes(fichierPreuve.type)) {
-marquerInvalide(fileWrapperEl, errPreuveEl, 'Format non accepté. Utilisez une image JPG, PNG ou WEBP.'); valide = false;
-} else if (fichierPreuve.size > TAILLE_MAX_FICHIER) {
-marquerInvalide(fileWrapperEl, errPreuveEl, 'Ce fichier dépasse 10 Mo. Choisissez une image plus légère.'); valide = false;
-}
-
-if (!valide) {
-const premier = document.querySelector('.field-invalid');
-if (premier) premier.scrollIntoView({ behavior: 'smooth', block: 'center' });
-return;
-}
-
-if (btn.disabled) return;
-btn.disabled = true;
-window.addEventListener('beforeunload', gxAvertirAvantFermeture);
-btn.innerHTML = `<span class="spinner"></span> Envoi en cours… Ne fermez pas cette page.`;
-
-try {
-const preuve = await compresserImage(fichierPreuve);
-if (preuve.size > TAILLE_MAX_ENVOI) {
-window.removeEventListener('beforeunload', gxAvertirAvantFermeture);
-marquerInvalide(fileWrapperEl, errPreuveEl, "Cette image reste trop lourde. Choisissez une capture d'écran plus légère.");
-fileWrapperEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-btn.disabled = false;
-btn.innerHTML = btnHTMLOriginal;
-return;
-}
-
-const formData = new FormData();
-formData.append('event', ev.id);
-formData.append('nom_participant', nom);
-formData.append('email', email || '');
-formData.append('telephone', tel);
-formData.append('type_billet', typeBilletChoisi);
-formData.append('preuve', preuve);
-
-const reponseAchat = await fetchAvecTimeout('/api/tickets', { method: 'POST', body: formData }, 30000);
-
-let resultat;
-try { resultat = await reponseAchat.json(); } catch (e) { resultat = null; }
-
-if (!reponseAchat.ok || !resultat || !resultat.success) {
-const message = (resultat && resultat.error) ? resultat.error : "Erreur lors de l'enregistrement du billet.";
-window.removeEventListener('beforeunload', gxAvertirAvantFermeture);
-zoneMsg.innerHTML = `<div class="notice error">${ICONS.alert}<span>${esc(message)}</span></div>`;
-btn.disabled = false;
-btn.innerHTML = btnHTMLOriginal;
-return;
-}
-
-// Paiement en attente de vérification (jamais « confirmé » ici)
-zoneMsg.innerHTML = `<div class="notice success">${ICONS.check}<span>Vos informations ont bien été reçues. Votre paiement est en attente de vérification par l'organisateur.</span></div>`;
-btn.innerHTML = `${ICONS.check} Informations envoyées`;
-window.removeEventListener('beforeunload', gxAvertirAvantFermeture);
-
-setTimeout(function() {
-window.location.href = `billet.html?id=${encodeURIComponent(resultat.code_public)}`;
-}, 1500);
-
-} catch (err) {
-console.error('Erreur inattendue :', err);
-const message = (err && err.name === 'AbortError')
-? 'La connexion met trop de temps à répondre. Vérifiez votre réseau puis réessayez.'
-: 'Une erreur inattendue est survenue lors du traitement.';
-window.removeEventListener('beforeunload', gxAvertirAvantFermeture);
-zoneMsg.innerHTML = `<div class="notice error">${ICONS.alert}<span>${esc(message)}</span></div>`;
-btn.disabled = false;
-btn.innerHTML = btnHTMLOriginal;
-}
-};
-}
-
-// ─── Mise à jour périodique (30 s, arrêtée quand les ventes ferment) ──
-function signatureEvenementAchat(ev) {
-if (!ev) return '';
-return [
-ev.titre || '', ev.date || '', ev.heure || '', ev.lieu || '',
-ev.affiche_url || '', ev.beneficiaire_nom || '', ev.beneficiaire_infos || '',
-JSON.stringify(ev.categories_data || []),
-JSON.stringify(ev.disponibilites || {}),
-ev.prix || '',
-ev.ventes_fermees ? '1' : '0'
-].join('|');
-}
-
-async function verifierMiseAJourAchat() {
-const eventIdCourant = new URLSearchParams(window.location.search).get('event');
-if (!eventIdCourant) return;
-try {
-const reponse = await fetchAvecTimeout('/api/tickets?event=' + encodeURIComponent(eventIdCourant), { method: 'GET' }, 15000);
-if (!reponse.ok) return;
-const data = await reponse.json();
-const ev = data.event;
-if (!ev) return;
-const nouvelleSignature = signatureEvenementAchat(ev);
-if (nouvelleSignature === derniereSignatureAchat) return;
-derniereSignatureAchat = nouvelleSignature;
-evCourant = ev;
-
-const btnValider = document.getElementById('btnValiderAchat');
-if (ev.ventes_fermees && btnValider && !document.getElementById('ventesFermeesAlerte')) {
-const alerteEl = document.createElement('div');
-alerteEl.id = 'ventesFermeesAlerte';
-alerteEl.className = 'notice error';
-alerteEl.innerHTML = `${ICONS.alert}<span>Les ventes viennent d'être fermées par l'organisateur. Aucun achat n'est possible pour le moment. Contactez le bénéficiaire pour toute réclamation.</span>`;
-btnValider.insertAdjacentElement('beforebegin', alerteEl);
-btnValider.disabled = true;
-btnValider.style.opacity = '0.6';
-}
-
-const infosEl = document.getElementById('infosEvenementEl');
-if (infosEl) infosEl.innerHTML = htmlInfosEvenement(ev);
-const posterImgEl = document.getElementById('posterImgEl');
-if (posterImgEl && ev.affiche_url && posterImgEl.getAttribute('src') !== ev.affiche_url) posterImgEl.src = ev.affiche_url;
-const maj = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-const listeCatEl = document.getElementById('listeCategoriesEl');
-if (listeCatEl) listeCatEl.innerHTML = htmlLignesCategories(ev);
-maj('evBeneficiaireNomEl', ev.beneficiaire_nom || 'Non renseigné');
-maj('evBeneficiaireContactEl', ev.beneficiaire_infos || 'Non renseigné');
-
-const selectCategorieEl = document.getElementById('selectCategorie');
-if (selectCategorieEl) {
-const valeurSelectionnee = selectCategorieEl.value;
-selectCategorieEl.innerHTML = genererOptionsCategorieAchat(ev);
-const existeEncore = Array.from(selectCategorieEl.options).some(o => o.value === valeurSelectionnee && !o.disabled);
-if (existeEncore) {
-selectCategorieEl.value = valeurSelectionnee;
-} else if (valeurSelectionnee) {
-const zone = document.getElementById('zoneMessageAchat');
-if (zone) zone.innerHTML = `<div class="notice error">${ICONS.alert}<span>La catégorie choisie n'est plus disponible. Choisissez-en une autre. Pour toute réclamation, contactez le bénéficiaire.</span></div>`;
-}
-mettreAJourRecap();
-} else if (!aDesCategories(ev)) {
-mettreAJourRecap();
-}
-} catch (err) {
-console.error('Erreur vérification mise à jour (achat) :', err);
-}
-}
-
-function demarrerVerificationPeriodiqueAchat() {
-if (intervalMiseAJourAchatDemarre) return;
-intervalMiseAJourAchatDemarre = true;
-const timer = setInterval(() => {
-if (document.hidden) return;
-if (evCourant && evCourant.ventes_fermees) { clearInterval(timer); return; }
-verifierMiseAJourAchat();
-}, 30000);
-document.addEventListener('visibilitychange', () => {
-if (!document.hidden && evCourant && !evCourant.ventes_fermees) verifierMiseAJourAchat();
-});
-}
-
-document.addEventListener('DOMContentLoaded', chargerPageAchatUnique);
+      function escHTML(str) {
+        if (!str) return '';
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      }
+
+      const dlBtn = document.getElementById('downloadTicket');
+      if (dlBtn) dlBtn.addEventListener('click', demanderConfirmationTelechargement);
+
+      chargerBillet();
+    });
 </script>
 </body>
 </html>
