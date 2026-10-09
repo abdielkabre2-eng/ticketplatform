@@ -592,7 +592,7 @@ async function changerStatut(supabase, payload, res) {
     if (b && b.email) {
       const nom = echapperHtml(b.nom_participant || "");
       if (nouveauStatut === "confirme") {
-        const lien = `${process.env.SITE_URL}/billet.html?id=${encodeURIComponent(b.code_public)}`;
+       const lien = `https://ticketplatform-kappa.vercel.app/billet.html?id=${encodeURIComponent(b.code_public)}`;
         emailEnvoye = await envoyerEmailResend({
           to: b.email,
           subject: "Votre billet GoldTix est prêt 🎫",
