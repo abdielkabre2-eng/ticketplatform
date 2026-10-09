@@ -124,6 +124,9 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
 .gx-footer__titre{margin-bottom:14px;font-size:12px;font-weight:800;letter-spacing:1.2px;color:var(--ink)}
 .gx-footer__col a{display:block;margin-bottom:10px;font-size:13.5px;font-weight:500;color:var(--text);text-decoration:none;transition:color .2s ease}
 .gx-footer__col a:hover{color:var(--gold-dark)}
+.gx-off{cursor:default;user-select:none}
+.gx-footer__col .gx-off{display:block;margin-bottom:10px;font-size:13.5px;font-weight:500;color:var(--text)}
+.gx-footer__legal .gx-off{font-size:12px;color:var(--text)}
 .gx-footer__paiement{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:16px;padding:16px 0;border-top:1px solid var(--line)}
 .gx-footer__paiement-label{margin-right:6px;font-size:12px;color:var(--muted)}
 .gx-badge{display:inline-block;padding:6px 12px;background:#fafaf9;color:var(--ink-2);border:1px solid var(--line);border-radius:7px;font-size:12px;font-weight:600}
@@ -418,9 +421,9 @@ Billetterie sécurisée
 </div>
 <div class="gx-footer__col">
 <h3 class="gx-footer__titre">INFORMATIONS LÉGALES</h3>
-<a href="cgv.html">CGV</a>
+<span class="gx-off">CGV</span>
 <a href="mentions-legales.html">Mentions légales</a>
-<a href="confidentialite.html">Politique de confidentialité</a>
+<span class="gx-off">Politique de confidentialité</span>
 <a href="remboursement.html">Politique de remboursement</a>
 </div>
 </div>
@@ -438,10 +441,10 @@ Billetterie sécurisée
 <div class="wrap gx-footer__bas-inner">
 <span class="gx-footer__copy">© GoldTix — Tous droits réservés - 2026</span>
 <nav class="gx-footer__legal" aria-label="Liens légaux">
-<a href="cgv.html">CGV</a>
+<span class="gx-off">CGV</span>
 <a href="conditions.html">Conditions d'utilisation</a>
 <a href="mentions-legales.html">Mentions légales</a>
-<a href="confidentialite.html">Confidentialité</a>
+<span class="gx-off">Confidentialité</span>
 </nav>
 </div>
 </div>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mentions légales — GoldTix</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+    --gold-500: #f59e0b; --gold-600: #d97706; --gold-700: #b45309;
+    --ink-50: #f8fafc; --ink-100: #f1f5f9; --ink-200: #e2e8f0;
+    --ink-400: #94a3b8; --ink-500: #64748b; --ink-700: #334155; --ink-900: #0f172a;
+    --grad-gold: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+    --grad-page: linear-gradient(160deg, #fffdf7 0%, #fef9ee 50%, #fffbf0 100%);
+    --radius-md: 16px; --radius-sm: 12px; --radius-xl: 32px;
+    --shadow-gold-lg: 0 6px 18px rgba(217,119,6,0.10), 0 20px 60px rgba(217,119,6,0.16);
+    --border-gold: rgba(217,119,6,0.20);
+    --font-display: 'Sora', sans-serif; --font-body: 'DM Sans', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: var(--font-body);
+    background: var(--grad-page);
+    background-attachment: fixed;
+    color: var(--ink-900);
+    line-height: 1.6;
+    padding: 24px 16px 60px;
+}
+.wrap { max-width: 720px; margin: 0 auto; }
+.back-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--font-display); font-weight: 700; font-size: 13px;
+    color: var(--gold-700); text-decoration: none; margin-bottom: 20px;
+}
+.card {
+    background: rgba(255,255,255,0.95);
+    border: 1px solid var(--border-gold);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-gold-lg);
+    overflow: hidden;
+}
+.card::before { content:''; display:block; height:3px; background: var(--grad-gold); }
+.card-inner { padding: 32px 28px 40px; }
+@media (max-width: 520px) { .card-inner { padding: 22px 16px 30px; } }
+
+.eyebrow {
+    display: inline-block;
+    font-family: var(--font-display); font-size: 10px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase; color: var(--gold-600);
+    margin-bottom: 10px;
+}
+h1 { font-family: var(--font-display); font-size: 24px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 28px; }
+
+.group { margin-bottom: 30px; }
+.group:last-of-type { margin-bottom: 0; }
+.group-title {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--font-display); font-size: 16px; font-weight: 800;
+    margin-bottom: 14px;
+}
+.num {
+    flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--grad-gold); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 12px; font-weight: 800;
+}
+.rows { display: flex; flex-direction: column; gap: 10px; }
+.row {
+    background: var(--ink-50); border: 1px solid var(--ink-200);
+    border-radius: var(--radius-sm); padding: 14px 16px;
+}
+.row h3 { font-family: var(--font-display); font-size: 12px; font-weight: 700; margin-bottom: 3px; color: var(--ink-500); }
+.row p { font-size: 13.5px; color: var(--ink-900); font-weight: 500; }
+.text {
+    background: var(--ink-50); border: 1px solid var(--ink-200);
+    border-radius: var(--radius-sm); padding: 14px 16px;
+    font-size: 13px; color: var(--ink-500);
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+    <a class="back-link" href="javascript:history.back()">← Retour</a>
+    <div class="card">
+        <div class="card-inner">
+            <span class="eyebrow">Informations légales</span>
+            <h1>Mentions légales</h1>
+
+            <div class="group">
+                <div class="group-title"><span class="num">1</span> Informations générales</div>
+                <div class="rows">
+                    <div class="row"><h3>Nom de la plateforme</h3><p>GoldTix</p></div>
+                    <div class="row"><h3>Responsable de la publication</h3><p>Abdiel Wendpanga Jedidja Kabre</p></div>
+                    <div class="row"><h3>Contact</h3><p>+212 770967646 / +226 53107345 / +226 56205761</p></div>
+                    <div class="row"><h3>Adresse</h3><p>Tanger, Maroc</p></div>
+                </div>
+            </div>
+
+            <div class="group">
+                <div class="group-title"><span class="num">2</span> Hébergement</div>
+                <div class="rows">
+                    <div class="row"><h3>Hébergeur</h3><p>Vercel</p></div>
+                    <div class="row"><h3>Site web de l'hébergeur</h3><p>En cours</p></div>
+                </div>
+            </div>
+
+            <div class="group">
+                <div class="group-title"><span class="num">3</span> Données personnelles</div>
+                <p class="text">Les informations collectées sur le site sont utilisées uniquement pour le bon fonctionnement de la billetterie et des événements. Tu peux à tout moment nous contacter pour toute demande concernant tes données.</p>
+            </div>
+
+            <div class="group">
+                <div class="group-title"><span class="num">4</span> Responsabilité</div>
+                <p class="text">GoldTix fait de son mieux pour assurer un service fluide et accessible, mais ne peut pas être tenu responsable des éventuels bugs ou interruptions techniques indépendants de notre volonté.</p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
