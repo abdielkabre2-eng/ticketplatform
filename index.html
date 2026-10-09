@@ -6,7 +6,7 @@
 <title>Achat de Billet | GoldTix</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@1,500&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#f7f7f5;--surface:#fff;--surface-soft:#f4f3f0;--surface-gold:#fffbf0;--ink:#111216;--ink-2:#25262b;--text:#44464e;--muted:#85878f;--line:#e8e7e3;--line-strong:#d8d6d0;--gold:#d97706;--gold-dark:#b45309;--gold-soft:#fef3c7;--gold-bright:#f59e0b;--grad-gold:linear-gradient(135deg,#f59e0b 0%,#d97706 50%,#b45309 100%);--green:#16803c;--green-bg:#edf9f1;--red:#c62828;--red-bg:#fff1f1;--radius:18px;--radius-sm:12px;--shadow-sm:0 2px 8px rgba(17,18,22,.04),0 1px 2px rgba(17,18,22,.03);--shadow:0 12px 35px rgba(17,18,22,.07),0 2px 8px rgba(17,18,22,.04);--ease:cubic-bezier(.16,1,.3,1)}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -112,15 +112,31 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
 .btn-submit:active:not(:disabled){transform:none}
 .btn-submit svg{width:17px;height:17px;flex-shrink:0}
 .submit-note{margin-top:10px;color:var(--muted);font-size:10.5px;line-height:1.6;text-align:center}
-.footer{margin-top:5px;background:#fff;border-top:1px solid var(--line);padding:34px 0 28px;text-align:center;color:var(--muted)}
-.footer-brand{margin-bottom:9px;color:var(--gold-dark);font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
-.footer-description{max-width:610px;margin:0 auto 18px;font-size:10.5px;line-height:1.7}
-.footer-links{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin-bottom:17px}
-.footer-links a{padding:7px 11px;background:#fafaf9;color:var(--text);border:1px solid var(--line);border-radius:999px;text-decoration:none;font-size:10.5px;font-weight:600;transition:border-color .2s ease,background .2s ease,color .2s ease}
-.footer-links a:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
-.footer-copy{color:#a1a19c;font-size:9.5px}
+
+/* ── Pied de page (nouveau) ── */
+.gx-footer{margin-top:5px;background:#fff;border-top:1px solid var(--line);color:var(--muted)}
+.gx-footer__haut{padding:46px 0 14px}
+.gx-footer__intro{text-align:center;padding:0 0 34px}
+.gx-footer__slogan{margin-bottom:14px;font-family:"Playfair Display",Georgia,serif;font-style:italic;font-weight:500;font-size:30px;letter-spacing:.5px;line-height:1.25;color:var(--gold-dark)}
+.gx-footer__desc{max-width:900px;margin:0 auto;font-size:14px;line-height:1.75;color:var(--muted)}
+.gx-footer__grille{display:flex;flex-wrap:wrap;justify-content:flex-start;gap:34px 60px;padding-top:30px;border-top:1px solid var(--line)}
+.gx-footer__col{flex:0 1 200px;min-width:0}
+.gx-footer__titre{margin-bottom:14px;font-size:12px;font-weight:800;letter-spacing:1.2px;color:var(--ink)}
+.gx-footer__col a{display:block;margin-bottom:10px;font-size:13.5px;font-weight:500;color:var(--text);text-decoration:none;transition:color .2s ease}
+.gx-footer__col a:hover{color:var(--gold-dark)}
+.gx-footer__paiement{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:16px;padding:16px 0;border-top:1px solid var(--line)}
+.gx-footer__paiement-label{margin-right:6px;font-size:12px;color:var(--muted)}
+.gx-badge{display:inline-block;padding:6px 12px;background:#fafaf9;color:var(--ink-2);border:1px solid var(--line);border-radius:7px;font-size:12px;font-weight:600}
+.gx-footer__secu{margin-left:auto;font-size:12px;color:var(--muted)}
+.gx-footer__bas{background:#f4f3f0}
+.gx-footer__bas-inner{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding:16px 0}
+.gx-footer__copy{font-size:12px;color:#a1a19c}
+.gx-footer__legal{display:flex;flex-wrap:wrap;gap:6px 20px}
+.gx-footer__legal a{font-size:12px;color:var(--text);text-decoration:none;transition:color .2s ease}
+.gx-footer__legal a:hover{color:var(--gold-dark)}
+
 @media(max-width:920px){.layout{grid-template-columns:310px minmax(0,1fr);gap:20px}.card{padding:21px}.col-steps .card:not(.state-card)::before{left:21px}.rib-box{grid-template-columns:auto minmax(0,1fr)}.rib-box .btn-outline{grid-column:1/-1;width:100%}}
-@media(max-width:760px){.wrap{width:min(100% - 28px,600px)}.topbar-inner{height:58px}.brand-name{font-size:17px}.secure-badge{padding:6px 8px;font-size:9.5px}.secure-badge svg{width:13px;height:13px}.page-head{padding:34px 0 24px}.ph-eyebrow{gap:9px;margin-bottom:12px;font-size:9px;letter-spacing:1.5px}.ph-eyebrow span{width:24px}.page-head h1{font-size:29px;letter-spacing:-1px}.ph-sub{max-width:300px;margin-top:9px;font-size:13px}.ph-chips{gap:6px;margin-top:16px}.ph-chips li{padding:7px 10px;font-size:11px}.ph-chips svg{width:14px;height:14px}.layout{grid-template-columns:1fr;gap:15px}.col-event{position:static;gap:13px}.col-steps{gap:13px}.poster{border-radius:17px}.info-card{padding:19px}.event-head .event-title{font-size:28px}.card{padding:20px 17px;border-radius:15px}.col-steps .card:not(.state-card)::before{left:17px}.card-head{gap:11px;margin-bottom:19px}.step-num,.step-icon{width:34px;height:34px;flex-basis:34px}.card-title{font-size:15px}.card-desc{font-size:11.5px}input[type=text],input[type=email],input[type=tel],select{min-height:51px;font-size:16px}.price-line{padding:14px}.price-line span:last-child{font-size:20px}.rib-box{padding:13px}.rib-txt span{font-size:10px}.upload-empty{min-height:135px}.btn-submit{min-height:55px;font-size:13px}.footer{padding:28px 0 24px}.footer-description{font-size:10px}}
+@media(max-width:760px){.wrap{width:min(100% - 28px,600px)}.topbar-inner{height:58px}.brand-name{font-size:17px}.secure-badge{padding:6px 8px;font-size:9.5px}.secure-badge svg{width:13px;height:13px}.page-head{padding:34px 0 24px}.ph-eyebrow{gap:9px;margin-bottom:12px;font-size:9px;letter-spacing:1.5px}.ph-eyebrow span{width:24px}.page-head h1{font-size:29px;letter-spacing:-1px}.ph-sub{max-width:300px;margin-top:9px;font-size:13px}.ph-chips{gap:6px;margin-top:16px}.ph-chips li{padding:7px 10px;font-size:11px}.ph-chips svg{width:14px;height:14px}.layout{grid-template-columns:1fr;gap:15px}.col-event{position:static;gap:13px}.col-steps{gap:13px}.poster{border-radius:17px}.info-card{padding:19px}.event-head .event-title{font-size:28px}.card{padding:20px 17px;border-radius:15px}.col-steps .card:not(.state-card)::before{left:17px}.card-head{gap:11px;margin-bottom:19px}.step-num,.step-icon{width:34px;height:34px;flex-basis:34px}.card-title{font-size:15px}.card-desc{font-size:11.5px}input[type=text],input[type=email],input[type=tel],select{min-height:51px;font-size:16px}.price-line{padding:14px}.price-line span:last-child{font-size:20px}.rib-box{padding:13px}.rib-txt span{font-size:10px}.upload-empty{min-height:135px}.btn-submit{min-height:55px;font-size:13px}.gx-footer__haut{padding:34px 0 10px}.gx-footer__slogan{font-size:25px}.gx-footer__desc{font-size:13px}.gx-footer__grille{gap:26px 36px}.gx-footer__secu{margin-left:0;width:100%}.gx-footer__bas-inner{flex-direction:column;align-items:flex-start}}
 @media(max-width:390px){.wrap{width:min(100% - 22px,600px)}.topbar-inner{gap:8px}.brand{min-width:0;flex-shrink:1}.brand-name{font-size:16px}.brand-logo{height:22px}.secure-badge{gap:5px;padding:5px 8px;font-size:9px;white-space:nowrap;flex-shrink:0}.secure-badge svg{width:12px;height:12px}.page-head h1{font-size:27px}.card{padding:18px 15px}.info-card{padding:17px}.rib-box{grid-template-columns:1fr}.rib-ico{width:38px;height:38px}.rib-box .btn-outline{grid-column:auto}}
 @media(max-width:340px){.topbar-inner{gap:6px}.brand-name{font-size:14.5px;letter-spacing:-.4px}.brand-logo{height:20px}.secure-badge{gap:4px;padding:4px 6px;font-size:8px}.secure-badge svg{width:10px;height:10px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.card,.plain{animation:none}.poster img,.btn-submit,.btn-outline,.cat-row{transition:none}.btn-submit:hover:not(:disabled){transform:none}}
@@ -381,17 +397,53 @@ Billetterie sécurisée
 </main>
 </div>
 
-<footer class="footer">
+<footer class="gx-footer">
 <div class="wrap">
-<p class="footer-brand">— La Billetterie en Or —</p>
-<p class="footer-description">GoldTix est une plateforme de billetterie en ligne conçue pour simplifier l'achat et la gestion des billets d'événements. Elle permet aux participants d'acheter facilement leurs billets depuis leur téléphone, et aux organisateurs de gérer efficacement leurs ventes, leurs participants et le contrôle des accès.</p>
-<div class="footer-links">
-<a href="conditions.html">Conditions d'utilisation</a>
-<a href="contact.html">Contacts</a>
+<div class="gx-footer__haut">
+<div class="gx-footer__intro">
+<p class="gx-footer__slogan">— La billetterie en or —</p>
+<p class="gx-footer__desc">GoldTix est une plateforme de billetterie en ligne conçue pour simplifier l'achat et la gestion des billets d'événements. Elle permet aux participants d'acheter facilement leurs billets depuis leur téléphone, et aux organisateurs de gérer efficacement leurs ventes, leurs participants et le contrôle des accès.</p>
+</div>
+
+<div class="gx-footer__grille">
+<div class="gx-footer__col">
+<h3 class="gx-footer__titre">DÉCOUVRIR</h3>
 <a href="guide.html">Comment ça marche ?</a>
 <a href="histoire.html">Histoire-GoldTix</a>
 </div>
-<p class="footer-copy">© GoldTix — Tous droits réservés - 2026</p>
+<div class="gx-footer__col">
+<h3 class="gx-footer__titre">AIDE</h3>
+<a href="contact.html">Contacts</a>
+<a href="conditions.html">Conditions d'utilisation</a>
+</div>
+<div class="gx-footer__col">
+<h3 class="gx-footer__titre">INFORMATIONS LÉGALES</h3>
+<a href="cgv.html">CGV</a>
+<a href="mentions-legales.html">Mentions légales</a>
+<a href="confidentialite.html">Politique de confidentialité</a>
+<a href="remboursement.html">Politique de remboursement</a>
+</div>
+</div>
+
+<div class="gx-footer__paiement">
+<span class="gx-footer__paiement-label">Paiement :</span>
+<span class="gx-badge">Virement (RIB)</span>
+<span class="gx-badge">Preuve de paiement</span>
+<span class="gx-footer__secu">Données protégées</span>
+</div>
+</div>
+</div>
+
+<div class="gx-footer__bas">
+<div class="wrap gx-footer__bas-inner">
+<span class="gx-footer__copy">© GoldTix — Tous droits réservés - 2026</span>
+<nav class="gx-footer__legal" aria-label="Liens légaux">
+<a href="cgv.html">CGV</a>
+<a href="conditions.html">Conditions d'utilisation</a>
+<a href="mentions-legales.html">Mentions légales</a>
+<a href="confidentialite.html">Confidentialité</a>
+</nav>
+</div>
 </div>
 </footer>
 
