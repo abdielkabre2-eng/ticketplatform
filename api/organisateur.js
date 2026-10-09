@@ -517,13 +517,13 @@ function emailBilletHtml(nom, lien) {
         </h1>
 
         <p style="margin:0;font-size:15px;line-height:25px;color:#4b5563;">
-          Votre paiement a été confirmé. Vous pouvez maintenant accéder à votre billet et le présenter à l’entrée de l’événement.
+          Votre paiement a été confirmé. Vous pouvez consulter à tout moment les détails de votre billet et le présenter à l’entrée de l’événement.
         </p>
       </div>
 
       <div style="padding:8px 0 32px;">
         <a href="${lien}" style="display:inline-block;padding:14px 24px;background:#111111;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;border-radius:6px;">
-          Accéder à mon billet →
+          Détails du billet →
         </a>
       </div>
 

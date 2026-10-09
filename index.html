@@ -964,7 +964,7 @@ return;
 }
 
 // Paiement en attente de vérification (jamais « confirmé » ici)
-zoneMsg.innerHTML = `<div class="notice success">${ICONS.check}<span>Vos informations ont bien été reçues. Votre paiement est en attente de vérification par l'organisateur.</span></div>`;
+zoneMsg.innerHTML = `<div class="notice success">${ICONS.check}<span>Vos informations et votre preuve de paiement ont été envoyées. Votre paiement est en attente de vérification par le bénéficiaire.</span></div>`;
 btn.innerHTML = `${ICONS.check} Informations envoyées`;
 window.removeEventListener('beforeunload', gxAvertirAvantFermeture);
 
