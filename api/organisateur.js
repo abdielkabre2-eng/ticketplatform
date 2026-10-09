@@ -498,47 +498,105 @@ async function envoyerEmailResend({ to, subject, html }) {
 
 function emailBilletHtml(nom, lien) {
   return `
-  <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:24px;background:#fffbeb;">
-    <h2 style="color:#b45309;margin:0 0 16px;">GoldTix 🎫</h2>
-    <p>Bonjour <strong>${nom}</strong>,</p>
-    <p>Votre paiement a bien été reçu. Votre billet est prêt !</p>
-    <p style="text-align:center;margin:28px 0;">
-      <a href="${lien}" style="background:#d97706;color:#ffffff;padding:14px 26px;border-radius:10px;text-decoration:none;font-weight:bold;">Voir mon billet</a>
-    </p>
-    <p style="font-size:12px;color:#64748b;">Présentez le QR code de votre billet à l'entrée de l'événement.</p>
+  <div style="margin:0;padding:0;background:#ffffff;font-family:Arial,Helvetica,sans-serif;color:#111827;">
+    <div style="max-width:560px;margin:0 auto;padding:36px 24px;">
+
+      <div style="padding-bottom:24px;border-bottom:1px solid #eeeeee;">
+        <span style="font-size:22px;font-weight:700;letter-spacing:-0.5px;color:#111111;">
+          GoldTix<span style="color:#d4a017;">.</span>
+        </span>
+      </div>
+
+      <div style="padding:32px 0 24px;">
+        <p style="margin:0 0 12px;font-size:15px;line-height:24px;color:#374151;">
+          Bonjour ${nom},
+        </p>
+
+        <h1 style="margin:0 0 16px;font-size:25px;line-height:34px;font-weight:700;letter-spacing:-0.6px;color:#111111;">
+          Votre billet est prêt.
+        </h1>
+
+        <p style="margin:0;font-size:15px;line-height:25px;color:#4b5563;">
+          Votre paiement a été confirmé. Vous pouvez maintenant accéder à votre billet et le présenter à l’entrée de l’événement.
+        </p>
+      </div>
+
+      <div style="padding:8px 0 32px;">
+        <a href="${lien}" style="display:inline-block;padding:14px 24px;background:#111111;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;border-radius:6px;">
+          Accéder à mon billet →
+        </a>
+      </div>
+
+      <div style="padding:20px 0;border-top:1px solid #eeeeee;">
+        <p style="margin:0 0 8px;font-size:13px;line-height:21px;color:#6b7280;">
+          Pensez à présenter le QR code de votre billet à l’entrée de l’événement.
+        </p>
+        <p style="margin:16px 0 0;font-size:12px;line-height:20px;color:#9ca3af;">
+          GoldTix · Votre accès, en toute simplicité.
+        </p>
+      </div>
+
+    </div>
   </div>`;
 }
-
 
 function emailRefusHtml(nom, lienWhatsApp) {
   return `
-  <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:24px;background:#ffffff;border:1px solid #e5e7eb;border-radius:14px;">
-    <h2 style="color:#b45309;margin:0 0 24px;">GoldTix 🎫</h2>
+  <div style="margin:0;padding:0;background:#ffffff;font-family:Arial,Helvetica,sans-serif;color:#111827;">
+    <div style="max-width:560px;margin:0 auto;padding:36px 24px;">
 
-    <h3 style="color:#111827;">Paiement non confirmé</h3>
+      <div style="padding-bottom:24px;border-bottom:1px solid #eeeeee;">
+        <span style="font-size:22px;font-weight:700;letter-spacing:-0.5px;color:#111111;">
+          GoldTix<span style="color:#d4a017;">.</span>
+        </span>
+      </div>
 
-    <p>Bonjour <strong>${nom}</strong>,</p>
+      <div style="padding:32px 0 24px;">
+        <p style="margin:0 0 12px;font-size:15px;line-height:24px;color:#374151;">
+          Bonjour ${nom},
+        </p>
 
-    <p>Nous n'avons pas pu confirmer la réception de votre paiement.</p>
+        <h1 style="margin:0 0 16px;font-size:25px;line-height:34px;font-weight:700;letter-spacing:-0.6px;color:#111111;">
+          Paiement non confirmé.
+        </h1>
 
-    <p>Si vous avez déjà effectué le transfert, contactez directement le bénéficiaire de l'événement afin de vérifier votre transaction.</p>
+        <p style="margin:0 0 16px;font-size:15px;line-height:25px;color:#4b5563;">
+          Nous n'avons pas pu confirmer la réception de votre paiement.
+        </p>
 
-    ${
-      lienWhatsApp
-        ? `<div style="text-align:center;margin:28px 0;">
-            <a href="${lienWhatsApp}"
-               style="display:inline-block;background:#25D366;color:#ffffff;padding:14px 20px;border-radius:10px;text-decoration:none;font-weight:bold;">
-              Contacter le bénéficiaire sur WhatsApp
-            </a>
-          </div>`
-        : `<p>Veuillez contacter directement le bénéficiaire de l'événement pour vérifier votre paiement.</p>`
-    }
+        <p style="margin:0;font-size:15px;line-height:25px;color:#4b5563;">
+          Si vous avez déjà effectué le transfert, contactez le bénéficiaire de l'événement afin de vérifier votre transaction.
+        </p>
+      </div>
 
-    <p style="font-size:12px;color:#64748b;margin-top:24px;">
-      Ce message a été envoyé automatiquement par GoldTix.
-    </p>
+      ${
+        lienWhatsApp
+          ? `<div style="padding:8px 0 32px;">
+              <a href="${lienWhatsApp}"
+                 style="display:inline-block;padding:14px 24px;background:#111111;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;border-radius:6px;">
+                Contacter le bénéficiaire →
+              </a>
+            </div>`
+          : `<div style="padding:8px 0 32px;">
+              <p style="margin:0;font-size:14px;line-height:23px;color:#4b5563;">
+                Veuillez contacter directement le bénéficiaire de l'événement pour vérifier votre paiement.
+              </p>
+            </div>`
+      }
+
+      <div style="padding:20px 0;border-top:1px solid #eeeeee;">
+        <p style="margin:0;font-size:12px;line-height:20px;color:#9ca3af;">
+          Ce message a été envoyé automatiquement par GoldTix.
+        </p>
+        <p style="margin:12px 0 0;font-size:12px;line-height:20px;color:#9ca3af;">
+          GoldTix · Votre accès, en toute simplicité.
+        </p>
+      </div>
+
+    </div>
   </div>`;
 }
+
 
 function creerLienWhatsApp(beneficiaireInfos) {
   const numero = String(beneficiaireInfos || "")
