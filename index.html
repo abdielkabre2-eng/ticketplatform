@@ -49,11 +49,15 @@ img{max-width:100%}button,input,select{font-family:inherit}button{-webkit-tap-hi
 .poster img{display:block;width:100%;height:auto;object-fit:cover;transition:transform .6s var(--ease)}
 .poster:hover img{transform:scale(1.015)}
 .info-card{padding:22px}
-.poster-info{position:relative;z-index:2;padding:18px 20px 20px;background:var(--ink);color:#fff;text-align:left;line-height:1.4}
-.poster-info .event-title{margin-bottom:10px;color:#fff;font-size:26px;font-weight:800;line-height:1.1;letter-spacing:-.8px;word-break:break-word}
-.poster-info .event-meta{flex-direction:row;flex-wrap:wrap;gap:6px 16px;margin:0;padding:0;border:0}
-.poster-info .meta-row{align-items:center;gap:7px;color:#f5f3ee;font-size:13px;font-weight:600}
-.poster-info .meta-row svg{width:16px;height:16px;margin-top:0;color:var(--gold-bright)}
+.event-head{padding:6px 0 2px;text-align:center;animation:fadeUp .45s var(--ease) both}
+.event-head .event-title{margin-bottom:16px;font-size:30px;font-weight:800;line-height:1.1;letter-spacing:-1px;word-break:break-word}
+.ev-bar{display:flex;padding:12px 0;border-top:1px solid var(--ink);border-bottom:1px solid var(--ink)}
+.ev-cell{flex:1 1 0;min-width:0;display:flex;flex-direction:column;justify-content:center;padding:0 8px}
+.ev-cell+.ev-cell{border-left:1px solid var(--line-strong)}
+.ev-cell.date,.ev-cell.lieu{flex-grow:1.2}
+.ev-cell.heure{flex-grow:.8}
+.ev-label{margin-bottom:3px;color:var(--gold-dark);font-size:10px;font-weight:800;letter-spacing:1.5px}
+.ev-value{font-size:14px;font-weight:700;line-height:1.35;word-break:break-word}
 .event-meta{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;padding-bottom:19px;border-bottom:1px solid var(--line)}
 .meta-row{display:flex;align-items:flex-start;gap:10px;color:var(--text);font-size:13px;font-weight:600}
 .meta-row svg{width:16px;height:16px;margin-top:2px;flex-shrink:0;color:var(--gold-dark)}
@@ -116,7 +120,7 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
 .footer-links a:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
 .footer-copy{color:#a1a19c;font-size:9.5px}
 @media(max-width:920px){.layout{grid-template-columns:310px minmax(0,1fr);gap:20px}.card{padding:21px}.col-steps .card:not(.state-card)::before{left:21px}.rib-box{grid-template-columns:auto minmax(0,1fr)}.rib-box .btn-outline{grid-column:1/-1;width:100%}}
-@media(max-width:760px){.wrap{width:min(100% - 28px,600px)}.topbar-inner{height:58px}.brand-name{font-size:17px}.secure-badge{padding:6px 8px;font-size:9.5px}.secure-badge svg{width:13px;height:13px}.page-head{padding:34px 0 24px}.ph-eyebrow{gap:9px;margin-bottom:12px;font-size:9px;letter-spacing:1.5px}.ph-eyebrow span{width:24px}.page-head h1{font-size:29px;letter-spacing:-1px}.ph-sub{max-width:300px;margin-top:9px;font-size:13px}.ph-chips{gap:6px;margin-top:16px}.ph-chips li{padding:7px 10px;font-size:11px}.ph-chips svg{width:14px;height:14px}.layout{grid-template-columns:1fr;gap:15px}.col-event{position:static;gap:13px}.col-steps{gap:13px}.poster{border-radius:17px}.info-card{padding:19px}.poster-info{padding:16px 16px 18px}.card{padding:20px 17px;border-radius:15px}.col-steps .card:not(.state-card)::before{left:17px}.card-head{gap:11px;margin-bottom:19px}.step-num,.step-icon{width:34px;height:34px;flex-basis:34px}.card-title{font-size:15px}.card-desc{font-size:11.5px}input[type=text],input[type=email],input[type=tel],select{min-height:51px;font-size:16px}.price-line{padding:14px}.price-line span:last-child{font-size:20px}.rib-box{padding:13px}.rib-txt span{font-size:10px}.upload-empty{min-height:135px}.btn-submit{min-height:55px;font-size:13px}.footer{padding:28px 0 24px}.footer-description{font-size:10px}}
+@media(max-width:760px){.wrap{width:min(100% - 28px,600px)}.topbar-inner{height:58px}.brand-name{font-size:17px}.secure-badge{padding:6px 8px;font-size:9.5px}.secure-badge svg{width:13px;height:13px}.page-head{padding:34px 0 24px}.ph-eyebrow{gap:9px;margin-bottom:12px;font-size:9px;letter-spacing:1.5px}.ph-eyebrow span{width:24px}.page-head h1{font-size:29px;letter-spacing:-1px}.ph-sub{max-width:300px;margin-top:9px;font-size:13px}.ph-chips{gap:6px;margin-top:16px}.ph-chips li{padding:7px 10px;font-size:11px}.ph-chips svg{width:14px;height:14px}.layout{grid-template-columns:1fr;gap:15px}.col-event{position:static;gap:13px}.col-steps{gap:13px}.poster{border-radius:17px}.info-card{padding:19px}.event-head .event-title{font-size:28px}.card{padding:20px 17px;border-radius:15px}.col-steps .card:not(.state-card)::before{left:17px}.card-head{gap:11px;margin-bottom:19px}.step-num,.step-icon{width:34px;height:34px;flex-basis:34px}.card-title{font-size:15px}.card-desc{font-size:11.5px}input[type=text],input[type=email],input[type=tel],select{min-height:51px;font-size:16px}.price-line{padding:14px}.price-line span:last-child{font-size:20px}.rib-box{padding:13px}.rib-txt span{font-size:10px}.upload-empty{min-height:135px}.btn-submit{min-height:55px;font-size:13px}.footer{padding:28px 0 24px}.footer-description{font-size:10px}}
 @media(max-width:390px){.wrap{width:min(100% - 22px,600px)}.topbar-inner{gap:8px}.brand{min-width:0;flex-shrink:1}.brand-name{font-size:16px}.brand-logo{height:22px}.secure-badge{gap:5px;padding:5px 8px;font-size:9px;white-space:nowrap;flex-shrink:0}.secure-badge svg{width:12px;height:12px}.page-head h1{font-size:27px}.card{padding:18px 15px}.info-card{padding:17px}.rib-box{grid-template-columns:1fr}.rib-ico{width:38px;height:38px}.rib-box .btn-outline{grid-column:auto}}
 @media(max-width:340px){.topbar-inner{gap:6px}.brand-name{font-size:14.5px;letter-spacing:-.4px}.brand-logo{height:20px}.secure-badge{gap:4px;padding:4px 6px;font-size:8px}.secure-badge svg{width:10px;height:10px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.card,.plain{animation:none}.poster img,.btn-submit,.btn-outline,.cat-row{transition:none}.btn-submit:hover:not(:disabled){transform:none}}
@@ -167,7 +171,7 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
 @media(max-width:760px){.steps-divider{gap:10px;margin:4px 0}.steps-divider span{font-size:12px}}
 
 /* ── Infos de l'événement : écrites directement sur le fond, centrées ── */
-@media(max-width:390px){.poster-info .event-title{font-size:22px}.poster-info .meta-row{font-size:12.5px}}
+@media(max-width:390px){.event-head .event-title{font-size:25px}.ev-cell{padding:0 5px}.ev-value{font-size:13px}}
 
 /* ── Coordonnées de paiement : écrites directement sur le fond, centrées ── */
 .plain{padding:8px 4px;text-align:center;animation:fadeUp .45s var(--ease) .08s both}
@@ -594,13 +598,16 @@ return d + ' ' + mois[m - 1] + ' ' + y;
 
 function htmlInfosEvenement(ev) {
 const heure = (ev.heure || '').slice(0, 5);
+const cellule = (classe, libelle, valeur) =>
+`<div class="ev-cell ${classe}"><div class="ev-label">${libelle}</div><div class="ev-value">${esc(valeur)}</div></div>`;
+const cellules = [
+ev.date ? cellule('date', 'DATE', formaterDateLongue(ev.date)) : '',
+heure ? cellule('heure', 'HEURE', heure) : '',
+ev.lieu ? cellule('lieu', 'LIEU', ev.lieu) : ''
+].filter(Boolean).join('');
 return `
 <h2 class="event-title">${esc(ev.titre)}</h2>
-<div class="event-meta">
-${ev.date ? `<div class="meta-row">${ICONS.calendar}<span>${esc(formaterDateLongue(ev.date))}</span></div>` : ''}
-${heure ? `<div class="meta-row">${ICONS.clock}<span>${esc(heure)}</span></div>` : ''}
-${ev.lieu ? `<div class="meta-row">${ICONS.pin}<span>${esc(ev.lieu)}</span></div>` : ''}
-</div>`;
+${cellules ? `<div class="ev-bar">${cellules}</div>` : ''}`;
 }
 
 // ─── Aperçu de la preuve de paiement ──────────────────────────────────
@@ -790,8 +797,8 @@ ${ICONS.check} Valider mon paiement
 container.innerHTML = `
 <div class="layout">
 <aside class="col-event">
-<div class="poster">${ev.affiche_url ? `<img id="posterImgEl" src="${esc(ev.affiche_url)}" alt="Affiche de l'événement">` : `<div class="poster-fallback">${ICONS.image}<span>Affiche non disponible</span></div>`}
-<div class="poster-info" id="infosEvenementEl">${htmlInfosEvenement(ev)}</div></div>
+<div class="poster">${ev.affiche_url ? `<img id="posterImgEl" src="${esc(ev.affiche_url)}" alt="Affiche de l'événement">` : `<div class="poster-fallback">${ICONS.image}<span>Affiche non disponible</span></div>`}</div>
+<div class="event-head" id="infosEvenementEl">${htmlInfosEvenement(ev)}</div>
 <div class="card info-card">
 <h3 class="cat-title">Catégorie(s) disponible(s)</h3>
 <div class="cat-list" id="listeCategoriesEl">${htmlLignesCategories(ev)}</div>
