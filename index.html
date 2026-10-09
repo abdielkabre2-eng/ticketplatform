@@ -174,17 +174,18 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
 @media(max-width:390px){.event-head .event-title{font-size:25px}.ev-cell{padding:0 5px}.ev-value{font-size:13px}}
 
 /* ── Coordonnées de paiement : écrites directement sur le fond, centrées ── */
-.plain{padding:8px 4px;text-align:center;animation:fadeUp .45s var(--ease) .08s both}
-.plain-head{display:flex;flex-direction:column;align-items:center;margin-bottom:20px}
-.plain-head .step-icon{margin-bottom:11px}
-.plain-head .card-title{font-size:18px}
-.plain-head .card-desc{max-width:420px}
-.info-list.plain-list{display:flex;flex-wrap:wrap;justify-content:center;gap:20px 44px;overflow:visible;background:none;border:0;border-radius:0}
-.plain-list .info-item{flex-direction:column;gap:7px;padding:0;text-align:center}
-.plain-list .info-item+.info-item{border-top:0}
-.plain-list .info-item-ico{background:var(--gold-soft);color:var(--gold-dark);border-radius:50%}
-.plain-list .info-item-value{font-size:15px}
-.plain .rib-box{margin-top:24px;text-align:left}
+.plain{padding:8px 4px;animation:fadeUp .45s var(--ease) .08s both}
+.plain-head{margin-bottom:20px}
+.plain-head .card-title{font-size:21px;letter-spacing:-.6px}
+.pay-list{display:flex;flex-direction:column;gap:18px}
+.pay-block{min-width:0;padding:2px 0 2px 14px;border-left:3px solid var(--ink)}
+.pay-block-rib{border-left-color:var(--line-strong)}
+.pay-label{margin-bottom:1px;color:var(--muted);font-size:11px;font-weight:700}
+.pay-block-rib .pay-label{margin-bottom:4px}
+.pay-value{font-size:24px;font-weight:800;line-height:1.15;letter-spacing:-.7px;word-break:break-word}
+.pay-hint{margin-bottom:9px;color:var(--muted);font-size:11.5px;line-height:1.5}
+.pay-block .rib-status{margin-top:8px}
+@media(max-width:390px){.pay-value{font-size:21px}}
 </style>
 </head>
 <body>
@@ -691,12 +692,9 @@ const blocPrix = aDesCategories(ev)
 : `<div class="price-line"><span>Total à payer</span><span id="prixChoisiEl">${esc(ev.prix || 'Gratuit')}</span></div>`;
 
 const blocRib = urlRib ? `
-<div class="rib-box">
-<div class="rib-ico">${ICONS.file}</div>
-<div class="rib-txt">
-<strong>RIB du bénéficiaire</strong>
-<span>Téléchargez-le pour effectuer votre virement depuis votre application bancaire.</span>
-</div>
+<div class="pay-block pay-block-rib">
+<div class="pay-label">RIB du bénéficiaire</div>
+<p class="pay-hint">Téléchargez-le pour effectuer votre virement depuis votre application bancaire.</p>
 <button type="button" class="btn-outline" id="btnTelechargerRib">${ICONS.download} Télécharger le RIB</button>
 <p class="rib-status" id="ribDownloadStatus"></p>
 </div>` : '';
@@ -715,27 +713,20 @@ ${blocPrix}
 
 <section class="plain" aria-labelledby="t2">
 <div class="plain-head">
-<span class="step-icon">${ICONS.wallet}</span>
 <h2 class="card-title" id="t2">Coordonnées de paiement</h2>
 <p class="card-desc">Effectuez le transfert vers les coordonnées ci-dessous.</p>
 </div>
-<div class="info-list plain-list">
-<div class="info-item">
-<span class="info-item-ico">${ICONS.user}</span>
-<div class="info-item-txt">
-<div class="info-item-label">Bénéficiaire des paiements</div>
-<div class="info-item-value" id="evBeneficiaireNomEl">${esc(ev.beneficiaire_nom || 'Non renseigné')}</div>
+<div class="pay-list">
+<div class="pay-block">
+<div class="pay-label">Bénéficiaire des paiements</div>
+<div class="pay-value" id="evBeneficiaireNomEl">${esc(ev.beneficiaire_nom || 'Non renseigné')}</div>
 </div>
-</div>
-<div class="info-item">
-<span class="info-item-ico">${ICONS.phone}</span>
-<div class="info-item-txt">
-<div class="info-item-label">Contact WhatsApp</div>
-<div class="info-item-value" id="evBeneficiaireContactEl">${esc(ev.beneficiaire_infos || 'Non renseigné')}</div>
-</div>
-</div>
+<div class="pay-block">
+<div class="pay-label">Contact WhatsApp</div>
+<div class="pay-value" id="evBeneficiaireContactEl">${esc(ev.beneficiaire_infos || 'Non renseigné')}</div>
 </div>
 ${blocRib}
+</div>
 </section>
 
 <section class="card" aria-labelledby="t3">
