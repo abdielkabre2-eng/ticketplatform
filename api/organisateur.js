@@ -540,7 +540,7 @@ function emailBilletHtml(nom, lien) {
   </div>`;
 }
 
-function emailRefusHtml(nom, lienWhatsApp) {
+function emailRefusHtml(nom, lienWhatsApp, lienBillet) {
   return `
   <div style="margin:0;padding:0;background:#ffffff;font-family:Arial,Helvetica,sans-serif;color:#111827;">
     <div style="max-width:560px;margin:0 auto;padding:36px 24px;">
@@ -569,20 +569,15 @@ function emailRefusHtml(nom, lienWhatsApp) {
         </p>
       </div>
 
-      ${
-        lienWhatsApp
-          ? `<div style="padding:8px 0 32px;">
-              <a href="${lienWhatsApp}"
-                 style="display:inline-block;padding:14px 24px;background:#111111;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;border-radius:6px;">
-                Contacter le bénéficiaire →
-              </a>
-            </div>`
-          : `<div style="padding:8px 0 32px;">
-              <p style="margin:0;font-size:14px;line-height:23px;color:#4b5563;">
-                Veuillez contacter directement le bénéficiaire de l'événement pour vérifier votre paiement.
-              </p>
-            </div>`
-      }
+      <div style="padding:8px 0 32px;">
+        <a href="${lienWhatsApp || lienBillet}"
+           style="display:inline-block;margin:0 10px 10px 0;padding:14px 24px;background:#111111;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;border-radius:6px;">
+          Contacter le bénéficiaire →
+        </a><a href="${lienBillet}"
+           style="display:inline-block;margin:0 10px 10px 0;padding:14px 24px;background:#111111;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;border-radius:6px;">
+          Voir les détails →
+        </a>
+      </div>
 
       <div style="padding:20px 0;border-top:1px solid #eeeeee;">
         <p style="margin:0;font-size:12px;line-height:20px;color:#9ca3af;">
@@ -599,14 +594,24 @@ function emailRefusHtml(nom, lienWhatsApp) {
 
 
 function creerLienWhatsApp(beneficiaireInfos) {
-  const numero = String(beneficiaireInfos || "")
-    .replace(/[^\d+]/g, "")
-    .replace(/^\+/, "");
+  const texte = String(beneficiaireInfos || "");
 
-  // Pour le Burkina Faso : indicatif 226 + 8 chiffres
-  if (!/^226\d{8}$/.test(numero)) {
-    return null;
-  }
+  // Premier numéro de téléphone trouvé dans le texte (espaces, points, tirets, parenthèses acceptés)
+  const trouve = texte.match(/(?:\+|00)?\d[\d\s().-]{6,}\d/);
+  if (!trouve) return null;
+
+  const brut = trouve[0].trim();
+  const aIndicatif = brut.startsWith("+") || brut.startsWith("00");
+  let numero = brut.replace(/\D/g, "");
+  if (brut.startsWith("00")) numero = numero.replace(/^00/, "");
+
+  // Numéro local burkinabè (8 chiffres, sans indicatif) : on ajoute 226
+  if (!aIndicatif && /^\d{8}$/.test(numero)) numero = "226" + numero;
+
+  // Numéro local d'un autre pays (commence par 0, sans indicatif) : impossible de deviner le pays
+  if (!aIndicatif && numero.startsWith("0")) return null;
+
+  if (numero.length < (aIndicatif ? 7 : 9) || numero.length > 15) return null;
 
   const message =
     "Bonjour, je vous contacte concernant mon paiement pour votre événement sur GoldTix. Pouvez-vous m'aider à vérifier ma transaction ?";
@@ -649,8 +654,9 @@ async function changerStatut(supabase, payload, res) {
 
     if (b && b.email) {
       const nom = echapperHtml(b.nom_participant || "");
+      const lienBillet = `https://ticketplatform-kappa.vercel.app/billet.html?id=${encodeURIComponent(b.code_public)}`;
       if (nouveauStatut === "confirme") {
-       const lien = `https://ticketplatform-kappa.vercel.app/billet.html?id=${encodeURIComponent(b.code_public)}`;
+       const lien = lienBillet;
         emailEnvoye = await envoyerEmailResend({
           to: b.email,
           subject: "Votre billet GoldTix est prêt 🎫",
@@ -679,7 +685,7 @@ async function changerStatut(supabase, payload, res) {
   emailEnvoye = await envoyerEmailResend({
     to: b.email,
     subject: "Paiement non reçu - GoldTix",
-    html: emailRefusHtml(nom, lienWhatsApp),
+    html: emailRefusHtml(nom, lienWhatsApp, lienBillet),
   });
 }
     }
