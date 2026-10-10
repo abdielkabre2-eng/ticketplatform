@@ -721,6 +721,32 @@ color: #10b981; font-size: .6rem; font-weight: 800; letter-spacing: .06em; text-
   line-height: 1;
   flex-shrink: 0;
 }
+
+/* ── Sélecteur de langue (drapeau + menu) et en-tête compact fluide ── */
+.top-navbar{gap:clamp(6px,2vw,12px);height:48px}
+@media (max-width:600px){.top-navbar{height:42px}}
+.navbar-brand{min-width:0;flex:0 1 auto;gap:clamp(5px,1.4vw,7px)}
+.navbar-logo{height:clamp(17px,5vw,21px)}
+.navbar-name{font-size:clamp(13px,3.8vw,16px);white-space:nowrap}
+.nav-actions{display:flex;align-items:center;gap:clamp(4px,1.4vw,8px);min-width:0;flex:0 1 auto}
+.lang-dd{position:relative;flex-shrink:0;min-width:clamp(40px,10vw,48px);height:clamp(26px,6.8vw,30px)}
+.lang-dd-btn{display:inline-flex;align-items:center;justify-content:center;gap:clamp(3px,1vw,5px);width:100%;height:100%;padding:0 clamp(5px,1.6vw,8px);background:#fff;color:#25262b;border:1px solid #e8e7e3;border-radius:999px;cursor:pointer;transition:border-color .2s ease,background .2s ease}
+.lang-dd-btn:hover{border-color:#d8d6d0;background:#fafaf9}
+.lang-dd-btn:focus-visible,.lang-opt:focus-visible{outline:2px solid #f59e0b;outline-offset:2px}
+.lang-chev{width:clamp(8px,2.2vw,10px);height:clamp(8px,2.2vw,10px);flex-shrink:0;transition:transform .2s ease}
+.lang-dd.open .lang-chev{transform:rotate(180deg)}
+.flag{display:block;flex-shrink:0;width:22px;height:15px;overflow:hidden;border-radius:4px;box-shadow:0 0 0 1px rgba(17,18,22,.1)}
+.flag svg{display:block;width:100%;height:100%}
+.lang-dd-btn .flag{width:clamp(18px,5vw,22px);height:clamp(12px,3.4vw,15px)}
+@keyframes lang-pop{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.lang-menu{display:none;position:absolute;top:calc(100% + 8px);right:0;z-index:400;min-width:164px;padding:6px;background:#fff;border:1px solid #e8e7e3;border-radius:14px;box-shadow:0 14px 36px rgba(17,18,22,.14)}
+.lang-dd.open .lang-menu{display:block;animation:lang-pop .16s ease both}
+.lang-opt{display:flex;align-items:center;gap:11px;width:100%;padding:9px 11px;background:transparent;color:#44464e;border:0;border-radius:10px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:700;line-height:1.2;text-align:left}
+.lang-opt:hover{background:#f4f3f0}
+.lang-opt[aria-checked="true"]{background:#fef3c7;color:#b45309}
+.navbar-badge{min-width:0;flex-shrink:1;gap:clamp(3px,1vw,5px);font-size:clamp(8px,2.3vw,10.5px)}
+.navbar-badge svg{width:clamp(10px,2.8vw,12px);height:clamp(10px,2.8vw,12px)}
+.navbar-badge bdi{min-width:0;overflow:hidden;text-overflow:ellipsis}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
@@ -731,13 +757,13 @@ color: #10b981; font-size: .6rem; font-weight: 800; letter-spacing: .06em; text-
 <img src="images/logo.png" alt="GoldTix" class="navbar-logo" />
 <span class="navbar-name">Gold<span class="navbar-name-accent">Tix</span></span>
 </a>
-<span class="navbar-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>Billetterie sécurisée</span>
+<div class="nav-actions"><div class="lang-dd" data-lang-dd></div><span class="navbar-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg><bdi data-i18n="secure">Billetterie sécurisée</bdi></span></div>
 </nav>
 
 <div id="loadingScreen" class="state-screen">
 <div class="loader-ring"></div>
-<p class="state-title">Chargement de votre billet…</p>
-<p class="state-sub">Récupération des données en cours, veuillez patienter.</p>
+<p class="state-title" data-i18n="load_t">Chargement de votre billet…</p>
+<p class="state-sub" data-i18n="load_s">Récupération des données en cours, veuillez patienter.</p>
 </div>
 
 <div id="errorScreen" class="state-screen" style="display:none;">
@@ -748,8 +774,8 @@ color: #10b981; font-size: .6rem; font-weight: 800; letter-spacing: .06em; text-
 <line x1="9" y1="9" x2="15" y2="15"/>
 </svg>
 </div>
-<p class="state-title" id="errorMessage">Billet introuvable</p>
-<p class="state-sub">Vérifiez que le lien est correct ou contactez l'organisateur.</p>
+<p class="state-title" id="errorMessage" data-i18n="err_default">Billet introuvable</p>
+<p class="state-sub" data-i18n="err_s">Vérifiez que le lien est correct ou contactez l'organisateur.</p>
 </div>
 
 <div class="ticket-wrapper" id="ticketWrapper" style="display:none;">
@@ -791,15 +817,15 @@ color: #10b981; font-size: .6rem; font-weight: 800; letter-spacing: .06em; text-
 <div id="qrcode"></div>
 </div>
 <div class="qr-info">
-<p class="qr-cta-label">Veuillez présenter ce QR code à l'entrée</p>
-<p class="qr-cta-sub">Nous vous souhaitons un excellent événement!</p>
+<p class="qr-cta-label" data-i18n="qr_cta">Veuillez présenter ce QR code à l'entrée</p>
+<p class="qr-cta-sub" data-i18n="qr_sub">Nous vous souhaitons un excellent événement!</p>
 </div>
 <div class="qr-divider"></div>
 <div class="qr-security-badge">
 <div class="qsb-icon">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
 </div>
-<span>Billet unique et sécurisé</span>
+<span data-i18n="qr_secure">Billet unique et sécurisé</span>
 </div>
 <div class="qr-ref-label" style="display:none;">Code QR </div>
 <div class="qr-ref-value" id="billetRef" style="display:none;">—</div>
@@ -825,27 +851,238 @@ color: #10b981; font-size: .6rem; font-weight: 800; letter-spacing: .06em; text-
 <polyline points="7 10 12 15 17 10"/>
 <line x1="12" y1="15" x2="12" y2="3"/>
 </svg>
-      Télécharger mon billet en PDF
+<span data-i18n="dl_btn">Télécharger mon billet en PDF</span>
 </button>
 </div>
 
 <footer class="creator-footer">
-<p class="footer-tagline" align="center">La Billetterie en Or</p>
+<p class="footer-tagline" align="center" data-i18n="f_tag">La Billetterie en Or</p>
 <div class="footer-contacts">
-<p class="footer-contact-item">E-mail : <a href="mailto:goldtixbilletterie@gmail.com">goldtixbilletterie@gmail.com</a></p>
-<p class="footer-contact-item">WhatsApp : <a href="https://wa.me/22653107345">+226 53 10 73 45</a></p>
+<p class="footer-contact-item"><span data-i18n="f_email">E-mail :</span> <a href="mailto:goldtixbilletterie@gmail.com">goldtixbilletterie@gmail.com</a></p>
+<p class="footer-contact-item"><span data-i18n="f_wa">WhatsApp :</span> <a href="https://wa.me/22653107345">+226 53 10 73 45</a></p>
 </div>
-<p class="footer-dev">Développée par <strong style="color:var(--text-mid)">Abdiel KABRE</strong> · GoldTix &copy; 2026</p>
+<p class="footer-dev" data-i18n-html="f_dev">Développée par <strong style="color:var(--text-mid)">Abdiel KABRE</strong> · GoldTix &copy; 2026</p>
 </div>
 </footer>
 
+<!-- ═══════════ TRADUCTIONS FR / EN — début ═══════════
+     Même clé de mémorisation que la page d'achat (goldtix_lang) : le choix fait sur la page d'achat
+     s'applique ici automatiquement. Pour corriger un texte : modifier les deux dictionnaires (fr et en).
+     Dans le HTML : data-i18n="cle" (texte), data-i18n-html="cle" (texte avec balises), data-i18n-aria="cle".
+     Dans le JS : tr('cle'). -->
+<script>
+(function () {
+'use strict';
+var GX = window.GX = { lang: 'fr', dict: { fr: {}, en: {} } };
+var FR = GX.dict.fr, EN = GX.dict.en;
+
+FR.doc_title = 'Mon Billet - GoldTix';                      EN.doc_title = 'My Ticket - GoldTix';
+FR.lang_group = 'Langue / Language';                        EN.lang_group = 'Langue / Language';
+FR.secure = 'Billetterie sécurisée';                        EN.secure = 'Secure ticketing';
+
+FR.load_t = 'Chargement de votre billet…';                  EN.load_t = 'Loading your ticket…';
+FR.load_s = 'Récupération des données en cours, veuillez patienter.';
+EN.load_s = 'Retrieving your data, please wait.';
+FR.err_default = 'Billet introuvable';                      EN.err_default = 'Ticket not found';
+FR.err_s = "Vérifiez que le lien est correct ou contactez l'organisateur.";
+EN.err_s = 'Check that the link is correct or contact the organizer.';
+FR.err_noid = 'Aucun identifiant de billet fourni.';        EN.err_noid = 'No ticket ID provided.';
+FR.err_nf = 'Billet introuvable.';                          EN.err_nf = 'Ticket not found.';
+FR.err_evnf = 'Événement introuvable.';                     EN.err_evnf = 'Event not found.';
+FR.err_generic = 'Une erreur est survenue. Veuillez réessayer.';
+EN.err_generic = 'Something went wrong. Please try again.';
+FR.event_default = 'Événement';                             EN.event_default = 'Event';
+
+FR.cell_titulaire = 'Titulaire';                            EN.cell_titulaire = 'Holder';
+FR.cell_telephone = 'Téléphone';                            EN.cell_telephone = 'Phone';
+FR.cell_categorie = 'Catégorie';                            EN.cell_categorie = 'Category';
+FR.cell_lieu = 'Lieu';                                      EN.cell_lieu = 'Venue';
+FR.cell_benef = 'Bénéficiaire_paiements';                   EN.cell_benef = 'Payment_recipient';
+FR.cell_id = 'ID-billet';                                   EN.cell_id = 'Ticket-ID';
+
+FR.reload_wait = 'Rafraîchir';                              EN.reload_wait = 'Refresh';
+FR.reload_retry = 'Réessayer';                              EN.reload_retry = 'Try again';
+
+FR.p_title = 'Paiement en cours de vérification';           EN.p_title = 'Payment being verified';
+FR.p_sub = 'Vos informations et votre preuve de paiement ont bien été reçues. Veuillez patienter que le bénéficiaire confirme votre paiement.';
+EN.p_sub = 'Your details and proof of payment have been received. Please wait for the recipient to confirm your payment.';
+FR.s_info = 'Infos reçues';                                 EN.s_info = 'Details received';
+FR.s_proof = 'Preuve reçue';                                EN.s_proof = 'Proof received';
+FR.s_verif = 'Vérification';                                EN.s_verif = 'Verification';
+FR.s_ready = 'Billet prêt';                                 EN.s_ready = 'Ticket ready';
+FR.p_note = 'Toujours en attente après 1 heure ? Contactez le bénéficiaire pour vérifier la réception de votre paiement.';
+EN.p_note = 'Still pending after 1 hour? Contact the recipient to check that your payment was received.';
+FR.r_title = 'Paiement non reçu';                           EN.r_title = 'Payment not received';
+FR.r_sub = "Votre paiement n'a pas été reçu par le bénéficiaire.";
+EN.r_sub = 'Your payment was not received by the recipient.';
+FR.r_note = 'Contactez le bénéficiaire pour confirmer votre paiement. Votre billet sera disponible dès validation.';
+EN.r_note = 'Contact the recipient to confirm your payment. Your ticket will be available once it is validated.';
+FR.d_badge = 'Billet valide';                               EN.d_badge = 'Valid ticket';
+FR.d_title = 'Paiement validé';                             EN.d_title = 'Payment confirmed';
+FR.d_sub = 'Votre billet est à présent actif. Vous pouvez, si vous le souhaitez, le télécharger en version réduite.';
+EN.d_sub = 'Your ticket is now active. You can download a lighter version if you wish.';
+
+FR.qr_cta = "Veuillez présenter ce QR code à l'entrée";     EN.qr_cta = 'Please show this QR code at the entrance';
+FR.qr_sub = 'Nous vous souhaitons un excellent événement!'; EN.qr_sub = 'We wish you a great event!';
+FR.qr_secure = 'Billet unique et sécurisé';                 EN.qr_secure = 'Unique and secure ticket';
+FR.dl_btn = 'Télécharger mon billet en PDF';                EN.dl_btn = 'Download my ticket as PDF';
+
+FR.f_tag = 'La Billetterie en Or';                          EN.f_tag = 'Ticketing, pure gold';
+FR.f_email = 'E-mail :';                                    EN.f_email = 'E-mail:';
+FR.f_wa = 'WhatsApp :';                                     EN.f_wa = 'WhatsApp:';
+FR.f_dev = 'Développée par <strong style="color:var(--text-mid)">Abdiel KABRE</strong> · GoldTix &copy; 2026';
+EN.f_dev = 'Developed by <strong style="color:var(--text-mid)">Abdiel KABRE</strong> · GoldTix &copy; 2026';
+
+FR.sw_title = 'Téléchargement du billet';                   EN.sw_title = 'Ticket download';
+FR.sw_text = 'Le billet que vous aurez en PDF est une version optimisée et simplifiée';
+EN.sw_text = 'The PDF ticket you will get is an optimized, simplified version';
+FR.sw_btn = 'Télécharger';                                  EN.sw_btn = 'Download';
+FR.dl_prep = 'Préparation…';                                EN.dl_prep = 'Preparing…';
+FR.dl_gen = 'Génération du PDF…';                           EN.dl_gen = 'Generating PDF…';
+FR.dl_fail = 'Impossible de préparer le téléchargement. Vérifiez votre connexion et réessayez.';
+EN.dl_fail = 'Unable to prepare the download. Check your connection and try again.';
+FR.pdf_fail = 'Erreur lors de la génération du PDF. Veuillez réessayer.';
+EN.pdf_fail = 'Error while generating the PDF. Please try again.';
+FR.pdf_popup = 'Génération de votre billet…';              EN.pdf_popup = 'Generating your ticket…';
+FR.pdf_official = 'Billet Officiel';                        EN.pdf_official = 'Official Ticket';
+FR.pdf_datetime = 'Date & Heure';                           EN.pdf_datetime = 'Date & Time';
+FR.pdf_venue = 'Lieu';                                      EN.pdf_venue = 'Venue';
+FR.pdf_participant = 'Participant';                         EN.pdf_participant = 'Attendee';
+FR.pdf_phone = 'Téléphone';                                 EN.pdf_phone = 'Phone';
+FR.pdf_id = 'ID Billet';                                    EN.pdf_id = 'Ticket ID';
+FR.pdf_platform = 'Plateforme de billetterie sécurisée';    EN.pdf_platform = 'Secure ticketing platform';
+
+GX.t = function (cle, vars) {
+var d = GX.dict[GX.lang] || FR;
+var s = d[cle] != null ? d[cle] : (FR[cle] != null ? FR[cle] : cle);
+if (vars) for (var k in vars) s = s.split('{' + k + '}').join(vars[k]);
+return s;
+};
+
+GX.apply = function (racine) {
+racine = racine || document;
+var i, el, liste;
+liste = racine.querySelectorAll('[data-i18n]');
+for (i = 0; i < liste.length; i++) { el = liste[i]; el.textContent = GX.t(el.getAttribute('data-i18n')); }
+liste = racine.querySelectorAll('[data-i18n-html]');
+for (i = 0; i < liste.length; i++) { el = liste[i]; el.innerHTML = GX.t(el.getAttribute('data-i18n-html')); }
+liste = racine.querySelectorAll('[data-i18n-aria]');
+for (i = 0; i < liste.length; i++) { el = liste[i]; el.setAttribute('aria-label', GX.t(el.getAttribute('data-i18n-aria'))); }
+};
+
+GX.flags = {
+fr: '<svg viewBox="0 0 3 2" preserveAspectRatio="none" aria-hidden="true"><rect width="1" height="2" fill="#0055a4"/><rect x="1" width="1" height="2" fill="#fff"/><rect x="2" width="1" height="2" fill="#ef4135"/></svg>',
+en: '<svg viewBox="0 0 60 30" preserveAspectRatio="none" aria-hidden="true"><rect width="60" height="30" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#c8102e" stroke-width="2.6"/><path d="M30,0 V30 M0,15 H60" stroke="#fff" stroke-width="10"/><path d="M30,0 V30 M0,15 H60" stroke="#c8102e" stroke-width="6"/></svg>'
+};
+GX.names = { fr: 'Français', en: 'English' };
+
+/* Sélecteur de langue : bouton avec drapeau + menu déroulant (Français / English) */
+GX.ddHtml = function () {
+var h = '<button type="button" class="lang-dd-btn" aria-haspopup="menu" aria-expanded="false" data-i18n-aria="lang_group" aria-label="Langue / Language">'
++ '<span class="flag lang-cur"></span>'
++ '<svg class="lang-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button>'
++ '<div class="lang-menu" role="menu">';
+['fr', 'en'].forEach(function (l) {
+h += '<button type="button" class="lang-opt" role="menuitemradio" aria-checked="false" data-lang="' + l + '"><span class="flag">' + GX.flags[l] + '</span><span>' + GX.names[l] + '</span></button>';
+});
+return h + '</div>';
+};
+GX.switchHtml = '<div class="lang-dd" data-lang-dd></div>';
+GX.mount = function () {
+var l = document.querySelectorAll('[data-lang-dd]');
+for (var i = 0; i < l.length; i++) if (!l[i].firstChild) l[i].innerHTML = GX.ddHtml();
+};
+GX.closeMenus = function () {
+var o = document.querySelectorAll('.lang-dd.open');
+for (var i = 0; i < o.length; i++) {
+o[i].classList.remove('open');
+var b = o[i].querySelector('.lang-dd-btn');
+if (b) b.setAttribute('aria-expanded', 'false');
+}
+};
+
+GX.sync = function () {
+GX.mount();
+document.documentElement.lang = GX.lang;
+document.title = GX.t('doc_title');
+var cur = document.querySelectorAll('.lang-cur');
+for (var i = 0; i < cur.length; i++) cur[i].innerHTML = GX.flags[GX.lang];
+var opts = document.querySelectorAll('.lang-opt');
+for (var j = 0; j < opts.length; j++) opts[j].setAttribute('aria-checked', opts[j].getAttribute('data-lang') === GX.lang ? 'true' : 'false');
+GX.apply(document);
+};
+
+GX.setLang = function (l) {
+if (!GX.dict[l]) l = 'fr';
+GX.lang = l;
+try { localStorage.setItem('goldtix_lang', l); } catch (e) {}
+GX.sync();
+document.dispatchEvent(new Event('goldtix:lang'));
+};
+
+/* Langue de départ : ?lang= dans le lien (envoyé par la page d'achat) > choix mémorisé > français */
+var depart = null;
+try {
+var p = new URLSearchParams(window.location.search).get('lang');
+if (p && GX.dict[p]) {
+depart = p;
+try { localStorage.setItem('goldtix_lang', p); } catch (e) {}
+try {
+var u = new URL(window.location.href);
+u.searchParams.delete('lang');
+window.history.replaceState(null, '', u.pathname + u.search + u.hash);
+} catch (e) {}
+}
+} catch (e) {}
+if (!depart) {
+try { var saved = localStorage.getItem('goldtix_lang'); if (saved && GX.dict[saved]) depart = saved; } catch (e) {}
+}
+if (depart) GX.lang = depart;
+
+document.addEventListener('click', function (e) {
+var t = e.target;
+if (!t || !t.closest) return;
+var opt = t.closest('.lang-opt');
+if (opt) { e.preventDefault(); GX.closeMenus(); GX.setLang(opt.getAttribute('data-lang')); return; }
+var btn = t.closest('.lang-dd-btn');
+if (btn) {
+e.preventDefault();
+var dd = btn.closest('.lang-dd');
+var etaitOuvert = dd.classList.contains('open');
+GX.closeMenus();
+if (!etaitOuvert) { dd.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); }
+return;
+}
+GX.closeMenus();
+});
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') GX.closeMenus(); });
+
+/* Si la langue est changée dans un autre onglet (page d'achat), celle-ci suit */
+window.addEventListener('storage', function (e) {
+if (e.key === 'goldtix_lang' && e.newValue && GX.dict[e.newValue] && e.newValue !== GX.lang) {
+GX.lang = e.newValue;
+GX.sync();
+document.dispatchEvent(new Event('goldtix:lang'));
+}
+});
+
+GX.sync();
+})();
+</script>
+<!-- ═══════════ TRADUCTIONS FR / EN — fin ═══════════ -->
+
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
+const tr = (cle, vars) => GX.t(cle, vars);
+let etatBillet = null, etatEv = null, etatStatut = null;
+function formaterDateEv(d) {
+return d ? new Date(d).toLocaleDateString(GX.lang === 'en' ? 'en-GB' : 'fr-FR', { day:'2-digit', month:'long', year:'numeric' }) : '—';
+}
 function showLoading(v) { document.getElementById('loadingScreen').style.display = v ? 'flex' : 'none'; }
 function showError(msg) {
 document.getElementById('loadingScreen').style.display = 'none';
 document.getElementById('errorScreen').style.display = 'flex';
-if (msg) document.getElementById('errorMessage').textContent = msg;
+if (msg) { const elMsg = document.getElementById('errorMessage'); elMsg.setAttribute('data-i18n', msg); elMsg.textContent = tr(msg); }
       }
 function showTicket() {
 document.getElementById('loadingScreen').style.display = 'none';
@@ -854,7 +1091,7 @@ document.getElementById('ticketWrapper').style.display = 'flex';
 
 const params   = new URLSearchParams(window.location.search);
 const billetId = params.get('id');
-if (!billetId) { showError('Aucun identifiant de billet fourni.'); return; }
+if (!billetId) { showError('err_noid'); return; }
 
       let dernierSignatureAffichee = null;
       let verificationEnCours = false;
@@ -989,10 +1226,10 @@ const enAttente = (statut === 'attente' || statut === 'en_attente' || statut ===
 const refuse    = (statut === 'refuse' || statut === 'rejected' || statut === 'annule');
 
 if (enAttente) {
-label.textContent = 'Rafraîchir';
+label.textContent = tr('reload_wait');
 btn.style.display = 'inline-flex';
         } else if (refuse) {
-label.textContent = 'Réessayer';
+label.textContent = tr('reload_retry');
 btn.style.display = 'inline-flex';
         } else {
 btn.style.display = 'none';
@@ -1013,38 +1250,38 @@ btn.style.display = 'none';
                 <div class="sp-head">
                   <div class="sp-icon-wrap pending"><span class="sp-icon-ring"></span>${svgClock}</div>
                   <div class="sp-head-text">
-                    <div class="sp-title">Paiement en cours de vérification</div>
-                    <div class="sp-sub">Vos informations et votre preuve de paiement ont bien été reçues. Veillez patienter que le bénéficiaire confirme votre paiement.</div>
+                    <div class="sp-title">${tr('p_title')}</div>
+                    <div class="sp-sub">${tr('p_sub')}</div>
                   </div>
                 </div>
                 <div class="sp-steps">
                   <div class="sp-steps-line"><span class="sp-steps-line-fill" style="width:66%;"></span></div>
-                  <div class="sp-step is-done"><span class="sp-step-dot">${svgCheck}</span><span class="sp-step-label">Infos reçues</span></div>
-                  <div class="sp-step is-done"><span class="sp-step-dot">${svgCheck}</span><span class="sp-step-label">Preuve reçue</span></div>
-                  <div class="sp-step is-active"><span class="sp-step-dot"><span class="sp-step-pulse"></span></span><span class="sp-step-label">Vérification</span></div>
-                  <div class="sp-step"><span class="sp-step-dot">${svgTicket}</span><span class="sp-step-label">Billet prêt</span></div>
+                  <div class="sp-step is-done"><span class="sp-step-dot">${svgCheck}</span><span class="sp-step-label">${tr('s_info')}</span></div>
+                  <div class="sp-step is-done"><span class="sp-step-dot">${svgCheck}</span><span class="sp-step-label">${tr('s_proof')}</span></div>
+                  <div class="sp-step is-active"><span class="sp-step-dot"><span class="sp-step-pulse"></span></span><span class="sp-step-label">${tr('s_verif')}</span></div>
+                  <div class="sp-step"><span class="sp-step-dot">${svgTicket}</span><span class="sp-step-label">${tr('s_ready')}</span></div>
                 </div>
-                <div class="sp-note">${svgInfo}<span>Toujours en attente après 1 heure ? Contactez le bénéficiaire pour vérifier la réception de votre paiement.</span></div>
+                <div class="sp-note">${svgInfo}<span>${tr('p_note')}</span></div>
               </div>`;
         } else if (statut === 'refuse' || statut === 'annule') {
           return `<div class="status-panel status-panel--refuse">
                 <div class="sp-head">
                   <div class="sp-icon-wrap refuse">${svgCross}</div>
                   <div class="sp-head-text">
-                    <div class="sp-title">Paiement non reçu</div>
-                    <div class="sp-sub">Votre paiement n'a pas été reçu par le bénéficiaire.</div>
+                    <div class="sp-title">${tr('r_title')}</div>
+                    <div class="sp-sub">${tr('r_sub')}</div>
                   </div>
                 </div>
                 <div class="sp-steps">
                   <div class="sp-steps-line"><span class="sp-steps-line-fill" style="width:66%;"></span></div>
-                  <div class="sp-step is-done"><span class="sp-step-dot">${svgCheck}</span><span class="sp-step-label">Infos reçues</span></div>
-                  <div class="sp-step is-done"><span class="sp-step-dot">${svgCheck}</span><span class="sp-step-label">Preuve reçue</span></div>
-                  <div class="sp-step is-error"><span class="sp-step-dot">${svgCross}</span><span class="sp-step-label">Paiement non reçu</span></div>
-                  <div class="sp-step"><span class="sp-step-dot">${svgTicket}</span><span class="sp-step-label">Billet prêt</span></div>
+                  <div class="sp-step is-done"><span class="sp-step-dot">${svgCheck}</span><span class="sp-step-label">${tr('s_info')}</span></div>
+                  <div class="sp-step is-done"><span class="sp-step-dot">${svgCheck}</span><span class="sp-step-label">${tr('s_proof')}</span></div>
+                  <div class="sp-step is-error"><span class="sp-step-dot">${svgCross}</span><span class="sp-step-label">${tr('r_title')}</span></div>
+                  <div class="sp-step"><span class="sp-step-dot">${svgTicket}</span><span class="sp-step-label">${tr('s_ready')}</span></div>
                 </div>
                 <div class="sp-reassure">
                   <span class="info-icon">ⓘ</span>
-                      <span>Contactez le bénéficiaire pour confirmer votre paiement. Votre billet sera disponible dès validation.</span>
+                      <span>${tr('r_note')}</span>
                 </div>
               </div>`;
         }
@@ -1052,9 +1289,9 @@ btn.style.display = 'none';
         <div class="sp-head" style="align-items:center;">
           <div class="sp-icon-wrap done">${svgCheck}</div>
           <div class="sp-head-text">
-            <span class="sp-confirmed-badge">Billet valide</span>
-            <div class="sp-title">Paiement validé</div>
-            <div class="sp-sub">Votre billet est à présent actif. Vous pouvez si vous le souhaité le télécharger en version réduite.</div>
+            <span class="sp-confirmed-badge">${tr('d_badge')}</span>
+            <div class="sp-title">${tr('d_title')}</div>
+            <div class="sp-sub">${tr('d_sub')}</div>
           </div>
         </div>
       </div>`;
@@ -1096,15 +1333,15 @@ btn.style.display = 'none';
           const data = await recupererDonneesBillet();
 
           if (!data) {
-            showError('Billet introuvable.');
+            showError('err_nf');
             return;
           }
 
           const billet = data.ticket;
           const ev     = data.event;
 
-          if (!billet) { showError('Billet introuvable.'); return; }
-          if (!ev)     { showError("Événement introuvable."); return; }
+          if (!billet) { showError('err_nf'); return; }
+          if (!ev)     { showError('err_evnf'); return; }
 
           let categories_data = [];
           if (ev.categories_data) {
@@ -1179,14 +1416,14 @@ btn.style.display = 'none';
             if (hdr) { hdr.style.background = `linear-gradient(160deg, ${color}22 0%, #0c0a09 100%)`; hdr.style.minHeight = '140px'; }
           }
 
-          const dateStr = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' }) : '—';
+          const dateStr = formaterDateEv(ev.date);
           const headerEl = document.getElementById('ticketHeaderBlock');
           headerEl.innerHTML = `
   <div class="category-badge" style="${badgeBgStyle} display:none;">
     <span class="badge-dot" style="background:${ts.dotClr}; box-shadow:0 0 6px ${ts.dotClr};"></span>
      ${escHTML(nomCategorie)}
   </div>
-  <h1 class="event-title-h" id="evTitreH" style="display:none;">${escHTML(ev.titre || 'Événement')}</h1>
+  <h1 class="event-title-h" id="evTitreH" style="display:none;">${escHTML(ev.titre || tr('event_default'))}</h1>
   <div style="display:flex; gap:8px; flex-wrap:wrap;">
     <div class="event-meta-pill">
       <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="${ts.dotClr}" stroke-width="2" stroke-linecap="round">
@@ -1203,7 +1440,7 @@ ${ev.heure ? `<div class="event-meta-pill">
       </svg><span id="evHeureH">${escHTML((ev.heure || '').slice(0, 5))}</span></div>` : ''}
   </div>`;
 
-          const statut = (billet.statut || 'attente').trim().toLowerCase();
+          const statut = (billet.statut || 'attente').trim().toLowerCase(); etatBillet = billet; etatEv = ev; etatStatut = statut;
           const statusZone = document.getElementById('statusBannerZone');
           const isConfirmed = (statut === 'confirme' || statut === 'valide');
 
@@ -1218,24 +1455,24 @@ ${ev.heure ? `<div class="event-meta-pill">
 
           const infoGrid = document.getElementById('infoGrid');
           const cells = [
-            { label:'Titulaire', value: billet.nom_participant || '—', icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`, full:false },
-            { label:'Téléphone', value: billet.telephone || '—', icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><rect x="7" y="2" width="10" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>`, full:false },
-            { label:'Catégorie', value: nomCategorie, icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`, full:false, accent:true },
-            { label:'Lieu', value: ev.lieu || '—', icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>`, full:false },
-            ...(ev.beneficiaire_nom ? [{ label:'Bénéficiaire_paiements', value: renderValeurBeneficiaire(ev.beneficiaire_nom, ev.beneficiaire_infos, statut), icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`, full:true, rawHtml:true }] : []),
-            ...(isConfirmed ? [{ label:'ID-billet', value: billet.numero_billet || billet.id || '—', icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg>`, full:true }] : [])
+            { label:'cell_titulaire', value: billet.nom_participant || '—', icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`, full:false },
+            { label:'cell_telephone', value: billet.telephone || '—', icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><rect x="7" y="2" width="10" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>`, full:false },
+            { label:'cell_categorie', value: nomCategorie, icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`, full:false, accent:true },
+            { label:'cell_lieu', value: ev.lieu || '—', icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>`, full:false },
+            ...(ev.beneficiaire_nom ? [{ label:'cell_benef', value: renderValeurBeneficiaire(ev.beneficiaire_nom, ev.beneficiaire_infos, statut), icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`, full:true, rawHtml:true }] : []),
+            ...(isConfirmed ? [{ label:'cell_id', value: billet.numero_billet || billet.id || '—', icon:`<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg>`, full:true }] : [])
           ];
           cells.forEach((cell, i) => {
             const div = document.createElement('div');
             div.className = 'info-cell' + (cell.full ? ' full' : '');
-            if (cell.label === 'ID-billet') div.id = 'cellIdBillet';
-            if (cell.label === 'Lieu') div.id = 'cellLieu';
-            if (cell.label === 'Bénéficiaire_paiements') div.id = 'cellBeneficiaire';
+            if (cell.label === 'cell_id') div.id = 'cellIdBillet';
+            if (cell.label === 'cell_lieu') div.id = 'cellLieu';
+            if (cell.label === 'cell_benef') div.id = 'cellBeneficiaire';
             div.style.animationDelay = (0.25 + i * 0.055) + 's';
             const valueStyle = cell.accent ? `color:var(--text-hi); font-weight:800; display:inline-flex; align-items:center; gap:6px;` : '';
             const accentDot = cell.accent ? `<span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:${ts.dotClr}; box-shadow:0 0 5px ${ts.dotClr}; flex-shrink:0;"></span>` : '';
             const valueContent = cell.rawHtml ? cell.value : (accentDot + escHTML(String(cell.value)));
-            div.innerHTML = `<span class="cell-label">${cell.label}</span><span class="cell-value" style="${valueStyle}">${valueContent}</span><span class="cell-icon">${cell.icon}</span>`;
+            div.innerHTML = `<span class="cell-label" data-i18n="${cell.label}">${escHTML(tr(cell.label))}</span><span class="cell-value" style="${valueStyle}">${valueContent}</span><span class="cell-icon">${cell.icon}</span>`;
             infoGrid.appendChild(div);
           });
 
@@ -1284,7 +1521,7 @@ ${ev.heure ? `<div class="event-meta-pill">
 
         } catch(err) {
           console.error('Erreur chargerBillet:', err);
-          showError('Une erreur est survenue. Veuillez réessayer.');
+          showError('err_generic');
         }
       }
 
@@ -1294,14 +1531,14 @@ ${ev.heure ? `<div class="event-meta-pill">
 
         try {
           const data = await recupererDonneesBillet();
-          if (!data) { if (forcerErreur) showError('Billet introuvable.'); return; }
+          if (!data) { if (forcerErreur) showError('err_nf'); return; }
 
           const billet = data.ticket;
           const ev = data.event;
-          if (!billet) { if (forcerErreur) showError('Billet introuvable.'); return; }
-          if (!ev)     { if (forcerErreur) showError("Événement introuvable."); return; }
+          if (!billet) { if (forcerErreur) showError('err_nf'); return; }
+          if (!ev)     { if (forcerErreur) showError('err_evnf'); return; }
 
-         const statut = (billet.statut || 'attente').trim().toLowerCase();
+         const statut = (billet.statut || 'attente').trim().toLowerCase(); etatBillet = billet; etatEv = ev; etatStatut = statut;
 const signature = `${statut}|${billet.numero_billet || ''}|${billet.id || ''}`;
 const signatureEv = `${ev.titre||''}|${ev.date||''}|${ev.heure||''}|${ev.lieu||''}|${ev.affiche_url||ev.image_url||ev.affiche||''}`;
 
@@ -1323,7 +1560,7 @@ if (!quelqueChoseAChange) return;
 
         } catch (err) {
           console.error('Erreur verifierMiseAJour:', err);
-          if (forcerErreur) showError('Une erreur est survenue. Veuillez réessayer.');
+          if (forcerErreur) showError('err_generic');
         } finally {
           verificationEnCours = false;
         }
@@ -1333,10 +1570,10 @@ let dernierSignatureEvenementAffiche = null;
 
 function appliquerMiseAJourEvenement(ev) {
     const titreEl = document.getElementById('evTitreH');
-    if (titreEl) titreEl.textContent = ev.titre || 'Événement';
+    if (titreEl) titreEl.textContent = ev.titre || tr('event_default');
     const dateEl = document.getElementById('evDateH');
     if (dateEl) {
-        dateEl.textContent = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' }) : '—';
+        dateEl.textContent = formaterDateEv(ev.date);
     }
     const heureEl = document.getElementById('evHeureH');
     if (heureEl && ev.heure) heureEl.textContent = (ev.heure || '').slice(0, 5);
@@ -1379,7 +1616,7 @@ function appliquerMiseAJourEvenement(ev) {
           idCell = document.createElement('div');
           idCell.className = 'info-cell full';
           idCell.id = 'cellIdBillet';
-          idCell.innerHTML = `<span class="cell-label">ID-billet</span><span class="cell-value">${escHTML(String(billet.numero_billet || billet.id || '—'))}</span><span class="cell-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg></span>`;
+          idCell.innerHTML = `<span class="cell-label" data-i18n="cell_id">${escHTML(tr('cell_id'))}</span><span class="cell-value">${escHTML(String(billet.numero_billet || billet.id || '—'))}</span><span class="cell-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg></span>`;
           infoGrid.appendChild(idCell);
         } else if (!isConfirmed && idCell) {
           idCell.remove();
@@ -1465,14 +1702,14 @@ function appliquerMiseAJourEvenement(ev) {
           if (!libsTelechargementChargees) {
             if (dlBtn) {
               dlBtn.disabled = true;
-              dlBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9" stroke-dasharray="56" style="animation:spin 1s linear infinite;"/></svg> Préparation…`;
+              dlBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9" stroke-dasharray="56" style="animation:spin 1s linear infinite;"/></svg> ${tr('dl_prep')}`;
             }
             await chargerLibsTelechargementSiBesoin();
           }
         } catch (err) {
           console.error('Erreur chargement librairies PDF:', err);
           if (dlBtn) { dlBtn.innerHTML = original; dlBtn.disabled = false; }
-          alert("Impossible de préparer le téléchargement. Vérifiez votre connexion et réessayez.");
+          alert(tr('dl_fail'));
           return;
         }
 
@@ -1480,9 +1717,9 @@ function appliquerMiseAJourEvenement(ev) {
 
         Swal.fire({
           icon: 'info',
-          title: 'Téléchargement du billet',
-          text: "Le billet que vous aurez en PDF est une version optimisée et simplifiée",
-          confirmButtonText: 'Télécharger',
+          title: tr('sw_title'),
+          text: tr('sw_text'),
+          confirmButtonText: tr('sw_btn'),
           confirmButtonColor: '#d97706',
           background: '#111010',
           color: '#fafaf9',
@@ -1506,14 +1743,14 @@ function appliquerMiseAJourEvenement(ev) {
         '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Billet GoldTix</title>' +
         '<style>body{margin:0;display:flex;align-items:center;justify-content:center;' +
         'height:100vh;background:#0c0a09;color:#a8a29e;font-family:sans-serif;font-size:14px;}</style>' +
-        '</head><body>Génération de votre billet…</body></html>'
+        '</head><body>' + escHTML(tr('pdf_popup')) + '</body></html>'
       );
     }
   }
 
   const btn = document.getElementById('downloadTicket');
   const original = btn.innerHTML;
-  btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9" stroke-dasharray="56" style="animation:spin 1s linear infinite;"/></svg> Génération du PDF…`;
+  btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9" stroke-dasharray="56" style="animation:spin 1s linear infinite;"/></svg> ${tr('dl_gen')}`;
   btn.disabled = true;
   btn.style.opacity = '.7';
 
@@ -1523,11 +1760,11 @@ function appliquerMiseAJourEvenement(ev) {
     btn.style.opacity = '1';
   }
 
-  const eventTitle   = document.querySelector('.event-title-h')?.textContent.trim() || 'Événement';
+  const eventTitle   = document.querySelector('.event-title-h')?.textContent.trim() || tr('event_default');
   const categoryText = document.querySelector('.category-badge')?.textContent.trim() || 'Standard';
   const metaPills    = Array.from(document.querySelectorAll('.event-meta-pill')).map(p => p.textContent.trim());
   const cellValues   = Array.from(document.querySelectorAll('.info-cell')).map(c => ({
-    label: c.querySelector('.cell-label')?.textContent.trim() || '',
+    label: c.querySelector('.cell-label')?.getAttribute('data-i18n') || '',
     value: c.querySelector('.cell-value')?.textContent.trim() || ''
   }));
   const billetRef    = document.getElementById('billetRef')?.textContent.trim() || '';
@@ -1535,10 +1772,10 @@ function appliquerMiseAJourEvenement(ev) {
   const accentColorB = getComputedStyle(document.getElementById('ticketContent')).getPropertyValue('--tier-b').trim() || '#d97706';
 
   const getCell = (label) => cellValues.find(c => c.label === label)?.value || '—';
-  const categorieValue = getCell('Catégorie');
-  const lieuValue = getCell('Lieu');
-  const titulaireValue = getCell('Titulaire');
-  const telephoneValue = getCell('Téléphone');
+  const categorieValue = getCell('cell_categorie');
+  const lieuValue = getCell('cell_lieu');
+  const titulaireValue = getCell('cell_titulaire');
+  const telephoneValue = getCell('cell_telephone');
   const dateValue = document.getElementById('evDateH')?.textContent.trim() || metaPills[0] || '—';
   const heureValue = document.getElementById('evHeureH')?.textContent.trim() || metaPills[1] || '—';
 
@@ -1623,7 +1860,7 @@ function appliquerMiseAJourEvenement(ev) {
           <!-- ===== LABEL + TITRE ===== -->
           <div style="text-align:center; margin-bottom:14px;">
             <div style="font-size:12px; font-weight:400; color:#1c1917; margin-bottom:6px;">
-              Billet Officiel &middot; GoldTix
+              ${escHTML(tr('pdf_official'))} &middot; GoldTix
             </div>
             <div style="font-size:20px; font-weight:800; color:#1c1917; line-height:1.25; letter-spacing:-.01em;">
               ${escHTML(eventTitle)}
@@ -1633,20 +1870,20 @@ function appliquerMiseAJourEvenement(ev) {
           <!-- ===== BLOC INFOS (neutre, sans liseré coloré) ===== -->
           <div style="background:#faf8f4; border-radius:14px; padding:2px 18px; margin-bottom:14px;">
             <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid #efece4;">
-              <span style="color:#1c1917; font-weight:400; font-size:13px;">Date &amp; Heure</span>
+              <span style="color:#1c1917; font-weight:400; font-size:13px;">${escHTML(tr('pdf_datetime'))}</span>
               <span style="font-weight:700; color:#1c1917; font-size:14px; text-align:right;">${escHTML(dateValue)} &middot; ${escHTML(heureValue)}</span>
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid #efece4;">
-              <span style="color:#1c1917; font-weight:400; font-size:13px;">Lieu</span>
+              <span style="color:#1c1917; font-weight:400; font-size:13px;">${escHTML(tr('pdf_venue'))}</span>
               <span style="font-weight:700; color:#1c1917; font-size:14px; text-align:right;">${escHTML(lieuValue)}</span>
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 0; ${telephoneValue && telephoneValue !== '—' ? 'border-bottom:1px solid #efece4;' : ''}">
-              <span style="color:#1c1917; font-weight:400; font-size:13px;">Participant</span>
+              <span style="color:#1c1917; font-weight:400; font-size:13px;">${escHTML(tr('pdf_participant'))}</span>
               <span style="font-weight:700; color:#1c1917; font-size:14px; text-align:right;">${escHTML(titulaireValue)}</span>
             </div>
             ${telephoneValue && telephoneValue !== '—' ? `
             <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 0;">
-              <span style="color:#1c1917; font-weight:400; font-size:13px;">Téléphone</span>
+              <span style="color:#1c1917; font-weight:400; font-size:13px;">${escHTML(tr('pdf_phone'))}</span>
               <span style="font-weight:700; color:#1c1917; font-size:14px; text-align:right;">${escHTML(telephoneValue)}</span>
             </div>` : ''}
           </div>
@@ -1673,7 +1910,7 @@ function appliquerMiseAJourEvenement(ev) {
               </div>
             ` : ''}
             <div style="font-size:10px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:#a8a29e; margin-top:10px;">
-              ID Billet
+              ${escHTML(tr('pdf_id'))}
             </div>
             <div style="font-size:18px; font-weight:800; letter-spacing:.04em; color:#1c1917; font-family:monospace; margin-top:2px;">
               ${escHTML(billetRef)}
@@ -1687,7 +1924,7 @@ function appliquerMiseAJourEvenement(ev) {
                         ? `<img src="${logoDataUrl}" style="height:16px; width:auto; display:block;" />`
             : `<span style="font-family:'Plus Jakarta Sans', sans-serif; font-size:11px; font-weight:800; letter-spacing:-.01em; color:#1c1917;">Gold<span style="color:#d97706;">Tix</span></span>`}
           <span style="font-size:10px; color:#1c1917;">&bull;</span>
-          <span style="font-size:10px; font-weight:400; color:#1c1917;">Plateforme de billetterie sécurisée</span>
+          <span style="font-size:10px; font-weight:400; color:#1c1917;">${escHTML(tr('pdf_platform'))}</span>
         </div>
       </div>
     `;
@@ -1749,7 +1986,7 @@ function appliquerMiseAJourEvenement(ev) {
         if (document.body.contains(pdfContainer)) document.body.removeChild(pdfContainer);
         if (pdfWindow) pdfWindow.close();
         console.error("Erreur PDF:", err);
-        alert("Erreur lors de la génération du PDF. Veuillez réessayer.");
+        alert(tr('pdf_fail'));
         resetButton();
       });
   }
@@ -1761,6 +1998,45 @@ function appliquerMiseAJourEvenement(ev) {
 
       const dlBtn = document.getElementById('downloadTicket');
       if (dlBtn) dlBtn.addEventListener('click', demanderConfirmationTelechargement);
+
+      function rafraichirLangue() {
+
+
+        if (etatStatut == null) return;
+
+
+        const zone = document.getElementById('statusBannerZone');
+
+
+        if (zone) zone.innerHTML = statusBannerHTML(etatStatut);
+
+
+        updateFooterReloadButton(etatStatut);
+
+
+        const dateEl = document.getElementById('evDateH');
+
+
+        if (dateEl && etatEv) dateEl.textContent = formaterDateEv(etatEv.date);
+
+
+        const titreEl = document.getElementById('evTitreH');
+
+
+        if (titreEl && etatEv && !etatEv.titre) titreEl.textContent = tr('event_default');
+
+
+        const ticket = document.getElementById('ticketContent');
+
+
+        if (ticket && ticket.classList.contains('ticket--notched')) requestAnimationFrame(() => requestAnimationFrame(positionnerEncoches));
+
+
+      }
+
+
+      document.addEventListener('goldtix:lang', rafraichirLangue);
+
 
       chargerBillet();
     });
