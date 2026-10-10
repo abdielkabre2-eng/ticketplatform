@@ -22,6 +22,15 @@ img{max-width:100%}button,input,select{font-family:inherit}button{-webkit-tap-hi
 .brand-name em{color:var(--gold);font-style:normal}
 .secure-badge{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border:1px solid var(--line);border-radius:999px;background:#fafaf9;color:var(--text);font-size:11.5px;font-weight:700}
 .secure-badge svg{width:14px;height:14px;color:var(--green);flex-shrink:0}
+
+/* ── Sélecteur de langue FR / EN ── */
+.top-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.lang-switch{display:inline-flex;align-items:center;gap:2px;padding:3px;background:#fafaf9;border:1px solid var(--line);border-radius:999px}
+.lang-btn{min-width:34px;height:26px;padding:0 9px;background:transparent;color:var(--muted);border:0;border-radius:999px;cursor:pointer;font-size:11px;font-weight:800;letter-spacing:.6px;line-height:1;transition:background .2s ease,color .2s ease}
+.lang-btn:hover{color:var(--ink)}
+.lang-btn[aria-pressed="true"]{background:var(--ink);color:#fff;cursor:default}
+.lang-btn:focus-visible{outline:2px solid var(--gold-bright);outline-offset:2px}
+
 .page-head{position:relative;padding:48px 0 34px;text-align:center}
 .ph-eyebrow{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:15px;color:var(--gold);font-size:10.5px;font-weight:800;letter-spacing:2px}
 .ph-eyebrow span{width:34px;height:1px;background:var(--gold);opacity:.55}
@@ -140,10 +149,10 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
 .gx-footer__legal a:hover{color:var(--gold-dark)}
 
 @media(max-width:920px){.layout{grid-template-columns:310px minmax(0,1fr);gap:20px}.card{padding:21px}.col-steps .card:not(.state-card)::before{left:21px}.rib-box{grid-template-columns:auto minmax(0,1fr)}.rib-box .btn-outline{grid-column:1/-1;width:100%}}
-@media(max-width:760px){.wrap{width:min(100% - 28px,600px)}.topbar-inner{height:58px}.brand-name{font-size:17px}.secure-badge{padding:6px 8px;font-size:9.5px}.secure-badge svg{width:13px;height:13px}.page-head{padding:34px 0 24px}.ph-eyebrow{gap:9px;margin-bottom:12px;font-size:9px;letter-spacing:1.5px}.ph-eyebrow span{width:24px}.page-head h1{font-size:29px;letter-spacing:-1px}.ph-sub{max-width:300px;margin-top:9px;font-size:13px}.ph-chips{gap:6px;margin-top:16px}.ph-chips li{padding:7px 10px;font-size:11px}.ph-chips svg{width:14px;height:14px}.layout{grid-template-columns:1fr;gap:15px}.col-event{position:static;gap:13px}.col-steps{gap:13px}.poster{border-radius:17px}.info-card{padding:19px}.event-head .event-title{font-size:28px}.card{padding:20px 17px;border-radius:15px}.col-steps .card:not(.state-card)::before{left:17px}.card-head{gap:11px;margin-bottom:19px}.step-num,.step-icon{width:34px;height:34px;flex-basis:34px}.card-title{font-size:15px}.card-desc{font-size:11.5px}input[type=text],input[type=email],input[type=tel],select{min-height:51px;font-size:16px}.price-line{padding:14px}.price-line span:last-child{font-size:20px}.rib-box{padding:13px}.rib-txt span{font-size:10px}.upload-empty{min-height:135px}.btn-submit{min-height:55px;font-size:13px}.gx-footer__haut{padding:34px 0 10px}.gx-footer__slogan{font-size:19px}.gx-footer__desc{font-size:12px}.gx-footer__grille{gap:26px 36px}.gx-footer__secu{margin-left:0;width:100%}.gx-footer__bas-inner{flex-direction:column;align-items:flex-start}}
-@media(max-width:390px){.wrap{width:min(100% - 22px,600px)}.topbar-inner{gap:8px}.brand{min-width:0;flex-shrink:1}.brand-name{font-size:16px}.brand-logo{height:22px}.secure-badge{gap:5px;padding:5px 8px;font-size:9px;white-space:nowrap;flex-shrink:0}.secure-badge svg{width:12px;height:12px}.page-head h1{font-size:27px}.card{padding:18px 15px}.info-card{padding:17px}.rib-box{grid-template-columns:1fr}.rib-ico{width:38px;height:38px}.rib-box .btn-outline{grid-column:auto}}
-@media(max-width:340px){.topbar-inner{gap:6px}.brand-name{font-size:14.5px;letter-spacing:-.4px}.brand-logo{height:20px}.secure-badge{gap:4px;padding:4px 6px;font-size:8px}.secure-badge svg{width:10px;height:10px}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.card,.plain{animation:none}.poster img,.btn-submit,.btn-outline,.cat-row{transition:none}.btn-submit:hover:not(:disabled){transform:none}}
+@media(max-width:760px){.wrap{width:min(100% - 28px,600px)}.topbar-inner{height:58px}.brand-name{font-size:17px}.top-actions{gap:6px}.lang-btn{min-width:30px;height:24px;padding:0 7px;font-size:10px}.secure-badge{padding:6px 8px;font-size:9.5px}.secure-badge svg{width:13px;height:13px}.page-head{padding:34px 0 24px}.ph-eyebrow{gap:9px;margin-bottom:12px;font-size:9px;letter-spacing:1.5px}.ph-eyebrow span{width:24px}.page-head h1{font-size:29px;letter-spacing:-1px}.ph-sub{max-width:300px;margin-top:9px;font-size:13px}.ph-chips{gap:6px;margin-top:16px}.ph-chips li{padding:7px 10px;font-size:11px}.ph-chips svg{width:14px;height:14px}.layout{grid-template-columns:1fr;gap:15px}.col-event{position:static;gap:13px}.col-steps{gap:13px}.poster{border-radius:17px}.info-card{padding:19px}.event-head .event-title{font-size:28px}.card{padding:20px 17px;border-radius:15px}.col-steps .card:not(.state-card)::before{left:17px}.card-head{gap:11px;margin-bottom:19px}.step-num,.step-icon{width:34px;height:34px;flex-basis:34px}.card-title{font-size:15px}.card-desc{font-size:11.5px}input[type=text],input[type=email],input[type=tel],select{min-height:51px;font-size:16px}.price-line{padding:14px}.price-line span:last-child{font-size:20px}.rib-box{padding:13px}.rib-txt span{font-size:10px}.upload-empty{min-height:135px}.btn-submit{min-height:55px;font-size:13px}.gx-footer__haut{padding:34px 0 10px}.gx-footer__slogan{font-size:19px}.gx-footer__desc{font-size:12px}.gx-footer__grille{gap:26px 36px}.gx-footer__secu{margin-left:0;width:100%}.gx-footer__bas-inner{flex-direction:column;align-items:flex-start}}
+@media(max-width:390px){.wrap{width:min(100% - 22px,600px)}.topbar-inner{gap:8px}.brand{min-width:0;flex-shrink:1}.brand-name{font-size:16px}.brand-logo{height:22px}.top-actions{gap:5px}.lang-btn{min-width:27px;padding:0 6px}.secure-badge{gap:5px;padding:5px 8px;font-size:9px;white-space:nowrap;flex-shrink:0}.secure-badge svg{width:12px;height:12px}.page-head h1{font-size:27px}.card{padding:18px 15px}.info-card{padding:17px}.rib-box{grid-template-columns:1fr}.rib-ico{width:38px;height:38px}.rib-box .btn-outline{grid-column:auto}}
+@media(max-width:340px){.topbar-inner{gap:6px}.brand-name{font-size:14.5px;letter-spacing:-.4px}.brand-logo{height:20px}.top-actions{gap:4px}.lang-switch{padding:2px}.lang-btn{min-width:24px;height:22px;padding:0 5px;font-size:9px}.secure-badge{gap:4px;padding:4px 6px;font-size:8px}.secure-badge svg{width:10px;height:10px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.card,.plain{animation:none}.poster img,.btn-submit,.btn-outline,.cat-row,.lang-btn{transition:none}.btn-submit:hover:not(:disabled){transform:none}}
 .brand-logo{width:auto;height:28px;object-fit:contain}
 .poster-fallback{min-height:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--muted);font-size:12px;font-weight:700;line-height:1.5}
 .poster-fallback svg{width:32px;height:32px;opacity:.55}
@@ -206,9 +215,248 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
 .pay-hint{margin-bottom:9px;color:var(--muted);font-size:11.5px;line-height:1.5}
 .pay-block .rib-status{margin-top:8px}
 @media(max-width:390px){.pay-value{font-size:21px}}
+
+/* ── En-tête fluide : tout se redimensionne avec la largeur de l'écran (téléphones compris) ── */
+.topbar-inner{gap:clamp(6px,2vw,16px)}
+.brand{min-width:0;flex:0 1 auto;gap:clamp(5px,1.6vw,9px)}
+.brand-name{font-size:clamp(14px,4.6vw,19px);white-space:nowrap}
+.brand-logo{height:clamp(20px,6vw,28px)}
+.top-actions{min-width:0;flex:0 1 auto;gap:clamp(4px,1.6vw,8px)}
+.lang-switch{flex-shrink:0;padding:clamp(2px,.7vw,3px)}
+.lang-btn{min-width:clamp(24px,7.5vw,34px);height:clamp(22px,6.5vw,26px);padding:0 clamp(5px,1.8vw,9px);font-size:clamp(9px,2.8vw,11px)}
+.secure-badge{min-width:0;flex-shrink:1;gap:clamp(4px,1.3vw,7px);padding:clamp(4px,1.6vw,7px) clamp(6px,2.2vw,11px);font-size:clamp(8px,2.5vw,11.5px);white-space:nowrap}
+.secure-badge svg{flex-shrink:0;width:clamp(10px,3.2vw,14px);height:clamp(10px,3.2vw,14px)}
+.secure-badge bdi{min-width:0;overflow:hidden;text-overflow:ellipsis}
 </style>
 </head>
 <body>
+
+<!-- ═══════════ TRADUCTIONS FR / EN — début ═══════════
+     Pour ajouter ou corriger un texte : modifier les deux dictionnaires ci-dessous (fr et en).
+     Dans le HTML : data-i18n="cle" (texte), data-i18n-html="cle" (texte avec balises),
+     data-i18n-ph="cle" (placeholder), data-i18n-aria="cle" (aria-label), data-i18n-alt="cle" (alt).
+     Dans le JS : tr('cle'). -->
+<script>
+(function () {
+'use strict';
+var GX = window.GX = { lang: 'fr', dict: { fr: {}, en: {} } };
+var FR = GX.dict.fr, EN = GX.dict.en;
+
+/* ── Page : en-tête, bandeau, pied de page ── */
+FR.doc_title = 'Achat de Billet | GoldTix';                 EN.doc_title = 'Buy a Ticket | GoldTix';
+FR.secure = 'Billetterie sécurisée';                        EN.secure = 'Secure ticketing';
+FR.eyebrow = 'PLATEFORME MODERNE';                          EN.eyebrow = 'MODERN PLATFORM';
+FR.h1 = 'Achetez votre <em>billet</em>';                    EN.h1 = 'Buy your <em>ticket</em>';
+FR.sub = "En toute simplicité, recevez-le avec un QR code unique qui sera scanné à l'entrée.";
+EN.sub = 'Simple and easy: receive it with a unique QR code that will be scanned at the entrance.';
+FR.chip1 = 'Paiement vérifié';                              EN.chip1 = 'Verified payment';
+FR.chip2 = 'Billet par e-mail';                             EN.chip2 = 'Ticket by e-mail';
+FR.chip3 = 'Achat rapide';                                  EN.chip3 = 'Quick purchase';
+FR.loading = 'Chargement de votre expérience…';             EN.loading = 'Loading your experience…';
+FR.lang_group = 'Langue / Language';                        EN.lang_group = 'Langue / Language';
+
+FR.f_slogan = '— La billetterie en or —';                   EN.f_slogan = '— Ticketing, pure gold —';
+FR.f_desc = "GoldTix est une plateforme de billetterie en ligne conçue pour simplifier l'achat et la gestion des billets d'événements. Elle permet aux participants d'acheter facilement leurs billets depuis leur téléphone, et aux organisateurs de gérer efficacement leurs ventes, leurs participants et le contrôle des accès.";
+EN.f_desc = 'GoldTix is an online ticketing platform designed to simplify buying and managing event tickets. It lets attendees easily buy their tickets from their phone, and helps organizers efficiently manage their sales, their attendees and access control.';
+FR.f_discover = 'DÉCOUVRIR';                                 EN.f_discover = 'DISCOVER';
+FR.f_how = 'Comment ça marche ?';                           EN.f_how = 'How it works';
+FR.f_story = 'Histoire-GoldTix';                            EN.f_story = 'GoldTix story';
+FR.f_help = 'AIDE';                                         EN.f_help = 'HELP';
+FR.f_contacts = 'Contacts';                                 EN.f_contacts = 'Contact';
+FR.f_terms = "Conditions d'utilisation";                    EN.f_terms = 'Terms of use';
+FR.f_legalinfo = 'INFORMATIONS LÉGALES';                    EN.f_legalinfo = 'LEGAL INFORMATION';
+FR.f_cgv = 'CGV';                                           EN.f_cgv = 'Terms of sale';
+FR.f_legal = 'Mentions légales';                            EN.f_legal = 'Legal notice';
+FR.f_privacy = 'Politique de confidentialité';              EN.f_privacy = 'Privacy policy';
+FR.f_refund = 'Politique de remboursement';                 EN.f_refund = 'Refund policy';
+FR.f_pay = 'Paiement :';                                    EN.f_pay = 'Payment:';
+FR.f_transfer = 'Virement';                                 EN.f_transfer = 'Bank transfer';
+FR.f_proof = 'Preuve de paiement';                          EN.f_proof = 'Proof of payment';
+FR.f_data = 'Données protégées';                            EN.f_data = 'Data protected';
+FR.f_copy = '© GoldTix — Tous droits réservés - 2026';      EN.f_copy = '© GoldTix — All rights reserved - 2026';
+FR.f_privacy_short = 'Confidentialité';                     EN.f_privacy_short = 'Privacy';
+FR.f_legal_nav = 'Liens légaux';                            EN.f_legal_nav = 'Legal links';
+
+/* ── Intro animée ── */
+FR.intro_aria = 'Présentation de l’événement';              EN.intro_aria = 'Event presentation';
+FR.intro_sub = 'Un évènement à ne pas manquer';             EN.intro_sub = 'An event not to be missed';
+FR.intro_cta = 'J’achète mon billet';                       EN.intro_cta = 'Buy my ticket';
+FR.intro_foot = 'Plateforme de billetterie moderne';        EN.intro_foot = 'Modern ticketing platform';
+FR.poster_prefix = 'Affiche : ';                            EN.poster_prefix = 'Poster: ';
+
+/* ── Chargement / états ── */
+FR.retry = 'Réessayer';                                     EN.retry = 'Try again';
+FR.st_invalid_t = 'Lien invalide';                          EN.st_invalid_t = 'Invalid link';
+FR.st_invalid_m = 'Aucun événement spécifié dans ce lien.'; EN.st_invalid_m = 'No event specified in this link.';
+FR.st_slow_t = 'Chargement trop long';                      EN.st_slow_t = 'Taking too long';
+FR.st_slow_m = 'La connexion semble instable. Vérifiez votre réseau (Wi-Fi ou données mobiles) et réessayez.';
+EN.st_slow_m = 'Your connection seems unstable. Check your network (Wi-Fi or mobile data) and try again.';
+FR.st_conn_t = 'Connexion impossible';                      EN.st_conn_t = 'Connection failed';
+FR.st_conn_m = 'Le chargement a échoué (réseau instable ou trop lent). Vérifiez votre connexion et réessayez.';
+EN.st_conn_m = 'Loading failed (unstable or slow network). Check your connection and try again.';
+FR.st_nf_t = 'Événement introuvable';                       EN.st_nf_t = 'Event not found';
+FR.st_nf_m = "Cet événement a été supprimé ou n'existe plus."; EN.st_nf_m = 'This event has been deleted or no longer exists.';
+FR.st_err_t = 'Une erreur est survenue';                    EN.st_err_t = 'Something went wrong';
+FR.st_err_m = "Impossible d'afficher les informations de l'événement. Réessayez.";
+EN.st_err_m = 'Unable to display the event information. Please try again.';
+FR.st_closed_t = 'Ventes fermées';                          EN.st_closed_t = 'Sales closed';
+FR.st_closed_m = "Les ventes en ligne de billets pour cet événement viennent d'être fermées par l'organisateur.";
+EN.st_closed_m = 'Online ticket sales for this event have just been closed by the organizer.';
+FR.st_sold_t = 'Billets épuisés';                           EN.st_sold_t = 'Sold out';
+FR.st_sold_m = 'Tous les billets disponibles pour cet événement ont été vendus.';
+EN.st_sold_m = 'All available tickets for this event have been sold.';
+FR.st_thanks = 'Merci pour votre intérêt et à bientôt !';   EN.st_thanks = 'Thank you for your interest, see you soon!';
+
+/* ── Événement / catégories ── */
+FR.poster_alt = "Affiche de l'événement";                   EN.poster_alt = 'Event poster';
+FR.poster_na = 'Affiche non disponible';                    EN.poster_na = 'Poster not available';
+FR.lbl_date = 'DATE';                                       EN.lbl_date = 'DATE';
+FR.lbl_time = 'HEURE';                                      EN.lbl_time = 'TIME';
+FR.lbl_venue = 'LIEU';                                      EN.lbl_venue = 'VENUE';
+FR.cat_title = 'Catégorie(s) disponible(s)';                EN.cat_title = 'Available categories';
+FR.soldout = 'Épuisé';                                      EN.soldout = 'Sold out';
+FR.ticket = 'Billet';                                       EN.ticket = 'Ticket';
+FR.free = 'Gratuit';                                        EN.free = 'Free';
+FR.spot_one = '{n} place disponible';                       EN.spot_one = '{n} spot available';
+FR.spot_many = '{n} places disponibles';                    EN.spot_many = '{n} spots available';
+FR.steps_divider = 'Procédure de paiement ci-dessous';      EN.steps_divider = 'Payment procedure below';
+
+/* ── Étape 1 : choix du billet ── */
+FR.s1_title = 'Choisissez votre billet';                    EN.s1_title = 'Choose your ticket';
+FR.s1_desc = 'Sélectionnez votre catégorie de billet, puis effectuez le paiement.';
+EN.s1_desc = 'Select your ticket category, then make the payment.';
+FR.s1_select = 'Catégorie(s) de billet disponible(s)';      EN.s1_select = 'Available ticket categories';
+FR.total = 'Total à payer';                                 EN.total = 'Total to pay';
+
+/* ── Coordonnées de paiement ── */
+FR.pay_title = 'Coordonnées de paiement';                   EN.pay_title = 'Payment details';
+FR.pay_desc = 'Effectuez le transfert vers les coordonnées ci-dessous.';
+EN.pay_desc = 'Make the transfer to the details below.';
+FR.pay_benef = 'Bénéficiaire des paiements';                EN.pay_benef = 'Payment recipient';
+FR.pay_wa = 'Contact WhatsApp';                             EN.pay_wa = 'WhatsApp contact';
+FR.not_provided = 'Non renseigné';                          EN.not_provided = 'Not provided';
+FR.rib_label = 'RIB du bénéficiaire';                       EN.rib_label = "Recipient's bank details (RIB)";
+FR.rib_hint = 'Téléchargez-le pour effectuer votre virement depuis votre application bancaire.';
+EN.rib_hint = 'Download it to make your transfer from your banking app.';
+FR.rib_dl = 'Télécharger le RIB';                           EN.rib_dl = 'Download the RIB';
+FR.rib_dling = 'Téléchargement…';                           EN.rib_dling = 'Downloading…';
+FR.rib_fallback = "Le RIB s'est ouvert dans un nouvel onglet — enregistrez-le depuis là.";
+EN.rib_fallback = 'The RIB opened in a new tab — save it from there.';
+FR.rib_filename = 'RIB du bénéficiaire';                    EN.rib_filename = 'Recipient RIB';
+
+/* ── Étape 2 : confirmation ── */
+FR.s2_title = 'Confirmer mon paiement';                     EN.s2_title = 'Confirm my payment';
+FR.s2_desc = 'Après avoir effectué le paiement, renseignez vos informations et transmettez votre preuve de paiement.';
+EN.s2_desc = 'Once you have paid, fill in your details and upload your proof of payment.';
+FR.f_name = 'Nom et prénom(s)';                             EN.f_name = 'Full name';
+FR.ph_name = 'ex : KONATE Jean';                            EN.ph_name = 'e.g. KONATE Jean';
+FR.f_email = 'Adresse e-mail';                              EN.f_email = 'E-mail address';
+FR.f_email_hint = '(Pour la réception du lien du billet)';  EN.f_email_hint = '(To receive your ticket link)';
+FR.ph_email = 'ex : nom@gmail.com';                         EN.ph_email = 'e.g. name@gmail.com';
+FR.f_tel = 'Contact WhatsApp';                              EN.f_tel = 'WhatsApp number';
+FR.ph_tel = 'ex : +226 ... / +212 ...';                     EN.ph_tel = 'e.g. +226 ... / +212 ...';
+FR.f_proof_l = 'Preuve de paiement';                        EN.f_proof_l = 'Proof of payment';
+FR.f_proof_hint = '(capture du reçu)';                      EN.f_proof_hint = '(screenshot of the receipt)';
+FR.up_choose = 'Cliquez pour choisir un fichier';           EN.up_choose = 'Click to choose a file';
+FR.up_types = 'JPG, PNG ou WEBP — 10 Mo maximum';           EN.up_types = 'JPG, PNG or WEBP — 10 MB maximum';
+FR.up_replace = 'Remplacer le fichier';                     EN.up_replace = 'Replace file';
+FR.up_thumb_alt = 'Aperçu de la preuve de paiement';        EN.up_thumb_alt = 'Preview of the proof of payment';
+FR.submit = 'Valider mon paiement';                         EN.submit = 'Confirm my payment';
+FR.sending = 'Envoi en cours… Ne fermez pas cette page.';   EN.sending = "Sending… Please don't close this page.";
+FR.sent = 'Informations envoyées';                          EN.sent = 'Information sent';
+FR.submit_note = "Votre paiement sera vérifié par le bénéficiaire avant la validation et l'obtention de votre billet.";
+EN.submit_note = 'Your payment will be checked by the recipient before your ticket is validated and issued.';
+FR.success = 'Vos informations et votre preuve de paiement ont été envoyées. Votre paiement est en attente de vérification par le bénéficiaire.';
+EN.success = 'Your details and proof of payment have been sent. Your payment is awaiting verification by the recipient.';
+
+/* ── Messages d'erreur ── */
+FR.err_required = 'Ce champ est obligatoire.';              EN.err_required = 'This field is required.';
+FR.err_phone_short = 'Ce numéro semble trop court.';        EN.err_phone_short = 'This number seems too short.';
+FR.err_email = 'Cette adresse e-mail ne semble pas valide.'; EN.err_email = "This e-mail address doesn't look valid.";
+FR.err_proof_req = 'Une preuve de paiement est obligatoire.'; EN.err_proof_req = 'A proof of payment is required.';
+FR.err_format = 'Format non accepté. Utilisez une image JPG, PNG ou WEBP.';
+EN.err_format = 'Format not accepted. Please use a JPG, PNG or WEBP image.';
+FR.err_size = 'Ce fichier dépasse 10 Mo. Choisissez une image plus légère.';
+EN.err_size = 'This file exceeds 10 MB. Please choose a lighter image.';
+FR.err_heavy = "Cette image reste trop lourde. Choisissez une capture d'écran plus légère.";
+EN.err_heavy = 'This image is still too large. Please choose a lighter screenshot.';
+FR.err_cat_na = "Cette catégorie n'est plus disponible. Choisissez-en une autre.";
+EN.err_cat_na = 'This category is no longer available. Please choose another one.';
+FR.err_save = "Erreur lors de l'enregistrement du billet.";  EN.err_save = 'Error while saving the ticket.';
+FR.err_timeout = 'La connexion met trop de temps à répondre. Vérifiez votre réseau puis réessayez.';
+EN.err_timeout = 'The connection is taking too long to respond. Check your network and try again.';
+FR.err_unexpected = 'Une erreur inattendue est survenue lors du traitement.';
+EN.err_unexpected = 'An unexpected error occurred while processing your request.';
+FR.sales_closed_alert = "Les ventes viennent d'être fermées par l'organisateur. Aucun achat n'est possible pour le moment. Contactez le bénéficiaire pour toute réclamation.";
+EN.sales_closed_alert = 'Sales have just been closed by the organizer. No purchase is possible at the moment. Please contact the recipient for any claim.';
+FR.cat_gone = "La catégorie choisie n'est plus disponible. Choisissez-en une autre. Pour toute réclamation, contactez le bénéficiaire.";
+EN.cat_gone = 'The category you chose is no longer available. Please choose another one. For any claim, contact the recipient.';
+
+/* ── Moteur ── */
+var MOIS = {
+fr: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'],
+en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+};
+GX.mois = function () { return MOIS[GX.lang] || MOIS.fr; };
+
+GX.t = function (cle, vars) {
+var d = GX.dict[GX.lang] || FR;
+var s = d[cle] != null ? d[cle] : (FR[cle] != null ? FR[cle] : cle);
+if (vars) for (var k in vars) s = s.split('{' + k + '}').join(vars[k]);
+return s;
+};
+
+GX.apply = function (racine) {
+racine = racine || document;
+var i, el, liste;
+liste = racine.querySelectorAll('[data-i18n]');
+for (i = 0; i < liste.length; i++) { el = liste[i]; el.textContent = GX.t(el.getAttribute('data-i18n')); }
+liste = racine.querySelectorAll('[data-i18n-html]');
+for (i = 0; i < liste.length; i++) { el = liste[i]; el.innerHTML = GX.t(el.getAttribute('data-i18n-html')); }
+liste = racine.querySelectorAll('[data-i18n-ph]');
+for (i = 0; i < liste.length; i++) { el = liste[i]; el.setAttribute('placeholder', GX.t(el.getAttribute('data-i18n-ph'))); }
+liste = racine.querySelectorAll('[data-i18n-aria]');
+for (i = 0; i < liste.length; i++) { el = liste[i]; el.setAttribute('aria-label', GX.t(el.getAttribute('data-i18n-aria'))); }
+liste = racine.querySelectorAll('[data-i18n-alt]');
+for (i = 0; i < liste.length; i++) { el = liste[i]; el.setAttribute('alt', GX.t(el.getAttribute('data-i18n-alt'))); }
+};
+
+/* Met à jour tout ce qui est déjà affiché (boutons FR/EN, titre de l'onglet, textes statiques) */
+GX.sync = function () {
+document.documentElement.lang = GX.lang;
+document.title = GX.t('doc_title');
+var btns = document.querySelectorAll('.lang-btn');
+for (var i = 0; i < btns.length; i++) btns[i].setAttribute('aria-pressed', btns[i].getAttribute('data-lang') === GX.lang ? 'true' : 'false');
+GX.apply(document);
+};
+
+GX.setLang = function (l) {
+if (!GX.dict[l]) l = 'fr';
+GX.lang = l;
+try { localStorage.setItem('goldtix_lang', l); } catch (e) {}
+GX.sync();
+document.dispatchEvent(new Event('goldtix:lang'));
+};
+
+/* Code HTML du sélecteur (utilisé dans l'en-tête de la page et dans celui de l'intro) */
+GX.switchHtml = '<div class="lang-switch" role="group" data-i18n-aria="lang_group" aria-label="Langue / Language">'
++ '<button type="button" class="lang-btn" data-lang="fr" aria-pressed="true">FR</button>'
++ '<button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button></div>';
+
+try {
+var saved = localStorage.getItem('goldtix_lang');
+if (saved && GX.dict[saved]) GX.lang = saved;
+} catch (e) {}
+
+document.addEventListener('click', function (e) {
+var b = e.target && e.target.closest ? e.target.closest('.lang-btn') : null;
+if (!b) return;
+e.preventDefault();
+GX.setLang(b.getAttribute('data-lang'));
+});
+})();
+</script>
+<!-- ═══════════ TRADUCTIONS FR / EN — fin ═══════════ -->
 
 <!-- ═══════════ INTRO ANIMÉE (v11) — début ═══════════ -->
 <script>
@@ -276,24 +524,27 @@ document.head.appendChild(style);
 var root = document.createElement('div');
 root.id = 'gi-root';
 root.setAttribute('role', 'dialog');
+root.setAttribute('data-i18n-aria', 'intro_aria');
 root.setAttribute('aria-label', 'Présentation de l’événement');
 root.innerHTML = ''
-/* En-tête : copie exacte de celui de la page d'achat */
+/* En-tête : copie exacte de celui de la page d'achat (avec le sélecteur FR / EN) */
 + '<header class="topbar gi-a" style="--d:.3s;--dy:-12px"><div class="wrap topbar-inner">'
 + '<a class="brand" href="#" aria-label="GoldTix" onclick="return false"><img src="images/logo.png" alt="" class="brand-logo" onerror="this.style.display=\'none\'"><span class="brand-name">Gold<em>Tix</em></span></a>'
-+ '<span class="secure-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>Billetterie sécurisée</span>'
++ '<div class="top-actions">' + GX.switchHtml
++ '<span class="secure-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg><bdi data-i18n="secure">Billetterie sécurisée</bdi></span></div>'
 + '</div></header>'
 + '<div class="gi-page"><div class="gi-stage">'
 + '<div class="gi-posterwrap">'
 + '<figure class="gi-poster gi-a" style="--d:.75s"><img id="gi-img" alt="" decoding="async"></figure>'
 + '</div>'
 + '<h1 class="gi-title gi-a" id="gi-titre" style="--d:1.35s"></h1>'
-+ '<p class="gi-sub gi-a" id="gi-sub" style="--d:1.6s">Un évènement à ne pas manquer</p>'
-+ '<div class="gi-tk gi-a" style="--d:1.95s"><i></i><button type="button" class="gi-cta" id="gi-btn">J’achète mon billet</button><i></i></div>'
-+ '<p class="gi-foot gi-a" style="--d:2.15s">Plateforme de billetterie moderne</p>'
++ '<p class="gi-sub gi-a" id="gi-sub" data-i18n="intro_sub" style="--d:1.6s">Un évènement à ne pas manquer</p>'
++ '<div class="gi-tk gi-a" style="--d:1.95s"><i></i><button type="button" class="gi-cta" id="gi-btn" data-i18n="intro_cta">J’achète mon billet</button><i></i></div>'
++ '<p class="gi-foot gi-a" data-i18n="intro_foot" style="--d:2.15s">Plateforme de billetterie moderne</p>'
 + '</div></div>';
 document.body.insertBefore(root, document.body.firstChild);
 document.documentElement.classList.add('gi-lock');
+GX.sync(); /* applique la langue choisie (FR / EN) à l'intro dès son affichage */
 
 function $(id) { return document.getElementById(id); }
 
@@ -336,11 +587,16 @@ return fetch('/api/tickets?event=' + encodeURIComponent(eventId), ctrl ? { signa
 
 function remplir(ev) {
 var titre = String(ev.titre || '').trim();
-var t = $('gi-titre');
-t.textContent = titre;
-t.style.setProperty('--tm', Math.min(10.6, Math.max(5.6, 180 / titre.length)));
+var elTitre = $('gi-titre');
+elTitre.textContent = titre;
+elTitre.style.setProperty('--tm', Math.min(10.6, Math.max(5.6, 180 / titre.length)));
 var st = String(ev.sous_titre || '').trim();
-if (st) $('gi-sub').textContent = st;
+if (st) {
+/* sous-titre propre à l'événement : il n'est pas traduit automatiquement */
+var elSub = $('gi-sub');
+elSub.removeAttribute('data-i18n');
+elSub.textContent = st;
+}
 }
 
 function imagePrete(ev) {
@@ -351,7 +607,7 @@ var fini = false;
 function ok() { if (fini) return; fini = true; poster.classList.add('gi-loaded'); res(); }
 img.onload = ok;
 img.onerror = function () { wrap.style.display = 'none'; ok(); };
-img.alt = 'Affiche : ' + String(ev.titre || '');
+img.alt = GX.t('poster_prefix') + String(ev.titre || '');
 img.src = ev.affiche_url;
 setTimeout(ok, 5000);
 });
@@ -377,27 +633,33 @@ charger()
 <img src="images/logo.png" alt="" class="brand-logo" onerror="this.style.display='none'">
 <span class="brand-name">Gold<em>Tix</em></span>
 </a>
+<div class="top-actions">
+<div class="lang-switch" role="group" data-i18n-aria="lang_group" aria-label="Langue / Language">
+<button type="button" class="lang-btn" data-lang="fr" aria-pressed="true">FR</button>
+<button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+</div>
 <span class="secure-badge">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
-Billetterie sécurisée
+<bdi data-i18n="secure">Billetterie sécurisée</bdi>
 </span>
+</div>
 </div>
 </header>
 
 <div class="wrap">
 <div class="page-head">
-<p class="ph-eyebrow"><span></span>PLATFORME MODERNE<span></span></p>
-<h1>Achetez votre <em>billet</em></h1>
-<p class="ph-sub">En toute simplicité, reçevez le avec un qr code unique qui sera scanné à l'entrée.</p>
+<p class="ph-eyebrow"><span></span><bdi data-i18n="eyebrow">PLATEFORME MODERNE</bdi><span></span></p>
+<h1 data-i18n-html="h1">Achetez votre <em>billet</em></h1>
+<p class="ph-sub" data-i18n="sub">En toute simplicité, recevez-le avec un QR code unique qui sera scanné à l'entrée.</p>
 <ul class="ph-chips">
-<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>Paiement vérifié</li>
-<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>Billet par e-mail</li>
-<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Achat rapide</li>
+<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg><bdi data-i18n="chip1">Paiement vérifié</bdi></li>
+<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><bdi data-i18n="chip2">Billet par e-mail</bdi></li>
+<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><bdi data-i18n="chip3">Achat rapide</bdi></li>
 </ul>
 </div>
 
 <main id="detailsEvenement">
-<div class="card"><p class="loading-line"><span class="spinner"></span>Chargement de votre expérience…</p></div>
+<div class="card"><p class="loading-line"><span class="spinner"></span><span data-i18n="loading">Chargement de votre expérience…</span></p></div>
 </main>
 </div>
 
@@ -405,54 +667,57 @@ Billetterie sécurisée
 <div class="wrap">
 <div class="gx-footer__haut">
 <div class="gx-footer__intro">
-<p class="gx-footer__slogan">— La billetterie en or —</p>
-<p class="gx-footer__desc">GoldTix est une plateforme de billetterie en ligne conçue pour simplifier l'achat et la gestion des billets d'événements. Elle permet aux participants d'acheter facilement leurs billets depuis leur téléphone, et aux organisateurs de gérer efficacement leurs ventes, leurs participants et le contrôle des accès.</p>
+<p class="gx-footer__slogan" data-i18n="f_slogan">— La billetterie en or —</p>
+<p class="gx-footer__desc" data-i18n="f_desc">GoldTix est une plateforme de billetterie en ligne conçue pour simplifier l'achat et la gestion des billets d'événements. Elle permet aux participants d'acheter facilement leurs billets depuis leur téléphone, et aux organisateurs de gérer efficacement leurs ventes, leurs participants et le contrôle des accès.</p>
 </div>
 
 <div class="gx-footer__grille">
 <div class="gx-footer__col">
-<h3 class="gx-footer__titre">DÉCOUVRIR</h3>
-<a href="guide.html">Comment ça marche ?</a>
-<a href="histoire.html">Histoire-GoldTix</a>
+<h3 class="gx-footer__titre" data-i18n="f_discover">DÉCOUVRIR</h3>
+<a href="guide.html" data-i18n="f_how">Comment ça marche ?</a>
+<a href="histoire.html" data-i18n="f_story">Histoire-GoldTix</a>
 </div>
 <div class="gx-footer__col">
-<h3 class="gx-footer__titre">AIDE</h3>
-<a href="contact.html">Contacts</a>
-<a href="conditions.html">Conditions d'utilisation</a>
+<h3 class="gx-footer__titre" data-i18n="f_help">AIDE</h3>
+<a href="contact.html" data-i18n="f_contacts">Contacts</a>
+<a href="conditions.html" data-i18n="f_terms">Conditions d'utilisation</a>
 </div>
 <div class="gx-footer__col">
-<h3 class="gx-footer__titre">INFORMATIONS LÉGALES</h3>
-<span class="gx-off">CGV</span>
-<a href="mentions-legales.html">Mentions légales</a>
-<span class="gx-off">Politique de confidentialité</span>
-<a href="remboursement.html">Politique de remboursement</a>
+<h3 class="gx-footer__titre" data-i18n="f_legalinfo">INFORMATIONS LÉGALES</h3>
+<span class="gx-off" data-i18n="f_cgv">CGV</span>
+<a href="mentions-legales.html" data-i18n="f_legal">Mentions légales</a>
+<span class="gx-off" data-i18n="f_privacy">Politique de confidentialité</span>
+<a href="remboursement.html" data-i18n="f_refund">Politique de remboursement</a>
 </div>
 </div>
 
 <div class="gx-footer__paiement">
-<span class="gx-footer__paiement-label">Paiement :</span>
-<span class="gx-badge">Virement</span>
-<span class="gx-badge">Preuve de paiement</span>
-<span class="gx-footer__secu">Données protégées</span>
+<span class="gx-footer__paiement-label" data-i18n="f_pay">Paiement :</span>
+<span class="gx-badge" data-i18n="f_transfer">Virement</span>
+<span class="gx-badge" data-i18n="f_proof">Preuve de paiement</span>
+<span class="gx-footer__secu" data-i18n="f_data">Données protégées</span>
 </div>
 </div>
 </div>
 
 <div class="gx-footer__bas">
 <div class="wrap gx-footer__bas-inner">
-<span class="gx-footer__copy">© GoldTix — Tous droits réservés - 2026</span>
-<nav class="gx-footer__legal" aria-label="Liens légaux">
-<span class="gx-off">CGV</span>
-<a href="conditions.html">Conditions d'utilisation</a>
-<a href="mentions-legales.html">Mentions légales</a>
-<span class="gx-off">Confidentialité</span>
+<span class="gx-footer__copy" data-i18n="f_copy">© GoldTix — Tous droits réservés - 2026</span>
+<nav class="gx-footer__legal" data-i18n-aria="f_legal_nav" aria-label="Liens légaux">
+<span class="gx-off" data-i18n="f_cgv">CGV</span>
+<a href="conditions.html" data-i18n="f_terms">Conditions d'utilisation</a>
+<a href="mentions-legales.html" data-i18n="f_legal">Mentions légales</a>
+<span class="gx-off" data-i18n="f_privacy_short">Confidentialité</span>
 </nav>
 </div>
 </div>
 </footer>
 
 <script>
-/* GOLDTIX — Page d'achat. Lecture : GET /api/tickets?event=ID — Écriture : POST /api/tickets (multipart) */
+/* GOLDTIX — Page d'achat. Lecture : GET /api/tickets?event=ID — Écriture : POST /api/tickets (multipart)
+   Les textes passent par tr('cle') : voir le bloc « TRADUCTIONS FR / EN » en haut de la page. */
+
+const tr = (cle, vars) => GX.t(cle, vars);
 
 const S = (p, w = 2) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
 const ICONS = {
@@ -486,6 +751,15 @@ function esc(valeur) {
 return String(valeur == null ? '' : valeur).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+// Texte traduisible : le data-i18n permet de le retraduire quand on change de langue
+function cleSpan(cle) {
+return `<span data-i18n="${esc(cle)}">${esc(tr(cle))}</span>`;
+}
+
+function htmlBouton(cle, icone) {
+return (icone ? icone + ' ' : '') + cleSpan(cle);
+}
+
 function gxAvertirAvantFermeture(e) { e.preventDefault(); e.returnValue = ''; return ''; }
 
 async function fetchAvecTimeout(url, options, timeoutMs) {
@@ -498,20 +772,20 @@ clearTimeout(timeoutId);
 }
 }
 
-function afficherErreurChargement(container, titre, message) {
+function afficherErreurChargement(container, cleTitre, cleMessage) {
 container.innerHTML = `
 <div class="card state-card">
-<h2>${esc(titre)}</h2>
-<p>${esc(message)}</p>
-<button class="btn-submit" onclick="chargerPageAchatUnique()">Réessayer</button>
+<h2 data-i18n="${esc(cleTitre)}">${esc(tr(cleTitre))}</h2>
+<p data-i18n="${esc(cleMessage)}">${esc(tr(cleMessage))}</p>
+<button class="btn-submit" onclick="chargerPageAchatUnique()" data-i18n="retry">${esc(tr('retry'))}</button>
 </div>`;
 }
 
-// ─── Validation en ligne ──────────────────────────────────────────────
-function marquerInvalide(champEl, erreurEl, texte) {
+// ─── Validation en ligne (cleErreur = clé de traduction) ──────────────
+function marquerInvalide(champEl, erreurEl, cleErreur) {
 if (!champEl || !erreurEl) return;
 champEl.classList.add('field-invalid');
-erreurEl.innerHTML = `${ICONS.alert}<span>${esc(texte || 'Ce champ est obligatoire.')}</span>`;
+erreurEl.innerHTML = `${ICONS.alert}${cleSpan(cleErreur || 'err_required')}`;
 erreurEl.classList.add('visible');
 }
 function effacerInvalide(champEl, erreurEl) {
@@ -521,8 +795,11 @@ erreurEl.classList.remove('visible');
 }
 
 function formaterTaille(octets) {
-if (octets < 1024 * 1024) return Math.max(1, Math.round(octets / 1024)) + ' Ko';
-return (octets / (1024 * 1024)).toFixed(1).replace('.', ',') + ' Mo';
+const ko = GX.lang === 'en' ? 'KB' : 'Ko';
+const mo = GX.lang === 'en' ? 'MB' : 'Mo';
+if (octets < 1024 * 1024) return Math.max(1, Math.round(octets / 1024)) + ' ' + ko;
+const val = (octets / (1024 * 1024)).toFixed(1);
+return (GX.lang === 'en' ? val : val.replace('.', ',')) + ' ' + mo;
 }
 
 // ─── Compression de la preuve avant envoi ─────────────────────────────
@@ -556,10 +833,9 @@ return nomParDefaut + (m ? m[0] : '.png');
 
 async function gxTelechargerRib(url, btnEl, statusEl) {
 if (!url || !btnEl) return;
-const nomFichier = gxNomFichierDepuisUrl(url, 'RIB du bénéficiaire');
-const contenuOriginal = btnEl.innerHTML;
+const nomFichier = gxNomFichierDepuisUrl(url, tr('rib_filename'));
 btnEl.disabled = true;
-btnEl.innerHTML = `${ICONS.download} Téléchargement…`;
+btnEl.innerHTML = htmlBouton('rib_dling', ICONS.download);
 if (statusEl) { statusEl.classList.remove('visible', 'warn'); statusEl.innerHTML = ''; }
 try {
 const reponse = await fetchAvecTimeout(url, { mode: 'cors' }, 20000);
@@ -577,13 +853,13 @@ setTimeout(() => URL.revokeObjectURL(objectUrl), 4000);
 console.error('Téléchargement direct du RIB impossible, ouverture dans un nouvel onglet :', err);
 window.open(url, '_blank', 'noopener');
 if (statusEl) {
-statusEl.innerHTML = `${ICONS.alert}<span>Le RIB s'est ouvert dans un nouvel onglet — enregistrez-le depuis là.</span>`;
+statusEl.innerHTML = `${ICONS.alert}${cleSpan('rib_fallback')}`;
 statusEl.classList.add('visible', 'warn');
 setTimeout(() => statusEl.classList.remove('visible', 'warn'), 6000);
 }
 } finally {
 btnEl.disabled = false;
-btnEl.innerHTML = contenuOriginal;
+btnEl.innerHTML = htmlBouton('rib_dl', ICONS.download);
 }
 }
 
@@ -607,11 +883,11 @@ const dispo = ev.disponibilites ? ev.disponibilites[c.nom] : null;
 const epuise = !!(dispo && dispo.epuise);
 return `<div class="cat-row${epuise ? ' epuise' : ''}">
 <span class="cat-name">${esc(c.nom)}</span>
-<span class="cat-price">${epuise ? 'Épuisé' : esc(c.prix)}</span>
+<span class="cat-price">${epuise ? esc(tr('soldout')) : esc(c.prix)}</span>
 </div>`;
 }).join('');
 }
-return `<div class="cat-row"><span class="cat-name">Billet</span><span class="cat-price">${esc(ev.prix || 'Gratuit')}</span></div>`;
+return `<div class="cat-row"><span class="cat-name">${esc(tr('ticket'))}</span><span class="cat-price">${esc(ev.prix || tr('free'))}</span></div>`;
 }
 
 function genererOptionsCategorieAchat(ev) {
@@ -623,8 +899,8 @@ const valeur = `${cat.nom} - ${cat.prix}`;
 let libelle = `${cat.nom} — ${cat.prix}`;
 if (infoDispo) {
 libelle += estEpuisee
-? ' (Épuisé)'
-: ` (${infoDispo.restant} place${infoDispo.restant > 1 ? 's' : ''} disponible${infoDispo.restant > 1 ? 's' : ''})`;
+? ` (${tr('soldout')})`
+: ` (${tr(infoDispo.restant > 1 ? 'spot_many' : 'spot_one', { n: infoDispo.restant })})`;
 }
 return `<option value="${esc(valeur)}" data-nom="${esc(cat.nom)}" data-prix="${esc(cat.prix)}"${estEpuisee ? ' disabled' : ''}>${esc(libelle)}</option>`;
 }).join('');
@@ -636,7 +912,7 @@ let prix = '—';
 if (sel && sel.selectedOptions && sel.selectedOptions[0] && !sel.selectedOptions[0].disabled) {
 prix = sel.selectedOptions[0].dataset.prix || '—';
 } else if (!sel && evCourant) {
-prix = evCourant.prix || 'Gratuit';
+prix = evCourant.prix || tr('free');
 }
 const el = document.getElementById('prixChoisiEl');
 if (el) el.textContent = prix;
@@ -644,23 +920,23 @@ if (el) el.textContent = prix;
 
 // ─── Infos de l'événement (écrites directement sur le fond) : titre, date, heure, lieu ───
 function formaterDateLongue(texte) {
-const mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
-const t = String(texte || '').trim();
+const mois = GX.mois();
+const s = String(texte || '').trim();
 let y, m, d, r;
-if ((r = t.match(/^(\d{4})-(\d{2})-(\d{2})/))) { y = r[1]; m = +r[2]; d = +r[3]; }
-else if ((r = t.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/))) { d = +r[1]; m = +r[2]; y = r[3]; }
-if (!y || m < 1 || m > 12) return t;
+if ((r = s.match(/^(\d{4})-(\d{2})-(\d{2})/))) { y = r[1]; m = +r[2]; d = +r[3]; }
+else if ((r = s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/))) { d = +r[1]; m = +r[2]; y = r[3]; }
+if (!y || m < 1 || m > 12) return s;
 return d + ' ' + mois[m - 1] + ' ' + y;
 }
 
 function htmlInfosEvenement(ev) {
 const heure = (ev.heure || '').slice(0, 5);
 const ligne = (icone, libelle, valeur) =>
-`<div class="ev-row"><span class="ev-ico" aria-hidden="true">${icone}</span><div class="ev-txt"><div class="ev-label">${libelle}</div><div class="ev-value">${esc(valeur)}</div></div></div>`;
+`<div class="ev-row"><span class="ev-ico" aria-hidden="true">${icone}</span><div class="ev-txt"><div class="ev-label">${esc(libelle)}</div><div class="ev-value">${esc(valeur)}</div></div></div>`;
 const lignes = [
-ev.date ? ligne(ICONS.calendar, 'DATE', formaterDateLongue(ev.date)) : '',
-heure ? ligne(ICONS.clock, 'HEURE', heure) : '',
-ev.lieu ? ligne(ICONS.pin, 'LIEU', ev.lieu) : ''
+ev.date ? ligne(ICONS.calendar, tr('lbl_date'), formaterDateLongue(ev.date)) : '',
+heure ? ligne(ICONS.clock, tr('lbl_time'), heure) : '',
+ev.lieu ? ligne(ICONS.pin, tr('lbl_venue'), ev.lieu) : ''
 ].filter(Boolean).join('');
 return `
 <h2 class="event-title">${esc(ev.titre)}</h2>
@@ -686,18 +962,17 @@ chargementEnCours = true;
 const eventId = new URLSearchParams(window.location.search).get('event');
 const container = document.getElementById('detailsEvenement');
 
-container.innerHTML = `<div class="card"><p class="loading-line"><span class="spinner"></span>Chargement de votre expérience…</p></div>`;
+container.innerHTML = `<div class="card"><p class="loading-line"><span class="spinner"></span>${cleSpan('loading')}</p></div>`;
 
 const watchdog = setTimeout(function() {
 if (container.querySelector('.loading-line')) {
-afficherErreurChargement(container, 'Chargement trop long',
-'La connexion semble instable. Vérifiez votre réseau (Wi-Fi ou données mobiles) et réessayez.');
+afficherErreurChargement(container, 'st_slow_t', 'st_slow_m');
 }
 }, 20000);
 
 try {
 if (!eventId) {
-afficherErreurChargement(container, 'Lien invalide', 'Aucun événement spécifié dans ce lien.');
+afficherErreurChargement(container, 'st_invalid_t', 'st_invalid_m');
 return;
 }
 
@@ -709,13 +984,12 @@ const data = await reponse.json();
 ev = data.event;
 } catch (err) {
 console.error("Erreur réseau lors du chargement de l'événement :", err);
-afficherErreurChargement(container, 'Connexion impossible',
-'Le chargement a échoué (réseau instable ou trop lent). Vérifiez votre connexion et réessayez.');
+afficherErreurChargement(container, 'st_conn_t', 'st_conn_m');
 return;
 }
 
 if (!ev) {
-afficherErreurChargement(container, 'Événement introuvable', 'Cet événement a été supprimé ou n\'existe plus.');
+afficherErreurChargement(container, 'st_nf_t', 'st_nf_m');
 return;
 }
 
@@ -725,33 +999,31 @@ const ouvert = achatOuvert(ev);
 let colonneEtapes = '';
 
 if (!ouvert) {
-const titre = ev.ventes_fermees ? 'Ventes fermées' : 'Billets épuisés';
-const texte = ev.ventes_fermees
-? "Les ventes en ligne de billets pour cet événement viennent d'être fermées par l'organisateur."
-: 'Tous les billets disponibles pour cet événement ont été vendus.';
+const cleTitre = ev.ventes_fermees ? 'st_closed_t' : 'st_sold_t';
+const cleTexte = ev.ventes_fermees ? 'st_closed_m' : 'st_sold_m';
 colonneEtapes = `
 <div class="card state-card">
 <div class="state-ico">${ICONS.x}</div>
-<h2>${titre}</h2>
-<p>${texte}</p>
-<p>Merci pour votre intérêt et à bientôt !</p>
+<h2 data-i18n="${cleTitre}">${esc(tr(cleTitre))}</h2>
+<p data-i18n="${cleTexte}">${esc(tr(cleTexte))}</p>
+<p data-i18n="st_thanks">${esc(tr('st_thanks'))}</p>
 </div>`;
 } else {
 const urlRib = ev.rib_image_url || ev.qr_code_paiement || '';
 
 const blocPrix = aDesCategories(ev)
 ? `<div class="field">
-<label for="selectCategorie">Catégorie(s) de billet disponible(s)</label>
+<label for="selectCategorie" data-i18n="s1_select">${esc(tr('s1_select'))}</label>
 <select id="selectCategorie">${genererOptionsCategorieAchat(ev)}</select>
 </div>
-<div class="price-line"><span>Total à payer</span><span id="prixChoisiEl">—</span></div>`
-: `<div class="price-line"><span>Total à payer</span><span id="prixChoisiEl">${esc(ev.prix || 'Gratuit')}</span></div>`;
+<div class="price-line"><span data-i18n="total">${esc(tr('total'))}</span><span id="prixChoisiEl">—</span></div>`
+: `<div class="price-line"><span data-i18n="total">${esc(tr('total'))}</span><span id="prixChoisiEl">${esc(ev.prix || tr('free'))}</span></div>`;
 
 const blocRib = urlRib ? `
 <div class="pay-block pay-block-rib">
-<div class="pay-label">RIB du bénéficiaire</div>
-<p class="pay-hint">Téléchargez-le pour effectuer votre virement depuis votre application bancaire.</p>
-<button type="button" class="btn-outline" id="btnTelechargerRib">${ICONS.download} Télécharger le RIB</button>
+<div class="pay-label" data-i18n="rib_label">${esc(tr('rib_label'))}</div>
+<p class="pay-hint" data-i18n="rib_hint">${esc(tr('rib_hint'))}</p>
+<button type="button" class="btn-outline" id="btnTelechargerRib">${htmlBouton('rib_dl', ICONS.download)}</button>
 <p class="rib-status" id="ribDownloadStatus"></p>
 </div>` : '';
 
@@ -760,8 +1032,8 @@ colonneEtapes = `
 <div class="card-head">
 <span class="step-num">1</span>
 <div>
-<h2 class="card-title" id="t1">Choisissez votre billet</h2>
-<p class="card-desc">Sélectionnez votre catégorie de billet, puis effectuez le paiement.</p>
+<h2 class="card-title" id="t1" data-i18n="s1_title">${esc(tr('s1_title'))}</h2>
+<p class="card-desc" data-i18n="s1_desc">${esc(tr('s1_desc'))}</p>
 </div>
 </div>
 ${blocPrix}
@@ -769,17 +1041,17 @@ ${blocPrix}
 
 <section class="plain" aria-labelledby="t2">
 <div class="plain-head">
-<h2 class="card-title" id="t2">Coordonnées de paiement</h2>
-<p class="card-desc">Effectuez le transfert vers les coordonnées ci-dessous.</p>
+<h2 class="card-title" id="t2" data-i18n="pay_title">${esc(tr('pay_title'))}</h2>
+<p class="card-desc" data-i18n="pay_desc">${esc(tr('pay_desc'))}</p>
 </div>
 <div class="pay-list">
 <div class="pay-block">
-<div class="pay-label">Bénéficiaire des paiements</div>
-<div class="pay-value" id="evBeneficiaireNomEl">${esc(ev.beneficiaire_nom || 'Non renseigné')}</div>
+<div class="pay-label" data-i18n="pay_benef">${esc(tr('pay_benef'))}</div>
+<div class="pay-value" id="evBeneficiaireNomEl">${esc(ev.beneficiaire_nom || tr('not_provided'))}</div>
 </div>
 <div class="pay-block">
-<div class="pay-label">Contact WhatsApp</div>
-<div class="pay-value" id="evBeneficiaireContactEl">${esc(ev.beneficiaire_infos || 'Non renseigné')}</div>
+<div class="pay-label" data-i18n="pay_wa">${esc(tr('pay_wa'))}</div>
+<div class="pay-value" id="evBeneficiaireContactEl">${esc(ev.beneficiaire_infos || tr('not_provided'))}</div>
 </div>
 ${blocRib}
 </div>
@@ -789,70 +1061,68 @@ ${blocRib}
 <div class="card-head">
 <span class="step-num">2</span>
 <div>
-<h2 class="card-title" id="t3">Confirmer mon paiement</h2>
-<p class="card-desc">Après avoir effectué le paiement, renseignez vos informations et transmettez votre preuve de paiement.</p>
+<h2 class="card-title" id="t3" data-i18n="s2_title">${esc(tr('s2_title'))}</h2>
+<p class="card-desc" data-i18n="s2_desc">${esc(tr('s2_desc'))}</p>
 </div>
 </div>
 
 <div class="field">
-<label for="nomParticipant">Nom et prénom(s) <span class="req">*</span></label>
-<input type="text" id="nomParticipant" placeholder="ex : KONATE Jean" autocomplete="name">
+<label for="nomParticipant"><span data-i18n="f_name">${esc(tr('f_name'))}</span> <span class="req">*</span></label>
+<input type="text" id="nomParticipant" placeholder="${esc(tr('ph_name'))}" data-i18n-ph="ph_name" autocomplete="name">
 <p class="field-error" id="errNomParticipant"></p>
 </div>
 
 <div class="field">
-<label for="emailParticipant">Adresse e-mail <span class="hint">(Pour la réception du lien du billet)</span></label>
-<input type="email" id="emailParticipant" placeholder="ex : nom@gmail.com" autocomplete="email" inputmode="email">
+<label for="emailParticipant"><span data-i18n="f_email">${esc(tr('f_email'))}</span> <span class="hint" data-i18n="f_email_hint">${esc(tr('f_email_hint'))}</span></label>
+<input type="email" id="emailParticipant" placeholder="${esc(tr('ph_email'))}" data-i18n-ph="ph_email" autocomplete="email" inputmode="email">
 <p class="field-error" id="errEmailParticipant"></p>
 </div>
 
 <div class="field">
-<label for="telParticipant">Contact WhatsApp <span class="req">*</span></label>
-<input type="tel" id="telParticipant" placeholder="ex : +226 ... / +212 ..." autocomplete="tel" inputmode="tel">
+<label for="telParticipant"><span data-i18n="f_tel">${esc(tr('f_tel'))}</span> <span class="req">*</span></label>
+<input type="tel" id="telParticipant" placeholder="${esc(tr('ph_tel'))}" data-i18n-ph="ph_tel" autocomplete="tel" inputmode="tel">
 <p class="field-error" id="errTelParticipant"></p>
 </div>
 
 <div class="field">
-<span class="label">Preuve de paiement <span class="hint">(capture du reçu)</span> <span class="req">*</span></span>
+<span class="label"><span data-i18n="f_proof_l">${esc(tr('f_proof_l'))}</span> <span class="hint" data-i18n="f_proof_hint">${esc(tr('f_proof_hint'))}</span> <span class="req">*</span></span>
 <div class="upload" id="fileWrapper">
-<input type="file" id="preuvePaiement" accept="image/jpeg,image/png,image/webp,image/*" aria-label="Preuve de paiement">
+<input type="file" id="preuvePaiement" accept="image/jpeg,image/png,image/webp,image/*" aria-label="${esc(tr('f_proof_l'))}" data-i18n-aria="f_proof_l">
 <div class="upload-empty">
 ${ICONS.upload}
-<strong>Cliquez pour choisir un fichier</strong>
-<span>JPG, PNG ou WEBP — 10 Mo maximum</span>
+<strong data-i18n="up_choose">${esc(tr('up_choose'))}</strong>
+<span data-i18n="up_types">${esc(tr('up_types'))}</span>
 </div>
 <div class="upload-file">
-<img class="upload-thumb" id="fileThumb" alt="Aperçu de la preuve de paiement">
+<img class="upload-thumb" id="fileThumb" alt="${esc(tr('up_thumb_alt'))}" data-i18n-alt="up_thumb_alt">
 <div class="upload-meta">
 <div class="upload-name" id="fileNamePreview"></div>
 <div class="upload-size" id="fileSizePreview"></div>
-<button type="button" class="upload-replace" id="btnRemplacerFichier">Remplacer le fichier</button>
+<button type="button" class="upload-replace" id="btnRemplacerFichier" data-i18n="up_replace">${esc(tr('up_replace'))}</button>
 </div>
 </div>
 </div>
 <p class="field-error" id="errPreuvePaiement"></p>
 </div>
 
-<button class="btn-submit" id="btnValiderAchat" type="button">
- Valider mon paiement
-</button>
+<button class="btn-submit" id="btnValiderAchat" type="button">${htmlBouton('submit')}</button>
 <div id="zoneMessageAchat" aria-live="polite"></div>
-<p class="submit-note">Votre paiement sera vérifié par le bénéficiaire avant la validation et l'obtention de votre billet.</p>
+<p class="submit-note" data-i18n="submit_note">${esc(tr('submit_note'))}</p>
 </section>`;
 }
 
 container.innerHTML = `
 <div class="layout">
 <aside class="col-event">
-<div class="poster">${ev.affiche_url ? `<img id="posterImgEl" src="${esc(ev.affiche_url)}" alt="Affiche de l'événement">` : `<div class="poster-fallback">${ICONS.image}<span>Affiche non disponible</span></div>`}</div>
+<div class="poster">${ev.affiche_url ? `<img id="posterImgEl" src="${esc(ev.affiche_url)}" alt="${esc(tr('poster_alt'))}" data-i18n-alt="poster_alt">` : `<div class="poster-fallback">${ICONS.image}<span data-i18n="poster_na">${esc(tr('poster_na'))}</span></div>`}</div>
 <div class="event-head" id="infosEvenementEl">${htmlInfosEvenement(ev)}</div>
 <div class="card info-card">
-<h3 class="cat-title">Catégorie(s) disponible(s)</h3>
+<h3 class="cat-title" data-i18n="cat_title">${esc(tr('cat_title'))}</h3>
 <div class="cat-list" id="listeCategoriesEl">${htmlLignesCategories(ev)}</div>
 </div>
 </aside>
 <div class="col-steps">
-${ouvert ? `<div class="steps-divider"><span>Procédure de paiement ci-dessous</span></div>` : ''}
+${ouvert ? `<div class="steps-divider"><span data-i18n="steps_divider">${esc(tr('steps_divider'))}</span></div>` : ''}
 ${colonneEtapes}
 </div>
 </div>`;
@@ -862,7 +1132,7 @@ if (posterImage) {
 posterImage.addEventListener('error', function() {
 const fallback = document.createElement('div');
 fallback.className = 'poster-fallback';
-fallback.innerHTML = `${ICONS.image}<span>Affiche non disponible</span>`;
+fallback.innerHTML = `${ICONS.image}<span data-i18n="poster_na">${esc(tr('poster_na'))}</span>`;
 this.replaceWith(fallback);
 });
 }
@@ -875,8 +1145,7 @@ demarrerVerificationPeriodiqueAchat();
 
 } catch (err) {
 console.error("Erreur inattendue lors de l'affichage de l'événement :", err);
-afficherErreurChargement(container, 'Une erreur est survenue',
-"Impossible d'afficher les informations de l'événement. Réessayez.");
+afficherErreurChargement(container, 'st_err_t', 'st_err_m');
 } finally {
 clearTimeout(watchdog);
 chargementEnCours = false;
@@ -915,12 +1184,12 @@ if (!fichier) return;
 
 if (!TYPES_IMAGE_OK.includes(fichier.type)) {
 reinitialiserFichier(fileInput, fileWrapperEl);
-marquerInvalide(fileWrapperEl, errPreuveEl, 'Format non accepté. Utilisez une image JPG, PNG ou WEBP.');
+marquerInvalide(fileWrapperEl, errPreuveEl, 'err_format');
 return;
 }
 if (fichier.size > TAILLE_MAX_FICHIER) {
 reinitialiserFichier(fileInput, fileWrapperEl);
-marquerInvalide(fileWrapperEl, errPreuveEl, 'Ce fichier dépasse 10 Mo. Choisissez une image plus légère.');
+marquerInvalide(fileWrapperEl, errPreuveEl, 'err_size');
 return;
 }
 
@@ -939,7 +1208,6 @@ fileInput.click();
 });
 
 const btn = document.getElementById('btnValiderAchat');
-const btnHTMLOriginal = btn.innerHTML;
 const zoneMsg = document.getElementById('zoneMessageAchat');
 
 btn.onclick = async function() {
@@ -960,7 +1228,7 @@ let typeBilletChoisi = 'Standard';
 const sel = document.getElementById('selectCategorie');
 if (sel) {
 if (!sel.value || (sel.selectedOptions[0] && sel.selectedOptions[0].disabled)) {
-zoneMsg.innerHTML = `<div class="notice error">${ICONS.alert}<span>Cette catégorie n'est plus disponible. Choisissez-en une autre.</span></div>`;
+zoneMsg.innerHTML = `<div class="notice error">${ICONS.alert}${cleSpan('err_cat_na')}</div>`;
 return;
 }
 typeBilletChoisi = sel.value;
@@ -979,17 +1247,17 @@ if (!nom) { marquerInvalide(nomEl, errNomEl); valide = false; }
 if (!tel) {
 marquerInvalide(telEl, errTelEl); valide = false;
 } else if (tel.replace(/\D/g, '').length < 8) {
-marquerInvalide(telEl, errTelEl, 'Ce numéro semble trop court.'); valide = false;
+marquerInvalide(telEl, errTelEl, 'err_phone_short'); valide = false;
 }
 if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-marquerInvalide(emailEl, errEmailEl, 'Cette adresse e-mail ne semble pas valide.'); valide = false;
+marquerInvalide(emailEl, errEmailEl, 'err_email'); valide = false;
 }
 if (!fichierPreuve) {
-marquerInvalide(fileWrapperEl, errPreuveEl, 'Une preuve de paiement est obligatoire.'); valide = false;
+marquerInvalide(fileWrapperEl, errPreuveEl, 'err_proof_req'); valide = false;
 } else if (!TYPES_IMAGE_OK.includes(fichierPreuve.type)) {
-marquerInvalide(fileWrapperEl, errPreuveEl, 'Format non accepté. Utilisez une image JPG, PNG ou WEBP.'); valide = false;
+marquerInvalide(fileWrapperEl, errPreuveEl, 'err_format'); valide = false;
 } else if (fichierPreuve.size > TAILLE_MAX_FICHIER) {
-marquerInvalide(fileWrapperEl, errPreuveEl, 'Ce fichier dépasse 10 Mo. Choisissez une image plus légère.'); valide = false;
+marquerInvalide(fileWrapperEl, errPreuveEl, 'err_size'); valide = false;
 }
 
 if (!valide) {
@@ -1001,16 +1269,16 @@ return;
 if (btn.disabled) return;
 btn.disabled = true;
 window.addEventListener('beforeunload', gxAvertirAvantFermeture);
-btn.innerHTML = `<span class="spinner"></span> Envoi en cours… Ne fermez pas cette page.`;
+btn.innerHTML = `<span class="spinner"></span> ${cleSpan('sending')}`;
 
 try {
 const preuve = await compresserImage(fichierPreuve);
 if (preuve.size > TAILLE_MAX_ENVOI) {
 window.removeEventListener('beforeunload', gxAvertirAvantFermeture);
-marquerInvalide(fileWrapperEl, errPreuveEl, "Cette image reste trop lourde. Choisissez une capture d'écran plus légère.");
+marquerInvalide(fileWrapperEl, errPreuveEl, 'err_heavy');
 fileWrapperEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
 btn.disabled = false;
-btn.innerHTML = btnHTMLOriginal;
+btn.innerHTML = htmlBouton('submit');
 return;
 }
 
@@ -1028,17 +1296,18 @@ let resultat;
 try { resultat = await reponseAchat.json(); } catch (e) { resultat = null; }
 
 if (!reponseAchat.ok || !resultat || !resultat.success) {
-const message = (resultat && resultat.error) ? resultat.error : "Erreur lors de l'enregistrement du billet.";
+// Le message du serveur (resultat.error) est affiché tel quel ; sans message, on affiche le texte traduit
+const messageHtml = (resultat && resultat.error) ? `<span>${esc(resultat.error)}</span>` : cleSpan('err_save');
 window.removeEventListener('beforeunload', gxAvertirAvantFermeture);
-zoneMsg.innerHTML = `<div class="notice error">${ICONS.alert}<span>${esc(message)}</span></div>`;
+zoneMsg.innerHTML = `<div class="notice error">${ICONS.alert}${messageHtml}</div>`;
 btn.disabled = false;
-btn.innerHTML = btnHTMLOriginal;
+btn.innerHTML = htmlBouton('submit');
 return;
 }
 
 // Paiement en attente de vérification (jamais « confirmé » ici)
-zoneMsg.innerHTML = `<div class="notice success">${ICONS.check}<span>Vos informations et votre preuve de paiement ont été envoyées. Votre paiement est en attente de vérification par le bénéficiaire.</span></div>`;
-btn.innerHTML = `${ICONS.check} Informations envoyées`;
+zoneMsg.innerHTML = `<div class="notice success">${ICONS.check}${cleSpan('success')}</div>`;
+btn.innerHTML = htmlBouton('sent', ICONS.check);
 window.removeEventListener('beforeunload', gxAvertirAvantFermeture);
 
 setTimeout(function() {
@@ -1047,15 +1316,42 @@ window.location.href = `billet.html?id=${encodeURIComponent(resultat.code_public
 
 } catch (err) {
 console.error('Erreur inattendue :', err);
-const message = (err && err.name === 'AbortError')
-? 'La connexion met trop de temps à répondre. Vérifiez votre réseau puis réessayez.'
-: 'Une erreur inattendue est survenue lors du traitement.';
+const cleMessage = (err && err.name === 'AbortError') ? 'err_timeout' : 'err_unexpected';
 window.removeEventListener('beforeunload', gxAvertirAvantFermeture);
-zoneMsg.innerHTML = `<div class="notice error">${ICONS.alert}<span>${esc(message)}</span></div>`;
+zoneMsg.innerHTML = `<div class="notice error">${ICONS.alert}${cleSpan(cleMessage)}</div>`;
 btn.disabled = false;
-btn.innerHTML = btnHTMLOriginal;
+btn.innerHTML = htmlBouton('submit');
 }
 };
+}
+
+// ─── Changement de langue : on retraduit ce qui est calculé par le JS ──
+// (les textes marqués data-i18n sont déjà retraduits par GX.setLang)
+function rafraichirLangueDynamique() {
+const ev = evCourant;
+if (!ev) return;
+
+const infosEl = document.getElementById('infosEvenementEl');
+if (infosEl) infosEl.innerHTML = htmlInfosEvenement(ev);
+const listeCatEl = document.getElementById('listeCategoriesEl');
+if (listeCatEl) listeCatEl.innerHTML = htmlLignesCategories(ev);
+
+const selectEl = document.getElementById('selectCategorie');
+if (selectEl) {
+const valeur = selectEl.value;
+selectEl.innerHTML = genererOptionsCategorieAchat(ev);
+if (valeur) selectEl.value = valeur;
+}
+mettreAJourRecap();
+
+const nomEl = document.getElementById('evBeneficiaireNomEl');
+if (nomEl) nomEl.textContent = ev.beneficiaire_nom || tr('not_provided');
+const contactEl = document.getElementById('evBeneficiaireContactEl');
+if (contactEl) contactEl.textContent = ev.beneficiaire_infos || tr('not_provided');
+
+const fichierEl = document.getElementById('preuvePaiement');
+const tailleEl = document.getElementById('fileSizePreview');
+if (fichierEl && fichierEl.files && fichierEl.files[0] && tailleEl) tailleEl.textContent = formaterTaille(fichierEl.files[0].size);
 }
 
 // ─── Mise à jour périodique (30 s, arrêtée quand les ventes ferment) ──
@@ -1090,7 +1386,7 @@ if (ev.ventes_fermees && btnValider && !document.getElementById('ventesFermeesAl
 const alerteEl = document.createElement('div');
 alerteEl.id = 'ventesFermeesAlerte';
 alerteEl.className = 'notice error';
-alerteEl.innerHTML = `${ICONS.alert}<span>Les ventes viennent d'être fermées par l'organisateur. Aucun achat n'est possible pour le moment. Contactez le bénéficiaire pour toute réclamation.</span>`;
+alerteEl.innerHTML = `${ICONS.alert}${cleSpan('sales_closed_alert')}`;
 btnValider.insertAdjacentElement('beforebegin', alerteEl);
 btnValider.disabled = true;
 btnValider.style.opacity = '0.6';
@@ -1103,8 +1399,8 @@ if (posterImgEl && ev.affiche_url && posterImgEl.getAttribute('src') !== ev.affi
 const maj = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
 const listeCatEl = document.getElementById('listeCategoriesEl');
 if (listeCatEl) listeCatEl.innerHTML = htmlLignesCategories(ev);
-maj('evBeneficiaireNomEl', ev.beneficiaire_nom || 'Non renseigné');
-maj('evBeneficiaireContactEl', ev.beneficiaire_infos || 'Non renseigné');
+maj('evBeneficiaireNomEl', ev.beneficiaire_nom || tr('not_provided'));
+maj('evBeneficiaireContactEl', ev.beneficiaire_infos || tr('not_provided'));
 
 const selectCategorieEl = document.getElementById('selectCategorie');
 if (selectCategorieEl) {
@@ -1115,7 +1411,7 @@ if (existeEncore) {
 selectCategorieEl.value = valeurSelectionnee;
 } else if (valeurSelectionnee) {
 const zone = document.getElementById('zoneMessageAchat');
-if (zone) zone.innerHTML = `<div class="notice error">${ICONS.alert}<span>La catégorie choisie n'est plus disponible. Choisissez-en une autre. Pour toute réclamation, contactez le bénéficiaire.</span></div>`;
+if (zone) zone.innerHTML = `<div class="notice error">${ICONS.alert}${cleSpan('cat_gone')}</div>`;
 }
 mettreAJourRecap();
 } else if (!aDesCategories(ev)) {
@@ -1138,6 +1434,10 @@ document.addEventListener('visibilitychange', () => {
 if (!document.hidden && evCourant && !evCourant.ventes_fermees) verifierMiseAJourAchat();
 });
 }
+
+// Langue : applique le choix mémorisé aux textes déjà présents, puis écoute les changements FR / EN
+GX.sync();
+document.addEventListener('goldtix:lang', rafraichirLangueDynamique);
 
 document.addEventListener('DOMContentLoaded', chargerPageAchatUnique);
 </script>
