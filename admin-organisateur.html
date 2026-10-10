@@ -14,7 +14,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
 
     <style>
         /* ============================================
@@ -167,66 +167,39 @@
            NAVBAR
         ============================================ */
 
-        .logo-container { display: flex; align-items: center; gap: 12px; }
+                .logo-container { display: flex; align-items: center; gap: 8px; }
 
         .site-logo {
-            width: 40px;
             height: 40px;
-            border-radius: var(--radius-xs);
-            object-fit: cover;
-            border: 1.5px solid var(--border-gold-strong);
-            box-shadow: 0 2px 8px rgba(217,119,6,0.2);
+            width: auto;
+            object-fit: contain;
+            display: block;
         }
 
         .brand-title {
-            font-family: var(--font-display);
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
             font-size: 22px;
             font-weight: 800;
-            letter-spacing: -0.8px;
+            letter-spacing: -0.6px;
             line-height: 1;
+            color: #111216;
         }
-
-        .brand-title .text-dark { color: var(--ink-900); }
-        .brand-title .text-gold {
-            background: var(--grad-gold);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+        .brand-title .text-dark { color: #111216; }
+        .brand-title .text-gold { color: #d97706; font-style: normal; }
 
         .badge-espace {
             display: inline-flex;
             align-items: center;
-            gap: 7px;
-            background: linear-gradient(135deg, rgba(217,119,6,0.10) 0%, rgba(245,158,11,0.07) 100%);
-            color: var(--gold-700);
-            border: 1px solid var(--border-gold-strong);
-            padding: 8px 16px;
-            border-radius: 50px;
-            font-family: var(--font-display);
-            font-size: 11px;
+            padding: 5px 9px;
+            border: 1px solid #e8e7e3;
+            border-radius: 999px;
+            background: #fafaf9;
+            color: #44464e;
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            font-size: 10.5px;
             font-weight: 700;
-            letter-spacing: 0.8px;
-            text-transform: uppercase;
+            white-space: nowrap;
         }
-
-        .badge-espace .badge-dot {
-            width: 7px;
-            height: 7px;
-            background: var(--gold-500);
-            border-radius: 50%;
-            position: relative;
-        }
-
-        .badge-espace .badge-dot::after {
-            content: '';
-            position: absolute;
-            inset: -3px;
-            border-radius: 50%;
-            background: rgba(245,158,11,0.35);
-            animation: pulse-ring 1.8s ease-out infinite;
-        }
-
         .navbar-right { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 
         /* ============================================
@@ -1227,7 +1200,7 @@
             body { padding: 16px 12px 70px; }
             .top-navbar { padding: 12px 14px; }
             .brand-title { font-size: 19px; }
-            .badge-espace { font-size: 10px; padding: 6px 12px; }
+            .badge-espace { font-size: clamp(8px, 2.3vw, 10.5px); padding: 4px 8px; }
             #titreEvenementOrg { font-size: 21px; }
             .tab-btn { font-size: 11px; padding: 10px 4px; }
             .billet-card-actions { gap: 6px; }
@@ -1812,7 +1785,7 @@ h1, h2, h3, p, span, div {
     animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both !important;
 }
 
-.logo-container { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.logo-container { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .navbar-right { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
 
 /* Seule source de vérité pour l'espace sous le header fixe */
@@ -1825,13 +1798,7 @@ body { padding-top: 92px !important; }
         padding: 12px 14px !important; 
     }
     body { padding-top: 84px !important; }
-   .badge-espace {
-        padding: 8px !important;
-        gap: 0 !important;
-    }
-    .badge-espace .badge-espace-text {
-        display: none !important;
-    } 
+  
 }
 /* ============================================
    BOUTON HAMBURGER
@@ -2035,8 +2002,7 @@ body { padding-top: 92px !important; }
             </span>
         </div>
         <div class="navbar-right">
-            <span class="badge-espace">
-              <span class="badge-dot"></span>
+                        <span class="badge-espace">
               <span class="badge-espace-text">Espace Organisateur</span>
             </span>
             <button id="btnMenuHamburger" class="btn-menu-hamburger" onclick="ouvrirSidebar()" aria-label="Ouvrir le menu">
