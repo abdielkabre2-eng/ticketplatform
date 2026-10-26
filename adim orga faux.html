@@ -203,9 +203,7 @@
         .navbar-right { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 
         /* ============================================
-           BANDEAU DE CONFIANCE (nouveau)
-           Rappel discret et permanent : connexion chiffrée,
-           validation humaine, support joignable.
+           BANDEAU DE CONFIANCE
         ============================================ */
         .trust-strip {
             display: flex;
@@ -445,7 +443,6 @@
 
         .section-header p { font-size: 13px; color: var(--ink-500); line-height: 1.55; }
 
-        /* Rappel de confiance contextuel dans l'en-tête de section */
         .section-trust-note {
             display: inline-flex;
             align-items: center;
@@ -835,8 +832,6 @@
             animation: fadeUp 0.6s 0.3s cubic-bezier(0.22,1,0.36,1) both;
         }
 
-        /* Bandeau de garanties, au-dessus du crédit développeur */
-        
         .footer-brand { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 12px; }
         .footer-brand-line { height: 1px; width: 40px; background: linear-gradient(90deg, transparent, var(--gold-500)); }
         .footer-brand-line.right { background: linear-gradient(90deg, var(--gold-500), transparent); }
@@ -1061,7 +1056,6 @@
         .eye-toggle:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
         .eye-toggle svg { width: 18px; height: 18px; display: block; }
 
-        /* Rappel de sécurité sous les champs de mot de passe (nouveau) */
         .auth-security-note {
             display: flex;
             align-items: flex-start;
@@ -1156,7 +1150,6 @@
 
         .recovery-code-warning { font-size: 12px; color: var(--ink-500); text-align: center; line-height: 1.6; margin-bottom: 18px; }
 
-        /* Pied de carte d'authentification : rassurance finale (nouveau) */
         .auth-trust-footer {
             display: flex;
             justify-content: center;
@@ -1212,7 +1205,7 @@
         }
 
         /* ============================================
-           INTRO — ÉCRAN D'OUVERTURE "CENTRE DE CONTRÔLE"
+           INTRO — ÉCRAN D'OUVERTURE
         ============================================ */
         #introGoldTix {
             position: fixed;
@@ -1759,7 +1752,6 @@ h1, h2, h3, p, span, div {
 }
 
 /* ============================================
- /* ============================================
    NAVBAR — bloc unique et propre
 ============================================ */
 .top-navbar {
@@ -1923,7 +1915,166 @@ body { padding-top: 76px !important; }
 .btn-download-liste:disabled { opacity: 0.6; cursor: not-allowed; }
 .btn-download-liste:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
 .btn-download-liste svg { width: 14px; height: 14px; flex-shrink: 0; }
-    </style>
+
+/* ==========================================================
+   AFFINEMENT PROFESSIONNEL
+   Bloc de surcharge volontairement placé en fin de feuille :
+   il ne modifie aucune structure ni aucun sélecteur utilisé
+   par le JavaScript, uniquement l'apparence (rayons, ombres,
+   dégradés, animations décoratives, icônes).
+========================================================== */
+
+/* Cartes principales : plus sobres */
+.main-card,
+.auth-card {
+    border-radius: 20px;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 12px 32px rgba(15,23,42,0.08);
+}
+.main-card::before,
+.auth-card::before { height: 2px; }
+
+/* Bannière événement : moins "vitrine", plus éditoriale */
+.header-top {
+    border-radius: 16px;
+    padding: 40px 24px 30px;
+    box-shadow: none;
+}
+.header-top::after { display: none; }
+.header-label {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.28);
+    color: rgba(255,255,255,0.85);
+    letter-spacing: 1.6px;
+}
+#titreEvenementOrg {
+    font-size: 24px;
+    letter-spacing: -0.3px;
+    text-shadow: none;
+}
+#infosEvenementOrg {
+    border-radius: 10px;
+    background: rgba(15,10,3,0.72);
+    border-color: rgba(255,255,255,0.18);
+    box-shadow: none;
+    max-width: 100%;
+    text-align: center;
+    line-height: 1.6;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* Cartes billets : pas de déplacement au survol */
+.billet-card { border-radius: 14px; box-shadow: 0 1px 2px rgba(15,23,42,0.05); }
+.billet-card:hover {
+    transform: none;
+    box-shadow: 0 4px 14px rgba(15,23,42,0.08);
+    border-color: var(--ink-300);
+}
+
+/* Onglet "En attente" : cartes compactes (beaucoup de paiements) */
+#listePaiements .billet-card { margin-bottom: 10px; }
+#listePaiements .billet-card-header { padding: 10px 14px 0; }
+#listePaiements .billet-card-body { padding: 4px 14px 10px; }
+#listePaiements .billet-info-row { padding: 3px 0; }
+#listePaiements .preuve-container { margin-top: 8px; }
+#listePaiements .billet-card .preuve-label { margin-bottom: 4px; font-size: 12px; }
+#listePaiements .billet-card a img,
+#listePaiements .billet-card img.preuve-img { max-height: 200px; }
+#listePaiements .billet-card-actions {
+    flex-wrap: nowrap;
+    gap: 6px;
+    padding: 8px 14px;
+}
+#listePaiements .btn-action {
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: center;
+    padding: 8px 4px;
+    font-size: 11px;
+    white-space: nowrap;
+}
+@media (max-width: 480px) {
+    #listePaiements .btn-action { font-size: 10px; padding: 8px 2px; letter-spacing: 0; }
+    #listePaiements .billet-card-actions { padding: 8px 10px; }
+}
+
+/* Boutons principaux : or uni, sans effet de brillance */
+.btn-auth-primary {
+    background: var(--gold-600);
+    border-radius: 10px;
+    box-shadow: none;
+    font-weight: 700;
+}
+.btn-auth-primary::before { display: none; }
+.btn-auth-primary:hover:not(:disabled) { background: var(--gold-700); transform: none; box-shadow: none; }
+.scanner-input-group .btn-scan-manual {
+    background: var(--gold-600);
+    border-radius: 10px;
+    box-shadow: none;
+    font-weight: 700;
+}
+.scanner-input-group .btn-scan-manual:hover { background: var(--gold-700); transform: none; box-shadow: none; }
+
+/* Badges sans halos, navigation plus discrète */
+.tab-badge { background: var(--gold-600); }
+.quota-progress-fill { background: var(--gold-600); }
+.quota-progress-fill.quota-full { background: #dc2626; }
+.status-indicator.open  { box-shadow: none; }
+.status-indicator.closed{ box-shadow: none; }
+.tabs-icon-nav { border-radius: 14px; }
+.tab-icon-btn { border-radius: 10px; }
+.tab-icon-btn.active { box-shadow: 0 1px 3px rgba(15,23,42,0.10); }
+
+/* Scanner : cadre fin et net */
+.scanner-frame {
+    border: 1px solid var(--ink-300);
+    box-shadow: none;
+    border-radius: 14px;
+}
+.scanner-corner.tl, .scanner-corner.tr,
+.scanner-corner.bl, .scanner-corner.br { border-color: rgba(255,255,255,0.85); }
+
+/* Pastille d'icône des écrans d'accès : carrée arrondie, icône vectorielle */
+.auth-icon-badge {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: var(--gold-50);
+    border: 1px solid var(--border-gold);
+    color: var(--gold-700);
+}
+.auth-icon-badge::after { display: none; }
+.auth-icon-badge svg { width: 22px; height: 22px; }
+
+/* Code de récupération : sobre */
+.recovery-code-display {
+    background: var(--ink-50);
+    border: 1px dashed var(--ink-300);
+    border-radius: 12px;
+}
+.recovery-code-display .code-value { font-size: 19px; }
+
+/* Intro : icônes vectorielles, numérotation discrète */
+.intro-logo-badge {
+    border-radius: 16px;
+    color: var(--gold-400);
+    box-shadow: none;
+}
+.intro-logo-badge::after { display: none; }
+.intro-logo-badge svg { width: 34px; height: 34px; }
+.intro-feature-row { border-radius: 10px; }
+.intro-feature-icon {
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--gold-400);
+    min-width: 22px;
+    text-align: left;
+}
+.intro-check-mark svg { width: 10px; height: 10px; }
+.intro-welcome-icon { font-size: 30px; margin-bottom: 14px; }
+.intro-skip-btn { border-radius: 8px; }
+</style>
 </head>
 <body>
 
@@ -1936,29 +2087,31 @@ body { padding-top: 76px !important; }
 
             <!-- Stage 1 : logo -->
             <div class="intro-stage intro-stage-active" data-stage="1">
-                <div class="intro-logo-badge">🎫</div>
+                <div class="intro-logo-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9a2 2 0 010 6v3a1 1 0 001 1h16a1 1 0 001-1v-3a2 2 0 010-6V6a1 1 0 00-1-1H4a1 1 0 00-1 1z"/><path d="M14 5v2M14 11v2M14 17v2"/></svg>
+                </div>
                 <div class="intro-brand"><span class="ig-dark">Gold</span><span class="ig-gold">Tix</span></div>
-                <p class="intro-tagline">Votre événement. Votre espace de gestion.</p>
+                <p class="intro-tagline">Plateforme de billetterie professionnelle</p>
             </div>
 
             <!-- Stage 2 : fonctionnalités -->
             <div class="intro-stage" data-stage="2">
-                <p class="intro-stage-title">Tout est centralisé au même endroit</p>
+                <p class="intro-stage-title">Une gestion centralisée</p>
                 <div class="intro-features">
                     <div class="intro-feature-row">
-                        <span class="intro-feature-icon">🎟️</span>
-                        <span class="intro-feature-label">Billets</span>
+                        <span class="intro-feature-icon">01</span>
+                        <span class="intro-feature-label">Billetterie</span>
                     </div>
                     <div class="intro-feature-row">
-                        <span class="intro-feature-icon">💰</span>
+                        <span class="intro-feature-icon">02</span>
                         <span class="intro-feature-label">Paiements</span>
                     </div>
                     <div class="intro-feature-row">
-                        <span class="intro-feature-icon">📱</span>
-                        <span class="intro-feature-label">Scans</span>
+                        <span class="intro-feature-icon">03</span>
+                        <span class="intro-feature-label">Contrôle d'accès</span>
                     </div>
                     <div class="intro-feature-row">
-                        <span class="intro-feature-icon">📊</span>
+                        <span class="intro-feature-icon">04</span>
                         <span class="intro-feature-label">Suivi en temps réel</span>
                     </div>
                 </div>
@@ -1968,10 +2121,10 @@ body { padding-top: 76px !important; }
             <div class="intro-stage" data-stage="3">
                 <p class="intro-init-title">Initialisation de votre espace<span class="intro-dots-inline"><span>.</span><span>.</span><span>.</span></span></p>
                 <div class="intro-checklist" id="introChecklist">
-                    <div class="intro-check-item"><span class="intro-check-mark">✓</span><span>Gérez votre événement</span></div>
-                    <div class="intro-check-item"><span class="intro-check-mark">✓</span><span>Suivez les achats</span></div>
-                    <div class="intro-check-item"><span class="intro-check-mark">✓</span><span>Validez les paiements</span></div>
-                    <div class="intro-check-item"><span class="intro-check-mark">✓</span><span>Scannez les billets</span></div>
+                    <div class="intro-check-item"><span class="intro-check-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span><span>Événement</span></div>
+                    <div class="intro-check-item"><span class="intro-check-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span><span>Ventes</span></div>
+                    <div class="intro-check-item"><span class="intro-check-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span><span>Paiements</span></div>
+                    <div class="intro-check-item"><span class="intro-check-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span><span>Contrôle d'accès</span></div>
                 </div>
             </div>
 
@@ -1984,7 +2137,7 @@ body { padding-top: 76px !important; }
 
         </div>
 
-        <button type="button" class="intro-skip-btn" id="introSkipBtn" onclick="passerIntroGoldTix()">Passer ⏭</button>
+        <button type="button" class="intro-skip-btn" id="introSkipBtn" onclick="passerIntroGoldTix()">Passer</button>
     </div>
 
         <!-- ==================== NAVBAR ====================
@@ -2064,15 +2217,15 @@ body { padding-top: 76px !important; }
         <div class="trust-strip" aria-hidden="true">
             <span class="trust-strip-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-                Votre espace est 100% sécurisé
+                Espace sécurisé
             </span>
             <span class="trust-strip-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
-                Vous validez vous-même chaque paiement
+                Validation manuelle des paiements
             </span>
             <span class="trust-strip-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-                Vous suivez vos ventes en temps réel
+                Suivi des ventes en temps réel
             </span>
         </div>
 
@@ -2092,7 +2245,9 @@ body { padding-top: 76px !important; }
             <div id="authEcranSetup" class="auth-screen">
                 <div class="auth-card">
                     <div class="auth-card-inner">
-                        <div class="auth-icon-badge">🔐</div>
+                        <div class="auth-icon-badge">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                        </div>
                         <p class="auth-event-name" id="nomEvenementSetup">Chargement...</p>
                         <h2 class="auth-title auth-title-sub">Bienvenue dans votre espace organisateur</h2>
                         <p class="auth-subtitle">Vous êtes sur le point de sécuriser votre espace. Créez votre mot de passe pour continuer.</p>
@@ -2145,7 +2300,9 @@ body { padding-top: 76px !important; }
             <div id="authEcranCodeGenere" class="auth-screen">
                 <div class="auth-card">
                     <div class="auth-card-inner">
-                        <div class="auth-icon-badge">🔑</div>
+                        <div class="auth-icon-badge">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="M10.85 12.15L19 4M18 5l3 3M15 8l3 3"/></svg>
+                        </div>
                         <h2 class="auth-title">Conservez votre code de récupération</h2>
                         <p class="auth-subtitle">Ce code vous permettra de réinitialiser votre mot de passe en cas d'oubli. Il ne sera plus jamais affiché après cette page.</p>
 
@@ -2167,7 +2324,9 @@ body { padding-top: 76px !important; }
             <div id="authEcranLogin" class="auth-screen">
                 <div class="auth-card">
                     <div class="auth-card-inner">
-                        <div class="auth-icon-badge">🔐</div>
+                        <div class="auth-icon-badge">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                        </div>
                         <p class="auth-event-name" id="nomEvenementLogin">Chargement...</p>
                         <h2 class="auth-title auth-title-sub">Connexion à votre espace organisateur</h2>
                         <p class="auth-subtitle">Veuillez entrer votre mot de passe afin d'accéder à la gestion de votre événement.</p>
@@ -2203,11 +2362,13 @@ body { padding-top: 76px !important; }
             <div id="authEcranRecuperation" class="auth-screen">
                 <div class="auth-card">
                     <div class="auth-card-inner">
-                        <div class="auth-icon-badge">🔑</div>
+                        <div class="auth-icon-badge">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="M10.85 12.15L19 4M18 5l3 3M15 8l3 3"/></svg>
+                        </div>
                         <h2 class="auth-title">Réinitialiser votre mot de passe</h2>
                         <p class="auth-subtitle">
                             Entrez le code de récupération qui vous a été donné à la création de cet espace.
-                           <strong style="color: #e74c3c;">Si vous l'avez perdu, contactez GoldTix au numéro qui se trouve tout en bas de la page.</strong>
+                           <strong style="color: #b91c1c;">Si vous l'avez perdu, contactez GoldTix au numéro qui se trouve tout en bas de la page.</strong>
                         </p>
                         <div id="authRecuperationError" class="auth-error-msg"></div>
 
@@ -2221,7 +2382,7 @@ body { padding-top: 76px !important; }
                         </button>
 
                         <div class="auth-link-row">
-                            <a onclick="afficherEcranAuth('authEcranLogin')"> ⬅️ Retourer à la page de connexion</a>
+                            <a onclick="afficherEcranAuth('authEcranLogin')">Retour à la connexion</a>
                         </div>
                     </div>
                 </div>
@@ -2231,7 +2392,9 @@ body { padding-top: 76px !important; }
             <div id="authEcranNouveauMdp" class="auth-screen">
                 <div class="auth-card">
                     <div class="auth-card-inner">
-                        <div class="auth-icon-badge">🔐</div>
+                        <div class="auth-icon-badge">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                        </div>
                         <h2 class="auth-title">Créez votre nouveau mot de passe</h2>
                         <p class="auth-subtitle">Votre code a été validé. Choisissez un nouveau mot de passe pour cet espace.</p>
 
@@ -2274,7 +2437,9 @@ body { padding-top: 76px !important; }
             <div id="authEcranNouveauCodeGenere" class="auth-screen">
                 <div class="auth-card">
                     <div class="auth-card-inner">
-                        <div class="auth-icon-badge">🔑</div>
+                        <div class="auth-icon-badge">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="M10.85 12.15L19 4M18 5l3 3M15 8l3 3"/></svg>
+                        </div>
                         <h2 class="auth-title">Votre nouveau code de récupération</h2>
                         <p class="auth-subtitle">L'ancien code n'est plus valide. Conservez précieusement ce nouveau code.</p>
 
@@ -2301,7 +2466,7 @@ body { padding-top: 76px !important; }
 
                     <!-- EVENT HEADER BANNER -->
                     <div class="header-top" id="headerTopContainer">
-                        <span class="header-label">Votre evenement</span>
+                        <span class="header-label">Votre événement</span>
                         <h1 id="titreEvenementOrg">Chargement...</h1>
                         <p id="infosEvenementOrg">Connexion en cours...</p>
                                                 <div class="header-banner-glow"></div>
@@ -2725,7 +2890,9 @@ body { padding-top: 76px !important; }
         document.getElementById("authEcranChargement").innerHTML = `
             <div class="auth-card">
                 <div class="auth-card-inner">
-                    <div class="auth-icon-badge">⚠️</div>
+                    <div class="auth-icon-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    </div>
                     <h2 class="auth-title">Événement introuvable</h2>
                     <p class="auth-subtitle">
                         Cet événement a été supprimé ou n'existe plus.<br>
@@ -2898,7 +3065,7 @@ body { padding-top: 76px !important; }
             entrerDansEspaceProtege();
 
         } catch (err) {
-            afficherErreurAuth("authLoginError", "❌ Mot de passe incorrect. Veuillez réessayer.");
+            afficherErreurAuth("authLoginError", "Mot de passe incorrect. Veuillez réessayer.");
         } finally {
             btn.disabled = false;
             btn.textContent = "Se connecter";
@@ -3746,7 +3913,7 @@ async function envoyerSuggestion() {
         });
 
         textarea.value = "";
-        statutEl.textContent = "✓ Message envoyé, merci pour votre retour !";
+        statutEl.textContent = "Message envoyé, merci pour votre retour.";
         statutEl.style.color = "var(--green-600)";
     } catch (err) {
         console.error("Erreur envoi suggestion :", err);

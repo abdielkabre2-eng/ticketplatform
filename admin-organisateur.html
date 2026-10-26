@@ -2074,6 +2074,29 @@ body { padding-top: 76px !important; }
 .intro-check-mark svg { width: 10px; height: 10px; }
 .intro-welcome-icon { font-size: 30px; margin-bottom: 14px; }
 .intro-skip-btn { border-radius: 8px; }
+
+/* ==========================================================
+   NOUVEAU — Lien "Voir la preuve" (cartes des participants confirmés)
+   Scopé à .btn-voir-preuve : n'affecte aucun autre élément.
+========================================================== */
+.btn-voir-preuve {
+    margin-left: auto;              /* pousse le lien tout à droite de la carte */
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 4px;
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gold-700);
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.btn-voir-preuve:hover { color: var(--gold-900); text-decoration: underline; }
+.btn-voir-preuve:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
+.btn-voir-preuve svg { width: 14px; height: 14px; flex-shrink: 0; }
 </style>
 </head>
 <body>
@@ -3581,7 +3604,23 @@ async function verifierMiseAJourEvenement() {
         </div>`;
 }
 
+    /* =============================================
+       CARTE PARTICIPANT CONFIRMÉ
+       MODIFIÉ : ajout d'un lien "Voir la preuve" dans la zone
+       d'actions (en bas à droite de la carte). Il réutilise
+       exactement le mécanisme de l'onglet "En attente" :
+       un simple lien vers b.preuve_url, ouvert dans un nouvel onglet.
+       Le lien n'est affiché que si une preuve existe pour ce billet.
+    ============================================= */
     function HTMLCarteValidee(b) {
+        // NOUVEAU : lien "Voir la preuve" (vide si aucune preuve enregistrée)
+        const lienPreuve = b.preuve_url
+            ? `<a href="${b.preuve_url}" target="_blank" rel="noopener" class="btn-voir-preuve">
+                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                   Voir la preuve
+               </a>`
+            : '';
+
         return `
             <div class="billet-card billet-card-confirme">
                 <div class="billet-card-header">
@@ -3611,6 +3650,7 @@ async function verifierMiseAJourEvenement() {
                         data-id="${b.id}">
                         Retirer ce participant
                     </button>
+                    ${lienPreuve}<!-- NOUVEAU : aligné à droite grâce à margin-left:auto -->
                 </div>
             </div>`;
     }
