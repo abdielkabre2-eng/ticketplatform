@@ -654,7 +654,7 @@ async function changerStatut(supabase, payload, res) {
 
     if (b && b.email) {
       const nom = echapperHtml(b.nom_participant || "");
-      const lienBillet = `https://goldtixbilletterie.com/billet.html?id=${encodeURIComponent(b.code_public)}`;
+      const lienBillet = `https://goldtixbilletterie.site/billet.html?id=${encodeURIComponent(b.code_public)}`;
       if (nouveauStatut === "confirme") {
        const lien = lienBillet;
         emailEnvoye = await envoyerEmailResend({
