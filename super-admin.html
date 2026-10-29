@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Espace Super Organisateur | GoldTix</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -468,7 +468,7 @@ function ouvrirModalDetails(idEvenement) {
     if (!ev) return;
     document.getElementById("detail-titre").innerText = "Gérer : " + ev.titre;
  
-    const baseUrl = "https://ticketplatform-kappa.vercel.app";
+    const baseUrl = "https://goldtixbilletterie.site";
     document.getElementById("lien-acheteur").value = `${baseUrl}/?event=${ev.id}`;
     document.getElementById("lien-vendeur").value = `${baseUrl}/admin-organisateur?event=${ev.id}`;
     document.getElementById("modalDetails").style.display = "flex";
