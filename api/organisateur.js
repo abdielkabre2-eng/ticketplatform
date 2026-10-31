@@ -536,7 +536,7 @@ function emailBilletHtml(nom, lien, avecPdf = false) {
 
       <div style="padding:20px 0;border-top:1px solid #eeeeee;">
         <p style="margin:0 0 8px;font-size:13px;line-height:21px;color:#6b7280;">
-          Pensez à présenter le QR code de votre billet à l’entrée de l’événement.${avecPdf ? " Votre billet est également joint à cet e-mail au format PDF." : ""}
+          Merci de présenter le QR code de votre billet à l’entrée.${avecPdf ? " Votre billet est également joint à cet e-mail au format PDF." : ""}
         </p>
         <p style="margin:16px 0 0;font-size:12px;line-height:20px;color:#9ca3af;">
           GoldTix · Votre accès, en toute simplicité.
@@ -587,9 +587,6 @@ function emailRefusHtml(nom, lienWhatsApp, lienBillet) {
       </div>
 
       <div style="padding:20px 0;border-top:1px solid #eeeeee;">
-        <p style="margin:0;font-size:12px;line-height:20px;color:#9ca3af;">
-          Ce message a été envoyé automatiquement par GoldTix.
-        </p>
         <p style="margin:12px 0 0;font-size:12px;line-height:20px;color:#9ca3af;">
           GoldTix · Votre accès, en toute simplicité.
         </p>
