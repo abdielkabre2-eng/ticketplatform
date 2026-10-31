@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { genererBilletPdf } from "./_billetPdf.js";
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
@@ -469,7 +470,7 @@ function echapperHtml(s) {
   ));
 }
 
-async function envoyerEmailResend({ to, subject, html }) {
+async function envoyerEmailResend({ to, subject, html, attachments }) {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.MAIL_FROM;
   if (!apiKey || !from) {
@@ -483,7 +484,13 @@ async function envoyerEmailResend({ to, subject, html }) {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ from, to: [to], subject, html }),
+      body: JSON.stringify({
+        from,
+        to: [to],
+        subject,
+        html,
+        ...(attachments ? { attachments } : {}),
+      }),
     });
     if (!r.ok) {
       console.error("Erreur Resend :", r.status, await r.text());
@@ -496,7 +503,7 @@ async function envoyerEmailResend({ to, subject, html }) {
   }
 }
 
-function emailBilletHtml(nom, lien) {
+function emailBilletHtml(nom, lien, avecPdf = false) {
   return `
   <div style="margin:0;padding:0;background:#ffffff;font-family:Arial,Helvetica,sans-serif;color:#111827;">
     <div style="max-width:560px;margin:0 auto;padding:36px 24px;">
@@ -529,7 +536,7 @@ function emailBilletHtml(nom, lien) {
 
       <div style="padding:20px 0;border-top:1px solid #eeeeee;">
         <p style="margin:0 0 8px;font-size:13px;line-height:21px;color:#6b7280;">
-          Pensez à présenter le QR code de votre billet à l’entrée de l’événement.
+          Pensez à présenter le QR code de votre billet à l’entrée de l’événement.${avecPdf ? " Votre billet est également joint à cet e-mail au format PDF." : ""}
         </p>
         <p style="margin:16px 0 0;font-size:12px;line-height:20px;color:#9ca3af;">
           GoldTix · Votre accès, en toute simplicité.
@@ -648,46 +655,70 @@ async function changerStatut(supabase, payload, res) {
   if (doitEnvoyer) {
     const { data: b } = await supabase
       .from("billets")
-      .select("email, nom_participant, code_public")
+      .select("*")
       .eq("id", billetId)
       .single();
 
     if (b && b.email) {
       const nom = echapperHtml(b.nom_participant || "");
       const lienBillet = `https://www.goldtixbilletterie.site/billet.html?id=${encodeURIComponent(b.code_public)}`;
+
       if (nouveauStatut === "confirme") {
-       const lien = lienBillet;
+        // On prépare le billet en PDF. Si la génération échoue, l'e-mail part quand même, sans PDF.
+        let attachments = null;
+        try {
+          const { data: evenementPdf, error: erreurEvPdf } = await supabase
+            .from("evenements")
+            .select("*")
+            .eq("id", evenementId)
+            .maybeSingle();
+
+          if (erreurEvPdf) {
+            console.error("Erreur lecture événement pour le PDF :", erreurEvPdf.message);
+          }
+
+          const pdf = await genererBilletPdf({
+            billet: b,
+            evenement: evenementPdf || {},
+            lienBillet,
+          });
+
+          attachments = [
+            {
+              filename: `Billet-GoldTix-${b.code_public}.pdf`,
+              content: pdf.toString("base64"),
+            },
+          ];
+        } catch (e) {
+          console.error("Erreur génération PDF du billet :", e);
+          attachments = null;
+        }
+
         emailEnvoye = await envoyerEmailResend({
           to: b.email,
           subject: "Votre billet GoldTix est prêt 🎫",
-          html: emailBilletHtml(nom, lien),
+          html: emailBilletHtml(nom, lienBillet, !!attachments),
+          attachments,
         });
-      
-} else {
-  const { data: evenement, error: erreurEvenement } =
-    await supabase
-      .from("evenements")
-      .select("beneficiaire_infos")
-      .eq("id", evenementId)
-      .maybeSingle();
+      } else {
+        const { data: evenement, error: erreurEvenement } = await supabase
+          .from("evenements")
+          .select("beneficiaire_infos")
+          .eq("id", evenementId)
+          .maybeSingle();
 
-  if (erreurEvenement) {
-    console.error(
-      "Erreur récupération bénéficiaire :",
-      erreurEvenement.message
-    );
-  }
+        if (erreurEvenement) {
+          console.error("Erreur récupération bénéficiaire :", erreurEvenement.message);
+        }
 
-  const lienWhatsApp = creerLienWhatsApp(
-    evenement?.beneficiaire_infos
-  );
+        const lienWhatsApp = creerLienWhatsApp(evenement?.beneficiaire_infos);
 
-  emailEnvoye = await envoyerEmailResend({
-    to: b.email,
-    subject: "Paiement non reçu - GoldTix",
-    html: emailRefusHtml(nom, lienWhatsApp, lienBillet),
-  });
-}
+        emailEnvoye = await envoyerEmailResend({
+          to: b.email,
+          subject: "Paiement non reçu - GoldTix",
+          html: emailRefusHtml(nom, lienWhatsApp, lienBillet),
+        });
+      }
     }
   }
 
