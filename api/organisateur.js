@@ -517,7 +517,7 @@ function emailBilletHtml(nom, lien) {
         </h1>
 
         <p style="margin:0;font-size:15px;line-height:25px;color:#4b5563;">
-          Votre paiement a été confirmé. Vous pouvez consulter à tout moment les détails de votre billet et le présenter à l’entrée de l’événement.
+          Votre paiement a été confirmé. Vous pouvez consulter les détails de votre billet à tout moment en cliquant sur le bouton ci-dessous.
         </p>
       </div>
 
@@ -529,7 +529,7 @@ function emailBilletHtml(nom, lien) {
 
       <div style="padding:20px 0;border-top:1px solid #eeeeee;">
         <p style="margin:0 0 8px;font-size:13px;line-height:21px;color:#6b7280;">
-          Pensez à présenter le QR code de votre billet à l’entrée de l’événement.
+          Merci de présenter le QR code de votre billet à l’entrée.
         </p>
         <p style="margin:16px 0 0;font-size:12px;line-height:20px;color:#9ca3af;">
           GoldTix · Votre accès, en toute simplicité.
