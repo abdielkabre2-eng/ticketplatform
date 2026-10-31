@@ -336,7 +336,7 @@ animation: ripple 2s ease-in-out infinite;
 position: relative; z-index: 1;
 padding: 20px;
 background: var(--bg-card);
-border-bottom: 1px solid var(--border);
+border-bottom: none;
 border-left: none;
 }
 
@@ -491,15 +491,26 @@ color: #25D366;
 
 .tear-separator {
 position: relative;
-padding: 14px 14px 0;
-display: flex; align-items: center;
+padding: 14px 0 0;
 background: var(--bg-card);
 }
-.tear-separator hr.dashed-line {
-flex: 1; height: 0; margin: 0; padding: 0; border: none;
-border-top: 2px dashed rgba(217,119,6,.4);
+
+/* Séparateurs de sections : ligne fine grise + titre centré discret */
+.section-divider {
+display: flex; align-items: center; gap: 12px;
+padding: 0 14px;
+background: var(--bg-card);
 }
-.tear-separator hr.dashed-line + hr.dashed-line { display: none; }
+.section-divider::before,
+.section-divider::after {
+content: ''; flex: 1; height: 1px; background: var(--border);
+}
+.section-divider span {
+flex-shrink: 0;
+font-size: .68rem; font-weight: 600; letter-spacing: .04em;
+line-height: 1.2; white-space: nowrap;
+color: var(--text-lo);
+}
 
 .qr-section {
 padding: 18px 16px; display: flex; align-items: center; gap: 14px;
@@ -793,6 +804,10 @@ flex-shrink: 0;
 
 <div id="statusBannerZone"></div>
 
+<div class="section-divider section-divider--details">
+<span data-i18n="sep_details">Détails de votre billet</span>
+</div>
+
 <div class="ticket-body">
 <svg class="tier-pattern" id="tierPattern" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
 <defs>
@@ -806,8 +821,9 @@ flex-shrink: 0;
 </div>
 
 <div class="tear-separator">
-<hr class="dashed-line" />
-<hr class="dashed-line" />
+<div class="section-divider section-divider--access">
+<span data-i18n="sep_access">Votre accès à l'événement</span>
+</div>
 </div>
 
 <div class="qr-section">
@@ -919,14 +935,18 @@ FR.r_sub = "Votre paiement n'a pas été reçu par le bénéficiaire.";
 EN.r_sub = 'Your payment was not received by the recipient.';
 FR.r_note = 'Contactez le bénéficiaire pour confirmer votre paiement. Votre billet sera disponible dès validation.';
 EN.r_note = 'Contact the recipient to confirm your payment. Your ticket will be available once it is validated.';
-FR.d_badge = 'Billet valide';                               EN.d_badge = 'Valid ticket';
-FR.d_title = 'Paiement validé';                             EN.d_title = 'Payment confirmed';
-FR.d_sub = 'Votre billet est à présent actif. Vous pouvez, si vous le souhaitez, le télécharger en version réduite.';
-EN.d_sub = 'Your ticket is now active. You can download a lighter version if you wish.';
+FR.d_badge = 'Billet valide';
+EN.d_badge = 'Valid ticket';
+FR.d_title = 'Paiement confirmé';
+EN.d_title = 'Payment confirmed';
+FR.d_sub = 'Un e-mail contenant votre billet en pièce jointe vous a été envoyé. Merci de consulter votre boîte de réception. Vous pouvez également télécharger directement votre billet au format PDF en cliquant sur le bouton ci-dessous.';
+EN.d_sub = 'An email with your ticket attached has been sent to you. Please check your inbox. You can also download your ticket directly in PDF format by clicking the button below.';
 
 FR.qr_cta = "Veuillez présenter ce QR code à l'entrée";     EN.qr_cta = 'Please show this QR code at the entrance';
 FR.qr_sub = 'Nous vous souhaitons un excellent événement!'; EN.qr_sub = 'We wish you a great event!';
 FR.qr_secure = 'Billet unique et sécurisé';                 EN.qr_secure = 'Unique and secure ticket';
+FR.sep_details = 'Détails de votre billet';                 EN.sep_details = 'Your ticket details';
+FR.sep_access = "Votre accès à l'événement";                EN.sep_access = 'Your access to the event';
 FR.dl_btn = 'Télécharger mon billet en PDF';                EN.dl_btn = 'Download my ticket as PDF';
 
 FR.f_tag = 'La Billetterie en Or';                          EN.f_tag = 'Ticketing, pure gold';
@@ -1130,15 +1150,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     const r = NOTCH_RADIUS_PX;
     const positionsY = [];
 
-    // Encoche du haut : juste sous la bannière de statut
+    // Encoche du haut : au centre de la ligne « Détails de votre billet »
+    const sepDetails = document.querySelector('.section-divider--details');
     const statusPanel = document.querySelector('.status-panel');
-    if (statusPanel) {
+    if (sepDetails) {
+      const dRect = sepDetails.getBoundingClientRect();
+      positionsY.push(Math.round((dRect.top + dRect.height / 2) - ticketRect.top));
+    } else if (statusPanel) {
       const spRect = statusPanel.getBoundingClientRect();
       positionsY.push(Math.round(spRect.bottom - ticketRect.top));
     }
 
     // Encoche du bas : au niveau de la séparation avant le QR code
-    const separateur = document.querySelector('.tear-separator');
+    const separateur = document.querySelector('.tear-separator .section-divider') || document.querySelector('.tear-separator');
     if (separateur) {
       const sepRect = separateur.getBoundingClientRect();
       positionsY.push(Math.round((sepRect.top + sepRect.height / 2) - ticketRect.top));
@@ -1713,20 +1737,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (dlBtn) { dlBtn.innerHTML = original; dlBtn.disabled = false; }
 
-    Swal.fire({
-      icon: 'info',
-      title: tr('sw_title'),
-      text: tr('sw_text'),
-      confirmButtonText: tr('sw_btn'),
-      confirmButtonColor: '#d97706',
-      background: '#111010',
-      color: '#fafaf9',
-      buttonsStyling: true
-    }).then((result) => {
-      if (result.isConfirmed) {
-        telechargerPDF();
-      }
-    });
+       telechargerPDF();
   }
 
   function telechargerPDF() {
