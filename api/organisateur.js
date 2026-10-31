@@ -100,6 +100,12 @@ export default async function handler(req, res) {
       case "modifier_affiche":
         return await modifierAffiche(supabase, payload, res);
 
+      case "creer_billet_especes":
+        return await creerBilletEspeces(supabase, payload, res);
+
+      case "renvoyer_email_billet":
+        return await renvoyerEmailBillet(supabase, payload, res);
+
       default:
         return res.status(400).json({ success: false, error: "Action inconnue." });
     }
@@ -717,6 +723,196 @@ async function changerStatut(supabase, payload, res) {
         });
       }
     }
+  }
+
+  return res.status(200).json({ success: true, email_envoye: emailEnvoye });
+}
+
+/* =============================================
+   BILLET CRÉÉ MANUELLEMENT (PAIEMENT EN ESPÈCES)
+============================================= */
+
+// Envoie à un participant son billet confirmé (même e-mail, même PDF que l'achat en ligne).
+// Retourne true si l'e-mail est parti, false sinon. Ne lève jamais d'erreur.
+async function envoyerBilletParEmail(supabase, billet, evenementId) {
+  try {
+    if (!billet || !billet.email) return false;
+
+    const nom = echapperHtml(billet.nom_participant || "");
+    const lienBillet = `https://www.goldtixbilletterie.site/billet.html?id=${encodeURIComponent(billet.code_public)}`;
+
+    // On prépare le billet en PDF. Si la génération échoue, l'e-mail part quand même, sans PDF.
+    let attachments = null;
+    try {
+      const { data: evenementPdf, error: erreurEvPdf } = await supabase
+        .from("evenements")
+        .select("*")
+        .eq("id", evenementId)
+        .maybeSingle();
+
+      if (erreurEvPdf) {
+        console.error("Erreur lecture événement pour le PDF :", erreurEvPdf.message);
+      }
+
+      const pdf = await genererBilletPdf({
+        billet,
+        evenement: evenementPdf || {},
+        lienBillet,
+      });
+
+      attachments = [
+        {
+          filename: `Billet-GoldTix-${billet.code_public}.pdf`,
+          content: pdf.toString("base64"),
+        },
+      ];
+    } catch (e) {
+      console.error("Erreur génération PDF du billet :", e);
+      attachments = null;
+    }
+
+    return await envoyerEmailResend({
+      to: billet.email,
+      subject: "Votre billet GoldTix est prêt 🎫",
+      html: emailBilletHtml(nom, lienBillet, !!attachments),
+      attachments,
+    });
+  } catch (e) {
+    console.error("Erreur envoi du billet par e-mail :", e);
+    return false;
+  }
+}
+
+async function creerBilletEspeces(supabase, payload, res) {
+  const { evenementId, token, nomParticipant, email, telephone, categorieNom, cleIdempotence } = payload;
+
+  if (
+    !evenementId || !token ||
+    !String(nomParticipant || "").trim() ||
+    !String(email || "").trim() ||
+    !String(telephone || "").trim() ||
+    !String(categorieNom || "").trim() ||
+    !cleIdempotence
+  ) {
+    return res.status(400).json({ success: false, error: "Paramètres manquants." });
+  }
+
+  const { data, error } = await supabase.rpc("organisateur_creer_billet_especes", {
+    p_evenement_id: evenementId,
+    p_token: token,
+    p_nom_participant: nomParticipant,
+    p_email: email,
+    p_telephone: telephone,
+    p_categorie_nom: categorieNom,
+    p_cle_idempotence: String(cleIdempotence),
+  });
+
+  if (error) {
+    const msg = String(error.message || "");
+    if (msg.includes("CATEGORIE_EPUISEE")) {
+      return res.status(409).json({ success: false, error: "Cette catégorie est épuisée." });
+    }
+    if (msg.includes("CATEGORIE_INVALIDE")) {
+      return res.status(400).json({ success: false, error: "Catégorie invalide." });
+    }
+    if (msg.includes("EMAIL_INVALIDE")) {
+      return res.status(400).json({ success: false, error: "Adresse e-mail invalide." });
+    }
+    if (msg.includes("NOM_OBLIGATOIRE")) {
+      return res.status(400).json({ success: false, error: "Le nom et prénom sont obligatoires." });
+    }
+    if (msg.includes("TELEPHONE_OBLIGATOIRE")) {
+      return res.status(400).json({ success: false, error: "Le numéro WhatsApp / téléphone est obligatoire." });
+    }
+    if (msg.includes("EVENEMENT_INTROUVABLE")) {
+      return res.status(404).json({ success: false, error: "Événement introuvable." });
+    }
+    if (msg.toLowerCase().includes("session")) {
+      return res.status(401).json({ success: false, error: msg });
+    }
+    console.error("Erreur création billet espèces :", msg);
+    return res.status(500).json({ success: false, error: "Impossible de générer le billet : " + msg });
+  }
+
+  const billet = Array.isArray(data) ? data[0] : data;
+  if (!billet || !billet.id) {
+    return res.status(500).json({ success: false, error: "Le billet n'a pas pu être généré." });
+  }
+
+  // Soumission répétée (même clé) : si l'e-mail est déjà parti, on ne le renvoie pas une seconde fois.
+  let emailEnvoye;
+  if (billet.email_envoye === true) {
+    emailEnvoye = true;
+  } else {
+    emailEnvoye = await envoyerBilletParEmail(supabase, billet, evenementId);
+
+    // L'échec de l'e-mail n'annule jamais la création du billet : on note seulement le résultat.
+    const { error: erreurMaj } = await supabase
+      .from("billets")
+      .update({ email_envoye: emailEnvoye })
+      .eq("id", billet.id)
+      .eq("evenement_id", evenementId);
+
+    if (erreurMaj) {
+      console.error("Erreur mise à jour email_envoye :", erreurMaj.message);
+    }
+  }
+
+  return res.status(200).json({
+    success: true,
+    billet: { id: billet.id, code_public: billet.code_public },
+    email_envoye: emailEnvoye,
+  });
+}
+
+async function renvoyerEmailBillet(supabase, payload, res) {
+  const { evenementId, token, billetId } = payload;
+  if (!evenementId || !token || !billetId) {
+    return res.status(400).json({ success: false, error: "Paramètres manquants." });
+  }
+
+  const { data: sessionValide, error: erreurSession } = await supabase.rpc("organisateur_verifier_session", {
+    p_evenement_id: evenementId,
+    p_token: token,
+  });
+
+  if (erreurSession) {
+    return res.status(500).json({ success: false, error: erreurSession.message });
+  }
+  if (sessionValide !== true) {
+    return res.status(401).json({ success: false, error: "Votre session a expiré, veuillez rafraîchir la page." });
+  }
+
+  const { data: billet, error: erreurBillet } = await supabase
+    .from("billets")
+    .select("*")
+    .eq("id", billetId)
+    .eq("evenement_id", evenementId)
+    .maybeSingle();
+
+  if (erreurBillet) {
+    return res.status(500).json({ success: false, error: erreurBillet.message });
+  }
+  if (!billet) {
+    return res.status(404).json({ success: false, error: "Billet introuvable pour cet événement." });
+  }
+  if (billet.statut !== "confirme") {
+    return res.status(400).json({ success: false, error: "Ce billet n'est pas confirmé." });
+  }
+  if (!billet.email) {
+    return res.status(400).json({ success: false, error: "Ce billet n'a pas d'adresse e-mail." });
+  }
+
+  const emailEnvoye = await envoyerBilletParEmail(supabase, billet, evenementId);
+
+  const { error: erreurMaj } = await supabase
+    .from("billets")
+    .update({ email_envoye: emailEnvoye })
+    .eq("id", billet.id)
+    .eq("evenement_id", evenementId);
+
+  if (erreurMaj) {
+    console.error("Erreur mise à jour email_envoye :", erreurMaj.message);
   }
 
   return res.status(200).json({ success: true, email_envoye: emailEnvoye });
