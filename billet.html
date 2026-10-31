@@ -735,6 +735,10 @@ line-height: 1;
 flex-shrink: 0;
 }
 
+/* Séparateurs de sections : visibles uniquement quand le paiement est confirmé
+   (attente et refus gardent exactement l'ancien rendu) */
+.ticket:not(.is-confirmed) .section-divider{display:none}
+
 /* Infos d'émission (billet confirmé uniquement) */
 .issue-info{display:none;grid-template-columns:repeat(4,1fr);padding:12px 14px 14px;background:var(--bg-card)}
 .issue-info.show{display:grid}
@@ -1174,7 +1178,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Encoche du haut : au centre de la ligne « Détails de votre billet »
     const sepDetails = document.querySelector('.section-divider--details');
     const statusPanel = document.querySelector('.status-panel');
-    if (sepDetails) {
+    if (sepDetails && sepDetails.offsetHeight) {
       const dRect = sepDetails.getBoundingClientRect();
       positionsY.push(Math.round((dRect.top + dRect.height / 2) - ticketRect.top));
     } else if (statusPanel) {
@@ -1183,7 +1187,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Encoche du bas : au niveau de la séparation avant le QR code
-    const separateur = document.querySelector('.tear-separator .section-divider') || document.querySelector('.tear-separator');
+    let separateur = document.querySelector('.tear-separator .section-divider');
+    if (!separateur || !separateur.offsetHeight) separateur = document.querySelector('.tear-separator');
     if (separateur) {
       const sepRect = separateur.getBoundingClientRect();
       positionsY.push(Math.round((sepRect.top + sepRect.height / 2) - ticketRect.top));
@@ -1516,6 +1521,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       etatBillet = billet; etatEv = ev; etatStatut = statut;
       const statusZone = document.getElementById('statusBannerZone');
       const isConfirmed = (statut === 'confirme' || statut === 'valide');
+      ticketEl.classList.toggle('is-confirmed', isConfirmed);
 
       if (!isConfirmed) {
         const dlBtn = document.getElementById('downloadTicket');
@@ -1662,6 +1668,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function mettreAJourStatutAffiche(billet, statut, ev) {
     const isConfirmed = (statut === 'confirme' || statut === 'valide');
+    const ticketRoot = document.getElementById('ticketContent');
+    if (ticketRoot) ticketRoot.classList.toggle('is-confirmed', isConfirmed);
 
     updateFooterReloadButton(statut);
 
