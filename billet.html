@@ -738,6 +738,9 @@ flex-shrink: 0;
 /* Séparateurs de sections : visibles uniquement quand le paiement est confirmé
    (attente et refus gardent exactement l'ancien rendu) */
 .ticket:not(.is-confirmed) .section-divider{display:none}
+/* Attente / refus : espace réduit entre la notification et les cartes d'infos */
+.ticket:not(.is-confirmed) .status-panel{padding-bottom:6px}
+.ticket:not(.is-confirmed) .ticket-body{padding-top:8px}
 
 /* Infos d'émission (billet confirmé uniquement) */
 .issue-info{display:none;grid-template-columns:repeat(4,1fr);padding:12px 14px 14px;background:var(--bg-card)}
