@@ -10,12 +10,9 @@ import QRCode from "qrcode";
   (bouton « Télécharger mon billet en PDF » : carte de 380 px, marge de 18 pt).
   Renvoie un Buffer. Le "_" initial évite que Vercel le publie comme route d'API.
 
-  AFFICHE_ENTIERE :
-    false = comme billet.html aujourd'hui : affiche de 170 pt de haut, recadrée (cover, centrée)
-    true  = l'affiche s'affiche en entier, la hauteur s'adapte à son format (max 320 pt)
-  Si vous passez à true, faites la même chose dans billet.html pour garder deux PDF identiques.
+  Affiche : comme dans billet.html, elle remplit le cadre de 380 x 170 pt (toute l'affiche est visible,
+  simplement mise à la taille du cadre).
 */
-const AFFICHE_ENTIERE = false;
 
 const hex = (h) => rgb(
   parseInt(h.slice(1, 3), 16) / 255,
@@ -188,9 +185,7 @@ export async function genererBilletPdf({ billet, evenement, lienBillet }) {
   try { origine = new URL(lienBillet).origin; } catch {}
   if (urlAffiche && urlAffiche.startsWith("/") && origine) urlAffiche = origine + urlAffiche;
   const imgAffiche = await integrerImage(pdf, await telecharger(urlAffiche));
-  const POSTER_H = imgAffiche && AFFICHE_ENTIERE
-    ? Math.max(100, Math.min(320, (CW * imgAffiche.height) / imgAffiche.width))
-    : 170;
+  const POSTER_H = 170;
 
   // ---- Mise en page (coordonnées « haut vers bas », mêmes cotes que billet.html)
   const INSET = 22;                    // marge intérieure de la carte
@@ -244,14 +239,10 @@ export async function genererBilletPdf({ billet, evenement, lienBillet }) {
   // ---- Carte (fond blanc)
   svg(cheminArrondi(cx, MARGE, CW, yCarteBas - MARGE, 20, 20, 20, 20), { color: rgb(1, 1, 1) });
 
-  // ---- Affiche (cover centré, coins du haut arrondis)
+  // ---- Affiche (remplit le cadre, coins du haut arrondis)
   if (imgAffiche) {
-    const sc = Math.max(CW / imgAffiche.width, POSTER_H / imgAffiche.height);
-    const dw = imgAffiche.width * sc, dh = imgAffiche.height * sc;
     page.pushOperators(pushGraphicsState(), ...operateursClip(cx, Y(MARGE), CW, POSTER_H, 20, 20, 0, 0));
-    page.drawImage(imgAffiche, {
-      x: cx + (CW - dw) / 2, y: Y(MARGE + (POSTER_H - dh) / 2 + dh), width: dw, height: dh,
-    });
+    page.drawImage(imgAffiche, { x: cx, y: Y(MARGE + POSTER_H), width: CW, height: POSTER_H });
     page.pushOperators(popGraphicsState());
   } else {
     degrade(cx, MARGE, CW, POSTER_H, [20, 20, 0, 0], NEUTRE_1, NEUTRE_2);
