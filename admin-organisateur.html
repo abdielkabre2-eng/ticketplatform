@@ -2100,6 +2100,269 @@ body { padding-top: 76px !important; }
 .btn-voir-preuve:focus-visible { outline: 2px solid #dc2626; outline-offset: 2px; }
 .btn-voir-preuve svg { width: 14px; height: 14px; flex-shrink: 0; }
 
+/* ==========================================================
+   NOUVEAU — Création manuelle d'un billet (paiement en espèces)
+   Bloc ajouté en fin de feuille : ne modifie aucun style existant.
+========================================================== */
+
+/* ----- Bouton "Créer un billet" (onglet Gestion) ----- */
+.btn-creer-billet {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    margin-bottom: 22px;
+    padding: 13px 20px;
+    background: var(--gold-600);
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.btn-creer-billet:hover { background: var(--gold-700); }
+.btn-creer-billet:focus-visible { outline: 2px solid var(--ink-900); outline-offset: 3px; }
+.btn-creer-billet svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+/* ----- Fenêtre (modale) du formulaire ----- */
+.modal-billet-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(10,6,2,0.55);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+}
+.modal-billet-overlay.active {
+    display: flex;
+    animation: fadeIn 0.2s ease both;
+}
+
+.modal-billet {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: #ffffff;
+    border: 1px solid var(--border-gold);
+    border-radius: 20px;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 20px 50px rgba(15,23,42,0.25);
+    animation: fadeUp 0.3s cubic-bezier(0.22,1,0.36,1) both;
+}
+.modal-billet::before { content: ''; display: block; height: 2px; background: var(--grad-gold); }
+
+.modal-billet-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 20px 22px 0;
+}
+.modal-billet-title {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--ink-900);
+    letter-spacing: -0.3px;
+    line-height: 1.3;
+}
+.modal-billet-sub {
+    margin-top: 4px;
+    font-size: 12.5px;
+    color: var(--ink-500);
+    line-height: 1.5;
+}
+.modal-billet-close {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ink-100);
+    border: none;
+    border-radius: 50%;
+    color: var(--ink-600);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+.modal-billet-close:hover { background: var(--ink-200); color: var(--ink-900); }
+.modal-billet-close:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
+.modal-billet-close svg { width: 16px; height: 16px; }
+
+.modal-billet-body { padding: 18px 22px 22px; }
+
+/* Champs du formulaire (même rendu que les champs existants) */
+.champ-billet {
+    width: 100%;
+    padding: 13px 16px;
+    background: var(--ink-50);
+    border: 1px solid var(--ink-200);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--ink-900);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.champ-billet:focus {
+    border-color: var(--gold-500);
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(245,158,11,0.12);
+}
+.champ-billet::placeholder { color: var(--ink-400); }
+select.champ-billet {
+    -webkit-appearance: none;
+    appearance: none;
+    padding-right: 40px;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+}
+
+/* Message d'erreur affiché dans la fenêtre */
+.modal-billet-error {
+    display: none;
+    margin-bottom: 14px;
+    padding: 10px 14px;
+    background: var(--red-100);
+    border: 1px solid rgba(239,68,68,0.25);
+    border-radius: var(--radius-xs);
+    color: var(--red-700);
+    font-size: 12.5px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.modal-billet-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+}
+.modal-billet-actions .btn-auth-primary {
+    flex: 1;
+    min-width: 150px;
+    width: auto;
+    margin-top: 0;
+}
+.btn-modal-annuler {
+    padding: 12px 16px;
+    background: var(--ink-100);
+    border: none;
+    border-radius: 10px;
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink-700);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.btn-modal-annuler:hover:not(:disabled) { background: var(--ink-200); }
+.btn-modal-annuler:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-modal-annuler:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
+
+@media (max-width: 480px) {
+    .modal-billet-overlay { padding: 10px; }
+    .modal-billet-header { padding: 16px 16px 0; }
+    .modal-billet-body { padding: 14px 16px 18px; }
+}
+
+/* ----- Notification (toast) en haut de l'écran ----- */
+.toast-goldtix {
+    position: fixed;
+    top: 72px;
+    left: 50%;
+    z-index: 1200;
+    width: calc(100% - 24px);
+    max-width: 420px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 13px 16px;
+    background: #ffffff;
+    border: 1px solid var(--ink-200);
+    border-left-width: 4px;
+    border-radius: 12px;
+    box-shadow: 0 8px 28px rgba(15,23,42,0.18);
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--ink-900);
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -16px);
+    transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.22,1,0.36,1);
+}
+.toast-goldtix.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, 0);
+}
+.toast-goldtix svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; }
+.toast-goldtix.toast-success { border-left-color: var(--green-500); }
+.toast-goldtix.toast-success svg { color: var(--green-600); }
+.toast-goldtix.toast-error { border-left-color: var(--red-500); }
+.toast-goldtix.toast-error svg { color: var(--red-500); }
+.toast-goldtix.toast-warning { border-left-color: var(--amber-500); }
+.toast-goldtix.toast-warning svg { color: var(--gold-600); }
+@media (max-width: 480px) { .toast-goldtix { top: 66px; font-size: 13px; } }
+
+/* ----- Carte d'un participant confirmé : billet en espèces ----- */
+/* "Paiement en espèces" : même position que "Voir la preuve", mais simple texte (pas un lien) */
+.mention-especes {
+    margin-left: auto;
+    padding: 7px 4px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--ink-500);
+    white-space: nowrap;
+    cursor: default;
+}
+
+/* Petit bouton "Renvoyer l'e-mail" (affiché seulement si l'envoi a échoué) */
+.btn-renvoyer-email {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    background: #ffffff;
+    border: 1px solid var(--border-gold-strong);
+    border-radius: var(--radius-xs);
+    font-family: var(--font-display);
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    color: var(--gold-700);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+}
+.btn-renvoyer-email:hover:not(:disabled) { background: rgba(217,119,6,0.08); transform: translateY(-1px); }
+.btn-renvoyer-email:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-renvoyer-email:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
+
+/* Rappel discret sous la carte : e-mail non parti */
+.alerte-email-billet {
+    flex-basis: 100%;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--red-700);
+}
 </style>
 </head>
 <body>
@@ -2531,6 +2794,10 @@ body { padding-top: 76px !important; }
 
                     <!-- SECTION : GESTION -->
                     <div id="section-gestion" class="section-content">
+                          <button type="button" class="btn-creer-billet" id="btnCreerBillet" onclick="ouvrirModalCreerBillet()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            Créer un billet
+                        </button>
                         <div class="section-header">
                             <h2>Gestion de l'événement</h2>
                             <p>Gérez les ventes, la limite de billets et modifiez les informations de votre événement.</p>
@@ -2773,7 +3040,57 @@ body { padding-top: 76px !important; }
 </footer>
 
     </div><!-- /.page-wrapper -->
+    <!-- ==================== FENÊTRE : CRÉER UN BILLET (paiement en espèces) ==================== -->
+    <div class="modal-billet-overlay" id="modalCreerBillet" aria-hidden="true">
+        <div class="modal-billet" role="dialog" aria-modal="true" aria-labelledby="titreModalCreerBillet">
+            <div class="modal-billet-header">
+                <div>
+                    <h3 class="modal-billet-title" id="titreModalCreerBillet">Créer un billet</h3>
+                    <p class="modal-billet-sub">Paiement en espèces : le billet est confirmé immédiatement et envoyé par e-mail au participant.</p>
+                </div>
+                <button type="button" class="modal-billet-close" onclick="fermerModalCreerBillet()" aria-label="Fermer">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
 
+            <div class="modal-billet-body">
+                <div id="creerBilletErreur" class="modal-billet-error"></div>
+
+                <form id="formCreerBillet" onsubmit="soumettreCreationBillet(event)" novalidate>
+                    <div class="auth-form-group">
+                        <label for="billetNom">Nom et prénom</label>
+                        <input type="text" id="billetNom" class="champ-billet" placeholder="Nom et prénom du participant" autocomplete="off">
+                    </div>
+
+                    <div class="auth-form-group">
+                        <label for="billetEmail">E-mail</label>
+                        <input type="email" id="billetEmail" class="champ-billet" placeholder="exemple@email.com" autocomplete="off">
+                    </div>
+
+                    <div class="auth-form-group">
+                        <label for="billetTelephone">WhatsApp / téléphone</label>
+                        <input type="tel" id="billetTelephone" class="champ-billet" placeholder="+212 6XX XXX XXX" autocomplete="off">
+                    </div>
+
+                    <div class="auth-form-group">
+                        <label for="billetCategorie">Catégorie</label>
+                        <select id="billetCategorie" class="champ-billet"></select>
+                    </div>
+
+                    <div class="modal-billet-actions">
+                        <button type="submit" class="btn-auth-primary" id="btnGenererBillet">Générer le billet</button>
+                        <button type="button" class="btn-modal-annuler" id="btnAnnulerBillet" onclick="fermerModalCreerBillet()">Annuler</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== NOTIFICATION EN HAUT DE L'ÉCRAN ==================== -->
+    <div class="toast-goldtix" id="toastGoldTix" role="status" aria-live="polite">
+        <span id="toastIcone"></span>
+        <span id="toastMessage"></span>
+    </div>
    
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
@@ -3388,7 +3705,7 @@ async function verifierMiseAJourEvenement() {
             if (b.statut === "confirme") {
                 nouveauxValidesGlobal.push(b);
 
-                if (b.updated_at) {
+                  if (b.updated_at && b.mode_paiement !== "especes") {
                     const tempsMaj = new Date(b.updated_at).getTime();
                     const tempsEcoule = maintenant - tempsMaj;
                     if (tempsEcoule < 5000) {
@@ -3503,7 +3820,7 @@ async function verifierMiseAJourEvenement() {
         listeFiltree.forEach(b => {
             cibleMap.set(String(b.id), {
                 billet: b,
-                sig: `${b.nom_participant || ''}|${b.telephone || ''}|${b.type_billet || ''}`
+                 sig: `${b.nom_participant || ''}|${b.telephone || ''}|${b.type_billet || ''}|${b.preuve_url || ''}|${b.mode_paiement || ''}|${b.email_envoye}`
             });
         });
 
@@ -3615,12 +3932,26 @@ async function verifierMiseAJourEvenement() {
        un simple lien vers b.preuve_url, ouvert dans un nouvel onglet.
        Le lien n'est affiché que si une preuve existe pour ce billet.
     ============================================= */
-    function HTMLCarteValidee(b) {
-        // NOUVEAU : lien "Voir la preuve" (vide si aucune preuve enregistrée)
-        const lienPreuve = b.preuve_url
-            ? `<a href="${b.preuve_url}" target="_blank" rel="noopener" class="btn-voir-preuve">
+        function HTMLCarteValidee(b) {
+        const estEspeces = b.mode_paiement === 'especes';
+
+        // À droite de la carte : "Paiement en espèces" (simple texte) ou lien "Voir la preuve"
+        let lienPreuve = '';
+        if (estEspeces) {
+            lienPreuve = `<span class="mention-especes">Paiement en espèces</span>`;
+        } else if (b.preuve_url) {
+            lienPreuve = `<a href="${b.preuve_url}" target="_blank" rel="noopener" class="btn-voir-preuve">
                    Voir la preuve
-               </a>`
+               </a>`;
+        }
+
+        // Billet espèces dont l'e-mail n'est pas parti : bouton pour renvoyer (sans créer de nouveau billet)
+        const emailNonEnvoye = estEspeces && b.email_envoye === false;
+        const boutonRenvoyer = emailNonEnvoye
+            ? `<button type="button" class="btn-renvoyer-email" data-id="${b.id}">Renvoyer l'e-mail</button>`
+            : '';
+        const alerteEmail = emailNonEnvoye
+            ? `<span class="alerte-email-billet">E-mail non envoyé au participant.</span>`
             : '';
 
         return `
@@ -3652,7 +3983,9 @@ async function verifierMiseAJourEvenement() {
                         data-id="${b.id}">
                         Retirer ce participant
                     </button>
-                    ${lienPreuve}<!-- NOUVEAU : aligné à droite grâce à margin-left:auto -->
+                    ${boutonRenvoyer}
+                    ${lienPreuve}
+                    ${alerteEmail}
                 </div>
             </div>`;
     }
@@ -4464,6 +4797,235 @@ function annulerNouvelleAffiche() {
     document.getElementById("nouvelleAfficheBlock").style.display = "none";
     document.getElementById("inputNouvelleAffiche").value = "";
 }
+
+/* =============================================
+   CRÉATION MANUELLE D'UN BILLET (PAIEMENT EN ESPÈCES)
+============================================= */
+let cleIdempotenceBillet = null;
+let creationBilletEnCours = false;
+let timerToast = null;
+
+const ICONES_TOAST = {
+    success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>',
+    error: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+    warning: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+};
+
+/* ----- Notification en haut de l'écran ----- */
+function afficherToast(type, message, dureeMs) {
+    const el = document.getElementById("toastGoldTix");
+    if (!el) return;
+    clearTimeout(timerToast);
+
+    el.className = "toast-goldtix toast-" + type;
+    document.getElementById("toastIcone").innerHTML = ICONES_TOAST[type] || "";
+    document.getElementById("toastMessage").textContent = message;
+
+    void el.offsetWidth; // relance l'animation d'apparition
+    el.classList.add("visible");
+
+    const duree = dureeMs || (type === "success" ? 4000 : 7000);
+    timerToast = setTimeout(() => el.classList.remove("visible"), duree);
+}
+
+/* ----- Outils ----- */
+function genererCleIdempotence() {
+    if (window.crypto && typeof window.crypto.randomUUID === "function") {
+        return window.crypto.randomUUID();
+    }
+    return "k-" + Date.now() + "-" + Math.random().toString(36).slice(2, 12);
+}
+
+function lireCategoriesEvenement() {
+    let cats = evenementActuelData ? evenementActuelData.categories_data : null;
+    try {
+        if (typeof cats === "string") cats = JSON.parse(cats);
+        if (typeof cats === "string") cats = JSON.parse(cats);
+    } catch (e) {
+        cats = null;
+    }
+    return Array.isArray(cats)
+        ? cats.filter(c => c && String(c.nom || "").trim() !== "")
+        : [];
+}
+
+function afficherErreurModalBillet(message) {
+    const el = document.getElementById("creerBilletErreur");
+    if (!el) return;
+    el.textContent = message;
+    el.style.display = "block";
+}
+
+function masquerErreurModalBillet() {
+    const el = document.getElementById("creerBilletErreur");
+    if (el) el.style.display = "none";
+}
+
+/* ----- Ouverture / fermeture de la fenêtre ----- */
+function ouvrirModalCreerBillet() {
+    const categories = lireCategoriesEvenement();
+    if (!evenementActuelData || categories.length === 0) {
+        afficherToast("error", "Aucune catégorie de billet n'est définie pour cet événement.");
+        return;
+    }
+
+    // Les catégories viennent de la configuration de l'événement (valeur = nom brut, espace final compris)
+    const select = document.getElementById("billetCategorie");
+    select.innerHTML = "";
+    const optionVide = document.createElement("option");
+    optionVide.value = "";
+    optionVide.textContent = "Choisir une catégorie";
+    select.appendChild(optionVide);
+    categories.forEach(cat => {
+        const opt = document.createElement("option");
+        opt.value = cat.nom;
+        opt.textContent = String(cat.nom).trim() + (cat.prix ? " - " + cat.prix : "");
+        select.appendChild(opt);
+    });
+
+    document.getElementById("billetNom").value = "";
+    document.getElementById("billetEmail").value = "";
+    document.getElementById("billetTelephone").value = "";
+    masquerErreurModalBillet();
+
+    // Une nouvelle clé à chaque ouverture : une même soumission ne peut créer qu'un seul billet
+    cleIdempotenceBillet = genererCleIdempotence();
+
+    const modal = document.getElementById("modalCreerBillet");
+    modal.classList.add("active");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+    setTimeout(() => document.getElementById("billetNom").focus(), 50);
+}
+
+function fermerModalCreerBillet() {
+    if (creationBilletEnCours) return;
+    const modal = document.getElementById("modalCreerBillet");
+    if (!modal) return;
+    modal.classList.remove("active");
+    modal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+}
+
+document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    const modal = document.getElementById("modalCreerBillet");
+    if (modal && modal.classList.contains("active")) fermerModalCreerBillet();
+});
+
+/* ----- Génération du billet ----- */
+async function soumettreCreationBillet(event) {
+    if (event) event.preventDefault();
+    if (creationBilletEnCours) return; // anti double clic
+
+    const nom = document.getElementById("billetNom").value.trim();
+    const email = document.getElementById("billetEmail").value.trim();
+    const telephone = document.getElementById("billetTelephone").value.trim();
+    const categorieNom = document.getElementById("billetCategorie").value;
+
+    masquerErreurModalBillet();
+
+    if (!nom) { afficherErreurModalBillet("Veuillez saisir le nom et prénom du participant."); return; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        afficherErreurModalBillet("Veuillez saisir une adresse e-mail valide.");
+        return;
+    }
+    if (!telephone) { afficherErreurModalBillet("Veuillez saisir le numéro WhatsApp / téléphone."); return; }
+    if (!categorieNom) { afficherErreurModalBillet("Veuillez choisir une catégorie."); return; }
+
+    const btnGenerer = document.getElementById("btnGenererBillet");
+    const btnAnnuler = document.getElementById("btnAnnulerBillet");
+    creationBilletEnCours = true;
+    btnGenerer.disabled = true;
+    btnAnnuler.disabled = true;
+    btnGenerer.textContent = "Génération en cours...";
+
+    try {
+        const data = await callOrganisateurAPI('creer_billet_especes', {
+            evenementId: eventId,
+            token: sessionToken,
+            nomParticipant: nom,
+            email: email,
+            telephone: telephone,
+            categorieNom: categorieNom,
+            cleIdempotence: cleIdempotenceBillet
+        }, 45000);
+
+        // Le billet existe : on ferme la fenêtre
+        creationBilletEnCours = false;
+        fermerModalCreerBillet();
+
+        if (data.email_envoye === false) {
+            afficherToast("warning", "Billet généré, mais l'e-mail n'a pas pu être envoyé. Utilisez « Renvoyer l'e-mail » dans la liste des confirmés.", 9000);
+        } else {
+            afficherToast("success", "Billet généré avec succès !");
+        }
+
+        await rechargerListesApresCreation();
+
+    } catch (err) {
+        console.error("Erreur création billet espèces :", err);
+        let message = err && err.message ? err.message : "Erreur inattendue.";
+        if (err && (err.name === "AbortError" || err instanceof TypeError)) {
+            message = "Le serveur n'a pas répondu à temps. Cliquez à nouveau sur « Générer le billet » : aucun doublon ne sera créé.";
+        }
+        afficherErreurModalBillet(message);
+        afficherToast("error", "Le billet n'a pas été généré. " + message);
+    } finally {
+        creationBilletEnCours = false;
+        btnGenerer.disabled = false;
+        btnAnnuler.disabled = false;
+        btnGenerer.textContent = "Générer le billet";
+    }
+}
+
+async function rechargerListesApresCreation() {
+    // Si un rechargement automatique est en cours, on attend qu'il se termine
+    for (let i = 0; i < 6 && chargementDemandesEnCours; i++) {
+        await new Promise(r => setTimeout(r, 300));
+    }
+    await chargerToutesLesDemandes();
+}
+
+/* ----- Renvoyer l'e-mail d'un billet (sans créer de nouveau billet) ----- */
+document.addEventListener("click", function(event) {
+    const bouton = event.target.closest(".btn-renvoyer-email");
+    if (!bouton) return;
+    renvoyerEmailBillet(bouton.getAttribute("data-id"), bouton);
+});
+
+async function renvoyerEmailBillet(billetId, bouton) {
+    if (!billetId) return;
+    if (bouton) {
+        if (bouton.disabled) return;
+        bouton.disabled = true;
+        bouton.textContent = "Envoi en cours...";
+    }
+
+    try {
+        const data = await callOrganisateurAPI('renvoyer_email_billet', {
+            evenementId: eventId,
+            token: sessionToken,
+            billetId: billetId
+        }, 45000);
+
+        if (data.email_envoye) {
+            afficherToast("success", "E-mail envoyé avec succès.");
+        } else {
+            afficherToast("error", "L'e-mail n'a pas pu être envoyé. Réessayez dans un instant.");
+        }
+        await rechargerListesApresCreation();
+    } catch (err) {
+        console.error("Erreur renvoi e-mail :", err);
+        afficherToast("error", err.message || "Erreur lors du renvoi de l'e-mail.");
+    } finally {
+        if (bouton) {
+            bouton.disabled = false;
+            bouton.textContent = "Renvoyer l'e-mail";
+        }
+    }
+}
+
 </script>
 
 </body>

@@ -1105,7 +1105,7 @@
         .btn-auth-primary:focus-visible { outline: 2px solid var(--ink-900); outline-offset: 3px; }
 
         .auth-link-row { text-align: center; margin-top: 16px; }
-        .auth-link-row a { font-size: 12.5px; color: var(--gold-600); text-decoration: none; font-weight: 700; cursor: pointer; }
+        .auth-link-row a { font-size: 12.5px; color: var(--gold-600); text-decoration: underline; font-weight: 700; cursor: pointer; }
         .auth-link-row a:hover { color: var(--gold-800); text-decoration: underline; }
         .auth-link-row a:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
 
@@ -2074,6 +2074,295 @@ body { padding-top: 76px !important; }
 .intro-check-mark svg { width: 10px; height: 10px; }
 .intro-welcome-icon { font-size: 30px; margin-bottom: 14px; }
 .intro-skip-btn { border-radius: 8px; }
+
+/* ==========================================================
+   NOUVEAU — Lien "Voir la preuve" (cartes des participants confirmés)
+   Scopé à .btn-voir-preuve : n'affecte aucun autre élément.
+========================================================== */
+/* ===== Lien "Voir la preuve" : simple, en rouge ===== */
+.btn-voir-preuve {
+    margin-left: auto;              /* reste tout à droite de la carte */
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 4px;
+    font-family: var(--font-body);  /* police simple, comme le reste du texte */
+    font-size: 13px;
+    font-weight: 400;               /* pas de gras */
+    color: #dc2626;
+    text-decoration: underline;                 /* rouge, comme le bouton "Retirer" */
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.btn-voir-preuve:hover { color: #b91c1c; text-decoration: underline; }
+.btn-voir-preuve:focus-visible { outline: 2px solid #dc2626; outline-offset: 2px; }
+.btn-voir-preuve svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+/* ==========================================================
+   NOUVEAU — Création manuelle d'un billet (paiement en espèces)
+   Bloc ajouté en fin de feuille : ne modifie aucun style existant.
+========================================================== */
+
+/* ----- Bouton "Créer un billet" (onglet Gestion) ----- */
+.btn-creer-billet {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    margin-bottom: 22px;
+    padding: 13px 20px;
+    background: var(--gold-600);
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.btn-creer-billet:hover { background: var(--gold-700); }
+.btn-creer-billet:focus-visible { outline: 2px solid var(--ink-900); outline-offset: 3px; }
+.btn-creer-billet svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+/* ----- Fenêtre (modale) du formulaire ----- */
+.modal-billet-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(10,6,2,0.55);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+}
+.modal-billet-overlay.active {
+    display: flex;
+    animation: fadeIn 0.2s ease both;
+}
+
+.modal-billet {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: #ffffff;
+    border: 1px solid var(--border-gold);
+    border-radius: 20px;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 20px 50px rgba(15,23,42,0.25);
+    animation: fadeUp 0.3s cubic-bezier(0.22,1,0.36,1) both;
+}
+.modal-billet::before { content: ''; display: block; height: 2px; background: var(--grad-gold); }
+
+.modal-billet-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 20px 22px 0;
+}
+.modal-billet-title {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--ink-900);
+    letter-spacing: -0.3px;
+    line-height: 1.3;
+}
+.modal-billet-sub {
+    margin-top: 4px;
+    font-size: 12.5px;
+    color: var(--ink-500);
+    line-height: 1.5;
+}
+.modal-billet-close {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ink-100);
+    border: none;
+    border-radius: 50%;
+    color: var(--ink-600);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+.modal-billet-close:hover { background: var(--ink-200); color: var(--ink-900); }
+.modal-billet-close:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
+.modal-billet-close svg { width: 16px; height: 16px; }
+
+.modal-billet-body { padding: 18px 22px 22px; }
+
+/* Champs du formulaire (même rendu que les champs existants) */
+.champ-billet {
+    width: 100%;
+    padding: 13px 16px;
+    background: var(--ink-50);
+    border: 1px solid var(--ink-200);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--ink-900);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.champ-billet:focus {
+    border-color: var(--gold-500);
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(245,158,11,0.12);
+}
+.champ-billet::placeholder { color: var(--ink-400); }
+select.champ-billet {
+    -webkit-appearance: none;
+    appearance: none;
+    padding-right: 40px;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+}
+
+/* Message d'erreur affiché dans la fenêtre */
+.modal-billet-error {
+    display: none;
+    margin-bottom: 14px;
+    padding: 10px 14px;
+    background: var(--red-100);
+    border: 1px solid rgba(239,68,68,0.25);
+    border-radius: var(--radius-xs);
+    color: var(--red-700);
+    font-size: 12.5px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.modal-billet-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+}
+.modal-billet-actions .btn-auth-primary {
+    flex: 1;
+    min-width: 150px;
+    width: auto;
+    margin-top: 0;
+}
+.btn-modal-annuler {
+    padding: 12px 16px;
+    background: var(--ink-100);
+    border: none;
+    border-radius: 10px;
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink-700);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.btn-modal-annuler:hover:not(:disabled) { background: var(--ink-200); }
+.btn-modal-annuler:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-modal-annuler:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
+
+@media (max-width: 480px) {
+    .modal-billet-overlay { padding: 10px; }
+    .modal-billet-header { padding: 16px 16px 0; }
+    .modal-billet-body { padding: 14px 16px 18px; }
+}
+
+/* ----- Notification (toast) en haut de l'écran ----- */
+.toast-goldtix {
+    position: fixed;
+    top: 72px;
+    left: 50%;
+    z-index: 1200;
+    width: calc(100% - 24px);
+    max-width: 420px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 13px 16px;
+    background: #ffffff;
+    border: 1px solid var(--ink-200);
+    border-left-width: 4px;
+    border-radius: 12px;
+    box-shadow: 0 8px 28px rgba(15,23,42,0.18);
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--ink-900);
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -16px);
+    transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.22,1,0.36,1);
+}
+.toast-goldtix.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, 0);
+}
+.toast-goldtix svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; }
+.toast-goldtix.toast-success { border-left-color: var(--green-500); }
+.toast-goldtix.toast-success svg { color: var(--green-600); }
+.toast-goldtix.toast-error { border-left-color: var(--red-500); }
+.toast-goldtix.toast-error svg { color: var(--red-500); }
+.toast-goldtix.toast-warning { border-left-color: var(--amber-500); }
+.toast-goldtix.toast-warning svg { color: var(--gold-600); }
+@media (max-width: 480px) { .toast-goldtix { top: 66px; font-size: 13px; } }
+
+/* ----- Carte d'un participant confirmé : billet en espèces ----- */
+/* "Paiement en espèces" : même position que "Voir la preuve", mais simple texte (pas un lien) */
+.mention-especes {
+    margin-left: auto;
+    padding: 7px 4px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--ink-500);
+    white-space: nowrap;
+    cursor: default;
+}
+
+/* Petit bouton "Renvoyer l'e-mail" (affiché seulement si l'envoi a échoué) */
+.btn-renvoyer-email {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    background: #ffffff;
+    border: 1px solid var(--border-gold-strong);
+    border-radius: var(--radius-xs);
+    font-family: var(--font-display);
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    color: var(--gold-700);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+}
+.btn-renvoyer-email:hover:not(:disabled) { background: rgba(217,119,6,0.08); transform: translateY(-1px); }
+.btn-renvoyer-email:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-renvoyer-email:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
+
+/* Rappel discret sous la carte : e-mail non parti */
+.alerte-email-billet {
+    flex-basis: 100%;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--red-700);
+}
 </style>
 </head>
 <body>
@@ -2505,6 +2794,10 @@ body { padding-top: 76px !important; }
 
                     <!-- SECTION : GESTION -->
                     <div id="section-gestion" class="section-content">
+                          <button type="button" class="btn-creer-billet" id="btnCreerBillet" onclick="ouvrirModalCreerBillet()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            Créer un billet
+                        </button>
                         <div class="section-header">
                             <h2>Gestion de l'événement</h2>
                             <p>Gérez les ventes, la limite de billets et modifiez les informations de votre événement.</p>
@@ -3581,7 +3874,22 @@ async function verifierMiseAJourEvenement() {
         </div>`;
 }
 
+    /* =============================================
+       CARTE PARTICIPANT CONFIRMÉ
+       MODIFIÉ : ajout d'un lien "Voir la preuve" dans la zone
+       d'actions (en bas à droite de la carte). Il réutilise
+       exactement le mécanisme de l'onglet "En attente" :
+       un simple lien vers b.preuve_url, ouvert dans un nouvel onglet.
+       Le lien n'est affiché que si une preuve existe pour ce billet.
+    ============================================= */
     function HTMLCarteValidee(b) {
+        // NOUVEAU : lien "Voir la preuve" (vide si aucune preuve enregistrée)
+        const lienPreuve = b.preuve_url
+            ? `<a href="${b.preuve_url}" target="_blank" rel="noopener" class="btn-voir-preuve">
+                   Voir la preuve
+               </a>`
+            : '';
+
         return `
             <div class="billet-card billet-card-confirme">
                 <div class="billet-card-header">
@@ -3611,6 +3919,7 @@ async function verifierMiseAJourEvenement() {
                         data-id="${b.id}">
                         Retirer ce participant
                     </button>
+                    ${lienPreuve}<!-- NOUVEAU : aligné à droite grâce à margin-left:auto -->
                 </div>
             </div>`;
     }
