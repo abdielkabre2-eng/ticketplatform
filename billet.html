@@ -735,6 +735,19 @@ line-height: 1;
 flex-shrink: 0;
 }
 
+/* Infos d'émission (billet confirmé uniquement) */
+.issue-info{display:none;grid-template-columns:repeat(4,1fr);padding:12px 14px 14px;background:var(--bg-card)}
+.issue-info.show{display:grid}
+.ei-item{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;padding:0 4px;min-width:0}
+.ei-item+.ei-item{border-left:1px solid var(--border)}
+.ei-label{font-size:.5rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-lo);line-height:1}
+.ei-value{font-size:.66rem;font-weight:700;color:var(--text-hi);line-height:1.25;display:inline-flex;align-items:center;gap:5px}
+.ei-dot{width:6px;height:6px;border-radius:50%;background:#10b981;box-shadow:0 0 4px rgba(16,185,129,.6);flex-shrink:0}
+@media (max-width:360px){
+  .issue-info{grid-template-columns:1fr 1fr;row-gap:10px}
+  .ei-item:nth-child(3){border-left:none}
+}
+
 /* ── Sélecteur de langue (drapeau + menu) et en-tête compact fluide ── */
 .top-navbar{gap:clamp(6px,2vw,12px);height:48px}
 @media (max-width:600px){.top-navbar{height:42px}}
@@ -803,6 +816,8 @@ flex-shrink: 0;
 </div>
 
 <div id="statusBannerZone"></div>
+
+<div class="issue-info" id="issueInfo"></div>
 
 <div class="section-divider section-divider--details">
 <span data-i18n="sep_details">Détails de votre billet</span>
@@ -917,6 +932,12 @@ FR.cell_categorie = 'Catégorie';                            EN.cell_categorie =
 FR.cell_lieu = 'Lieu';                                      EN.cell_lieu = 'Venue';
 FR.cell_benef = 'Bénéficiaire_paiements';                   EN.cell_benef = 'Payment_recipient';
 FR.cell_id = 'ID-billet';                                   EN.cell_id = 'Ticket-ID';
+
+FR.ei_date = "Date d'émission";   EN.ei_date = 'Issue date';
+FR.ei_time = "Heure d'émission";  EN.ei_time = 'Issue time';
+FR.ei_status = 'Statut';          EN.ei_status = 'Status';
+FR.ei_platform = 'Plateforme';    EN.ei_platform = 'Platform';
+FR.ei_confirmed = 'Confirmé';     EN.ei_confirmed = 'Confirmed';
 
 FR.reload_wait = 'Rafraîchir';                              EN.reload_wait = 'Refresh';
 FR.reload_retry = 'Réessayer';                              EN.reload_retry = 'Try again';
@@ -1323,6 +1344,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     </div>`;
   }
 
+  // Infos d'émission : affichées uniquement pour un billet confirmé.
+  // Date/heure : on prend le premier champ disponible renvoyé par l'API
+  // (adapter la liste ci-dessous si votre champ porte un autre nom).
+  function renderInfosEmission() {
+    const el = document.getElementById('issueInfo');
+    if (!el) return;
+    const ok = etatBillet && (etatStatut === 'confirme' || etatStatut === 'valide');
+    if (!ok) { el.classList.remove('show'); el.innerHTML = ''; return; }
+
+    const raw = etatBillet.date_emission || etatBillet.date_confirmation || etatBillet.confirmed_at
+             || etatBillet.updated_at || etatBillet.created_at || etatBillet.date_creation;
+    let d = raw ? new Date(raw) : null;
+    if (d && isNaN(d.getTime())) d = null;
+    const loc = GX.lang === 'en' ? 'en-GB' : 'fr-FR';
+    const dateTxt  = d ? d.toLocaleDateString(loc, { day: '2-digit', month: 'long', year: 'numeric' }) : '—';
+    const heureTxt = d ? d.toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' }) : '—';
+
+    el.innerHTML =
+      `<div class="ei-item"><span class="ei-label">${escHTML(tr('ei_date'))}</span><span class="ei-value">${escHTML(dateTxt)}</span></div>
+       <div class="ei-item"><span class="ei-label">${escHTML(tr('ei_time'))}</span><span class="ei-value">${escHTML(heureTxt)}</span></div>
+       <div class="ei-item"><span class="ei-label">${escHTML(tr('ei_status'))}</span><span class="ei-value"><span class="ei-dot"></span>${escHTML(tr('ei_confirmed'))}</span></div>
+       <div class="ei-item"><span class="ei-label">${escHTML(tr('ei_platform'))}</span><span class="ei-value">GoldTix</span></div>`;
+    el.classList.add('show');
+  }
+
   async function recupererDonneesBillet() {
     const reponse = await fetch('/api/tickets?id=' + encodeURIComponent(billetId));
     if (!reponse.ok) return null;
@@ -1479,6 +1525,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       updateFooterReloadButton(statut);
 
       statusZone.innerHTML = statusBannerHTML(statut);
+      renderInfosEmission();
 
       const infoGrid = document.getElementById('infoGrid');
       const cells = [
@@ -1620,6 +1667,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const statusZone = document.getElementById('statusBannerZone');
     if (statusZone) statusZone.innerHTML = statusBannerHTML(statut);
+    renderInfosEmission();
 
     const dlBtn = document.getElementById('downloadTicket');
     if (dlBtn) dlBtn.style.display = isConfirmed ? 'flex' : 'none';
@@ -2013,6 +2061,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const zone = document.getElementById('statusBannerZone');
     if (zone) zone.innerHTML = statusBannerHTML(etatStatut);
+    renderInfosEmission();
 
     updateFooterReloadButton(etatStatut);
 
