@@ -2325,12 +2325,13 @@ select.champ-billet {
 /* "Paiement en espèces" : même position que "Voir la preuve", mais simple texte (pas un lien) */
 .mention-especes {
     margin-left: auto;
-    padding: 7px 4px;
+    padding: 7px 0;
     font-family: var(--font-body);
-    font-size: 13px;
+    font-size: clamp(10px, 2.9vw, 13px);
     font-weight: 400;
     color: var(--ink-500);
     white-space: nowrap;
+    flex-shrink: 0;
     cursor: default;
 }
 
