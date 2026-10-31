@@ -6,49 +6,69 @@ import {
 import QRCode from "qrcode";
 
 /*
-  Billet GoldTix en PDF : même rendu que le bouton « Télécharger mon billet en PDF »
-  de billet.html (carte blanche de 380 pt, affiche, bloc d'infos, badge, QR, ID, bandeau).
+  Billet GoldTix en PDF, copie fidèle du PDF de billet.html
+  (bouton « Télécharger mon billet en PDF » : carte de 380 px, marge de 18 pt).
   Renvoie un Buffer. Le "_" initial évite que Vercel le publie comme route d'API.
+
+  Affiche : comme dans billet.html, elle remplit le cadre de 380 x 170 pt (toute l'affiche est visible,
+  simplement mise à la taille du cadre).
 */
 
-const NOIR = rgb(0.067, 0.067, 0.067);
-const GRIS = rgb(0.42, 0.45, 0.5);
-const GRIS_BORD = rgb(0.88, 0.88, 0.88);
-const BEIGE = rgb(0.973, 0.965, 0.945);
-const LIGNE = rgb(0.9, 0.89, 0.86);
-const OR_FOND = rgb(1, 0.92, 0.62);
-const OR_BORD = rgb(0.85, 0.65, 0.15);
-const OR_TEXTE = rgb(0.6, 0.38, 0.05);
-const GRIS_AFFICHE = rgb(0.25, 0.25, 0.27);
+const hex = (h) => rgb(
+  parseInt(h.slice(1, 3), 16) / 255,
+  parseInt(h.slice(3, 5), 16) / 255,
+  parseInt(h.slice(5, 7), 16) / 255,
+);
+const mix = (c1, c2, t) => rgb(
+  c1.red + (c2.red - c1.red) * t,
+  c1.green + (c2.green - c1.green) * t,
+  c1.blue + (c2.blue - c1.blue) * t,
+);
+
+const TXT = hex("#1c1917");
+const GRIS_ID = hex("#a8a29e");
+const BEIGE = hex("#faf8f4");
+const LIGNE = hex("#efece4");
+const RING = hex("#ece7dd");
+const FOOT_LINE = hex("#f1f0ef");
+const OR_1 = hex("#fef3c7");
+const OR_2 = hex("#fde68a");
+const OR_BORD = hex("#d97706");
+const OR_TEXTE = hex("#92400e");
+const NEUTRE_1 = hex("#c9c3b6");
+const NEUTRE_2 = hex("#8a8478");
 
 const MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août",
   "septembre", "octobre", "novembre", "décembre"];
 
-function formaterDateHeure(date, heure) {
-  let d = "";
-  const s = String(date ?? "");
+// Même rendu que billet.html : « 17 octobre 2026 » (jour sur 2 chiffres), heure « 18:00 »
+function formaterDate(date) {
+  if (!date) return "—";
+  const s = String(date);
   const m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
-  if (m) d = `${parseInt(m[3], 10)} ${MOIS[parseInt(m[2], 10) - 1]} ${m[1]}`;
-  else d = s;
-  let h = "";
-  const mh = String(heure ?? "").match(/^(\d{1,2}):(\d{2})/);
-  if (mh) h = `${mh[1].padStart(2, "0")}:${mh[2]}`;
-  else h = String(heure ?? "");
-  return [d, h].filter(Boolean).join(" · ");
+  if (m) return `${m[3]} ${MOIS[parseInt(m[2], 10) - 1]} ${m[1]}`;
+  return s;
+}
+function formaterHeure(heure) {
+  if (!heure) return "—";
+  return String(heure).slice(0, 5);
 }
 
+// Même logique que billet.html pour retrouver le nom de la catégorie
 function nomCategorie(billet, evenement) {
-  const direct = billet?.nom_categorie || billet?.type_billet;
-  if (direct) return String(direct);
+  let nom = billet?.nom_categorie || billet?.type_billet || "Standard";
   try {
     let cats = evenement?.categories_data;
     if (typeof cats === "string") cats = JSON.parse(cats);
-    if (Array.isArray(cats)) {
-      const c = cats.find((x) => String(x.id) === String(billet?.categorie_id));
-      if (c) return String(c.nom || c.name || "");
+    if (Array.isArray(cats) && cats.length > 0) {
+      let i = -1;
+      if (billet?.categorie_id) i = cats.findIndex((c) => String(c.id) === String(billet.categorie_id));
+      if (i === -1 && billet?.nom_categorie) i = cats.findIndex((c) => c.nom === billet.nom_categorie || c.name === billet.nom_categorie);
+      if (i === -1 && billet?.type_billet) i = cats.findIndex((c) => c.nom === billet.type_billet || c.name === billet.type_billet);
+      if (i !== -1) nom = cats[i].nom || cats[i].name || nom;
     }
   } catch {}
-  return "";
+  return String(nom);
 }
 
 async function telecharger(url) {
@@ -96,6 +116,24 @@ function cheminArrondi(x, y, w, h, tl, tr, br, bl) {
   ].join(" ");
 }
 
+// Opérateurs PDF de découpe en rectangle arrondi (coordonnées PDF : yTop = bord haut)
+function operateursClip(x, yTop, w, h, tl, tr, br, bl) {
+  const k = 0.5523;
+  const yBas = yTop - h;
+  return [
+    moveTo(x + tl, yTop),
+    lineTo(x + w - tr, yTop),
+    appendBezierCurve(x + w - tr + tr * k, yTop, x + w, yTop - tr + tr * k, x + w, yTop - tr),
+    lineTo(x + w, yBas + br),
+    appendBezierCurve(x + w, yBas + br - br * k, x + w - br + br * k, yBas, x + w - br, yBas),
+    lineTo(x + bl, yBas),
+    appendBezierCurve(x + bl - bl * k, yBas, x, yBas + bl - bl * k, x, yBas + bl),
+    lineTo(x, yTop - tl),
+    appendBezierCurve(x, yTop - tl + tl * k, x + tl - tl * k, yTop, x + tl, yTop),
+    closePath(), clip(), endPath(),
+  ];
+}
+
 export async function genererBilletPdf({ billet, evenement, lienBillet }) {
   const pdf = await PDFDocument.create();
   const gras = await pdf.embedFont(StandardFonts.HelveticaBold);
@@ -126,37 +164,49 @@ export async function genererBilletPdf({ billet, evenement, lienBillet }) {
     return t + "…";
   };
 
-  // ---- Données
+  // ---- Données (mêmes valeurs et mêmes valeurs par défaut que billet.html)
   const titreEv = evenement?.titre || "Événement";
-  const lignesTitre = retourLigne(titreEv, gras, 20, 330).slice(0, 2);
+  const lignesTitre = retourLigne(titreEv, gras, 20, 336).slice(0, 2);
+  const tel = billet?.telephone ? String(billet.telephone) : "";
   const rows = [
-    ["Date & Heure", formaterDateHeure(evenement?.date, evenement?.heure)],
-    ["Lieu", evenement?.lieu || ""],
-    ["Participant", billet?.nom_participant || ""],
+    ["Date & Heure", `${formaterDate(evenement?.date)} · ${formaterHeure(evenement?.heure)}`],
+    ["Lieu", evenement?.lieu || "—"],
+    ["Participant", billet?.nom_participant || "—"],
   ];
-  if (billet?.telephone) rows.push(["Téléphone", String(billet.telephone)]);
-  const categorie = nomCategorie(billet, evenement);
+  if (tel && tel !== "—") rows.push(["Téléphone", tel]);
+  const categorie = nomCategorie(billet, evenement) || "—";
   const codePublic = String(billet?.code_public ?? "");
   const idBillet = String(billet?.numero_billet ?? billet?.code_public ?? "");
 
-  // ---- Mise en page (coordonnées « haut vers bas »)
-  const MARGE = 18, CW = 380, W = CW + MARGE * 2;
-  const cx = MARGE;
-  const POSTER_H = 170, ROW_H = 38, BAND_H = 44;
+  // ---- Affiche (chargée avant la mise en page)
+  const MARGE = 18, CW = 380, W = CW + MARGE * 2, cx = MARGE;
+  let urlAffiche = evenement?.affiche_url || evenement?.image_url || evenement?.affiche || "";
+  let origine = "";
+  try { origine = new URL(lienBillet).origin; } catch {}
+  if (urlAffiche && urlAffiche.startsWith("/") && origine) urlAffiche = origine + urlAffiche;
+  const imgAffiche = await integrerImage(pdf, await telecharger(urlAffiche));
+  const POSTER_H = 170;
+
+  // ---- Mise en page (coordonnées « haut vers bas », mêmes cotes que billet.html)
+  const INSET = 22;                    // marge intérieure de la carte
+  const ROW = 37.6, ROW_SEP = 1;       // ligne d'info + trait
+  const BADGE_H = 35, QR = 128, BAND_H = 37;
 
   const yPosterBas = MARGE + POSTER_H;
-  const yLabel = yPosterBas + 28;
-  const yTitre = yLabel + 28;
-  const yBloc = yTitre + (lignesTitre.length - 1) * 25 + 24;
-  const blocH = rows.length * ROW_H + 8;
-  const yBadge = yBloc + blocH + 22;
-  const badgeH = 30;
-  const ySep = yBadge + (categorie ? badgeH : 0) + 30;
-  const yQr = ySep + 28;
-  const QR = 128;
-  const yIdLabel = yQr + QR + 28;
-  const yIdNum = yIdLabel + 22;
-  const yBand = yIdNum + 30;
+  const yTop = yPosterBas + 18;
+  const yLabel = yTop + 12;
+  const yTitreHaut = yTop + 15 + 6;
+  const yTitre = yTitreHaut + 19;
+  const yBloc = yTitreHaut + 25 * lignesTitre.length + 14;
+  const blocH = 4 + rows.length * ROW + (rows.length - 1) * ROW_SEP;
+  const yBadge = yBloc + blocH + 14;
+  const ySepHaut = yBadge + BADGE_H + 16;
+  const ySep = ySepHaut + 9;
+  const yQr = ySep + 35;
+  const yQrBas = yQr + QR;
+  const yIdLabel = yQrBas + 35;
+  const yIdNum = yQrBas + 56;
+  const yBand = yQrBas + 79;
   const yCarteBas = yBand + BAND_H;
   const H = yCarteBas + MARGE;
 
@@ -165,103 +215,118 @@ export async function genererBilletPdf({ billet, evenement, lienBillet }) {
   const texteCentre = (t, y, police, taille, couleur) =>
     page.drawText(t, { x: (W - police.widthOfTextAtSize(t, taille)) / 2, y: Y(y), size: taille, font: police, color: couleur });
   const svg = (chemin, opts) => page.drawSvgPath(chemin, { x: 0, y: H, ...opts });
+  const texteEspace = (t, y, police, taille, esp, couleur) => {
+    const total = police.widthOfTextAtSize(t, taille) + esp * (t.length - 1);
+    let x = (W - total) / 2;
+    for (const c of t) {
+      page.drawText(c, { x, y: Y(y), size: taille, font: police, color: couleur });
+      x += police.widthOfTextAtSize(c, taille) + esp;
+    }
+  };
+  // Dégradé horizontal dans un rectangle arrondi (découpé)
+  const degrade = (x, top, w, h, r, c1, c2) => {
+    page.pushOperators(pushGraphicsState(), ...operateursClip(x, Y(top), w, h, r[0], r[1], r[2], r[3]));
+    const n = 40;
+    for (let i = 0; i < n; i++) {
+      page.drawRectangle({
+        x: x + (w * i) / n, y: Y(top + h), width: w / n + 0.6, height: h,
+        color: mix(c1, c2, i / (n - 1)),
+      });
+    }
+    page.pushOperators(popGraphicsState());
+  };
 
-  // ---- Carte
-  svg(cheminArrondi(cx, MARGE, CW, yCarteBas - MARGE, 20, 20, 20, 20),
-    { color: rgb(1, 1, 1), borderColor: GRIS_BORD, borderWidth: 1 });
+  // ---- Carte (fond blanc)
+  svg(cheminArrondi(cx, MARGE, CW, yCarteBas - MARGE, 20, 20, 20, 20), { color: rgb(1, 1, 1) });
 
-  // ---- Affiche (recadrage « cover », coins du haut arrondis)
-  let urlAffiche = evenement?.affiche_url || evenement?.image_url || evenement?.affiche || "";
-  let origine = "";
-  try { origine = new URL(lienBillet).origin; } catch {}
-  if (urlAffiche && urlAffiche.startsWith("/") && origine) urlAffiche = origine + urlAffiche;
-  const imgAffiche = await integrerImage(pdf, await telecharger(urlAffiche));
-
+  // ---- Affiche (remplit le cadre, coins du haut arrondis)
   if (imgAffiche) {
-    const sc = Math.max(CW / imgAffiche.width, POSTER_H / imgAffiche.height);
-    const dw = imgAffiche.width * sc, dh = imgAffiche.height * sc;
-    const x0 = cx, x1 = cx + CW, yH = Y(MARGE), yB = Y(yPosterBas), r = 20, k = 0.5523 * r;
-    page.pushOperators(
-      pushGraphicsState(),
-      moveTo(x0, yB), lineTo(x0, yH - r),
-      appendBezierCurve(x0, yH - r + k, x0 + r - k, yH, x0 + r, yH),
-      lineTo(x1 - r, yH),
-      appendBezierCurve(x1 - r + k, yH, x1, yH - r + k, x1, yH - r),
-      lineTo(x1, yB), closePath(), clip(), endPath(),
-    );
-    page.drawImage(imgAffiche, {
-      x: cx + (CW - dw) / 2, y: Y(MARGE + (POSTER_H - dh) / 2 + dh), width: dw, height: dh,
-    });
+    page.pushOperators(pushGraphicsState(), ...operateursClip(cx, Y(MARGE), CW, POSTER_H, 20, 20, 0, 0));
+    page.drawImage(imgAffiche, { x: cx, y: Y(MARGE + POSTER_H), width: CW, height: POSTER_H });
     page.pushOperators(popGraphicsState());
   } else {
-    svg(cheminArrondi(cx, MARGE, CW, POSTER_H, 20, 20, 0, 0), { color: GRIS_AFFICHE });
-    const lg = retourLigne(titreEv, gras, 22, CW - 50).slice(0, 3);
-    let yy = MARGE + POSTER_H / 2 - ((lg.length - 1) * 28) / 2 + 7;
+    degrade(cx, MARGE, CW, POSTER_H, [20, 20, 0, 0], NEUTRE_1, NEUTRE_2);
+    const lg = retourLigne(titreEv, gras, 22, CW - 36).slice(0, 3);
+    let yy = MARGE + POSTER_H / 2 - ((lg.length - 1) * 14) + 7;
     for (const l of lg) { texteCentre(l, yy, gras, 22, rgb(1, 1, 1)); yy += 28; }
   }
 
-  // ---- Titre
-  texteCentre("Billet Officiel · GoldTix", yLabel, normal, 11, GRIS);
-  lignesTitre.forEach((l, i) => texteCentre(l, yTitre + i * 25, gras, 20, NOIR));
+  // ---- Libellé et titre
+  texteCentre("Billet Officiel · GoldTix", yLabel, normal, 12, TXT);
+  lignesTitre.forEach((l, i) => texteCentre(l, yTitre + i * 25, gras, 20, TXT));
 
   // ---- Bloc d'infos
-  const bx = cx + 28, bw = CW - 56;
+  const bx = cx + INSET, bw = CW - INSET * 2;
   svg(cheminArrondi(bx, yBloc, bw, blocH, 14, 14, 14, 14), { color: BEIGE });
   rows.forEach(([label, valeur], i) => {
-    const yy = yBloc + 4 + i * ROW_H + 24;
-    page.drawText(sur(label), { x: bx + 16, y: Y(yy), size: 12, font: normal, color: NOIR });
-    const maxV = bw - 32 - normal.widthOfTextAtSize(sur(label), 12) - 12;
-    const v = tronquer(valeur, gras, 12.5, maxV);
-    page.drawText(v, { x: bx + bw - 16 - gras.widthOfTextAtSize(v, 12.5), y: Y(yy), size: 12.5, font: gras, color: NOIR });
+    const haut = yBloc + 2 + i * (ROW + ROW_SEP);
+    const base = haut + 10 + 13.5;
+    page.drawText(sur(label), { x: bx + 18, y: Y(base), size: 13, font: normal, color: TXT });
+    const maxV = bw - 36 - normal.widthOfTextAtSize(sur(label), 13) - 12;
+    const v = tronquer(valeur, gras, 14, maxV);
+    page.drawText(v, { x: bx + bw - 18 - gras.widthOfTextAtSize(v, 14), y: Y(base), size: 14, font: gras, color: TXT });
     if (i < rows.length - 1) {
-      const yl = yBloc + 4 + (i + 1) * ROW_H;
-      page.drawLine({ start: { x: bx + 16, y: Y(yl) }, end: { x: bx + bw - 16, y: Y(yl) }, thickness: 0.6, color: LIGNE });
+      const yl = haut + ROW + ROW_SEP / 2;
+      page.drawLine({ start: { x: bx + 18, y: Y(yl) }, end: { x: bx + bw - 18, y: Y(yl) }, thickness: 1, color: LIGNE });
     }
   });
 
-  // ---- Badge catégorie
-  if (categorie) {
+  // ---- Badge catégorie (dégradé doré, bordure, texte brun)
+  {
     const t = tronquer(categorie, gras, 13, 300);
     const tw = gras.widthOfTextAtSize(t, 13);
-    const bwid = tw + 40;
-    svg(cheminArrondi((W - bwid) / 2, yBadge, bwid, badgeH, 15, 15, 15, 15),
-      { color: OR_FOND, borderColor: OR_BORD, borderWidth: 1 });
-    page.drawText(t, { x: (W - tw) / 2, y: Y(yBadge + 20), size: 13, font: gras, color: OR_TEXTE });
+    const bwid = tw + 48 + 3;
+    const bxx = (W - bwid) / 2;
+    degrade(bxx, yBadge, bwid, BADGE_H, [17.5, 17.5, 17.5, 17.5], OR_1, OR_2);
+    svg(cheminArrondi(bxx + 0.75, yBadge + 0.75, bwid - 1.5, BADGE_H - 1.5, 16.75, 16.75, 16.75, 16.75),
+      { borderColor: OR_BORD, borderWidth: 1.5 });
+    page.drawText(t, { x: (W - tw) / 2, y: Y(yBadge + 22), size: 13, font: gras, color: OR_TEXTE });
   }
 
-  // ---- Séparateur pointillé + encoches
-  for (let x = cx + 14; x < cx + CW - 14; x += 8) {
-    page.drawLine({ start: { x, y: Y(ySep) }, end: { x: x + 4, y: Y(ySep) }, thickness: 1.2, color: NOIR });
+  // ---- Séparateur pointillé + demi-disques sur les bords de la carte
+  for (let x = cx + 9; x < cx + CW - 9; x += 8) {
+    const fin = Math.min(x + 5, cx + CW - 9);
+    page.drawLine({ start: { x, y: Y(ySep) }, end: { x: fin, y: Y(ySep) }, thickness: 2, color: TXT });
   }
-  page.drawCircle({ x: cx, y: Y(ySep), size: 7, color: NOIR });
-  page.drawCircle({ x: cx + CW, y: Y(ySep), size: 7, color: NOIR });
+  svg(`M ${cx} ${ySep - 9} A 9 9 0 0 1 ${cx} ${ySep + 9} Z`, { color: TXT });
+  svg(`M ${cx + CW} ${ySep + 9} A 9 9 0 0 1 ${cx + CW} ${ySep - 9} Z`, { color: TXT });
 
   // ---- QR code (contenu = code_public, comme sur la page)
   const png = await QRCode.toBuffer(codePublic, { margin: 0, width: 512, errorCorrectionLevel: "M" });
   const imgQr = await pdf.embedPng(png);
-  page.drawImage(imgQr, { x: (W - QR) / 2, y: Y(yQr + QR), width: QR, height: QR });
+  page.drawImage(imgQr, { x: (W - QR) / 2, y: Y(yQrBas), width: QR, height: QR });
 
   // ---- ID billet
-  const spaced = "ID BILLET".split("").join(" ");
-  texteCentre(spaced, yIdLabel, gras, 9, GRIS);
-  texteCentre(sur(idBillet), yIdNum, mono, 15, NOIR);
+  texteEspace("ID BILLET", yIdLabel, gras, 10, 1.6, GRIS_ID);
+  texteEspace(sur(idBillet), yIdNum, mono, 18, 0.72, TXT);
 
-  // ---- Bandeau du bas (logo + texte)
-  svg(cheminArrondi(cx + 0.5, yBand, CW - 1, BAND_H - 0.5, 0, 0, 19.5, 19.5), { color: BEIGE });
+  // ---- Bandeau du bas : logo + « • Plateforme de billetterie sécurisée »
+  svg(cheminArrondi(cx, yBand, CW, BAND_H, 0, 0, 20, 20), { color: BEIGE });
+  page.drawLine({ start: { x: cx, y: Y(yBand + 0.5) }, end: { x: cx + CW, y: Y(yBand + 0.5) }, thickness: 1, color: FOOT_LINE });
+
   let imgLogo = null;
   if (origine) imgLogo = await integrerImage(pdf, await telecharger(origine + "/images/logo.png"));
-  const texteBand = "•  Plateforme de billetterie sécurisée";
-  const tbW = normal.widthOfTextAtSize(sur(texteBand), 10.5);
-  const logoW = imgLogo ? 22 : gras.widthOfTextAtSize("GoldTix", 11);
-  const totalW = logoW + 8 + tbW;
-  const xDeb = (W - totalW) / 2;
-  const yMid = yBand + BAND_H / 2;
+  const bullet = "•";
+  const texteBand = sur("Plateforme de billetterie sécurisée");
+  const wBullet = normal.widthOfTextAtSize(bullet, 10);
+  const wTexte = normal.widthOfTextAtSize(texteBand, 10);
+  const logoH = 16;
+  const logoW = imgLogo ? (logoH * imgLogo.width) / imgLogo.height : gras.widthOfTextAtSize("GoldTix", 11);
+  const total = logoW + 8 + wBullet + 8 + wTexte;
+  let xx = (W - total) / 2;
+  const yMilieu = yBand + 1 + 10 + 8;
   if (imgLogo) {
-    page.drawImage(imgLogo, { x: xDeb, y: Y(yMid + 11), width: 22, height: 22 });
+    page.drawImage(imgLogo, { x: xx, y: Y(yMilieu + logoH / 2), width: logoW, height: logoH });
   } else {
-    page.drawText("GoldTix", { x: xDeb, y: Y(yMid + 4), size: 11, font: gras, color: NOIR });
+    page.drawText("GoldTix", { x: xx, y: Y(yMilieu + 4), size: 11, font: gras, color: TXT });
   }
-  page.drawText(sur(texteBand), { x: xDeb + logoW + 8, y: Y(yMid + 4), size: 10.5, font: normal, color: GRIS });
+  xx += logoW + 8;
+  page.drawText(bullet, { x: xx, y: Y(yMilieu + 3.5), size: 10, font: normal, color: TXT });
+  xx += wBullet + 8;
+  page.drawText(texteBand, { x: xx, y: Y(yMilieu + 3.5), size: 10, font: normal, color: TXT });
+
+  // ---- Liseré fin autour de la carte
+  svg(cheminArrondi(cx, MARGE, CW, yCarteBas - MARGE, 20, 20, 20, 20), { borderColor: RING, borderWidth: 1 });
 
   return Buffer.from(await pdf.save());
 }
