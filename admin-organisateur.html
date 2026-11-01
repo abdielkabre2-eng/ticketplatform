@@ -2384,6 +2384,73 @@ body { padding-top: 74px !important; }
     body { padding-top: 70px !important; }
 }
 
+
+/* ===== Bannière événement : version compacte horizontale ===== */
+.header-top {
+    display: grid;
+    grid-template-columns: 104px minmax(0, 1fr);
+    grid-template-rows: 1fr auto auto auto 1fr;
+    column-gap: 14px;
+    text-align: left;
+    padding: 14px;
+    background: #ffffff;
+    border: 1px solid #e8e7e3;
+    border-radius: 16px;
+    box-shadow: none;
+    margin-bottom: 20px;
+}
+.header-top::before,
+.header-top::after,
+.header-banner-glow { display: none; }
+
+.header-top > .event-bg-img {
+    position: relative;
+    grid-column: 1;
+    grid-row: 1 / -1;
+    align-self: center;
+    width: 104px;
+    height: 140px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+.header-top > .header-label {
+    grid-column: 2; grid-row: 2;
+    justify-self: start;
+    background: #fef3c7;
+    border: none;
+    color: #92400e;
+    font-size: 10px;
+    letter-spacing: 0.8px;
+    padding: 4px 9px;
+    margin: 0 0 8px;
+}
+#titreEvenementOrg {
+    grid-column: 2; grid-row: 3;
+    color: #1c1917;
+    font-size: 19px;
+    letter-spacing: -0.3px;
+    text-align: left;
+    text-shadow: none;
+    margin: 0 0 8px;
+}
+#infosEvenementOrg {
+    grid-column: 2; grid-row: 4;
+    justify-self: start;
+    display: block;
+    background: none;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+    backdrop-filter: none;
+    color: #57534e;
+    font-size: 13px;
+    line-height: 1.55;
+    text-align: left;
+}
+/* Si aucune affiche n'est définie : affichage simple, sans colonne vide */
+.header-top:not(:has(.event-bg-img)) { display: block; }
+
 </style>
 </head>
 <body>
@@ -3611,7 +3678,7 @@ async function verifierMiseAJourEvenement() {
         evenementActuelData = ev;
 
         document.getElementById("titreEvenementOrg").textContent = ev.titre;
-        document.getElementById("infosEvenementOrg").innerHTML = `Date : ${ev.date} &nbsp;&middot;&nbsp; Heure : ${formatHeureAffichage(ev.heure)} &nbsp;&middot;&nbsp; Lieu : ${ev.lieu}`;
+        document.getElementById("infosEvenementOrg").innerHTML = `Date : ${ev.date} <br> Heure : ${formatHeureAffichage(ev.heure)} <br> Lieu : ${ev.lieu}`;
 
         let headerContainer = document.getElementById("headerTopContainer");
         let eventImage = ev.affiche_url || ev.image_url || ev.affiche || ev.photo;
@@ -3656,7 +3723,7 @@ async function verifierMiseAJourEvenement() {
 
             document.getElementById("titreEvenementOrg").textContent = ev.titre;
             document.getElementById("infosEvenementOrg").innerHTML =
-                `Date : ${ev.date} &nbsp;&middot;&nbsp; Heure : ${formatHeureAffichage(ev.heure)} &nbsp;&middot;&nbsp; Lieu : ${ev.lieu}`;
+                `Date : ${ev.date} <br> Heure : ${formatHeureAffichage(ev.heure)} <br> Lieu : ${ev.lieu}`;
 
             let headerContainer = document.getElementById("headerTopContainer");
             let eventImage = ev.affiche_url || ev.image_url || ev.affiche || ev.photo;
