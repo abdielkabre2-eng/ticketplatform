@@ -2475,6 +2475,58 @@ body { padding-top: 74px !important; }
     .trust-strip { gap: 6px 16px; font-size: 11.5px; }
 }
 
+/* ===== Onglets : libellés complets, badge en coin ===== */
+.tabs-icon-nav {
+    gap: 4px;
+    padding: 6px;
+    overflow-x: auto;              /* filet de sécurité si l'écran est très étroit */
+    scrollbar-width: none;
+}
+.tabs-icon-nav::-webkit-scrollbar { display: none; }
+
+.tabs-icon-nav .tab-icon-btn {
+    position: relative;
+    flex: 1 0 auto;                /* ne rétrécit jamais sous la taille du libellé */
+    min-width: 0;
+    padding: 10px 6px 9px;
+}
+
+/* Plus de coupure : le texte s'affiche en entier */
+.tabs-icon-nav .tab-icon-btn span,
+.tabs-icon-nav .tab-label-text {
+    overflow: visible;
+    text-overflow: clip;
+    max-width: none;
+    white-space: nowrap;
+    font-size: 11px;
+    letter-spacing: 0.1px;
+}
+
+/* Le conteneur du libellé ne compte plus : le badge sort de la ligne */
+.tabs-icon-nav .tab-label-row { display: contents; }
+
+/* Badge posé à droite de l'icône */
+.tabs-icon-nav .tab-icon-btn .tab-badge {
+    position: absolute;
+    top: 5px;
+    left: calc(50% + 8px);
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    font-size: 9.5px;
+    line-height: 16px;
+    letter-spacing: 0;
+    overflow: visible;
+    box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+    .tabs-icon-nav .tab-icon-btn { padding: 9px 4px 8px; }
+    .tabs-icon-nav .tab-icon-btn span,
+    .tabs-icon-nav .tab-label-text { font-size: 10px; letter-spacing: 0; }
+}
+
+
 </style>
 </head>
 <body>
