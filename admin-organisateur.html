@@ -2355,6 +2355,35 @@ select.champ-billet {
     font-weight: 600;
     color: var(--red-700);
 }
+
+/* ==========================================================
+   EN-TÊTE — même style que la page "Conditions d'utilisation"
+   (Espace Organisateur et menu conservés)
+========================================================== */
+.top-navbar {
+    height: 50px !important;
+    padding: 0 max(20px, calc((100% - 760px) / 2)) !important;
+    gap: 12px !important;
+    background: rgba(255,255,255,0.94) !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(232,231,227,0.9) !important;
+    box-shadow: none !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+}
+.top-navbar .site-logo { height: 22px; }
+.top-navbar .brand-title { font-size: 16px; letter-spacing: -0.5px; }
+
+/* Espace réservé sous l'en-tête (barre plus fine) */
+body { padding-top: 74px !important; }
+
+@media (max-width: 520px) {
+    .top-navbar { padding: 0 14px !important; }
+}
+@media (max-width: 480px) {
+    body { padding-top: 70px !important; }
+}
+
 </style>
 </head>
 <body>
