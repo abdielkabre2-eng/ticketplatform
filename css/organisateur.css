@@ -198,8 +198,6 @@
         ============================================ */
         .main-card {
             background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
             border: 1px solid var(--border-gold);
             border-radius: var(--radius-xl);
             box-shadow: var(--shadow-gold-lg);

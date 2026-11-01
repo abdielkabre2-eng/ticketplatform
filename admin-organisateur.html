@@ -16,7 +16,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="/css/organisateur.css?v=1">
+<link rel="stylesheet" href="/css/organisateur.css?v=2">
 </head>
 <body>
 
@@ -745,9 +745,9 @@
         <span id="toastMessage"></span>
     </div>
    
-<script src="https://unpkg.com/html5-qrcode"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script defer src="https://unpkg.com/html5-qrcode"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
 <script>
     /* =============================================
@@ -1553,7 +1553,7 @@ async function verifierMiseAJourEvenement() {
                 <div class="preuve-container">
                     <span class="preuve-label">Preuve de paiement</span>
                     <a href="${b.preuve_url}" target="_blank" class="preuve-link">
-                        <img src="${b.preuve_url}" alt="Preuve de paiement" class="preuve-img">
+                        <img src="${b.preuve_url}" alt="Preuve de paiement" class="preuve-img" loading="lazy" decoding="async">
                     </a>
                 </div>
             </div>
