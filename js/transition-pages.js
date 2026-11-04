@@ -11,8 +11,8 @@
   var CREME = '#F5F3ED';
   var OR = '#d97706';
   var CLE = 'gxTransitionPage';
-  var FADE = 80;     /* ms : voile crème au clic (comme dans l'intro) */
-  var DUREE = 520;   /* ms : passage de la bande (comme dans l'intro) */
+  var FADE = 60;     /* ms : voile crème au clic */
+  var DUREE = 380;   /* ms : passage de la bande */
 
   var reduit = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   var racine = document.documentElement;
