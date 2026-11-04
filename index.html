@@ -241,6 +241,7 @@ body.gx-entree #detailsEvenement{animation:gx-entree .45s var(--ease) .12s both}
 @media (prefers-reduced-motion:reduce){body.gx-entree .page-head,body.gx-entree #detailsEvenement{animation:none}}
 #gw-wipe{position:fixed;inset:0;z-index:100000;overflow:hidden;pointer-events:auto}
 #gw-wipe svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+html.gx-pre .topbar,html.gx-pre .page-head>*,html.gx-pre #detailsEvenement>*{opacity:0}
 </style>
 </head>
 <body>
@@ -656,10 +657,29 @@ var m = w / 2;
 voileP.setAttribute('d', 'M0,0H' + w + 'V' + T + 'Q' + m + ',' + (T + 2 * s) + ' 0,' + T + 'Z');
 bandeP.setAttribute('d', 'M0,' + L + 'Q' + m + ',' + (L + 2 * s) + ' ' + w + ',' + L + 'L' + w + ',' + T + 'Q' + m + ',' + (T + 2 * s) + ' 0,' + T + 'Z');
 }
+var glisse = false;
+function glisser() {
+if (glisse) return;
+glisse = true;
+var courbeG = 'cubic-bezier(.16,1,.3,1)';
+function jouer(liste, dy, duree, delai, pas) {
+for (var i = 0; i < liste.length; i++) {
+if (liste[i].animate) liste[i].animate(
+[{ opacity: 0, transform: 'translateY(' + dy + 'px)' }, { opacity: 1, transform: 'none' }],
+{ duration: duree, delay: delai + i * pas, easing: courbeG, fill: 'backwards' }
+);
+}
+}
+jouer(document.querySelectorAll('.topbar'), -12, 400, 100, 0);
+jouer(document.querySelectorAll('.page-head > *'), 24, 450, 0, 60);
+jouer(document.querySelectorAll('#detailsEvenement > *'), 28, 480, 120, 70);
+document.documentElement.classList.remove('gx-pre');
+}
 var debut = null, ouvert = false;
 function ouvrir() {
 if (ouvert) return;
 ouvert = true;
+document.documentElement.classList.add('gx-pre');
 fermer(true);
 window.scrollTo(0, 0);
 }
@@ -675,6 +695,7 @@ return;
 voileP.setAttribute('opacity', 1);
 ouvrir();
 var t = Math.min(1, (tt - FADE) / DUREE);
+if (t >= 0.12) glisser();
 dessiner(t);
 if (t < 1) requestAnimationFrame(image); else voile.remove();
 }
@@ -682,7 +703,7 @@ dessiner(0);
 voileP.setAttribute('opacity', 0);
 requestAnimationFrame(image);
 /* Sécurité : si l'animation ne tourne pas, on ouvre quand même la page d'achat */
-setTimeout(function () { ouvrir(); if (voile.parentNode) voile.remove(); }, 2500);
+setTimeout(function () { ouvrir(); glisser(); if (voile.parentNode) voile.remove(); }, 2500);
 }
 $('gi-btn').addEventListener('click', balayage);
 
