@@ -644,7 +644,7 @@ var s = Math.max(16, Math.min(60, w * 0.055));
 voile.innerHTML = '<svg viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none"><path id="gw-voile" fill="#F5F3ED"/><path id="gw-bande" fill="#d97706"/></svg>';
 var voileP = voile.querySelector('#gw-voile'), bandeP = voile.querySelector('#gw-bande');
 var yDeb = h, yFin = -s - 2;
-var FADE = 120, DUREE = 780;
+var FADE = 80, DUREE = 520;
 function dessiner(t) {
 var pl = Math.min(1, t);
 var pt = Math.min(1, Math.max(0, (t - 0.1) / 0.9));
