@@ -8,8 +8,8 @@
   var CIBLES = ['guide.html', 'histoire.html', 'contact.html', 'conditions.html'];
   var COULEUR = '#d97706';
   var CLE = 'gxTransitionPage';
-  var DUREE_SORTIE = 260;   /* ms : la bande monte et couvre l'écran */
-  var DUREE_ENTREE = 300;   /* ms : la bande se lève et révèle la page */
+  var DUREE_SORTIE = 220;   /* ms : la bande monte et couvre l'écran */
+  var DUREE_ENTREE = 240;   /* ms : la bande se lève et révèle la page */
 
   var reduit = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   var racine = document.documentElement;
@@ -127,6 +127,25 @@
     enCours = false;
     var v = document.getElementById('gx-page-wipe');
     if (v && v.parentNode) v.parentNode.removeChild(v);
+  });
+
+  /* Préchauffage : pendant que la personne lit, on télécharge discrètement les pages cibles
+     pour qu'elles s'ouvrent plus vite au moment du clic (inactif en mode économie de données) */
+  function prechauffer() {
+    var c = navigator.connection;
+    if (c && c.saveData) return;
+    var vus = {};
+    var liens = document.querySelectorAll('a[href]');
+    for (var i = 0; i < liens.length; i++) {
+      var u = cible(liens[i]);
+      if (u && !vus[u]) {
+        vus[u] = true;
+        try { fetch(u, { credentials: 'same-origin' }).catch(function () {}); } catch (e) {}
+      }
+    }
+  }
+  window.addEventListener('load', function () {
+    setTimeout(prechauffer, 800);
   });
 
   arriver();
