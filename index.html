@@ -239,6 +239,9 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
 body.gx-entree .page-head{animation:gx-entree .4s var(--ease) .05s both}
 body.gx-entree #detailsEvenement{animation:gx-entree .45s var(--ease) .12s both}
 @media (prefers-reduced-motion:reduce){body.gx-entree .page-head,body.gx-entree #detailsEvenement{animation:none}}
+#gw-wipe{position:fixed;inset:0;z-index:100000;overflow:hidden;pointer-events:auto}
+#gw-wipe .gw-cream{position:absolute;inset:0;background:#F5F3ED;opacity:0}
+#gw-wipe .gw-band{position:absolute;left:0;top:0;width:100%;height:130vh;display:block;will-change:transform;transform:translate3d(0,100vh,0)}
 </style>
 </head>
 <body>
@@ -627,7 +630,43 @@ document.body.classList.add('gx-entree');
 root.classList.add('gi-out');
 setTimeout(function () { root.remove(); document.body.classList.remove('gx-entree'); }, 700);
 }
-$('gi-btn').addEventListener('click', function () { fermer(false); });
+var balayageEnCours = false;
+function balayage() {
+if (balayageEnCours) return;
+balayageEnCours = true;
+if (reduit || !('animate' in Element.prototype)) { fermer(false); return; }
+var voile = document.createElement('div');
+voile.id = 'gw-wipe';
+voile.setAttribute('aria-hidden', 'true');
+voile.innerHTML = '<div class="gw-cream"></div><svg class="gw-band" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0 0Q50 18 100 0L100 92Q50 110 0 92Z" fill="#d97706"/></svg>';
+document.body.appendChild(voile);
+var creme = voile.firstChild, bande = voile.lastChild;
+var courbe = 'cubic-bezier(.65,0,.35,1)';
+var termine = false;
+function finir() {
+if (termine) return;
+termine = true;
+fermer(true);
+window.scrollTo(0, 0);
+}
+var montee = bande.animate(
+[{ transform: 'translate3d(0,100vh,0)' }, { transform: 'translate3d(0,-14vh,0)' }],
+{ duration: 440, easing: courbe, fill: 'forwards' }
+);
+creme.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 440, easing: 'ease-out', fill: 'forwards' });
+montee.onfinish = function () {
+finir();
+var sortie = bande.animate(
+[{ transform: 'translate3d(0,-14vh,0)' }, { transform: 'translate3d(0,-135vh,0)' }],
+{ duration: 380, easing: courbe, fill: 'forwards' }
+);
+creme.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 380, easing: 'ease-out', fill: 'forwards' });
+sortie.onfinish = function () { voile.remove(); };
+};
+/* Sécurité : si les animations ne démarrent pas, on ouvre quand même la page d'achat */
+setTimeout(function () { finir(); if (voile.parentNode) voile.remove(); }, 1800);
+}
+$('gi-btn').addEventListener('click', balayage);
 
 /* Polices sans blocage */
 var policeCss = new Promise(function (res) {
