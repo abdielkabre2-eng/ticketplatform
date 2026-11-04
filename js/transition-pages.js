@@ -1,21 +1,22 @@
 /* GoldTix — transition en bande dorée entre les pages (à inclure dans le <head> de chaque page concernée)
-   - Au clic sur un lien listé dans CIBLES : une bande dorée à bord courbe monte et recouvre l'écran, puis la page change.
-   - À l'arrivée sur la nouvelle page : la bande se lève vers le haut et révèle la page.
+   Même effet que celui de l'intro vers la page d'achat :
+   - Au clic sur un lien listé dans CIBLES : l'écran se couvre d'un voile crème, puis la page change.
+   - À l'arrivée sur la nouvelle page : une bande dorée à bords courbes monte sur le voile et
+     révèle la page derrière elle.
    Aucune autre navigation n'est touchée. */
 (function () {
   'use strict';
 
   var CIBLES = ['guide.html', 'histoire.html', 'contact.html', 'conditions.html'];
-  var COULEUR = '#d97706';
+  var CREME = '#F5F3ED';
+  var OR = '#d97706';
   var CLE = 'gxTransitionPage';
-  var DUREE_SORTIE = 220;   /* ms : la bande monte et couvre l'écran */
-  var DUREE_ENTREE = 240;   /* ms : la bande se lève et révèle la page */
+  var FADE = 80;     /* ms : voile crème au clic (comme dans l'intro) */
+  var DUREE = 520;   /* ms : passage de la bande (comme dans l'intro) */
 
   var reduit = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   var racine = document.documentElement;
   var enCours = false;
-
-  function doux(p) { return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2; }
 
   function creerVoile() {
     var v = document.createElement('div');
@@ -25,23 +26,24 @@
     (document.body || racine).appendChild(v);
     var r = v.getBoundingClientRect();
     var w = Math.max(1, r.width), h = Math.max(1, r.height) + 60;
-    v.innerHTML = '<svg viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block"><path fill="' + COULEUR + '"/></svg>';
-    return {
-      el: v,
-      path: v.querySelector('path'),
-      w: w,
-      h: h,
-      s: Math.max(16, Math.min(60, w * 0.055))
-    };
+    v.innerHTML = '<svg viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block">'
+      + '<path fill="' + CREME + '"/><path fill="' + OR + '"/></svg>';
+    var p = v.querySelectorAll('path');
+    return { el: v, voile: p[0], bande: p[1], w: w, h: h, s: Math.max(16, Math.min(60, w * 0.055)) };
   }
 
-  /* Zone dorée qui part du bord courbe situé à y et va jusqu'en bas */
-  function zoneBas(o, y) {
-    o.path.setAttribute('d', 'M0,' + y + 'Q' + (o.w / 2) + ',' + (y + 2 * o.s) + ' ' + o.w + ',' + y + 'V' + o.h + 'H0Z');
-  }
-  /* Zone dorée qui part du haut et va jusqu'au bord courbe situé à y */
-  function zoneHaut(o, y) {
-    o.path.setAttribute('d', 'M0,0H' + o.w + 'V' + y + 'Q' + (o.w / 2) + ',' + (y + 2 * o.s) + ' 0,' + y + 'Z');
+  /* Dessine l'image t (0 à 1) : le bord avant de la bande monte vite, le bord arrière la rattrape,
+     et la page apparaît derrière le bord arrière (identique à l'intro). */
+  function dessiner(o, t) {
+    var yDeb = o.h, yFin = -o.s - 2, m = o.w / 2, s = o.s;
+    var pl = Math.min(1, t);
+    var pt = Math.min(1, Math.max(0, (t - 0.1) / 0.9));
+    var el = 1 - Math.pow(1 - pl, 2.2);
+    var et = pt < 0.5 ? 4 * pt * pt * pt : 1 - Math.pow(-2 * pt + 2, 3) / 2;
+    var L = yDeb + (yFin - yDeb) * el;
+    var T = yDeb + (yFin - yDeb) * et;
+    o.voile.setAttribute('d', 'M0,0H' + o.w + 'V' + T + 'Q' + m + ',' + (T + 2 * s) + ' 0,' + T + 'Z');
+    o.bande.setAttribute('d', 'M0,' + L + 'Q' + m + ',' + (L + 2 * s) + ' ' + o.w + ',' + L + 'L' + o.w + ',' + T + 'Q' + m + ',' + (T + 2 * s) + ' 0,' + T + 'Z');
   }
 
   function animer(duree, image, fin) {
@@ -49,20 +51,20 @@
     function pas(ts) {
       if (debut === null) debut = ts;
       var p = Math.min(1, (ts - debut) / duree);
-      image(doux(p));
+      image(p);
       if (p < 1) requestAnimationFrame(pas); else if (fin) fin();
     }
     requestAnimationFrame(pas);
   }
 
-  /* ── Sortie : la bande monte et recouvre l'écran, puis on change de page ── */
+  /* ── Sortie : l'écran se couvre du voile crème, puis on change de page ── */
   function partir(url) {
     if (enCours) return;
     enCours = true;
     if (reduit) { window.location.href = url; return; }
     var o = creerVoile();
-    var yDeb = o.h, yFin = -o.s - 2;
-    zoneBas(o, yDeb);
+    dessiner(o, 0);
+    o.voile.setAttribute('opacity', 0);
     var parti = false;
     function aller() {
       if (parti) return;
@@ -70,11 +72,11 @@
       try { sessionStorage.setItem(CLE, String(Date.now())); } catch (e) {}
       window.location.href = url;
     }
-    animer(DUREE_SORTIE, function (e) { zoneBas(o, yDeb + (yFin - yDeb) * e); }, aller);
+    animer(FADE, function (p) { o.voile.setAttribute('opacity', p); }, aller);
     setTimeout(aller, 1200); /* sécurité */
   }
 
-  /* ── Arrivée : si on vient d'une transition, la page est couverte puis révélée ── */
+  /* ── Arrivée : voile crème dès le premier affichage, puis la bande dorée révèle la page ── */
   function arriver() {
     var t = null;
     try {
@@ -84,15 +86,14 @@
     if (!t || reduit || (Date.now() - Number(t)) > 6000) return;
 
     var o = creerVoile();
-    var yDeb = o.h, yFin = -o.s - 2;
-    zoneHaut(o, yDeb);                       /* écran entièrement doré dès le premier affichage */
+    dessiner(o, 0);                          /* écran entièrement crème dès le premier affichage */
     var retire = function () { if (o.el.parentNode) o.el.parentNode.removeChild(o.el); };
     var lance = false;
     function reveler() {
       if (lance) return;
       lance = true;
       requestAnimationFrame(function () {
-        animer(DUREE_ENTREE, function (e) { zoneHaut(o, yDeb + (yFin - yDeb) * e); }, retire);
+        animer(DUREE, function (p) { dessiner(o, p); }, retire);
       });
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', reveler);
@@ -121,7 +122,7 @@
     partir(url);
   });
 
-  /* Retour arrière : la page peut revenir figée avec la bande dorée, on la retire */
+  /* Retour arrière : la page peut revenir figée avec le voile, on le retire */
   window.addEventListener('pageshow', function (ev) {
     if (!ev.persisted) return;
     enCours = false;
