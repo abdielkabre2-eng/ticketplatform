@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Achat de Billet | GoldTix</title>
+<script src="/js/transition-pages.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@1,500&display=swap" rel="stylesheet">
@@ -644,7 +645,7 @@ var s = Math.max(16, Math.min(60, w * 0.055));
 voile.innerHTML = '<svg viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none"><path id="gw-voile" fill="#F5F3ED"/><path id="gw-bande" fill="#d97706"/></svg>';
 var voileP = voile.querySelector('#gw-voile'), bandeP = voile.querySelector('#gw-bande');
 var yDeb = h, yFin = -s - 2;
-var FADE = 80, DUREE = 520;
+var FADE = 70, DUREE = 420;
 function dessiner(t) {
 var pl = Math.min(1, t);
 var pt = Math.min(1, Math.max(0, (t - 0.1) / 0.9));
