@@ -240,8 +240,7 @@ body.gx-entree .page-head{animation:gx-entree .4s var(--ease) .05s both}
 body.gx-entree #detailsEvenement{animation:gx-entree .45s var(--ease) .12s both}
 @media (prefers-reduced-motion:reduce){body.gx-entree .page-head,body.gx-entree #detailsEvenement{animation:none}}
 #gw-wipe{position:fixed;inset:0;z-index:100000;overflow:hidden;pointer-events:auto}
-#gw-wipe .gw-cream{position:absolute;inset:0;background:#F5F3ED;opacity:0}
-#gw-wipe .gw-band{position:absolute;left:0;top:0;width:100%;height:130vh;display:block;will-change:transform;transform:translate3d(0,100vh,0)}
+#gw-wipe svg{position:absolute;inset:0;width:100%;height:100%;display:block}
 </style>
 </head>
 <body>
@@ -634,37 +633,56 @@ var balayageEnCours = false;
 function balayage() {
 if (balayageEnCours) return;
 balayageEnCours = true;
-if (reduit || !('animate' in Element.prototype)) { fermer(false); return; }
+if (reduit) { fermer(false); return; }
 var voile = document.createElement('div');
 voile.id = 'gw-wipe';
 voile.setAttribute('aria-hidden', 'true');
-voile.innerHTML = '<div class="gw-cream"></div><svg class="gw-band" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0 0Q50 18 100 0L100 92Q50 110 0 92Z" fill="#d97706"/></svg>';
 document.body.appendChild(voile);
-var creme = voile.firstChild, bande = voile.lastChild;
-var courbe = 'cubic-bezier(.65,0,.35,1)';
-var termine = false;
-function finir() {
-if (termine) return;
-termine = true;
+var r = voile.getBoundingClientRect();
+var w = Math.max(1, r.width), h = Math.max(1, r.height) + 60;
+var s = Math.max(16, Math.min(60, w * 0.055));
+voile.innerHTML = '<svg viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none"><path id="gw-voile" fill="#F5F3ED"/><path id="gw-bande" fill="#d97706"/></svg>';
+var voileP = voile.querySelector('#gw-voile'), bandeP = voile.querySelector('#gw-bande');
+var yDeb = h, yFin = -s - 2;
+var FADE = 120, DUREE = 780;
+function dessiner(t) {
+var pl = Math.min(1, t);
+var pt = Math.min(1, Math.max(0, (t - 0.1) / 0.9));
+var el = 1 - Math.pow(1 - pl, 2.2);
+var et = pt < 0.5 ? 4 * pt * pt * pt : 1 - Math.pow(-2 * pt + 2, 3) / 2;
+var L = yDeb + (yFin - yDeb) * el;
+var T = yDeb + (yFin - yDeb) * et;
+var m = w / 2;
+voileP.setAttribute('d', 'M0,0H' + w + 'V' + T + 'Q' + m + ',' + (T + 2 * s) + ' 0,' + T + 'Z');
+bandeP.setAttribute('d', 'M0,' + L + 'Q' + m + ',' + (L + 2 * s) + ' ' + w + ',' + L + 'L' + w + ',' + T + 'Q' + m + ',' + (T + 2 * s) + ' 0,' + T + 'Z');
+}
+var debut = null, ouvert = false;
+function ouvrir() {
+if (ouvert) return;
+ouvert = true;
 fermer(true);
 window.scrollTo(0, 0);
 }
-var montee = bande.animate(
-[{ transform: 'translate3d(0,100vh,0)' }, { transform: 'translate3d(0,-14vh,0)' }],
-{ duration: 440, easing: courbe, fill: 'forwards' }
-);
-creme.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 440, easing: 'ease-out', fill: 'forwards' });
-montee.onfinish = function () {
-finir();
-var sortie = bande.animate(
-[{ transform: 'translate3d(0,-14vh,0)' }, { transform: 'translate3d(0,-135vh,0)' }],
-{ duration: 380, easing: courbe, fill: 'forwards' }
-);
-creme.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 380, easing: 'ease-out', fill: 'forwards' });
-sortie.onfinish = function () { voile.remove(); };
-};
-/* Sécurité : si les animations ne démarrent pas, on ouvre quand même la page d'achat */
-setTimeout(function () { finir(); if (voile.parentNode) voile.remove(); }, 1800);
+function image(ts) {
+if (debut === null) debut = ts;
+var tt = ts - debut;
+if (tt < FADE) {
+voileP.setAttribute('opacity', tt / FADE);
+dessiner(0);
+requestAnimationFrame(image);
+return;
+}
+voileP.setAttribute('opacity', 1);
+ouvrir();
+var t = Math.min(1, (tt - FADE) / DUREE);
+dessiner(t);
+if (t < 1) requestAnimationFrame(image); else voile.remove();
+}
+dessiner(0);
+voileP.setAttribute('opacity', 0);
+requestAnimationFrame(image);
+/* Sécurité : si l'animation ne tourne pas, on ouvre quand même la page d'achat */
+setTimeout(function () { ouvrir(); if (voile.parentNode) voile.remove(); }, 2500);
 }
 $('gi-btn').addEventListener('click', balayage);
 
