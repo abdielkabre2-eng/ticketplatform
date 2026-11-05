@@ -47,7 +47,9 @@ h1{font-size:32px;font-weight:800;letter-spacing:-1px;line-height:1.15}
 .sub{max-width:460px;margin:12px auto 0;color:var(--text);font-size:14.5px;line-height:1.7}
 
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:6px 30px;animation:fadeUp .6s var(--ease) .08s both}
-article{display:flex;gap:16px;padding:24px 0}
+/* Articles : apparition au scroll (comme la page Histoire) */
+article{display:flex;gap:16px;padding:24px 0;opacity:0;transform:translateY(18px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+article.gx-visible{opacity:1;transform:translateY(0)}
 article + article{border-top:1px solid var(--line)}
 .num{flex:0 0 32px;width:32px;height:32px;margin-top:1px;border-radius:50%;background:var(--gold-soft);border:1px solid rgba(217,119,6,.28);color:var(--gold-dark);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;font-variant-numeric:tabular-nums}
 .body{min-width:0;flex:1}
@@ -58,7 +60,10 @@ article p{font-size:13.5px;line-height:1.75;color:var(--text)}
 .foot b{color:var(--text);font-weight:700}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  article{opacity:1!important;transform:none!important}
+}
 
 @media(max-width:520px){
   .topbar-inner,.wrap{width:min(100% - 28px,720px)}
@@ -201,7 +206,7 @@ article p{font-size:13.5px;line-height:1.75;color:var(--text)}
       </div>
     </article>
 
-<article>
+    <article>
       <span class="num">14</span>
       <div class="body">
         <h2>Conservation et suppression des données</h2>
@@ -224,5 +229,24 @@ article p{font-size:13.5px;line-height:1.75;color:var(--text)}
   <b>GoldTix</b> · La Billetterie en Or &copy; 2026
 </footer>
 
+<script>
+(function() {
+  var items = document.querySelectorAll('article');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce || !('IntersectionObserver' in window)) {
+    items.forEach(function(el) { el.classList.add('gx-visible'); });
+    return;
+  }
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('gx-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+  items.forEach(function(el) { observer.observe(el); });
+})();
+</script>
 </body>
 </html>

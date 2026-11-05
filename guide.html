@@ -53,9 +53,10 @@ h1{font-size:32px;font-weight:800;letter-spacing:-1px;line-height:1.15}
 .g-ico{width:38px;height:38px;flex:0 0 38px;border-radius:11px;background:var(--surface-soft);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink)}
 .g-ico svg{width:18px;height:18px}
 
-/* Étapes en ligne de temps verticale */
+/* Étapes en ligne de temps verticale (apparition au scroll, comme la page Histoire) */
 .steps{display:flex;flex-direction:column}
-.step{position:relative;display:flex;gap:16px;padding-bottom:22px}
+.step{position:relative;display:flex;gap:16px;padding-bottom:22px;opacity:0;transform:translateY(18px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.step.gx-visible{opacity:1;transform:translateY(0)}
 .step:last-child{padding-bottom:0}
 .step::before{content:'';position:absolute;left:13px;top:30px;bottom:2px;width:1.5px;background:var(--line)}
 .step:last-child::before{display:none}
@@ -75,7 +76,10 @@ h1{font-size:32px;font-weight:800;letter-spacing:-1px;line-height:1.15}
 .foot b{color:var(--text);font-weight:700}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .step{opacity:1!important;transform:none!important}
+}
 
 @media(max-width:520px){
   .topbar-inner,.wrap{width:min(100% - 28px,720px)}
@@ -217,5 +221,24 @@ h1{font-size:32px;font-weight:800;letter-spacing:-1px;line-height:1.15}
   <b>GoldTix</b> · La Billetterie en Or &copy; 2026
 </footer>
 
+<script>
+(function() {
+  var steps = document.querySelectorAll('.step');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce || !('IntersectionObserver' in window)) {
+    steps.forEach(function(el) { el.classList.add('gx-visible'); });
+    return;
+  }
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('gx-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+  steps.forEach(function(el) { observer.observe(el); });
+})();
+</script>
 </body>
 </html>
