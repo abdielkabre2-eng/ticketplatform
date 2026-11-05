@@ -241,7 +241,9 @@ body.gx-entree #detailsEvenement{animation:gx-entree .45s var(--ease) .12s both}
 @media (prefers-reduced-motion:reduce){body.gx-entree .page-head,body.gx-entree #detailsEvenement{animation:none}}
 #gw-wipe{position:fixed;inset:0;z-index:100000;overflow:hidden;pointer-events:auto}
 #gw-wipe svg{position:absolute;inset:0;width:100%;height:100%;display:block}
-html.gx-pre .topbar,html.gx-pre .page-head>*,html.gx-pre #detailsEvenement>*{opacity:0}
+/* Pendant le passage de la bande dorée : toute la page d'achat est masquée.
+   Elle est ensuite révélée par un glissement (voir glisser() dans le script de l'intro). */
+html.gx-pre body>.topbar,html.gx-pre body>.wrap,html.gx-pre body>.gx-footer{opacity:0}
 </style>
 </head>
 <body>
@@ -515,7 +517,7 @@ document.addEventListener('keydown', function (e) { if (e.key === 'Escape') GX.c
 </script>
 <!-- ═══════════ TRADUCTIONS FR / EN — fin ═══════════ -->
 
-<!-- ═══════════ INTRO ANIMÉE (v11) — début ═══════════ -->
+<!-- ═══════════ INTRO ANIMÉE (v12) — début ═══════════ -->
 <script>
 (function () {
 'use strict';
@@ -524,6 +526,15 @@ if (!eventId) return; /* sans ?event=, la page d'achat affiche son propre messag
 
 var reduit = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 var t0 = Date.now();
+
+/* ── Réglages du glissement de la page d'achat (après la bande dorée) ──
+   GLISSE_DEPART : moment du démarrage, en fraction (0 à 1) du passage de la bande
+                   (0.5 = quand la bande est à peu près au milieu de sa course ; plus grand = plus tard)
+   GLISSE_DUREE  : durée du glissement en ms (450 à 600 recommandé)
+   GLISSE_COURBE : ease-out naturel, sans rebond                                              */
+var GLISSE_DEPART = 0.5;
+var GLISSE_DUREE = 520;
+var GLISSE_COURBE = 'cubic-bezier(.215,.61,.355,1)';
 
 var css = ''
 + 'html.gi-lock,html.gi-lock body{overflow:hidden!important}'
@@ -646,6 +657,7 @@ voile.innerHTML = '<svg viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="n
 var voileP = voile.querySelector('#gw-voile'), bandeP = voile.querySelector('#gw-bande');
 var yDeb = h, yFin = -s - 2;
 var FADE = 80, DUREE = 520;
+/* Bande dorée : forme, courbure et animation INCHANGÉES */
 function dessiner(t) {
 var pl = Math.min(1, t);
 var pt = Math.min(1, Math.max(0, (t - 0.1) / 0.9));
@@ -658,21 +670,28 @@ voileP.setAttribute('d', 'M0,0H' + w + 'V' + T + 'Q' + m + ',' + (T + 2 * s) + '
 bandeP.setAttribute('d', 'M0,' + L + 'Q' + m + ',' + (L + 2 * s) + ' ' + w + ',' + L + 'L' + w + ',' + T + 'Q' + m + ',' + (T + 2 * s) + ' 0,' + T + 'Z');
 }
 var glisse = false;
+/* Glissement de la page d'achat : de bas en haut, ease-out, avec fondu.
+   La page est masquée (html.gx-pre) pendant le début du passage de la bande, puis glisse
+   en 3 blocs (en-tête, contenu, pied de page) légèrement décalés pour un effet harmonieux. */
 function glisser() {
 if (glisse) return;
 glisse = true;
-var courbeG = 'cubic-bezier(.16,1,.3,1)';
-function jouer(liste, dy, duree, delai, pas) {
-for (var i = 0; i < liste.length; i++) {
-if (liste[i].animate) liste[i].animate(
-[{ opacity: 0, transform: 'translateY(' + dy + 'px)' }, { opacity: 1, transform: 'none' }],
-{ duration: duree, delay: delai + i * pas, easing: courbeG, fill: 'backwards' }
+var blocs = [
+{ el: document.querySelector('body > .topbar'),    dy: 18, delai: 0 },
+{ el: document.querySelector('body > .wrap'),      dy: 56, delai: 40 },
+{ el: document.querySelector('body > .gx-footer'), dy: 56, delai: 80 }
+];
+blocs.forEach(function (b) {
+if (!b.el || !b.el.animate) return;
+b.el.animate(
+[
+{ opacity: 0, transform: 'translateY(' + b.dy + 'px)' },
+{ opacity: 1, offset: 0.6 },
+{ opacity: 1, transform: 'translateY(0)' }
+],
+{ duration: GLISSE_DUREE, delay: b.delai, easing: GLISSE_COURBE, fill: 'backwards' }
 );
-}
-}
-jouer(document.querySelectorAll('.topbar'), -12, 400, 100, 0);
-jouer(document.querySelectorAll('.page-head > *'), 24, 450, 0, 60);
-jouer(document.querySelectorAll('#detailsEvenement > *'), 28, 480, 120, 70);
+});
 document.documentElement.classList.remove('gx-pre');
 }
 var debut = null, ouvert = false;
@@ -695,9 +714,9 @@ return;
 voileP.setAttribute('opacity', 1);
 ouvrir();
 var t = Math.min(1, (tt - FADE) / DUREE);
-if (t >= 0.12) glisser();
+if (t >= GLISSE_DEPART) glisser();
 dessiner(t);
-if (t < 1) requestAnimationFrame(image); else voile.remove();
+if (t < 1) requestAnimationFrame(image); else { glisser(); voile.remove(); }
 }
 dessiner(0);
 voileP.setAttribute('opacity', 0);
@@ -777,7 +796,7 @@ charger()
 .catch(function () { fermer(true); });
 })();
 </script>
-<!-- ═══════════ INTRO ANIMÉE (v11) — fin ═══════════ -->
+<!-- ═══════════ INTRO ANIMÉE (v12) — fin ═══════════ -->
 
 <header class="topbar">
 <div class="wrap topbar-inner">
