@@ -532,9 +532,9 @@ var t0 = Date.now();
                    (0.5 = quand la bande est à peu près au milieu de sa course ; plus grand = plus tard)
    GLISSE_DUREE  : durée du glissement en ms (450 à 600 recommandé)
    GLISSE_COURBE : ease-out naturel, sans rebond                                              */
-var GLISSE_DEPART = 0.5;
-var GLISSE_DUREE = 520;
-var GLISSE_COURBE = 'cubic-bezier(.215,.61,.355,1)';
+var GLISSE_DEPART = 0.4;
+var GLISSE_DUREE = 900;
+var GLISSE_COURBE = 'cubic-bezier(.22,.61,.36,1)';
 
 var css = ''
 + 'html.gi-lock,html.gi-lock body{overflow:hidden!important}'
@@ -677,16 +677,17 @@ function glisser() {
 if (glisse) return;
 glisse = true;
 var blocs = [
-{ el: document.querySelector('body > .topbar'),    dy: 18, delai: 0 },
-{ el: document.querySelector('body > .wrap'),      dy: 56, delai: 40 },
-{ el: document.querySelector('body > .gx-footer'), dy: 56, delai: 80 }
+{ el: document.querySelector('body > .topbar'),                dy: 40,  delai: 0 },
+{ el: document.querySelector('body > .wrap > .page-head'),     dy: 110, delai: 60 },
+{ el: document.querySelector('body > .wrap > #detailsEvenement'), dy: 150, delai: 160 },
+{ el: document.querySelector('body > .gx-footer'),             dy: 150, delai: 240 }
 ];
 blocs.forEach(function (b) {
 if (!b.el || !b.el.animate) return;
 b.el.animate(
 [
 { opacity: 0, transform: 'translateY(' + b.dy + 'px)' },
-{ opacity: 1, offset: 0.6 },
+{ opacity: 1, offset: 0.75 },
 { opacity: 1, transform: 'translateY(0)' }
 ],
 { duration: GLISSE_DUREE, delay: b.delai, easing: GLISSE_COURBE, fill: 'backwards' }
