@@ -533,7 +533,7 @@ var t0 = Date.now();
    GLISSE_DUREE  : durée du glissement en ms (450 à 600 recommandé)
    GLISSE_COURBE : ease-out naturel, sans rebond                                              */
 var GLISSE_DEPART = 0.4;
-var GLISSE_DUREE = 900;
+var GLISSE_DUREE = 1400;
 var GLISSE_COURBE = 'cubic-bezier(.22,.61,.36,1)';
 
 var css = ''
@@ -678,9 +678,9 @@ if (glisse) return;
 glisse = true;
 var blocs = [
 { el: document.querySelector('body > .topbar'),                dy: 40,  delai: 0 },
-{ el: document.querySelector('body > .wrap > .page-head'),     dy: 110, delai: 60 },
-{ el: document.querySelector('body > .wrap > #detailsEvenement'), dy: 150, delai: 160 },
-{ el: document.querySelector('body > .gx-footer'),             dy: 150, delai: 240 }
+{ el: document.querySelector('body > .wrap > .page-head'),     dy: 110, delai: 100 },
+{ el: document.querySelector('body > .wrap > #detailsEvenement'), dy: 150, delai: 250 },
+{ el: document.querySelector('body > .gx-footer'),             dy: 150, delai: 380 }
 ];
 blocs.forEach(function (b) {
 if (!b.el || !b.el.animate) return;
