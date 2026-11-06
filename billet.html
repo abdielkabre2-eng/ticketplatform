@@ -1001,6 +1001,9 @@ FR.pdf_participant = 'Participant';                         EN.pdf_participant =
 FR.pdf_phone = 'Téléphone';                                 EN.pdf_phone = 'Phone';
 FR.pdf_id = 'ID Billet';                                    EN.pdf_id = 'Ticket ID';
 FR.pdf_platform = 'Plateforme de billetterie sécurisée';    EN.pdf_platform = 'Secure ticketing platform';
+FR.pdf_cat_label = 'Catégorie du billet';                   EN.pdf_cat_label = 'Ticket category';
+FR.pdf_entries = '1 entrée';                                EN.pdf_entries = '1 entry';
+FR.pdf_present = "Présentez ce QR code à l'entrée.";        EN.pdf_present = 'Please show this QR code at the entrance.';
 
 GX.t = function (cle, vars) {
 var d = GX.dict[GX.lang] || FR;
@@ -1900,6 +1903,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const neutralAccent = '#8a8478';
       const neutralAccentSoft = '#c9c3b6';
 
+      // Fond global en blanc pur (#FFFFFF) : conteneur + carte principale.
       const pdfContainer = document.createElement('div');
       pdfContainer.style.cssText = `
         position: fixed; left: -9999px; top: 0;
@@ -1909,7 +1913,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       `;
 
       pdfContainer.innerHTML = `
-        <div style="border-radius:20px; overflow:hidden; background:#ffffff; box-shadow:0 0 0 1px #ece7dd;">
+        <div style="border-radius:20px; overflow:hidden; background:#ffffff; box-shadow:0 0 0 1px #e5e7eb;">
 
           <!-- ===== AFFICHE (poster) ===== -->
           <div style="width:100%; height:170px; overflow:hidden; line-height:0; position:relative; background:linear-gradient(120deg, ${neutralAccentSoft}, ${neutralAccent});">
@@ -1922,7 +1926,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             `}
           </div>
 
-          <div style="padding:18px 22px 0;">
+          <div style="padding:18px 22px 0; background:#ffffff;">
 
             <!-- ===== LABEL + TITRE ===== -->
             <div style="text-align:center; margin-bottom:14px;">
@@ -1934,17 +1938,17 @@ document.addEventListener('DOMContentLoaded', async () => {
               </div>
             </div>
 
-            <!-- ===== BLOC INFOS (neutre, sans liseré coloré) ===== -->
-            <div style="background:#faf8f4; border-radius:14px; padding:2px 18px; margin-bottom:14px;">
-              <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid #efece4;">
+            <!-- ===== BLOC INFOS (fond blanc pur, fine bordure) ===== -->
+            <div style="background:#ffffff; border:1px solid #eceef1; border-radius:14px; padding:2px 18px; margin-bottom:14px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid #eceef1;">
                 <span style="color:#1c1917; font-weight:400; font-size:13px;">${escHTML(tr('pdf_datetime'))}</span>
                 <span style="font-weight:700; color:#1c1917; font-size:14px; text-align:right;">${escHTML(dateValue)} &middot; ${escHTML(heureValue)}</span>
               </div>
-              <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid #efece4;">
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid #eceef1;">
                 <span style="color:#1c1917; font-weight:400; font-size:13px;">${escHTML(tr('pdf_venue'))}</span>
                 <span style="font-weight:700; color:#1c1917; font-size:14px; text-align:right;">${escHTML(lieuValue)}</span>
               </div>
-              <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 0; ${telephoneValue && telephoneValue !== '—' ? 'border-bottom:1px solid #efece4;' : ''}">
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 0; ${telephoneValue && telephoneValue !== '—' ? 'border-bottom:1px solid #eceef1;' : ''}">
                 <span style="color:#1c1917; font-weight:400; font-size:13px;">${escHTML(tr('pdf_participant'))}</span>
                 <span style="font-weight:700; color:#1c1917; font-size:14px; text-align:right;">${escHTML(titulaireValue)}</span>
               </div>
@@ -1955,38 +1959,34 @@ document.addEventListener('DOMContentLoaded', async () => {
               </div>` : ''}
             </div>
 
-            <!-- ===== BADGE CATÉGORIE (doré) ===== -->
-            <div style="text-align:center; margin-bottom:16px;">
-              <span style="display:inline-block; background:linear-gradient(135deg, #fef3c7, #fde68a); color:#92400e; font-weight:800; font-size:13px; letter-spacing:.05em; padding:8px 24px; border-radius:999px; border:1.5px solid #d97706; box-shadow:0 4px 14px rgba(217,119,6,.22);">
-                ${escHTML(categorieValue)}
-              </span>
+            <!-- ===== CATÉGORIE : badge sombre + libellé + nombre d'entrées ===== -->
+            <div style="display:flex; align-items:center; gap:12px; background:#f3f4f6; border-radius:14px; padding:12px 14px; margin-bottom:18px;">
+              <span style="display:inline-block; flex-shrink:0; background:#141414; color:#d9a93a; font-weight:800; font-size:15px; letter-spacing:.12em; padding:8px 16px; border-radius:8px; text-transform:uppercase; line-height:1.2;">${escHTML(String(categorieValue).toUpperCase())}</span>
+              <span style="flex:1; min-width:0; font-size:13px; font-weight:500; color:#1c1917; line-height:1.3;">${escHTML(tr('pdf_cat_label'))}</span>
+              <span style="flex-shrink:0; font-size:13px; font-weight:800; color:#1c1917; line-height:1.3; white-space:nowrap;">${escHTML(tr('pdf_entries'))}</span>
             </div>
 
-            <!-- ===== SÉPARATEUR TICKET (effet détachable) ===== -->
-            <div style="position:relative; display:flex; align-items:center; margin:0 -22px 16px;">
-              <div style="width:18px; height:18px; border-radius:50%; background:#ffffff; box-shadow:inset 0 0 0 2px #1c1917; margin-left:-9px; flex-shrink:0;"></div>
-              <div style="flex:1; border-top:2px dashed #1c1917;"></div>
-              <div style="width:18px; height:18px; border-radius:50%; background:#ffffff; box-shadow:inset 0 0 0 2px #1c1917; margin-right:-9px; flex-shrink:0;"></div>
-            </div>
-
-            <!-- ===== QR CODE + ID BILLET (centré) ===== -->
-            <div style="text-align:center; padding-bottom:16px;">
+            <!-- ===== QR CODE dans une carte blanche à fine bordure ===== -->
+            <div style="text-align:center; padding-bottom:18px;">
               ${qrDataUrl ? `
-                <div style="display:inline-block; padding:10px; border-radius:14px; box-shadow:0 0 0 1px #ece7dd, 0 6px 16px rgba(0,0,0,.08);">
-                  <img src="${qrDataUrl}" style="width:128px; height:128px; display:block;" />
+                <div style="display:inline-block; background:#ffffff; border:1.5px solid #d9dadd; border-radius:18px; padding:16px; line-height:0;">
+                  <img src="${qrDataUrl}" style="width:150px; height:150px; display:block;" />
                 </div>
               ` : ''}
-              <div style="font-size:10px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:#a8a29e; margin-top:10px;">
+              <div style="font-size:14px; font-weight:800; color:#1c1917; margin-top:14px; line-height:1.35;">
+                ${escHTML(tr('pdf_present'))}
+              </div>
+              <div style="font-size:8px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#a8a29e; margin-top:10px;">
                 ${escHTML(tr('pdf_id'))}
               </div>
-              <div style="font-size:18px; font-weight:800; letter-spacing:.04em; color:#1c1917; font-family:monospace; margin-top:2px;">
+              <div style="font-size:12px; font-weight:700; letter-spacing:.04em; color:#57534e; font-family:monospace; margin-top:2px;">
                 ${escHTML(billetRef)}
               </div>
             </div>
           </div>
 
           <!-- ===== FOOTER ===== -->
-          <div style="border-top:1px solid #f1f0ef; padding:10px 18px; display:flex; align-items:center; justify-content:center; gap:8px; background:#faf8f4;">
+          <div style="border-top:1px solid #eceef1; padding:10px 18px; display:flex; align-items:center; justify-content:center; gap:8px; background:#ffffff;">
             ${logoDataUrl
               ? `<img src="${logoDataUrl}" style="height:16px; width:auto; display:block;" />`
               : `<span style="font-family:'Plus Jakarta Sans', sans-serif; font-size:11px; font-weight:800; letter-spacing:-.01em; color:#1c1917;">Gold<span style="color:#d97706;">Tix</span></span>`}
@@ -2023,6 +2023,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             format: [pageWidth, pageHeight],
             orientation: pageWidth >= pageHeight ? 'landscape' : 'portrait'
           });
+
+          // Fond de page en blanc pur : on peint toute la page avant d'y poser l'image,
+          // pour que la marge autour du billet soit aussi #FFFFFF.
+          pdf.setFillColor(255, 255, 255);
+          pdf.rect(0, 0, pageWidth, pageHeight, 'F');
 
           pdf.addImage(imgData, 'JPEG', marginMm, marginMm, imgWidthMm, imgHeightMm, undefined, 'FAST');
           return pdf.output('blob');
