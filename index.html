@@ -594,6 +594,10 @@ var css = ''
 + '@keyframes gi-bg{from{background-color:#fff}to{background-color:#f7f7f5}}'
 + '@keyframes gi-fade{from{opacity:0}to{opacity:1}}'
 + '@keyframes gi-in{from{opacity:0;transform:translateY(var(--dy,calc(var(--u) * 2)));visibility:visible}to{opacity:1;transform:none;visibility:visible}}'
+/* Entrées latérales : affiche depuis la gauche, bouton depuis la droite, texte du bas depuis le bas */
++ '@keyframes gi-in-x{from{opacity:0;transform:translateX(var(--dx,0));visibility:visible}to{opacity:1;transform:none;visibility:visible}}'
++ '#gi-root.gi-go .gi-from-left,#gi-root.gi-go .gi-from-right{animation:gi-in-x 1s var(--ease) var(--d,0s) forwards}'
++ '#gi-root.gi-go .gi-from-bottom{animation:gi-in 1s var(--ease) var(--d,0s) forwards}'
 
 /* ── Mobile ── */
 + '@media(max-width:599px){#gi-root .gi-stage{--pw:calc(var(--u) * 68);padding-top:calc(var(--u) * 8)}#gi-root .gi-title{margin-top:calc(var(--u) * 4.6)}#gi-root .gi-sub{margin-top:calc(var(--u) * 4.2);font-size:max(14px,calc(var(--u) * 4))}#gi-root .gi-foot{padding-top:calc(var(--u) * 4.5);font-size:max(11.5px,calc(var(--u) * 2.9))}}'
@@ -618,12 +622,12 @@ root.innerHTML = ''
 + '</div></header>'
 + '<div class="gi-page"><div class="gi-stage">'
 + '<div class="gi-posterwrap">'
-+ '<figure class="gi-poster gi-a" style="--d:.75s"><img id="gi-img" alt="" decoding="async"></figure>'
++ '<figure class="gi-poster gi-a gi-from-left" style="--d:.75s;--dx:calc(var(--u) * -55)"><img id="gi-img" alt="" decoding="async"></figure>'
 + '</div>'
-+ '<h1 class="gi-title gi-a" id="gi-titre" style="--d:1.35s"></h1>'
-+ '<p class="gi-sub gi-a" id="gi-sub" data-i18n="intro_sub" style="--d:1.6s">Un évènement à ne pas manquer</p>'
-+ '<div class="gi-tk gi-a" style="--d:1.95s"><i></i><button type="button" class="gi-cta" id="gi-btn" data-i18n="intro_cta">J’achète mon billet</button><i></i></div>'
-+ '<p class="gi-foot gi-a" data-i18n="intro_foot" style="--d:2.15s">Plateforme de billetterie moderne</p>'
++ '<h1 class="gi-title gi-a" id="gi-titre" style="--d:1.45s"></h1>'
++ '<p class="gi-sub gi-a" id="gi-sub" data-i18n="intro_sub" style="--d:1.65s">Un évènement à ne pas manquer</p>'
++ '<div class="gi-tk gi-a gi-from-right" style="--d:1.95s;--dx:calc(var(--u) * 55)"><i></i><button type="button" class="gi-cta" id="gi-btn" data-i18n="intro_cta">J’achète mon billet</button><i></i></div>'
++ '<p class="gi-foot gi-a gi-from-bottom" data-i18n="intro_foot" style="--d:2.45s;--dy:calc(var(--u) * 12)">Plateforme de billetterie moderne</p>'
 + '</div></div>';
 document.body.insertBefore(root, document.body.firstChild);
 document.documentElement.classList.add('gi-lock');
