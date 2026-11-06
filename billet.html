@@ -1850,13 +1850,46 @@ document.addEventListener('DOMContentLoaded', async () => {
     const dateValue = document.getElementById('evDateH')?.textContent.trim() || metaPills[0] || '—';
     const heureValue = document.getElementById('evHeureH')?.textContent.trim() || metaPills[1] || '—';
 
-    const qrSourceEl = document.querySelector('#qrcode canvas, #qrcode img');
-    let qrDataUrl = null;
-    if (qrSourceEl) {
-      if (qrSourceEl.tagName === 'CANVAS') {
-        qrDataUrl = qrSourceEl.toDataURL('image/png');
-      } else if (qrSourceEl.tagName === 'IMG') {
-        qrDataUrl = qrSourceEl.src;
+    // QR du PDF : on le génère à neuf (hors écran, en haute résolution) à partir du code du billet,
+    // au lieu de copier celui de l'écran. C'est plus fiable (le QR de l'écran peut être masqué ou
+    // pas encore converti en image sur certains navigateurs mobiles, ce qui donnait un cadre vide).
+    function genererQrPourPdf() {
+      try {
+        const texte = String((etatBillet && etatBillet.code_public) || '');
+        if (!texte || typeof QRCode === 'undefined') return null;
+        const holder = document.createElement('div');
+        holder.style.cssText = 'position:fixed; left:-9999px; top:0; width:260px; height:260px;';
+        document.body.appendChild(holder);
+        new QRCode(holder, {
+          text: texte,
+          width: 260,
+          height: 260,
+          colorDark: '#000000',
+          colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.M
+        });
+        let url = null;
+        const cv = holder.querySelector('canvas');
+        if (cv) { try { url = cv.toDataURL('image/png'); } catch (e) { url = null; } }
+        if (!url || url.length < 200) {
+          const im = holder.querySelector('img');
+          if (im && im.src && im.src.indexOf('data:image') === 0) url = im.src;
+        }
+        document.body.removeChild(holder);
+        return url;
+      } catch (e) { return null; }
+    }
+
+    let qrDataUrl = genererQrPourPdf();
+    if (!qrDataUrl) {
+      // Plan B : on reprend le QR affiché à l'écran
+      const qrSourceEl = document.querySelector('#qrcode canvas, #qrcode img');
+      if (qrSourceEl) {
+        if (qrSourceEl.tagName === 'CANVAS') {
+          try { qrDataUrl = qrSourceEl.toDataURL('image/png'); } catch (e) { qrDataUrl = null; }
+        } else if (qrSourceEl.tagName === 'IMG') {
+          qrDataUrl = qrSourceEl.src;
+        }
       }
     }
 
@@ -1903,6 +1936,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       const neutralAccent = '#8a8478';
       const neutralAccentSoft = '#c9c3b6';
 
+      // Catégorie longue (ex. « LISTE 2 – 70 DHS ») : on passe en disposition sur 2 lignes
+      // pour que le badge et le texte ne soient pas écrasés.
+      const catLongue = String(categorieValue).length > 9;
+
       // Fond global en blanc pur (#FFFFFF) : conteneur + carte principale.
       const pdfContainer = document.createElement('div');
       pdfContainer.style.cssText = `
@@ -1916,7 +1953,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <div style="border-radius:20px; overflow:hidden; background:#ffffff; box-shadow:0 0 0 1px #e5e7eb;">
 
           <!-- ===== AFFICHE (poster) ===== -->
-          <div style="width:100%; height:170px; overflow:hidden; line-height:0; position:relative; background:linear-gradient(120deg, ${neutralAccentSoft}, ${neutralAccent});">
+          <div style="width:100%; height:150px; overflow:hidden; line-height:0; position:relative; background:linear-gradient(120deg, ${neutralAccentSoft}, ${neutralAccent});">
             ${posterDataUrl ? `
               <img src="${posterDataUrl}" style="width:100%; height:100%; object-fit:cover; display:block;" />
             ` : `
@@ -1960,17 +1997,27 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div>
 
             <!-- ===== CATÉGORIE : badge sombre + libellé + nombre d'entrées ===== -->
-            <div style="display:flex; align-items:center; gap:12px; background:#f3f4f6; border-radius:14px; padding:12px 14px; margin-bottom:18px;">
+            ${catLongue ? `
+            <div style="background:#f3f4f6; border-radius:14px; padding:12px 14px; margin-bottom:16px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px;">
+                <span style="font-size:12px; font-weight:500; color:#57534e; white-space:nowrap;">${escHTML(tr('pdf_cat_label'))}</span>
+                <span style="font-size:12px; font-weight:800; color:#1c1917; white-space:nowrap;">${escHTML(tr('pdf_entries'))}</span>
+              </div>
+              <div style="text-align:center;">
+                <span style="display:inline-block; background:#141414; color:#d9a93a; font-weight:800; font-size:14px; letter-spacing:.1em; padding:9px 18px; border-radius:8px; text-transform:uppercase; line-height:1.25;">${escHTML(String(categorieValue).toUpperCase())}</span>
+              </div>
+            </div>` : `
+            <div style="display:flex; align-items:center; gap:12px; background:#f3f4f6; border-radius:14px; padding:12px 14px; margin-bottom:16px;">
               <span style="display:inline-block; flex-shrink:0; background:#141414; color:#d9a93a; font-weight:800; font-size:15px; letter-spacing:.12em; padding:8px 16px; border-radius:8px; text-transform:uppercase; line-height:1.2;">${escHTML(String(categorieValue).toUpperCase())}</span>
-              <span style="flex:1; min-width:0; font-size:13px; font-weight:500; color:#1c1917; line-height:1.3;">${escHTML(tr('pdf_cat_label'))}</span>
-              <span style="flex-shrink:0; font-size:13px; font-weight:800; color:#1c1917; line-height:1.3; white-space:nowrap;">${escHTML(tr('pdf_entries'))}</span>
-            </div>
+              <span style="flex:1; min-width:0; font-size:13px; font-weight:500; color:#1c1917; line-height:1.3; white-space:nowrap;">${escHTML(tr('pdf_cat_label'))}</span>
+              <span style="flex-shrink:0; margin-left:auto; font-size:13px; font-weight:800; color:#1c1917; line-height:1.3; white-space:nowrap;">${escHTML(tr('pdf_entries'))}</span>
+            </div>`}
 
             <!-- ===== QR CODE dans une carte blanche à fine bordure ===== -->
             <div style="text-align:center; padding-bottom:18px;">
               ${qrDataUrl ? `
-                <div style="display:inline-block; background:#ffffff; border:1.5px solid #d9dadd; border-radius:18px; padding:16px; line-height:0;">
-                  <img src="${qrDataUrl}" style="width:150px; height:150px; display:block;" />
+                <div style="display:inline-block; background:#ffffff; border:1.5px solid #d9dadd; border-radius:18px; padding:14px; line-height:0;">
+                  <img src="${qrDataUrl}" width="130" height="130" style="width:130px; height:130px; display:block;" />
                 </div>
               ` : ''}
               <div style="font-size:14px; font-weight:800; color:#1c1917; margin-top:14px; line-height:1.35;">
@@ -2011,7 +2058,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           const { jsPDF } = window.jspdf;
 
           const marginMm = 5;
-          const maxWidthMm = 105;
+          const maxWidthMm = 90;
           const pxToMm = maxWidthMm / canvas.width;
           const imgWidthMm = canvas.width * pxToMm;
           const imgHeightMm = canvas.height * pxToMm;
