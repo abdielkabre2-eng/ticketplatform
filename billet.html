@@ -1900,7 +1900,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       const neutralAccent = '#8a8478';
       const neutralAccentSoft = '#c9c3b6';
 
-      // Fond global en blanc pur (#FFFFFF) : conteneur + carte principale + blocs.
       const pdfContainer = document.createElement('div');
       pdfContainer.style.cssText = `
         position: fixed; left: -9999px; top: 0;
@@ -1923,7 +1922,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             `}
           </div>
 
-          <div style="padding:18px 22px 0; background:#ffffff;">
+          <div style="padding:18px 22px 0;">
 
             <!-- ===== LABEL + TITRE ===== -->
             <div style="text-align:center; margin-bottom:14px;">
@@ -1935,8 +1934,8 @@ document.addEventListener('DOMContentLoaded', async () => {
               </div>
             </div>
 
-            <!-- ===== BLOC INFOS (fond blanc pur, fine bordure) ===== -->
-            <div style="background:#ffffff; border:1px solid #efece4; border-radius:14px; padding:2px 18px; margin-bottom:14px;">
+            <!-- ===== BLOC INFOS (neutre, sans liseré coloré) ===== -->
+            <div style="background:#faf8f4; border-radius:14px; padding:2px 18px; margin-bottom:14px;">
               <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid #efece4;">
                 <span style="color:#1c1917; font-weight:400; font-size:13px;">${escHTML(tr('pdf_datetime'))}</span>
                 <span style="font-weight:700; color:#1c1917; font-size:14px; text-align:right;">${escHTML(dateValue)} &middot; ${escHTML(heureValue)}</span>
@@ -1973,7 +1972,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <!-- ===== QR CODE + ID BILLET (centré) ===== -->
             <div style="text-align:center; padding-bottom:16px;">
               ${qrDataUrl ? `
-                <div style="display:inline-block; padding:10px; border-radius:14px; background:#ffffff; box-shadow:0 0 0 1px #ece7dd, 0 6px 16px rgba(0,0,0,.08);">
+                <div style="display:inline-block; padding:10px; border-radius:14px; box-shadow:0 0 0 1px #ece7dd, 0 6px 16px rgba(0,0,0,.08);">
                   <img src="${qrDataUrl}" style="width:128px; height:128px; display:block;" />
                 </div>
               ` : ''}
@@ -1987,7 +1986,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           </div>
 
           <!-- ===== FOOTER ===== -->
-          <div style="border-top:1px solid #f1f0ef; padding:10px 18px; display:flex; align-items:center; justify-content:center; gap:8px; background:#ffffff;">
+          <div style="border-top:1px solid #f1f0ef; padding:10px 18px; display:flex; align-items:center; justify-content:center; gap:8px; background:#faf8f4;">
             ${logoDataUrl
               ? `<img src="${logoDataUrl}" style="height:16px; width:auto; display:block;" />`
               : `<span style="font-family:'Plus Jakarta Sans', sans-serif; font-size:11px; font-weight:800; letter-spacing:-.01em; color:#1c1917;">Gold<span style="color:#d97706;">Tix</span></span>`}
@@ -2024,10 +2023,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             format: [pageWidth, pageHeight],
             orientation: pageWidth >= pageHeight ? 'landscape' : 'portrait'
           });
-
-          // Fond de page en blanc pur : toute la page (marges comprises) est peinte en #FFFFFF
-          pdf.setFillColor(255, 255, 255);
-          pdf.rect(0, 0, pageWidth, pageHeight, 'F');
 
           pdf.addImage(imgData, 'JPEG', marginMm, marginMm, imgWidthMm, imgHeightMm, undefined, 'FAST');
           return pdf.output('blob');
