@@ -743,17 +743,13 @@ flex-shrink: 0;
 .ticket:not(.is-confirmed) .ticket-body{padding-top:8px}
 
 /* Infos d'émission (billet confirmé uniquement) */
-.issue-info{display:none;grid-template-columns:repeat(4,1fr);padding:12px 14px 14px;background:var(--bg-card)}
-.issue-info.show{display:grid}
-.ei-item{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;padding:0 4px;min-width:0}
+.issue-info{display:none;align-items:stretch;padding:12px 8px 14px;background:var(--bg-card)}
+.issue-info.show{display:flex}
+.ei-item{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;text-align:center;padding:0 4px;min-width:0;white-space:nowrap}
 .ei-item+.ei-item{border-left:1px solid var(--border)}
-.ei-label{font-size:.5rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-lo);line-height:1}
-.ei-value{font-size:.66rem;font-weight:700;color:var(--text-hi);line-height:1.25;display:inline-flex;align-items:center;gap:5px}
-.ei-dot{width:6px;height:6px;border-radius:50%;background:#10b981;box-shadow:0 0 4px rgba(16,185,129,.6);flex-shrink:0}
-@media (max-width:360px){
-  .issue-info{grid-template-columns:1fr 1fr;row-gap:10px}
-  .ei-item:nth-child(3){border-left:none}
-}
+.ei-label{font-size:.56rem;font-weight:500;letter-spacing:0;text-transform:none;color:var(--text-mid);line-height:1.1;white-space:nowrap}
+.ei-value{font-size:.68rem;font-weight:700;color:var(--text-hi);line-height:1.2;white-space:nowrap}
+.ei-pill{display:inline-block;padding:3px 9px;border-radius:999px;background:rgba(16,185,129,.14);color:#047857;font-size:.62rem;font-weight:700;line-height:1.2;white-space:nowrap}
 
 /* ── Sélecteur de langue (drapeau + menu) et en-tête compact fluide ── */
 .top-navbar{gap:clamp(6px,2vw,12px);height:48px}
@@ -1366,13 +1362,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     let d = raw ? new Date(raw) : null;
     if (d && isNaN(d.getTime())) d = null;
     const loc = GX.lang === 'en' ? 'en-GB' : 'fr-FR';
-    const dateTxt  = d ? d.toLocaleDateString(loc, { day: '2-digit', month: 'long', year: 'numeric' }) : '—';
+    const dateTxt  = d ? d.toLocaleDateString(loc, { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
     const heureTxt = d ? d.toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' }) : '—';
 
     el.innerHTML =
       `<div class="ei-item"><span class="ei-label">${escHTML(tr('ei_date'))}</span><span class="ei-value">${escHTML(dateTxt)}</span></div>
        <div class="ei-item"><span class="ei-label">${escHTML(tr('ei_time'))}</span><span class="ei-value">${escHTML(heureTxt)}</span></div>
-       <div class="ei-item"><span class="ei-label">${escHTML(tr('ei_status'))}</span><span class="ei-value"><span class="ei-dot"></span>${escHTML(tr('ei_confirmed'))}</span></div>
+       <div class="ei-item"><span class="ei-label">${escHTML(tr('ei_status'))}</span><span class="ei-pill">${escHTML(tr('ei_confirmed'))}</span></div>
        <div class="ei-item"><span class="ei-label">${escHTML(tr('ei_platform'))}</span><span class="ei-value">GoldTix</span></div>`;
     el.classList.add('show');
   }
