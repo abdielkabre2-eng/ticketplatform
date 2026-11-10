@@ -5,3 +5,14 @@
     { "source": "/api/organisateur", "destination": "/api/organisateur.js" }
   ]
 }
+
+{
+  "headers": [
+    {
+      "source": "/(guide|conditions|contact|histoire|notre-histoire)(.html)?",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+      ]
+    }
+  ]
+}
