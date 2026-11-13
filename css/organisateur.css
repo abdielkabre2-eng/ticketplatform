@@ -263,29 +263,27 @@
         .header-top > * { position: relative; z-index: 2; }
 
         /* Utilisation du nom de classe cohérent avec ton HTML */
-       .event-title-divider {
-           display: flex !important;
-           align-items: center !important;
-           width: 100% !important;
-           max-width: 340px !important;
-           gap: 10px !important;
-           margin: 6px 0 16px 0 !important;
+        .event-title-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            max-width: 260px;
+            margin: 0 auto 16px auto;
         }
 
         .event-title-divider .divider-line {
-    flex: 1 1 auto !important;
-    min-width: 80px !important;
-    height: 1.5px !important;
-    display: block !important;
-    background: linear-gradient(90deg, rgba(197, 155, 65, 0.2), #c59b41, rgba(197, 155, 65, 0.2)) !important;
-}
+            flex: 1;
+            height: 1.5px;
+            background: linear-gradient(90deg, transparent, rgba(245,158,11,0.75), transparent);
+        }
 
-       .event-title-divider .divider-ornament {
-    color: #c59b41 !important;
-    font-size: 15px !important;
-    line-height: 1 !important;
-    flex-shrink: 0 !important;
-}
+        .event-title-divider .divider-ornament {
+            color: var(--gold-400, #fbbf24);
+            font-size: 13px;
+            line-height: 1;
+            text-shadow: 0 0 8px rgba(245,158,11,0.4);
+        }
 
         #titreEvenementOrg {
             font-family: var(--font-display);
