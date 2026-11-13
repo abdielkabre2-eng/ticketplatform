@@ -261,21 +261,27 @@
 
         .header-top > * { position: relative; z-index: 2; }
 
-        .header-label {
-            display: inline-block;
-            background: rgba(245,158,11,0.18);
-            border: 1px solid rgba(245,158,11,0.35);
-            color: var(--gold-400);
-            font-family: var(--font-display);
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            padding: 5px 14px;
-            border-radius: 50px;
-            margin-bottom: 14px;
-        }
+        .header-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    max-width: 260px;
+    margin: 0 auto 16px auto;
+}
 
+.header-divider .divider-line {
+    flex: 1;
+    height: 1.5px;
+    background: linear-gradient(90deg, transparent, rgba(245,158,11,0.75), transparent);
+}
+
+.header-divider .divider-ornament {
+    color: var(--gold-400, #fbbf24);
+    font-size: 13px;
+    line-height: 1;
+    text-shadow: 0 0 8px rgba(245,158,11,0.4);
+}
         #titreEvenementOrg {
             font-family: var(--font-display);
             font-size: 26px;
