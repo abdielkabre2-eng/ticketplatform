@@ -214,12 +214,13 @@
         /* ============================================
            EVENT HEADER / BANNER
         ============================================ */
+       /* EVENT HEADER / BANNER */
         .header-top {
             position: relative;
             text-align: center;
             border-radius: var(--radius-lg);
             overflow: hidden;
-            padding: 48px 24px 36px;
+            padding: 36px 24px 36px; /* Réduit un peu le haut pour compenser la suppression du badge */
             background: var(--grad-dark);
             margin-bottom: 24px;
             box-shadow: var(--shadow-gold-md);
@@ -261,27 +262,29 @@
 
         .header-top > * { position: relative; z-index: 2; }
 
-        .header-divider {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    max-width: 260px;
-    margin: 0 auto 16px auto;
-}
+        /* Utilisation du nom de classe cohérent avec ton HTML */
+        .event-title-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            max-width: 260px;
+            margin: 0 auto 16px auto;
+        }
 
-.header-divider .divider-line {
-    flex: 1;
-    height: 1.5px;
-    background: linear-gradient(90deg, transparent, rgba(245,158,11,0.75), transparent);
-}
+        .event-title-divider .divider-line {
+            flex: 1;
+            height: 1.5px;
+            background: linear-gradient(90deg, transparent, rgba(245,158,11,0.75), transparent);
+        }
 
-.header-divider .divider-ornament {
-    color: var(--gold-400, #fbbf24);
-    font-size: 13px;
-    line-height: 1;
-    text-shadow: 0 0 8px rgba(245,158,11,0.4);
-}
+        .event-title-divider .divider-ornament {
+            color: var(--gold-400, #fbbf24);
+            font-size: 13px;
+            line-height: 1;
+            text-shadow: 0 0 8px rgba(245,158,11,0.4);
+        }
+
         #titreEvenementOrg {
             font-family: var(--font-display);
             font-size: 26px;
@@ -289,7 +292,8 @@
             color: #ffffff;
             letter-spacing: -0.5px;
             line-height: 1.2;
-            margin-bottom: 16px;
+            margin-top: 0; /* Fait remonter le titre tout en haut */
+            margin-bottom: 12px; /* Resserre l'espace avec le séparateur */
             text-shadow: 0 2px 12px rgba(0,0,0,0.4);
         }
 
@@ -309,7 +313,6 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.30), 0 0 0 1px rgba(245,158,11,0.10) inset;
             letter-spacing: 0.2px;
         }
-
         /* ============================================
            STATUS BOX
         ============================================ */
