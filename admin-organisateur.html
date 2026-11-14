@@ -484,6 +484,7 @@
                                     id="btnToggleVentes"
                                     class="btn-toggle-ventes"
                                     onclick="toggleVentes()"
+                                    disabled
                                     style="background: var(--ink-900); color: white;">
                                     Patientez...
                                 </button>
@@ -784,6 +785,9 @@
     let evenementActuelData = null;
     let chargementDemandesEnCours = false;
     let debounceRecherche = null;
+    // Billets dont une action (changement de statut / retrait) est en cours : évite les doubles requêtes (C2)
+    const actionsBilletEnCours = new Set();
+    let toggleVentesEnCours = false;
 
 
     
@@ -821,6 +825,44 @@
         }
     }
 
+    /* =============================================
+       SÉCURITÉ : échappement HTML et URL (correctif C1)
+       Toute donnée venant d'un acheteur ou de la base
+       doit passer par echapperHTML() avant d'être
+       insérée dans un gabarit innerHTML.
+       urlSecurisee() n'accepte que http(s) : un lien
+       "javascript:..." devient une chaîne vide.
+    ============================================= */
+    function echapperHTML(valeur) {
+        return String(valeur === null || valeur === undefined ? "" : valeur)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    }
+
+    function urlSecurisee(url) {
+        if (!url) return "";
+        try {
+            const u = new URL(String(url), window.location.origin);
+            return (u.protocol === "https:" || u.protocol === "http:") ? u.href : "";
+        } catch (e) {
+            return "";
+        }
+    }
+
+    /* =============================================
+       SESSION EXPIRÉE (correctif C6)
+       Actions qui ne doivent jamais être traitées comme
+       "session expirée" (leurs erreurs ont un autre sens).
+    ============================================= */
+    const ACTIONS_SANS_GESTION_SESSION = ["login", "logout", "verifier_session"];
+
+    function estErreurSessionExpiree(statutHttp, message) {
+        return statutHttp === 401 || /session.*(expir|invalid)/i.test(message || "");
+    }
+
     async function callOrganisateurAPI(action, payload = {}, timeoutMs = 15000) {
         const reponse = await fetchAvecTimeout(
             '/api/organisateur',
@@ -837,6 +879,19 @@
 
         if (!reponse.ok || !data || data.success === false) {
             const message = (data && data.error) ? data.error : `Erreur serveur (${reponse.status})`;
+
+            // Session expirée : on ne traite que les appels authentifiés. La déconnexion
+            // n'est déclenchée que si le token utilisé est toujours le token courant
+            // (une réponse tardive d'une ancienne session ne doit pas déconnecter la nouvelle).
+            if (payload && payload.token
+                && ACTIONS_SANS_GESTION_SESSION.indexOf(action) === -1
+                && estErreurSessionExpiree(reponse.status, message)) {
+                if (payload.token === sessionToken) gererSessionExpiree();
+                const erreurSession = new Error("Votre session a expiré. Veuillez vous reconnecter.");
+                erreurSession.sessionExpiree = true;
+                throw erreurSession;
+            }
+
             throw new Error(message);
         }
         return data; // { success: true, ...résultat }
@@ -1178,6 +1233,12 @@
             }
         }
 
+        retourEcranConnexion();
+    }
+
+    /* Nettoyage local + retour à l'écran de connexion.
+       Partagé par la déconnexion volontaire et par l'expiration de session. */
+    function retourEcranConnexion() {
         localStorage.removeItem(AUTH_STORAGE_KEY);
         sessionToken = null;
         arreterScanner();
@@ -1196,6 +1257,22 @@
         document.getElementById("blocAuthentification").style.display = "block";
         document.getElementById("loginPassword").value = "";
         afficherEcranAuth("authEcranLogin");
+    }
+
+    /* Session expirée détectée par l'API : retour à la connexion avec un message clair. */
+    function gererSessionExpiree() {
+        // Ferme la fenêtre « Créer un billet » si elle est ouverte (sans passer par
+        // fermerModalCreerBillet, qui refuse de se fermer pendant une création).
+        const modal = document.getElementById("modalCreerBillet");
+        if (modal) {
+            modal.classList.remove("active");
+            modal.setAttribute("aria-hidden", "true");
+        }
+        document.body.style.overflow = "";
+
+        retourEcranConnexion();
+        masquerErreurAuth("authLoginError");
+        afficherErreurAuth("authLoginError", "Votre session a expiré. Veuillez vous reconnecter.");
     }
 
     /* =============================================
@@ -1260,7 +1337,7 @@ async function verifierMiseAJourEvenement() {
         evenementActuelData = ev;
 
         document.getElementById("titreEvenementOrg").textContent = ev.titre;
-        document.getElementById("infosEvenementOrg").innerHTML = `Date : ${ev.date} <br> Heure : ${formatHeureAffichage(ev.heure)} <br> Lieu : ${ev.lieu}`;
+        document.getElementById("infosEvenementOrg").innerHTML = `Date : ${echapperHTML(ev.date)} <br> Heure : ${echapperHTML(formatHeureAffichage(ev.heure))} <br> Lieu : ${echapperHTML(ev.lieu)}`;
 
         let headerContainer = document.getElementById("headerTopContainer");
         let eventImage = ev.affiche_url || ev.image_url || ev.affiche || ev.photo;
@@ -1305,7 +1382,7 @@ async function verifierMiseAJourEvenement() {
 
             document.getElementById("titreEvenementOrg").textContent = ev.titre;
             document.getElementById("infosEvenementOrg").innerHTML =
-                `Date : ${ev.date} <br> Heure : ${formatHeureAffichage(ev.heure)} <br> Lieu : ${ev.lieu}`;
+                `Date : ${echapperHTML(ev.date)} <br> Heure : ${echapperHTML(formatHeureAffichage(ev.heure))} <br> Lieu : ${echapperHTML(ev.lieu)}`;
 
             let headerContainer = document.getElementById("headerTopContainer");
             let eventImage = ev.affiche_url || ev.image_url || ev.affiche || ev.photo;
@@ -1347,6 +1424,7 @@ async function verifierMiseAJourEvenement() {
 
         } catch (err) {
             console.error("Erreur chargement demandes :", err);
+            if (err && err.sessionExpiree) return; // retour à la connexion déjà géré (le finally s'exécute quand même)
             // Une erreur de polling ne doit pas effacer une interface déjà en cours
             // d'utilisation : on ne montre l'état d'erreur que si rien n'est encore affiché.
             if (pendingRenderState.size === 0) {
@@ -1553,6 +1631,9 @@ async function verifierMiseAJourEvenement() {
     }
 
     function HTMLCartePaiement(b, statutHtml) {
+    const preuveUrl = urlSecurisee(b.preuve_url);
+    const idSur = echapperHTML(b.id);
+    const dsb = actionsBilletEnCours.has(String(b.id)) ? ' disabled' : '';
     return `
         <div class="billet-card">
             <div class="billet-card-header">
@@ -1561,33 +1642,35 @@ async function verifierMiseAJourEvenement() {
             <div class="billet-card-body">
                 <div class="billet-info-row">
                     <span class="billet-info-label">Participant</span>
-                    <span class="billet-info-value">${b.nom_participant || 'Non renseigne'}</span>
+                    <span class="billet-info-value">${echapperHTML(b.nom_participant || 'Non renseigne')}</span>
                 </div>
                 <div class="billet-info-row">
                     <span class="billet-info-label">WhatsApp</span>
-                    <span class="billet-info-value">${b.telephone || 'N/A'}</span>
+                    <span class="billet-info-value">${echapperHTML(b.telephone || 'N/A')}</span>
                 </div>
                 <div class="preuve-container">
                     <span class="preuve-label">Preuve de paiement</span>
-                    <a href="${b.preuve_url}" target="_blank" class="preuve-link">
-                        <img src="${b.preuve_url}" alt="Preuve de paiement" class="preuve-img">
-                    </a>
+                    ${preuveUrl
+                        ? `<a href="${echapperHTML(preuveUrl)}" target="_blank" rel="noopener" class="preuve-link">
+                        <img src="${echapperHTML(preuveUrl)}" alt="Preuve de paiement" class="preuve-img">
+                    </a>`
+                        : `<span class="billet-info-value">Preuve non disponible</span>`}
                 </div>
             </div>
             <div class="billet-card-actions">
                 <button type="button"
                     class="btn-action btn-confirmer btn-changer-statut"
-                    data-id="${b.id}" data-statut="confirme">
+                    data-id="${idSur}" data-statut="confirme"${dsb}>
                     J'ai reçu
                 </button>
                 <button type="button"
                     class="btn-action btn-refuser btn-changer-statut"
-                    data-id="${b.id}" data-statut="refuse">
+                    data-id="${idSur}" data-statut="refuse"${dsb}>
                     Non reçu
                 </button>
                 <button type="button"
                     class="btn-action btn-attente btn-changer-statut"
-                    data-id="${b.id}" data-statut="attente">
+                    data-id="${idSur}" data-statut="attente"${dsb}>
                     Mettre en attente
                 </button>
             </div>
@@ -1609,16 +1692,18 @@ async function verifierMiseAJourEvenement() {
         let lienPreuve = '';
         if (estEspeces) {
             lienPreuve = `<span class="mention-especes">Paiement en espèces</span>`;
-        } else if (b.preuve_url) {
-            lienPreuve = `<a href="${b.preuve_url}" target="_blank" rel="noopener" class="btn-voir-preuve">
+        } else if (urlSecurisee(b.preuve_url)) {
+            lienPreuve = `<a href="${echapperHTML(urlSecurisee(b.preuve_url))}" target="_blank" rel="noopener" class="btn-voir-preuve">
                    Voir la preuve
                </a>`;
         }
 
         // Billet espèces dont l'e-mail n'est pas parti : bouton pour renvoyer (sans créer de nouveau billet)
+        const idSur = echapperHTML(b.id);
+        const dsb = actionsBilletEnCours.has(String(b.id)) ? ' disabled' : '';
         const emailNonEnvoye = estEspeces && b.email_envoye === false;
         const boutonRenvoyer = emailNonEnvoye
-            ? `<button type="button" class="btn-renvoyer-email" data-id="${b.id}">Renvoyer l'e-mail</button>`
+            ? `<button type="button" class="btn-renvoyer-email" data-id="${idSur}">Renvoyer l'e-mail</button>`
             : '';
         const alerteEmail = emailNonEnvoye
             ? `<span class="alerte-email-billet">E-mail non envoyé au participant.</span>`
@@ -1632,25 +1717,25 @@ async function verifierMiseAJourEvenement() {
                 <div class="billet-card-body">
                     <div class="billet-info-row">
                         <span class="billet-info-label">Participant</span>
-                        <span class="billet-info-value">${b.nom_participant || 'Non renseigne'}</span>
+                        <span class="billet-info-value">${echapperHTML(b.nom_participant || 'Non renseigne')}</span>
                     </div>
                     <div class="billet-info-row">
                         <span class="billet-info-label">WhatsApp</span>
-                        <span class="billet-info-value">${b.telephone || 'N/A'}</span>
+                        <span class="billet-info-value">${echapperHTML(b.telephone || 'N/A')}</span>
                     </div>
                     <div class="billet-info-row">
                        <span class="billet-info-label">Catégorie</span>
-                       <span class="billet-info-value">${b.type_billet || 'Non spécifiée'}</span>
+                       <span class="billet-info-value">${echapperHTML(b.type_billet || 'Non spécifiée')}</span>
                      </div>
                     <div class="billet-info-row">
                         <span class="billet-info-label">ID-Billet</span>
-                        <span class="billet-info-value">${b.id}</span>
+                        <span class="billet-info-value">${idSur}</span>
                     </div>
                 </div>
                 <div class="billet-card-actions">
                     <button type="button"
                         class="btn-action btn-retirer btn-retirer-participant"
-                        data-id="${b.id}">
+                        data-id="${idSur}"${dsb}>
                         Retirer ce participant
                     </button>
                     ${boutonRenvoyer}
@@ -1684,41 +1769,72 @@ async function verifierMiseAJourEvenement() {
        CHANGEMENT DE STATUT + ENVOI D'EMAIL (EmailJS,
        inchangé — ce n'est pas un appel Supabase)
     ============================================= */
-    async function changerStatut(billetId, nouveauStatut) {
-    let data;
-    try {
-        data = await callOrganisateurAPI('changer_statut', {
-            evenementId: eventId,
-            token: sessionToken,
-            billetId: billetId,
-            nouveauStatut: nouveauStatut
+    /* Active/désactive les boutons d'action d'un billet pendant une requête (C2) */
+    function basculerBoutonsBillet(billetId, desactive) {
+        const idStr = String(billetId);
+        document.querySelectorAll(".btn-changer-statut, .btn-retirer-participant").forEach(function(btn) {
+            if (btn.getAttribute("data-id") === idStr) btn.disabled = desactive;
         });
-    } catch (err) {
-        alert("Erreur lors de la mise a jour : " + err.message);
-        return;
     }
 
-    if (data.email_envoye === false) {
-        alert("Statut mis à jour, mais l'e-mail n'a pas pu être envoyé à l'acheteur.");
-    }
+    async function changerStatut(billetId, nouveauStatut) {
+    const cle = String(billetId);
+    if (actionsBilletEnCours.has(cle)) return; // une action est déjà en cours sur ce billet
+    actionsBilletEnCours.add(cle);
+    basculerBoutonsBillet(cle, true);
 
-    await chargerToutesLesDemandes();
-}
-    async function retirerParticipant(billetId) {
-        if (!confirm("Voulez-vous vraiment supprimer definitivement ce participant et son billet ?")) return;
-
+    try {
+        let data;
         try {
-            await callOrganisateurAPI('retirer_participant', {
+            data = await callOrganisateurAPI('changer_statut', {
                 evenementId: eventId,
                 token: sessionToken,
-                billetId: billetId
+                billetId: billetId,
+                nouveauStatut: nouveauStatut
             });
         } catch (err) {
-            alert("Erreur lors de la suppression : " + err.message);
+            if (err && err.sessionExpiree) return; // retour à la connexion déjà géré
+            alert("Erreur lors de la mise a jour : " + err.message);
             return;
         }
 
-        await chargerToutesLesDemandes();
+        if (data.email_envoye === false) {
+            alert("Statut mis à jour, mais l'e-mail n'a pas pu être envoyé à l'acheteur.");
+        }
+
+        // Attend la fin d'un éventuel rechargement automatique en cours (sinon la liste
+        // resterait sur l'ancien statut et inviterait à recliquer).
+        await rechargerListesApresCreation();
+    } finally {
+        actionsBilletEnCours.delete(cle);
+        basculerBoutonsBillet(cle, false);
+    }
+}
+    async function retirerParticipant(billetId) {
+        const cle = String(billetId);
+        if (actionsBilletEnCours.has(cle)) return;
+        if (!confirm("Voulez-vous vraiment supprimer definitivement ce participant et son billet ?")) return;
+        actionsBilletEnCours.add(cle);
+        basculerBoutonsBillet(cle, true);
+
+        try {
+            try {
+                await callOrganisateurAPI('retirer_participant', {
+                    evenementId: eventId,
+                    token: sessionToken,
+                    billetId: billetId
+                });
+            } catch (err) {
+                if (err && err.sessionExpiree) return;
+                alert("Erreur lors de la suppression : " + err.message);
+                return;
+            }
+
+            await rechargerListesApresCreation();
+        } finally {
+            actionsBilletEnCours.delete(cle);
+            basculerBoutonsBillet(cle, false);
+        }
     }
 
     
@@ -1745,8 +1861,8 @@ async function verifierMiseAJourEvenement() {
             const valeurInput = (limiteActuelle === null || limiteActuelle === undefined) ? "" : String(limiteActuelle);
             const idSuffixe = nomCat.replace(/[^a-zA-Z0-9]/g, "_");
             return `
-                <div class="categorie-quota-box" data-categorie-nom="${nomCat}">
-                    <div class="categorie-quota-nom">${nomCat || "(sans nom)"}</div>
+                <div class="categorie-quota-box" data-categorie-nom="${echapperHTML(nomCat)}">
+                    <div class="categorie-quota-nom">${echapperHTML(nomCat) || "(sans nom)"}</div>
                     <div class="quota-input-group">
                         <input
                             type="number"
@@ -1755,9 +1871,9 @@ async function verifierMiseAJourEvenement() {
                             inputmode="numeric"
                             placeholder="Illimité"
                             class="input-limite-categorie"
-                            data-categorie="${nomCat}"
+                            data-categorie="${echapperHTML(nomCat)}"
                             id="inputLimiteCat_${idSuffixe}"
-                            value="${valeurInput}"
+                            value="${echapperHTML(valeurInput)}"
                             onchange="onChangementLimitesCategories()">
                         <span class="quota-save-status" id="quotaSaveStatusCat_${idSuffixe}"></span>
                     </div>
@@ -1810,6 +1926,7 @@ async function verifierMiseAJourEvenement() {
             await chargerToutesLesDemandes();
         } catch (err) {
             console.error("Erreur sauvegarde limites par catégorie :", err);
+            if (err && err.sessionExpiree) return;
             alert("Erreur lors de l'enregistrement des limites : " + err.message);
         }
     }
@@ -1906,6 +2023,11 @@ async function verifierMiseAJourEvenement() {
 
         } catch (err) {
             console.error("Erreur lors de la vérification :", err);
+            if (err && err.sessionExpiree) {
+                setResultat(resultatDiv, "warning", "Votre session a expiré. Veuillez vous reconnecter.");
+                isScanLocked = false;
+                return;
+            }
             setResultat(resultatDiv, "error", "Erreur de connexion avec le serveur.");
             isScanLocked = false;
         }
@@ -2216,21 +2338,30 @@ function scrollVersSectionActive(nomOnglet) {
        OUVERTURE / FERMETURE DES VENTES
     ============================================= */
     async function toggleVentes() {
-        statutVentesFermees = !statutVentesFermees;
+        // Anti double clic (C2) : une seule requête à la fois
+        if (toggleVentesEnCours) return;
+        const btn = document.getElementById("btnToggleVentes");
+        // Sécurité (C3) : tant que le statut réel n'est pas chargé, le bouton est désactivé
+        if (!btn || btn.disabled) return;
+
+        toggleVentesEnCours = true;
+        btn.disabled = true;
+        btn.textContent = "Patientez...";
+        const nouveauStatut = !statutVentesFermees;
 
         try {
             await callOrganisateurAPI('toggle_ventes', {
                 evenementId: eventId,
                 token: sessionToken,
-                nouveauStatut: statutVentesFermees
+                nouveauStatut: nouveauStatut
             });
+            statutVentesFermees = nouveauStatut;
         } catch (err) {
-            alert("Erreur : " + err.message);
-            statutVentesFermees = !statutVentesFermees;
-            return;
+            if (!(err && err.sessionExpiree)) alert("Erreur : " + err.message);
+        } finally {
+            toggleVentesEnCours = false;
+            mettreAJourBoutonVentes(); // remet libellé, couleur et réactive le bouton
         }
-
-        mettreAJourBoutonVentes();
     }
 
     function mettreAJourBoutonVentes() {
@@ -2238,6 +2369,7 @@ function scrollVersSectionActive(nomOnglet) {
         let btn = document.getElementById("btnToggleVentes");
         let indicator = document.getElementById("statusIndicator");
         if (!label || !btn) return;
+        btn.disabled = false;
 
         if (statutVentesFermees) {
             label.innerHTML = `Ventes : <span style="color:#ef4444;font-weight:800;">FERMEES</span>`;
@@ -2348,11 +2480,11 @@ function genererChampsCategoriesEdition(categoriesData) {
                 <div class="categorie-edit-row">
                     <div class="categorie-edit-field">
                         <label>Nom de catégorie (ex: Standard, VIP)</label>
-                        <input type="text" class="search-input edit-cat-nom" data-type="${cat.type || i}" placeholder="Nom ${i}" value="${cat.nom || ''}">
+                        <input type="text" class="search-input edit-cat-nom" data-type="${echapperHTML(cat.type || i)}" placeholder="Nom ${i}" value="${echapperHTML(cat.nom || '')}">
                     </div>
                     <div class="categorie-edit-field">
                         <label>Prix (ex: 20dhs ou 2000 FCFA)</label>
-                        <input type="text" class="search-input edit-cat-prix" data-type="${cat.type || i}" placeholder="Prix ${i}" value="${cat.prix || ''}">
+                        <input type="text" class="search-input edit-cat-prix" data-type="${echapperHTML(cat.type || i)}" placeholder="Prix ${i}" value="${echapperHTML(cat.prix || '')}">
                     </div>
                 </div>
             </div>`;
@@ -2402,7 +2534,7 @@ async function enregistrerInfosEvenement() {
         await chargerEspaceOrganisateur();
         alert("Informations mises à jour avec succès.");
     } catch (err) {
-        alert("Erreur : " + err.message);
+        if (!(err && err.sessionExpiree)) alert("Erreur : " + err.message);
     } finally {
         btn.disabled = false;
         btn.textContent = "Enregistrer les modifications";
@@ -2456,7 +2588,7 @@ document.getElementById("nouvelleAfficheBlock").style.display = "none";
         fichierNouvelleAffiche = null;
         alert("Affiche mise à jour avec succès.");
     } catch (err) {
-        alert("Erreur : " + err.message);
+        if (!(err && err.sessionExpiree)) alert("Erreur : " + err.message);
     } finally {
         btn.disabled = false;
         btn.textContent = "Enregistrer la nouvelle affiche";
@@ -2635,6 +2767,7 @@ async function soumettreCreationBillet(event) {
 
     } catch (err) {
         console.error("Erreur création billet espèces :", err);
+        if (err && err.sessionExpiree) return; // retour à la connexion déjà géré
         let message = err && err.message ? err.message : "Erreur inattendue.";
         if (err && (err.name === "AbortError" || err instanceof TypeError)) {
             message = "Le serveur n'a pas répondu à temps. Cliquez à nouveau sur « Générer le billet » : aucun doublon ne sera créé.";
@@ -2687,6 +2820,7 @@ async function renvoyerEmailBillet(billetId, bouton) {
         await rechargerListesApresCreation();
     } catch (err) {
         console.error("Erreur renvoi e-mail :", err);
+        if (err && err.sessionExpiree) return;
         afficherToast("error", err.message || "Erreur lors du renvoi de l'e-mail.");
     } finally {
         if (bouton) {
