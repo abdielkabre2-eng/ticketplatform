@@ -2553,23 +2553,3 @@ body { padding-top: 74px !important; }
     letter-spacing: 0;
     font-size: 12.5px;
 }
-
-/* ==========================================================
-   SCANNER — repère de lecture central (dessiné en CSS)
-   La lecture du QR code se fait sur toute l'image de la caméra ;
-   ce carré n'est qu'un repère visuel (même taille qu'avant : 70 %).
-========================================================== */
-.scanner-frame::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 70%;
-    aspect-ratio: 1 / 1;
-    transform: translate(-50%, -50%);
-    border: 2px solid rgba(255,255,255,0.9);
-    border-radius: 12px;
-    box-shadow: 0 0 0 9999px rgba(0,0,0,0.45);
-    z-index: 5;
-    pointer-events: none;
-}
