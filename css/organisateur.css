@@ -2511,6 +2511,7 @@ body { padding-top: 74px !important; }
     grid-column: 2;
     grid-row: 2;              /* titre en ligne 2 */
     margin: 0 0 8px;
+    text-align: center;
 }
 
 .header-top > .event-title-divider {
