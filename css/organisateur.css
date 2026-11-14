@@ -2545,9 +2545,14 @@ body { padding-top: 74px !important; }
     margin: 0 0 12px;
 }
 /* ===== Fenêtre "Créer un billet" : libellés en noir, 1re lettre en majuscule ===== */
+
+/* ===== Fenêtre "Créer un billet" : libellés en noir, majuscule sur la 1re lettre seulement ===== */
 .modal-billet .auth-form-group label {
-    color: #000000;
-    text-transform: none;
+    color: #000000 !important;
+    text-transform: lowercase !important;
     letter-spacing: 0;
     font-size: 12.5px;
+}
+.modal-billet .auth-form-group label::first-letter {
+    text-transform: uppercase !important;
 }
