@@ -615,7 +615,7 @@ border-radius: 0 0 var(--radius-lg) var(--radius-lg);
 background: linear-gradient(135deg, #14110f 0%, #0c0a09 100%);
 gap: 8px;
 }
-.tf-brand-group { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.tf-brand-group { display: flex; align-items: center; gap: 8px; min-width: 0; min-height: 22px; }
 .tf-logo { height: 18px; width: auto; display: block; flex-shrink: 0; }
 .tf-brand {
 font-family: var(--font-accent);
@@ -696,12 +696,22 @@ display: flex; align-items: center; justify-content: center;
 font-size: .56rem; font-weight: 900; color: #0c0a09; letter-spacing: -.02em;
 }
 .footer-wordmark { font-size: .66rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--text-mid); }
-.footer-tagline { font-size: .56rem; color: var(--text-lo); letter-spacing: .07em; text-transform: uppercase; font-weight: 600; margin-bottom: 6px; }
+.footer-icons { display: flex; justify-content: center; gap: 12px; margin-bottom: 12px; }
+.footer-icon-btn {
+width: 40px; height: 40px; border-radius: 50%;
+display: inline-flex; align-items: center; justify-content: center;
+background: #ffffff; border: 1px solid var(--border);
+color: var(--gold-600); text-decoration: none;
+transition: color .2s, border-color .2s;
+}
+.footer-icon-btn:hover, .footer-icon-btn:focus-visible { color: var(--gold-700); border-color: var(--gold-600); }
+.footer-tagline { font-size: .62rem; color: var(--text-lo); text-align: center; font-weight: 500; margin-bottom: 2px; }
+.footer-tagline strong { color: var(--text-mid); font-weight: 700; }
 .footer-contacts { display: flex; flex-direction: column; align-items: center; gap: 3px; }
 .footer-contact-item { font-size: .6rem; color: var(--text-lo); font-weight: 500; }
 .footer-contact-item a { color: var(--gold-600); text-decoration: none; transition: color .2s; }
 .footer-contact-item a:hover { color: var(--gold-700); }
-.footer-dev { font-size: .54rem; color: var(--text-lo); text-align: center; border-top: 1px solid var(--border); padding-top: 10px; width: 100%; margin-top: 8px; }
+.footer-dev { font-size: .6rem; color: var(--text-lo); text-align: center; width: 100%; }
 
 .tier-pattern { position: absolute; inset: 0; border-radius: var(--radius-sm); pointer-events: none; z-index: 0; opacity: .03; }
 .ticket-body > *:not(.tier-pattern) { position: relative; z-index: 1; }
@@ -868,10 +878,7 @@ flex-shrink: 0;
 </div>
 
 <div class="ticket-footer-strip">
-<div class="tf-brand-group">
-<img src="images/logo.png" alt="GoldTix" class="tf-logo" />
-<span class="tf-brand">Gold<span class="tf-brand-accent">Tix</span></span>
-</div>
+<div class="tf-brand-group" aria-hidden="true"></div>
 <div class="tf-valid">
 <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
 <circle cx="5" cy="5" r="4.5" stroke="#d97706" stroke-width="1"/>
@@ -892,12 +899,16 @@ flex-shrink: 0;
 </div>
 
 <footer class="creator-footer">
-<p class="footer-tagline" align="center" data-i18n="f_tag">La Billetterie en Or</p>
-<div class="footer-contacts">
-<p class="footer-contact-item"><span data-i18n="f_email">E-mail :</span> <a href="mailto:goldtixbilletterie@gmail.com">goldtixbilletterie@gmail.com</a></p>
-<p class="footer-contact-item"><span data-i18n="f_wa">WhatsApp :</span> <a href="https://wa.me/22653107345">+226 53 10 73 45</a></p>
+<div class="footer-icons">
+<a class="footer-icon-btn" href="mailto:goldtixbilletterie@gmail.com" data-i18n-aria="f_email_a" aria-label="Nous écrire par e-mail">
+<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><polyline points="3 7 12 13 21 7"/></svg>
+</a>
+<a class="footer-icon-btn" href="https://wa.me/22653107345" target="_blank" rel="noopener noreferrer" data-i18n-aria="f_wa_a" aria-label="Nous écrire sur WhatsApp">
+<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.71 14.14c-.24.68-1.4 1.3-1.93 1.38-.5.08-1.13.11-1.82-.11-.42-.13-.96-.31-1.65-.6-2.9-1.25-4.8-4.16-4.94-4.35-.14-.19-1.18-1.57-1.18-3s.75-2.13 1.02-2.42c.27-.29.58-.36.78-.36.19 0 .39 0 .56.01.18.01.42-.07.66.5.24.58.83 2 .9 2.15.07.15.12.32.02.51-.1.19-.15.31-.29.47-.15.17-.31.37-.44.5-.15.14-.3.3-.13.58.17.29.76 1.25 1.63 2.03 1.12 1 2.06 1.31 2.35 1.46.29.14.46.12.63-.07.17-.19.72-.84.92-1.13.19-.29.38-.24.64-.14.26.1 1.66.78 1.94.93.29.14.48.21.55.33.07.12.07.7-.17 1.38z"/></svg>
+</a>
 </div>
-<p class="footer-dev" data-i18n-html="f_dev">Développée par <strong style="color:var(--text-mid)">Abdiel KABRE</strong> · GoldTix &copy; 2026</p>
+<p class="footer-tagline"><strong>GoldTix</strong> · <span data-i18n="f_tag">La Billetterie en Or</span></p>
+<p class="footer-dev" data-i18n-html="f_dev">Développée par <strong style="color:var(--text-mid)">Abdiel KABRE</strong> · &copy; 2026</p>
 </div>
 </footer>
 
@@ -976,8 +987,10 @@ FR.dl_btn = 'Télécharger mon billet en PDF';                EN.dl_btn = 'Downl
 FR.f_tag = 'La Billetterie en Or';                          EN.f_tag = 'Ticketing, pure gold';
 FR.f_email = 'E-mail :';                                    EN.f_email = 'E-mail:';
 FR.f_wa = 'WhatsApp :';                                     EN.f_wa = 'WhatsApp:';
-FR.f_dev = 'Développée par <strong style="color:var(--text-mid)">Abdiel KABRE</strong> · GoldTix &copy; 2026';
-EN.f_dev = 'Developed by <strong style="color:var(--text-mid)">Abdiel KABRE</strong> · GoldTix &copy; 2026';
+FR.f_email_a = 'Nous écrire par e-mail';                    EN.f_email_a = 'Email us';
+FR.f_wa_a = 'Nous écrire sur WhatsApp';                     EN.f_wa_a = 'Message us on WhatsApp';
+FR.f_dev = 'Développée par <strong style="color:var(--text-mid)">Abdiel KABRE</strong> · &copy; 2026';
+EN.f_dev = 'Developed by <strong style="color:var(--text-mid)">Abdiel KABRE</strong> · &copy; 2026';
 
 FR.sw_title = 'Téléchargement du billet';                   EN.sw_title = 'Ticket download';
 FR.sw_text = 'Le billet que vous aurez en PDF est une version optimisée et simplifiée';
