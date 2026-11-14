@@ -16,7 +16,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="/css/organisateur.css?v=3">
+<link rel="stylesheet" href="/css/organisateur.css?v=4">
 </head>
 <body>
 
@@ -2315,15 +2315,12 @@ function scrollVersSectionActive(nomOnglet) {
         let resultatDiv = document.getElementById("resultatScan");
         setResultat(resultatDiv, "warning", "Initialisation de la caméra...");
 
-        function qrboxFunction(viewfinderWidth, viewfinderHeight) {
-            let minEdge = Math.min(viewfinderWidth, viewfinderHeight);
-            let size = Math.floor(minEdge * 0.85);
-            return { width: size, height: size };
-        }
-
+        // Pas de qrbox : toute l'image de la caméra est analysée, le QR code se lit dès qu'il est
+        // visible, quelle que soit la distance. Le repère visuel central est dessiné en CSS
+        // (.scanner-frame::after) et n'a aucun rôle dans la lecture.
         html5QrCode.start(
             { facingMode: "environment" },
-            { fps: 10, qrbox: qrboxFunction },
+            { fps: 10 },
             (decodedText) => traiterVerificationBillet(decodedText),
             (errorMessage) => {}
         ).then(() => {
