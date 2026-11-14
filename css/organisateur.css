@@ -979,13 +979,13 @@ button { font-family: var(--font-display); cursor: pointer; }
     font-size: 11px;
     font-weight: 700;
     color: #000000;
-    text-transform: capitalize;
+    text-transform: none;
     letter-spacing: 0.6px;
     margin-bottom: 7px;
 }
 #formulaireInfosEvenement .auth-form-group label {
     color: #000000;
-    text-transform: capitalize;
+    text-transform: none;
     letter-spacing: 0;
 }
 
@@ -2545,17 +2545,11 @@ body { padding-top: 74px !important; }
     max-width: 320px;
     margin: 0 0 12px;
 }
-/* ===== Tous les libellés de formulaire : noir, majuscule sur la 1re lettre seulement ===== */
 .auth-form-group label,
 #formulaireInfosEvenement .auth-form-group label,
 .modal-billet .auth-form-group label {
     color: #000000 !important;
-    text-transform: lowercase !important;
+    text-transform: none !important;
     letter-spacing: 0;
     font-size: 12.5px;
-}
-.auth-form-group label::first-letter,
-#formulaireInfosEvenement .auth-form-group label::first-letter,
-.modal-billet .auth-form-group label::first-letter {
-    text-transform: uppercase !important;
 }
