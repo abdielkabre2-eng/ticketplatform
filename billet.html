@@ -732,10 +732,11 @@ body { background: #fff !important; }
 }
 
 .sp-confirmed-badge {
-display: inline-block; margin-bottom: 4px;
-padding: 3px 10px; border-radius: 99px;
-background: rgba(16,185,129,.10); border: 1px solid rgba(16,185,129,.35);
-color: #10b981; font-size: .6rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+display: inline-block; margin: 2px 0 10px 2px;
+padding: 4px 14px; border-radius: 6px;
+border: 2px solid #10b981; outline: 1px solid #10b981; outline-offset: 2px;
+color: #10b981; font-size: .62rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase;
+transform: rotate(-4deg); transform-origin: left center;
 }
 .status-panel--done { padding: 16px 20px; }
 
@@ -786,6 +787,11 @@ flex-shrink: 0;
 .navbar-badge{min-width:0;flex-shrink:1;gap:clamp(3px,1vw,5px);font-size:clamp(8px,2.3vw,10.5px)}
 .navbar-badge svg{width:clamp(10px,2.8vw,12px);height:clamp(10px,2.8vw,12px)}
 .navbar-badge bdi{min-width:0;overflow:hidden;text-overflow:ellipsis}
+/* Icônes e-mail / WhatsApp plus petites */
+.footer-icons { gap: 10px; }
+.footer-icon-btn { width: 34px; height: 34px; }
+.footer-icon-btn svg { width: 15px; height: 15px; }
+
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
@@ -970,8 +976,8 @@ FR.r_sub = "Votre paiement n'a pas été reçu par le bénéficiaire.";
 EN.r_sub = 'Your payment was not received by the recipient.';
 FR.r_note = 'Contactez le bénéficiaire pour confirmer votre paiement. Votre billet sera disponible dès validation.';
 EN.r_note = 'Contact the recipient to confirm your payment. Your ticket will be available once it is validated.';
-FR.d_badge = 'Billet valide';
-EN.d_badge = 'Valid ticket';
+FR.d_badge = 'Votre billet';
+EN.d_badge = 'Your ticket';
 FR.d_title = 'Paiement confirmé';
 EN.d_title = 'Payment confirmed';
 FR.d_sub = 'Un e-mail contenant votre billet en pièce jointe vous a été envoyé. Merci de consulter votre boîte de réception. Vous pouvez également télécharger directement votre billet au format PDF en cliquant sur le bouton ci-dessous.';
