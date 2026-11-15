@@ -2553,3 +2553,26 @@ body { padding-top: 74px !important; }
     letter-spacing: 0;
     font-size: 12.5px;
 }
+/* ===== Fiche événement : bloc date + heure / lieu ===== */
+#headerTopContainer .event-title-divider { display: none; }
+#headerTopContainer #titreEvenementOrg {
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  min-width: 0; max-width: 100%; text-align: left;
+}
+#headerTopContainer #infosEvenementOrg {
+  display: flex; align-items: center; gap: 10px;
+  min-width: 0; max-width: 100%; margin-top: 10px;
+  color: #1c1917; font-size: 12px; font-weight: 500; line-height: 1.2; text-align: left;
+}
+.ev-date-bloc {
+  flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  border: 1.5px solid #1c1917; border-radius: 9px; padding: 4px 9px;
+  line-height: 1; color: #1c1917; background: #fff;
+}
+.ev-jour, .ev-mois { font-size: 8px; letter-spacing: .14em; text-transform: uppercase; color: #6b6459; }
+.ev-num { font-size: 19px; font-weight: 700; margin: 2px 0; color: #1c1917; }
+.ev-num-texte { font-size: 12px; }
+.ev-groupe { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: .6em; }
+.ev-ligne { display: flex; align-items: center; gap: .5em; min-width: 0; white-space: nowrap; }
+.ev-ligne svg { width: 1.25em; height: 1.25em; flex-shrink: 0; color: #1c1917; }
+.ev-txt { min-width: 0; overflow: hidden; text-overflow: ellipsis; }

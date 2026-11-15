@@ -1326,6 +1326,58 @@ function signatureEvenement(ev) {
 
 let derniereSignatureEvenement = "";
 
+/* ===== Fiche événement : date en bloc, heure/lieu, texte qui rétrécit ===== */
+const ICONE_HORLOGE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>`;
+const ICONE_LIEU = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>`;
+
+function htmlInfosEvenement(ev) {
+    let blocDate = "";
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(ev.date || ""));
+    if (m) {
+        const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+        const jour = d.toLocaleDateString("fr-FR", { weekday: "short" });
+        const mois = d.toLocaleDateString("fr-FR", { month: "short" });
+        blocDate = `<span class="ev-date-bloc"><span class="ev-jour">${echapperHTML(jour)}</span><b class="ev-num">${echapperHTML(String(Number(m[3])))}</b><span class="ev-mois">${echapperHTML(mois)}</span></span>`;
+    } else if (ev.date) {
+        blocDate = `<span class="ev-date-bloc"><b class="ev-num ev-num-texte">${echapperHTML(ev.date)}</b></span>`;
+    }
+    const lignes = [];
+    if (ev.heure) lignes.push(`<span class="ev-ligne">${ICONE_HORLOGE}<span class="ev-txt">${echapperHTML(formatHeureAffichage(ev.heure))}</span></span>`);
+    if (ev.lieu) lignes.push(`<span class="ev-ligne">${ICONE_LIEU}<span class="ev-txt">${echapperHTML(ev.lieu)}</span></span>`);
+    return blocDate + `<span class="ev-groupe">${lignes.join("")}</span>`;
+}
+
+function ajusterTextesFiche() {
+    const titre = document.getElementById("titreEvenementOrg");
+    if (titre) {
+        titre.style.fontSize = "";
+        let s = parseFloat(getComputedStyle(titre).fontSize);
+        while (titre.scrollWidth > titre.clientWidth && s > 11) {
+            s -= 0.5;
+            titre.style.fontSize = s + "px";
+        }
+    }
+    const groupe = document.querySelector("#infosEvenementOrg .ev-groupe");
+    if (groupe) {
+        groupe.style.fontSize = "";
+        let s = parseFloat(getComputedStyle(groupe).fontSize);
+        const textes = groupe.querySelectorAll(".ev-txt");
+        const deborde = () => {
+            for (let i = 0; i < textes.length; i++) {
+                if (textes[i].scrollWidth > textes[i].clientWidth) return true;
+            }
+            return false;
+        };
+        while (deborde() && s > 9) {
+            s -= 0.5;
+            groupe.style.fontSize = s + "px";
+        }
+    }
+}
+
+window.addEventListener("resize", ajusterTextesFiche);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajusterTextesFiche);
+
 async function verifierMiseAJourEvenement() {
     try {
         const data = await callOrganisateurAPI('charger_evenement', { evenementId: eventId, token: sessionToken });
@@ -1337,7 +1389,8 @@ async function verifierMiseAJourEvenement() {
         evenementActuelData = ev;
 
         document.getElementById("titreEvenementOrg").textContent = ev.titre;
-        document.getElementById("infosEvenementOrg").innerHTML = `Date : ${echapperHTML(ev.date)} <br> Heure : ${echapperHTML(formatHeureAffichage(ev.heure))} <br> Lieu : ${echapperHTML(ev.lieu)}`;
+        document.getElementById("infosEvenementOrg").innerHTML = htmlInfosEvenement(ev);
+       ajusterTextesFiche();
 
         let headerContainer = document.getElementById("headerTopContainer");
         let eventImage = ev.affiche_url || ev.image_url || ev.affiche || ev.photo;
@@ -1381,8 +1434,8 @@ async function verifierMiseAJourEvenement() {
             }
 
             document.getElementById("titreEvenementOrg").textContent = ev.titre;
-            document.getElementById("infosEvenementOrg").innerHTML =
-                `Date : ${echapperHTML(ev.date)} <br> Heure : ${echapperHTML(formatHeureAffichage(ev.heure))} <br> Lieu : ${echapperHTML(ev.lieu)}`;
+            document.getElementById("infosEvenementOrg").innerHTML = htmlInfosEvenement(ev);
+            ajusterTextesFiche();
 
             let headerContainer = document.getElementById("headerTopContainer");
             let eventImage = ev.affiche_url || ev.image_url || ev.affiche || ev.photo;
