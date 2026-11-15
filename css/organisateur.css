@@ -2576,3 +2576,16 @@ body { padding-top: 74px !important; }
 .ev-ligne { display: flex; align-items: center; gap: .5em; min-width: 0; white-space: nowrap; }
 .ev-ligne svg { width: 1.25em; height: 1.25em; flex-shrink: 0; color: #1c1917; }
 .ev-txt { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+
+/* ===== Fiche événement : réduction de l'espace vertical ===== */
+.header-top {
+    padding: 6px 10px;                      /* avant : 14px */
+    grid-template-rows: 1fr auto auto auto 1fr;
+    row-gap: 0;
+    margin-bottom: 14px;                    /* avant : 20px */
+}
+
+.header-top > .event-bg-img {
+    width: 92px;                            /* avant : 104px */
+    height: 124px;                          /* avant : 140px */
+}
