@@ -2610,3 +2610,19 @@ body { padding-top: 74px !important; }
     align-self: start !important;
     margin-top: 0 !important;
 }
+.auth-link-row a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.back-arrow {
+    font-size: 18px;
+    transition: transform 0.2s ease;
+}
+
+.auth-link-row a:hover .back-arrow {
+    transform: translateX(-4px);
+}
