@@ -17,70 +17,118 @@
         <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="/css/organisateur.css?v=5">
+    <!-- Intro d'ouverture (attente de la page de connexion) : styles autonomes -->
+    <style id="gxo-style">
+    html.gxo-lock,html.gxo-lock body{overflow:hidden!important}
+    #gxo-root{--ease:cubic-bezier(.22,1,.36,1);position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;overflow:hidden;background-color:#f7f7f5;color:#111216;font-family:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;animation:gxo-bg .7s ease both,gxo-failsafe 0s linear 20s forwards;transition:opacity .35s ease,visibility .35s}
+    #gxo-root::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 85% 0%,rgba(217,119,6,.07),transparent 27rem)}
+    #gxo-root.gxo-out{opacity:0;visibility:hidden;pointer-events:none}
+    #gxo-root .gxo-box{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 24px;opacity:0}
+    #gxo-root.gxo-ready .gxo-box{opacity:1;transition:opacity .35s ease}
+    #gxo-root .gxo-brand{display:flex;font-weight:800;font-size:clamp(32px,9vw,42px);letter-spacing:-.5px;line-height:1.1;color:#1c1917;animation:gxo-pulse 1.4s ease-in-out infinite}
+    #gxo-root .gxo-brand span{display:inline-block}
+    #gxo-root .gxo-brand .gxo-t{color:#d97706}
+    #gxo-root .gxo-sub{margin-top:14px;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#44464e;transition:opacity .3s ease}
+    #gxo-root .gxo-dashes{display:flex;align-items:center;gap:8px;margin-top:52px;transition:opacity .3s ease}
+    #gxo-root .gxo-dash{width:26px;height:5px;border-radius:999px;background:#e3e0d6;transition:width .45s var(--ease),background-color .3s ease}
+    #gxo-root .gxo-dash.gxo-active{width:46px;background:#d97706;animation:gxo-dash 1.2s ease-in-out infinite}
+    #gxo-root .gxo-dash.gxo-done{width:26px;background:#d97706}
+    #gxo-root .gxo-msg{margin-top:18px;font-size:14px;font-weight:500;color:#85878f;transition:opacity .3s ease}
+    #gxo-root.gxo-leave .gxo-sub,#gxo-root.gxo-leave .gxo-dashes,#gxo-root.gxo-leave .gxo-msg{opacity:0}
+    #gxo-root.gxo-leave .gxo-brand span{animation:gxo-letter-out .4s cubic-bezier(.23,1,.32,1) calc(var(--i) * 80ms) forwards}
+    @keyframes gxo-bg{from{background-color:#fff}to{background-color:#f7f7f5}}
+    @keyframes gxo-pulse{0%,100%{opacity:.5}50%{opacity:1}}
+    @keyframes gxo-dash{0%,100%{opacity:.55}50%{opacity:1}}
+    @keyframes gxo-letter-out{to{opacity:0;transform:translateY(-8px)}}
+    /* Filet de sécurité : si le script de l'intro ne s'exécute pas, l'écran se lève tout seul */
+    @keyframes gxo-failsafe{to{opacity:0;visibility:hidden;pointer-events:none}}
+    @media(prefers-reduced-motion:reduce){#gxo-root,#gxo-root .gxo-brand,#gxo-root .gxo-dash.gxo-active{animation:none}#gxo-root.gxo-leave .gxo-brand span{animation:none;opacity:0}}
+    </style>
 </head>
 <body>
 
-    <!-- ==================== INTRO GOLDTIX (plein écran, purement visuel) ==================== -->
-    <div id="introGoldTix" aria-hidden="true">
-        <div class="intro-lines"></div>
-        <div id="introParticles"></div>
-
-        <div class="intro-content">
-
-            <!-- Stage 1 : logo -->
-            <div class="intro-stage intro-stage-active" data-stage="1">
-                <div class="intro-logo-badge">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9a2 2 0 010 6v3a1 1 0 001 1h16a1 1 0 001-1v-3a2 2 0 010-6V6a1 1 0 00-1-1H4a1 1 0 00-1 1z"/><path d="M14 5v2M14 11v2M14 17v2"/></svg>
-                </div>
-                <div class="intro-brand"><span class="ig-dark">Gold</span><span class="ig-gold">Tix</span></div>
-                <p class="intro-tagline">Plateforme de billetterie professionnelle</p>
-            </div>
-
-            <!-- Stage 2 : fonctionnalités -->
-            <div class="intro-stage" data-stage="2">
-                <p class="intro-stage-title">Une gestion centralisée</p>
-                <div class="intro-features">
-                    <div class="intro-feature-row">
-                        <span class="intro-feature-icon">01</span>
-                        <span class="intro-feature-label">Billetterie</span>
-                    </div>
-                    <div class="intro-feature-row">
-                        <span class="intro-feature-icon">02</span>
-                        <span class="intro-feature-label">Paiements</span>
-                    </div>
-                    <div class="intro-feature-row">
-                        <span class="intro-feature-icon">03</span>
-                        <span class="intro-feature-label">Contrôle d'accès</span>
-                    </div>
-                    <div class="intro-feature-row">
-                        <span class="intro-feature-icon">04</span>
-                        <span class="intro-feature-label">Suivi en temps réel</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Stage 3 : initialisation -->
-            <div class="intro-stage" data-stage="3">
-                <p class="intro-init-title">Initialisation de votre espace<span class="intro-dots-inline"><span>.</span><span>.</span><span>.</span></span></p>
-                <div class="intro-checklist" id="introChecklist">
-                    <div class="intro-check-item"><span class="intro-check-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span><span>Événement</span></div>
-                    <div class="intro-check-item"><span class="intro-check-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span><span>Ventes</span></div>
-                    <div class="intro-check-item"><span class="intro-check-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span><span>Paiements</span></div>
-                    <div class="intro-check-item"><span class="intro-check-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span><span>Contrôle d'accès</span></div>
-                </div>
-            </div>
-
-            <!-- Stage 4 : bienvenue -->
-            <div class="intro-stage" data-stage="4">
-                <div class="intro-welcome-icon">⚙️</div>
-                <p class="intro-welcome-title">Bienvenue dans votre espace organisateur.</p>
-                <p class="intro-welcome-sub">Chargement de votre événement...</p>
-            </div>
-
+    <!-- ==================== INTRO D'OUVERTURE (même style que la page d'achat) ====================
+         Sert d'attente réelle : elle se lève quand la page de connexion (ou l'espace, si la
+         session est déjà valide) est prête. Pilotée par window.GXIntro (etape / fin). -->
+    <div id="gxo-root" role="status" aria-live="polite" aria-label="Préparation de votre espace">
+        <div class="gxo-box">
+            <div class="gxo-brand" aria-hidden="true"><span style="--i:0">G</span><span style="--i:1">o</span><span style="--i:2">l</span><span style="--i:3">d</span><span class="gxo-t" style="--i:4">T</span><span class="gxo-t" style="--i:5">i</span><span class="gxo-t" style="--i:6">x</span></div>
+            <p class="gxo-sub">Espace organisateur</p>
+            <div class="gxo-dashes" aria-hidden="true"><i class="gxo-dash gxo-active"></i><i class="gxo-dash"></i><i class="gxo-dash"></i></div>
+            <p class="gxo-msg">Préparation de votre espace…</p>
         </div>
-
-        <button type="button" class="intro-skip-btn" id="introSkipBtn" onclick="passerIntroGoldTix()">Passer</button>
     </div>
+    <script>
+    (function () {
+        'use strict';
+        var racine = document.getElementById('gxo-root');
+        if (!racine) return;
+        var html = document.documentElement;
+        var reduit = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+        var DUREE_MIN = 1800;   /* durée minimale d'affichage (ms) pour que l'animation reste lisible */
+        var DUREE_MAX = 15000;  /* garde-fou : l'intro se lève au plus tard après ce délai (ms) */
+        var t0 = Date.now();
+        var tirets = racine.querySelectorAll('.gxo-dash');
+        var finDemandee = false, enDepart = false, retiree = false;
+
+        html.classList.add('gxo-lock');
+
+        /* Texte révélé dès que la police du logo est prête (évite un changement de police visible) */
+        function reveler() { racine.classList.add('gxo-ready'); }
+        try {
+            Promise.race([
+                document.fonts && document.fonts.load ? document.fonts.load('800 1em "Plus Jakarta Sans"') : Promise.resolve(),
+                new Promise(function (r) { setTimeout(r, 700); })
+            ]).then(reveler, reveler);
+        } catch (e) { reveler(); }
+
+        /* n = nombre d'étapes réellement terminées (0 à 3) : tirets faits / en cours / à venir */
+        function majTirets(n) {
+            for (var i = 0; i < tirets.length; i++) {
+                tirets[i].classList.toggle('gxo-done', i < n);
+                tirets[i].classList.toggle('gxo-active', i === n);
+            }
+        }
+
+        function retirer() {
+            if (retiree) return;
+            retiree = true;
+            clearTimeout(garde);
+            html.classList.remove('gxo-lock');
+            racine.classList.add('gxo-out');
+            setTimeout(function () { if (racine.parentNode) racine.parentNode.removeChild(racine); }, 450);
+        }
+
+        function partir() {
+            if (enDepart || retiree) return;
+            enDepart = true;
+            majTirets(3);
+            if (reduit) { retirer(); return; }
+            setTimeout(function () {
+                racine.classList.add('gxo-leave');                  /* les lettres partent une à une */
+                setTimeout(retirer, 6 * 80 + 400 + 100);
+            }, 250);
+        }
+
+        var garde = setTimeout(partir, DUREE_MAX);
+
+        window.GXIntro = {
+            /* Appelé par la page à chaque étape réelle terminée (1 = événement vérifié, 2 = session / mot de passe connus) */
+            etape: function (n) { if (!finDemandee && !enDepart) majTirets(n); },
+            /* Appelé quand l'écran à afficher derrière l'intro est prêt */
+            fin: function () {
+                if (finDemandee) return;
+                finDemandee = true;
+                var polices = (document.fonts && document.fonts.ready)
+                    ? Promise.race([document.fonts.ready, new Promise(function (r) { setTimeout(r, 1200); })])
+                    : Promise.resolve();
+                polices.catch(function () {}).then(function () {
+                    setTimeout(partir, Math.max(0, DUREE_MIN - (Date.now() - t0)));
+                });
+            }
+        };
+    })();
+    </script>
 
         <!-- ==================== NAVBAR ====================
          IMPORTANT : ce bloc doit rester HORS de .page-wrapper.
@@ -974,7 +1022,20 @@
     /* =============================================
        AUTHENTIFICATION
     ============================================= */
+    /* Pilote l'intro d'ouverture : elle ne se lève que lorsque l'écran à afficher est prêt
+       (connexion, création du mot de passe, message d'erreur, ou espace déjà chargé). */
     async function initialiserAuthentification() {
+        const intro = window.GXIntro || { etape: function () {}, fin: function () {} };
+        try {
+            await initialiserAuthentificationEtapes(intro);
+        } catch (err) {
+            console.error("Erreur initialisation :", err);
+        } finally {
+            intro.fin();
+        }
+    }
+
+    async function initialiserAuthentificationEtapes(intro) {
          document.getElementById("blocAuthentification").style.display = "block";
          document.getElementById("espaceProtege").style.display = "none";
          document.getElementById("btnMenuHamburger").style.display = "none";
@@ -986,6 +1047,7 @@
         }
 
         const evenementExiste = await verifierExistenceEvenement(eventId);
+        intro.etape(1); /* tiret 1 : événement vérifié */
         if (!evenementExiste) {
             afficherEcranEvenementIntrouvable();
             return;
@@ -1003,7 +1065,8 @@
 
                 if (data.valide === true) {
                     sessionToken = tokenLocal;
-                    entrerDansEspaceProtege();
+                    intro.etape(2); /* tiret 2 : session valide */
+                    await entrerDansEspaceProtege(); /* l'intro attend que l'espace soit chargé */
                     return;
                 }
             } catch (err) {
@@ -1014,6 +1077,7 @@
 
         try {
             const data = await callOrganisateurAPI('a_mot_de_passe', { evenementId: eventId });
+            intro.etape(2); /* tiret 2 : état du mot de passe connu */
 
             if (data.aMotDePasse === true) {
                 afficherEcranAuth("authEcranLogin");
@@ -1037,8 +1101,9 @@
         document.getElementById("espaceProtege").style.display = "block";
         document.getElementById("btnMenuHamburger").style.display = "flex";
 
-        chargerEspaceOrganisateur();
+        const chargement = chargerEspaceOrganisateur();
         demarrerPolling();
+        return chargement; /* promesse attendue par l'intro d'ouverture ; ignorée après une connexion */
     }
 
     function afficherErreurAuth(idErreur, message) {
@@ -2439,75 +2504,6 @@ function scrollVersSectionActive(nomOnglet) {
         }
     }
 
-    /* =============================================
-       INTRO GOLDTIX — écran d'ouverture (inchangé)
-    ============================================= */
-    (function () {
-        const introEl = document.getElementById("introGoldTix");
-        if (!introEl) return;
-
-        const reduitMouvement = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        const stages = introEl.querySelectorAll(".intro-stage");
-        const checkItems = introEl.querySelectorAll(".intro-check-item");
-        let minuteries = [];
-        let dejaFerme = false;
-
-        function planifier(fn, delai) {
-            minuteries.push(setTimeout(fn, delai));
-        }
-
-        function allerAuStage(numero) {
-            stages.forEach(s => s.classList.remove("intro-stage-active"));
-            const cible = introEl.querySelector('.intro-stage[data-stage="' + numero + '"]');
-            if (cible) cible.classList.add("intro-stage-active");
-        }
-
-        function genererParticules() {
-            const conteneur = document.getElementById("introParticles");
-            if (!conteneur) return;
-            const total = window.innerWidth < 480 ? 10 : 18;
-            let html = "";
-            for (let i = 0; i < total; i++) {
-                const gauche = Math.round(Math.random() * 100);
-                const bas = Math.round(Math.random() * 30);
-                const delai = (Math.random() * 4).toFixed(2);
-                const duree = (3.5 + Math.random() * 2.5).toFixed(2);
-                html += '<span class="intro-particle" style="left:' + gauche + '%; bottom:' + bas + '%; animation-delay:' + delai + 's; animation-duration:' + duree + 's;"></span>';
-            }
-            conteneur.innerHTML = html;
-        }
-
-        function fermerIntro() {
-            if (dejaFerme) return;
-            dejaFerme = true;
-            minuteries.forEach(id => clearTimeout(id));
-            minuteries = [];
-            introEl.classList.add("intro-hidden");
-            setTimeout(() => {
-                introEl.classList.add("intro-removed");
-            }, 750);
-        }
-
-        window.passerIntroGoldTix = fermerIntro;
-
-        if (reduitMouvement) {
-            fermerIntro();
-            return;
-        }
-
-        genererParticules();
-
-        planifier(() => allerAuStage(2), 1400);
-
-        planifier(() => allerAuStage(3), 3200);
-        checkItems.forEach((item, index) => {
-            planifier(() => item.classList.add("intro-checked"), 3600 + index * 500);
-        });
-
-        planifier(() => allerAuStage(4), 6100);
-
-        planifier(fermerIntro, 8200);
-    })();
 
     function fileToBase64(file) {
     return new Promise((resolve, reject) => {
