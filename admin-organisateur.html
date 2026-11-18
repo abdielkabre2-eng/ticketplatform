@@ -14,9 +14,9 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Abril+Fatface&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="/css/organisateur.css?v=5">
+<link rel="stylesheet" href="/css/organisateur.css?v=6">
     <!-- Intro d'ouverture (attente de la page de connexion) : styles autonomes -->
     <style id="gxo-style">
     html.gxo-lock,html.gxo-lock body{overflow:hidden!important}
@@ -336,7 +336,7 @@
                         </div>
 
                         <button type="button" class="btn-auth-primary" id="btnLogin" onclick="soumettreConnexion()">
-                            Se connecter
+                            Entrer dans mon espace
                         </button>
 
                         <div class="auth-link-row">
@@ -372,7 +372,10 @@
                         </button>
 
                         <div class="auth-link-row">
-                            <a onclick="afficherEcranAuth('authEcranLogin')">Retour à la connexion</a>
+                            <a class="auth-back-link" onclick="afficherEcranAuth('authEcranLogin')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                                connexion
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -1201,7 +1204,7 @@
             afficherErreurAuth("authLoginError", "Mot de passe incorrect. Veuillez réessayer.");
         } finally {
             btn.disabled = false;
-            btn.textContent = "Se connecter";
+            btn.textContent = "Entrer dans mon espace";
         }
     }
 
